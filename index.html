@@ -1168,6 +1168,21 @@
   }
   #ptGo{width:100%;background:var(--text);color:#0b0d11;padding:12px}
 
+  .holibadge{
+    display:inline-block;margin-left:6px;padding:2px 8px;border-radius:4px;
+    background:rgba(255,212,59,.14);border:1px solid rgba(255,212,59,.4);
+    color:#ffd43b;font-size:10.5px;font-weight:650;letter-spacing:.02em;
+  }
+  .holibadge.bust{
+    background:rgba(255,107,107,.14);border-color:rgba(255,107,107,.4);color:#ff8787;
+  }
+  .todaysym.gone{color:#3a4553;letter-spacing:0}
+
+  /* 추모하는 날은 차분한 색으로 */
+  .holibadge.solemn{
+    background:rgba(200,210,225,.10);border-color:rgba(200,210,225,.35);color:#c8d2e1;
+  }
+
   /* ══════════ 원소 계보 ══════════ */
   .shellTitle .usecnt{
     float:right;font-size:10.5px;color:#5f6a7a;font-weight:400;
@@ -3041,6 +3056,7 @@ const UI = {
     mixHintSome:"담은 원소로 만들 수 있는 게 {n}개 있어요. 개수를 바꿔보세요",
     mixHintNone:"이 원소들로는 아직 만들 수 있는 게 없어요",
     eggFound:"새로운 원소를 발견했습니다!", eggOk:"확인",
+    eggNone:"없음", eggIon:"모든 원소가 이온이 되었습니다", eggWhy:"왜요?",
     eggBust:"뻥인데요", eggBust2:"존재한다고 믿으면 존재함",
     eggReal:"진짜 119번은 아직 이름이 없어요. 임시로 우누넨늄(Uue)이라 부릅니다",
     anyRatio:"비율 무관", achGot:"업적 달성", achFail:"실패 업적", achTitle:"업적",
@@ -3109,6 +3125,7 @@ const UI = {
     mixHintSome:"{n} compound(s) possible from these elements. Try other amounts",
     mixHintNone:"Nothing can be made from these elements yet",
     eggFound:"A new element has been discovered!", eggOk:"OK",
+    eggNone:"None", eggIon:"Every element has become an ion", eggWhy:"Why?",
     eggBust:"Just kidding", eggBust2:"It exists if you believe it does",
     eggReal:"Element 119 has no name yet. For now it is ununennium (Uue)",
     anyRatio:"any ratio", achGot:"Achievement unlocked", achFail:"Failure unlocked", achTitle:"Achievements",
@@ -3808,9 +3825,25 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '2.2';
+const APP_VER = '2.3';
 
 const CHANGELOG = [
+  {
+    v: '2.3', date: '2026-09-09',
+    title: { ko: '그날에만 나오는 것', en: 'Only on certain days' },
+    items: {
+      ko: ['기념일 17개 — 국내 9개(삼일절·과학의 날·어린이날·현충일·제헌절·광복절·개천절·고양이의 날·한글날) 포함',
+           '추모하는 날은 배지 색을 차분하게 두었습니다',
+           '기념일 8개 추가 — 그날 "오늘" 탭을 열면 정해진 원소가 나옵니다',
+           '멘델레예프 생일(2/8) 멘델레븀, 몰의 날(10/23) 탄소, 마리 퀴리 생일(11/7) 라듐 등',
+           '만우절에는 원소가 사라집니다'],
+      en: ['Seventeen special days, including nine Korean ones',
+           'Days of remembrance use a quieter badge',
+           'Eight special days — open the Today tab and a fixed element appears',
+           "Mendeleev's birthday brings mendelevium, Mole Day brings carbon, Marie Curie's day brings radium",
+           'On April 1st the element goes missing'],
+    },
+  },
   {
     v: '2.2', date: '2026-09-09',
     title: { ko: '진짜 폭발음', en: 'A real bang' },
@@ -4113,17 +4146,135 @@ const FORTUNE = {
   ],
 };
 
+
+/* ═══════════════════════════════════════════════════
+   기념일
+   그날에만 정해진 원소와 문구가 나온다.
+   날짜와 인물 정보는 실제 기록을 확인해 넣었다.
+   ═══════════════════════════════════════════════════ */
+const HOLIDAY = {
+  '01-01': { sym:'H',
+    ko:['새해', '우주에서 가장 먼저 생긴 원소로 시작하는 하루'],
+    en:['New Year', 'Starting the year with the first element the universe made'] },
+
+  '02-08': { sym:'Md',
+    ko:['멘델레예프 생일', '1834년 오늘 태어나 주기율표를 만든 사람. 101번은 그의 이름'],
+    en:['Mendeleev was born', 'Born this day in 1834. Element 101 carries his name'] },
+
+  '04-01': { trick:true,
+    ko:['만우절', '오늘은 모두가 전자를 잃는 날'],
+    en:['April Fools', 'Today everyone loses an electron'] },
+
+  '10-23': { sym:'C',
+    ko:['몰의 날', '6.02×10²³. 6시 2분에 기념하는 화학자들의 날'],
+    en:['Mole Day', '6.02×10²³ — chemists celebrate at 6:02'] },
+
+  '10-31': { sym:'As',
+    ko:['핼러윈', '옛날 추리소설에서 제일 많이 쓰인 원소'],
+    en:['Halloween', 'The poison of choice in every old detective novel'] },
+
+  '11-07': { sym:'Ra',
+    ko:['마리 퀴리 생일', '1867년 오늘 태어나 폴로늄과 라듐을 찾아낸 사람'],
+    en:['Marie Curie was born', 'Born this day in 1867. She found polonium and radium'] },
+
+  '12-10': { sym:'No',
+    ko:['노벨상 시상식', '해마다 오늘 상을 준다. 102번은 그의 이름'],
+    en:['Nobel Prize ceremony', 'Awarded every year on this day. Element 102 bears his name'] },
+
+
+  /* ── 한국 ── */
+  '09-09': { sym:'Ga',
+    ko:['고양이의 날', '고양이 목숨은 아홉 개. 체온에 녹아 그릇 모양이 되는 원소'],
+    en:['Cat Day (Korea)', 'Nine lives — and an element that melts at body heat to fit its container'] },
+
+  '03-01': { sym:'Fe', solemn:true,
+    ko:['삼일절', '1919년 오늘 만세 소리가 시작되었다'],
+    en:['March First Movement', 'The independence declaration of 1919'] },
+
+  '04-21': { sym:'Si',
+    ko:['과학의 날', '보이지 않는 곳에서 세상을 굴리는 원소처럼'],
+    en:['Science Day (Korea)', 'Like the element that quietly runs the world'] },
+
+  '05-05': { sym:'He',
+    ko:['어린이날', '풍선을 띄우는 그 기체'],
+    en:["Children's Day", 'The gas that lifts the balloons'] },
+
+  '06-06': { sym:'W', solemn:true,
+    ko:['현충일', '3422도까지 버티는 원소로 오늘을 기억한다'],
+    en:['Memorial Day (Korea)', 'Remembered with the element that endures to 3422°C'] },
+
+  '07-17': { sym:'Pt',
+    ko:['제헌절', '1948년 오늘 헌법이 세워졌다. 변하지 않는 것에 대하여'],
+    en:['Constitution Day (Korea)', 'The constitution of 1948. On things that do not change'] },
+
+  '08-15': { sym:'Au', solemn:true,
+    ko:['광복절', '1945년 오늘 빛을 되찾았다'],
+    en:['Liberation Day (Korea)', 'The light returned on this day in 1945'] },
+
+  '10-03': { sym:'O',
+    ko:['개천절', '하늘이 열린 날. 그 하늘의 21퍼센트'],
+    en:['National Foundation Day (Korea)', 'The day the sky opened — and 21% of that sky'] },
+
+  '10-09': { sym:'I',
+    ko:['한글날', '요오드에서 아이오딘으로. 원소 이름도 우리말 표기가 바뀌어 왔다'],
+    en:['Hangeul Day', 'Korean element names have been revised over the years too'] },
+
+  '12-25': { sym:'Au',
+    ko:['크리스마스', '동방박사가 가져온 세 가지 선물 중 하나'],
+    en:['Christmas', 'One of the three gifts the wise men brought'] },
+};
+
+function todayKey(){
+  const d = new Date();
+  return String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function todayHoliday(){ return HOLIDAY[todayKey()] || null; }
+
 function todayElement(){
   const s = daySeed();
+  const L = LANG === 'en' ? 'en' : 'ko';
+  const h = todayHoliday();
+  if(h && h.sym){
+    const e = EL.find(x => x.s === h.sym);
+    if(e) return { el:e, fortune:h[L][1], holiday:h[L][0], solemn:!!h.solemn };
+  }
   return {
     el: EL[s % EL.length],
-    fortune: FORTUNE[LANG === 'en' ? 'en' : 'ko'][(s >>> 9) % FORTUNE.ko.length],
+    fortune: FORTUNE[L][(s >>> 9) % FORTUNE.ko.length],
   };
 }
 
-function renderToday(){
+/* 만우절: 원소 자리를 비워두고 놀린 뒤 진짜를 보여준다 */
+function renderAprilFools(){
   setFocus(false);
-  const { el: e, fortune } = todayElement();
+  const L = LANG === 'en' ? 'en' : 'ko';
+  const h = HOLIDAY['04-01'];
+  const d = new Date();
+  const dateStr = LANG === 'en'
+    ? d.toLocaleDateString('en-US', { month:'long', day:'numeric' })
+    : `${d.getMonth()+1}월 ${d.getDate()}일`;
+
+  qBodyEl.innerHTML = `
+    <div class="todaywrap">
+      <div class="todaydate">${dateStr} <span class="holibadge">${h[L][0]}</span></div>
+      <div class="todaysym gone">?</div>
+      <div class="todayname">${t('eggNone')}</div>
+      <div class="todaysub">${t('eggIon')}</div>
+      <div class="todayfort" style="border-color:#ff6b6b">${h[L][1]}</div>
+      <button class="btn" id="foolGo">${t('eggWhy')}</button>
+    </div>`;
+  document.getElementById('foolGo').addEventListener('click', () => {
+    try{ SFX.fail(); }catch(err){}
+    document.body.classList.add('eggflash');
+    setTimeout(() => document.body.classList.remove('eggflash'), 700);
+    renderToday(true);
+  });
+}
+
+function renderToday(afterFool){
+  setFocus(false);
+  if(!afterFool && todayHoliday() && todayHoliday().trick) return renderAprilFools();
+  const { el: e, fortune, holiday, solemn } = todayElement();
   const col = cssv(CAT[e.c].v);
   const d = new Date();
   const dateStr = LANG === 'en'
@@ -4132,7 +4283,9 @@ function renderToday(){
 
   qBodyEl.innerHTML = `
     <div class="todaywrap">
-      <div class="todaydate">${dateStr}</div>
+      <div class="todaydate">${dateStr}${
+        holiday ? ` <span class="holibadge${solemn ? ' solemn' : ''}">${holiday}</span>` : ''}${
+        afterFool ? ` <span class="holibadge bust">${t('eggBust')}</span>` : ''}</div>
       <div class="todaysym" style="color:${col}">${e.s}</div>
       <div class="todayname">${elName(e)}</div>
       <div class="todaysub">${subOf(e)}</div>
