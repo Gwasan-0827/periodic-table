@@ -7079,6 +7079,9 @@ function rxLoop(now){
   RX_LAST = now;
   if(!RX_DRAG && !RX_REDUCED) RX_PH += dt;
   if(RX_M.kin){
+    // 화면 크기가 바뀔 수 있으니 가끔 벽 위치를 다시 잰다
+    RX_M.bt = (RX_M.bt || 0) + 1;
+    if(!RX_M.bw || RX_M.bt % 30 === 0) rxKinBounds(RX_M);
     const gv = document.getElementById('mGrav');
     if(gv){
       gv.hidden = !RX_TILT.on;
@@ -7878,9 +7881,18 @@ function rxLiquidModel(sym, cnt, rnd){
            phys: { g: 0.34, rest: 0.25, floorRest: 0.1, damp: 0.975, cohesion: 0.011, friction: 0.97, maxV: 18 } };
 }
 
+/* 벽 = 실제로 보이는 분자 칸 가장자리 (폰에선 그림 영역보다 가로로 넓다) */
+function rxKinBounds(m){
+  const svg = document.getElementById('mMol');
+  const r = svg && svg.getBoundingClientRect();
+  if(!r || !r.width || !r.height) return;
+  const sc = Math.min(r.width / 400, r.height / 300);
+  m.bw = r.width / sc / 2 - 6;
+  m.bh = r.height / sc / 2 - 4;
+}
 function rxKinStep(m, k){
   const P = m.phys || { g: 0.32, rest: 0.62, floorRest: 0.45, damp: 0.992, friction: 0.86, maxV: 40 };
-  const W = 200 - 6, H = 150 - 4;
+  const W = m.bw || 194, H = m.bh || 146;
   const gx = RX_TILT.x * P.g, gy = RX_TILT.y * P.g;
   const damp = Math.pow(P.damp, k);
   const A = m.atoms;
@@ -8043,8 +8055,9 @@ function rxGrabMove(e){
   const p = rxStagePoint(e);
   const g = RX_GRAB, a = g.a;
   const now = performance.now(), dt = Math.max(8, now - g.lt);
-  const nx = Math.max(-194 + a.r, Math.min(194 - a.r, p.x + g.ox));
-  const ny = Math.max(-146 + a.r, Math.min(146 - a.r, p.y + g.oy));
+  const BW = RX_M.bw || 194, BH = RX_M.bh || 146;
+  const nx = Math.max(-BW + a.r, Math.min(BW - a.r, p.x + g.ox));
+  const ny = Math.max(-BH + a.r, Math.min(BH - a.r, p.y + g.oy));
   // 속도는 최근 움직임을 부드럽게 섞는다 (놓을 때 던지는 힘)
   a.vx = a.vx * 0.5 + (nx - a.x) / dt * 16 * 0.5;
   a.vy = a.vy * 0.5 + (ny - a.y) / dt * 16 * 0.5;
