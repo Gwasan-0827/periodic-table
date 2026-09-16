@@ -960,6 +960,449 @@
     .cbtns .btn{padding:10px;font-size:12.5px}
   }
 
+  /* ══════════ 결과 창 v2.7 ══════════ */
+  #modal{padding:64px 150px 32px 64px}
+  #card{
+    --rx-card:#3e4458; --rx-deep:#1f222b; --rx-acc:#7a9bcf; --rx-ink:#0a0c10; --rx-paper:#eef1f6;
+    --st:var(--rx-acc);
+    position:relative;display:grid;
+    grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);
+    grid-template-rows:auto 1fr;gap:12px 18px;
+    max-width:860px;padding:14px 16px 16px;text-align:left;
+    background:var(--rx-card);border:2px solid var(--rx-ink);border-radius:6px;
+    box-shadow:0 0 0 1px #5b637a,0 24px 70px rgba(0,0,0,.65);
+  }
+  #card.is-loose{--st:var(--transition)}
+  #card.is-fail{--st:#ff8787}
+
+  .rx-x{
+    position:absolute;top:-50px;right:0;width:40px;height:40px;
+    border:2px solid var(--rx-ink);border-radius:4px;background:var(--rx-card);
+    color:var(--text);font-size:17px;cursor:pointer;font-family:inherit;
+    box-shadow:0 0 0 1px #5b637a;
+  }
+  .rx-x:hover{background:#4a5169}
+  .rx-x:focus-visible{outline:2px solid var(--rx-acc);outline-offset:3px}
+
+  /* 새로 발견했을 때만 뜨는 반짝이 */
+  .rx-spark{position:absolute;left:-38px;top:-40px;width:46px;height:46px;display:none;pointer-events:none}
+  .rx-spark path{fill:none;stroke:var(--rx-acc);stroke-width:2.2;stroke-linejoin:round}
+  #card.is-new .rx-spark{display:block}
+
+  /* 머리: 넣은 원소 */
+  .rx-head{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:0;min-height:52px;position:relative;z-index:1}
+  .rx-head .rt{
+    position:relative;width:52px;height:52px;border-radius:9px;
+    background:var(--rx-paper);border:2px solid var(--rx-ink);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .rx-head .rt::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--cc)}
+  .rx-head .rt i{position:absolute;top:3px;left:5px;font-style:normal;font-size:9px;color:#5b6475}
+  .rx-head .rt b{font-size:19px;font-weight:800;color:#141821;margin-top:2px}
+  .rx-head .rt em{position:absolute;right:4px;bottom:6px;font-style:normal;font-size:10px;font-weight:800;color:#141821}
+  .rplus{
+    width:18px;height:3px;background:var(--rx-ink);position:relative;flex-shrink:0;margin:0 5px;
+    font-size:0;color:transparent;
+  }
+  .rplus::before{content:"";position:absolute;left:7.5px;top:-7.5px;width:3px;height:18px;background:var(--rx-ink)}
+  .rx-head.tight{gap:4px}
+  .rx-head.tight .rt{width:40px;height:40px;border-radius:7px}
+  .rx-head.tight .rt b{font-size:14px}
+  .rx-head.tight .rplus{display:none}
+
+  /* 넣은 원소 → 화학식 */
+  .rx-wire{
+    position:absolute;display:none;pointer-events:none;
+    border-top:3px solid var(--rx-paper);border-right:3px solid var(--rx-paper);
+    border-top-right-radius:6px;opacity:.9;
+  }
+  .rx-wire::after{
+    content:"";position:absolute;right:-7.5px;bottom:-2px;
+    border:6px solid transparent;border-top:8px solid var(--rx-paper);border-bottom:0;
+  }
+
+  /* 왼쪽: 분자 + 설명 띠 */
+  .rx-stage{
+    grid-column:1;grid-row:2;position:relative;min-height:330px;
+    border:2px solid var(--rx-ink);border-radius:2px;overflow:hidden;
+    background-color:var(--rx-deep);
+    background-image:radial-gradient(circle,#2e3340 1px,transparent 1.2px);
+    background-size:18px 18px;display:flex;flex-direction:column;
+  }
+  #mMol{flex:1;width:100%;min-height:0;display:block}
+  .rx-cap{position:relative;background:var(--rx-card);border-top:2px solid var(--rx-ink);margin:0 4px 4px;border:2px solid var(--rx-ink)}
+  .rx-strip{height:4px;display:flex;gap:1px}
+  .rx-strip i{display:block;min-width:2px}
+  #card .csub{
+    font-size:14px;color:var(--text);text-align:center;line-height:1.55;
+    padding:8px 14px 9px;margin:0;opacity:1;
+  }
+
+  .mol-bonds line{stroke:#a5b0c2;stroke-width:3;stroke-linecap:round;opacity:.55}
+  .mol-bonds.faint line{stroke-width:2;opacity:.22}
+  .mol-ball{fill:var(--c);stroke:var(--rx-ink);stroke-width:1.6}
+  .mol-hi{fill:#fff;opacity:.28}
+  .mol-sym{fill:#0b0d11;font-weight:800;text-anchor:middle;font-family:'Orbit',sans-serif;pointer-events:none}
+  .mol-at.loose .mol-ball{fill:none;stroke:var(--c);stroke-width:2;stroke-dasharray:4 3}
+  .mol-at.loose .mol-sym{fill:var(--c)}
+  .mol-glow{fill:var(--c);opacity:.14}
+  .mol-arrow line{stroke:var(--dim);stroke-width:2.5}
+  .mol-arrow path{fill:var(--dim)}
+  .mol-burst{stroke:#ffa94d;stroke-width:2.5;stroke-linecap:round;opacity:.7}
+
+  /* 오른쪽 */
+  .rx-side{grid-column:2;grid-row:2;display:flex;flex-direction:column;min-width:0;min-height:330px}
+  .rx-info{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px 0 12px}
+  #card .formula{
+    font-size:42px;font-weight:800;line-height:1.12;margin:0;color:#f3f5f9;
+    letter-spacing:-.02em;word-break:break-word;
+    text-shadow:2px 2px 0 var(--rx-ink);
+  }
+  #card .formula.long{font-size:30px}
+  #card .formula.xlong{font-size:22px}
+  #card .formula.fail{color:#ff8787}
+  #card .formula sub,#card .formula sup{line-height:0;position:relative;vertical-align:baseline}
+  #card .formula sub{font-size:.55em;top:.3em}
+  #card .formula sup{font-size:.5em;top:-.8em}
+  #card .cname{font-size:17px;font-weight:700;margin-top:8px;color:#c9d0dc}
+
+  .rx-state{font-size:17px;font-weight:750;color:var(--st);margin-top:10px}
+  #card .cdex{display:flex;align-items:center;gap:9px;margin-top:6px;font-size:14px;color:#c9d0dc;min-height:28px;flex-wrap:wrap}
+  .rx-new{
+    font-size:14px;font-weight:800;padding:2px 8px;
+    background:var(--rx-paper);color:#141821;border:2.5px solid #3aa0e0;
+  }
+  .rx-old{font-size:12px;color:#9aa4b5}
+  .dexprog{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dexprog b{color:#fff;font-weight:800}
+  #card .hintline{display:block;color:#b3bccb;line-height:1.55;font-size:12.5px}
+
+  #card .cbtns{display:flex;gap:10px;margin-top:14px}
+  #card .cbtns .btn{
+    flex:1;padding:10px 8px;background:var(--rx-paper);color:#141821;
+    border:2.5px solid var(--rx-ink);border-radius:3px;font-weight:700;font-size:13px;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  }
+  #card .cbtns .btn:hover{background:#fff}
+  #mWipe svg{width:20px;height:20px;flex-shrink:0}
+  #mWipe svg path{fill:none;stroke:var(--rx-acc);stroke-width:3;stroke-linejoin:round}
+  #mMoreBtn[aria-expanded="true"]{background:var(--rx-acc)!important;color:#0b0d11!important}
+  #card .cbtns .btn:focus-visible{outline:2px solid var(--rx-acc);outline-offset:3px}
+
+  /* 자세히 */
+  .rx-more{flex:1;overflow:auto;padding:4px 2px 8px}
+  .mm-sec + .mm-sec{margin-top:14px}
+  .mm-h{font-size:12px;color:#aab3c3;margin-bottom:6px}
+  .mm-big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff}
+  .mm-big small{font-size:13px;font-weight:600;color:#aab3c3}
+  .mm-row{display:grid;grid-template-columns:1fr auto 52px;column-gap:10px;align-items:baseline;font-size:12.5px;padding-top:5px}
+  .mm-el b{color:var(--cc);font-weight:800;margin-right:3px}
+  .mm-n{color:#aab3c3;font-variant-numeric:tabular-nums}
+  .mm-p{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+  .mm-bar{grid-column:1 / -1;height:4px;background:var(--rx-deep);margin-top:4px;overflow:hidden}
+  .mm-bar i{display:block;height:100%;background:var(--cc)}
+  .mm-note{font-size:12px;color:#aab3c3;line-height:1.55;margin-top:12px}
+
+  /* 도감 게이지 */
+  .rx-gauge{
+    position:absolute;left:calc(100% + 10px);top:-2px;bottom:-2px;width:112px;
+    display:flex;flex-direction:column;
+    background:var(--rx-card);border:3px solid var(--rx-acc);
+    box-shadow:0 0 0 1px var(--rx-ink);
+  }
+  #card.is-fail .rx-gauge{display:none}
+  .g-h{font-size:13px;font-weight:800;color:var(--rx-acc);text-align:center;padding:8px 4px 7px;white-space:nowrap}
+  .g-track{flex:1;position:relative;background:#000;margin:0 5px;overflow:hidden}
+  .g-fill{
+    position:absolute;left:0;right:0;bottom:0;height:var(--p);
+    background:linear-gradient(to top,#4f6f9f,var(--rx-acc));
+  }
+  .g-n{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:44px;font-weight:800;color:var(--rx-acc);font-variant-numeric:tabular-nums;
+    text-shadow:0 0 0 #000,2px 2px 0 #000;
+  }
+  .g-foot{
+    background:var(--rx-acc);color:#0b0d11;font-weight:800;font-size:13px;text-align:center;
+    padding:6px 4px;margin:5px;font-variant-numeric:tabular-nums;
+  }
+  #card:not(.is-new) .g-h{color:#aab3c3}
+
+  /* 열릴 때 한 번 */
+  #card.rx-anim .mol-in{animation:molPop .42s var(--d) cubic-bezier(.2,.9,.3,1.3) both}
+  #card.rx-anim .mol-bonds{animation:molFade .5s .25s ease-out both}
+  #card.rx-anim .rx-strip{animation:rxStrip .6s .2s ease-out both;transform-origin:left}
+  #card.rx-anim .rx-wire{animation:rxWire .5s .1s ease-out both}
+  #card.rx-anim .rx-new{animation:rxStamp .3s .35s ease-out both}
+  #card.rx-anim.is-new .rx-spark{animation:rxSpark 1.1s .2s ease-out both}
+  #card.rx-anim.is-new .g-fill{animation:rxGauge .9s .25s cubic-bezier(.3,.7,.3,1) both}
+  #card.rx-anim.is-fail .rx-stage{animation:rxShake .35s ease-out both}
+  .g-n.tick{animation:rxTick .35s ease-out}
+  .mol-in{transform-box:fill-box;transform-origin:center}
+  @keyframes molPop{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
+  @keyframes molFade{from{opacity:0}to{opacity:1}}
+  @keyframes rxStrip{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes rxWire{from{clip-path:inset(0 100% 100% 0)}60%{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 -20px 0)}}
+  @keyframes rxStamp{0%{opacity:0;transform:scale(1.8) rotate(-8deg)}100%{opacity:1;transform:none}}
+  @keyframes rxSpark{0%{opacity:0;transform:scale(.2) rotate(-45deg)}40%{opacity:1;transform:scale(1.25) rotate(0)}100%{opacity:1;transform:none}}
+  @keyframes rxGauge{from{height:var(--p0)}to{height:var(--p)}}
+  @keyframes rxTick{0%{transform:scale(1.5);color:#fff}100%{transform:none}}
+  @keyframes rxShake{0%,100%{transform:none}25%{transform:translateX(-5px)}60%{transform:translateX(4px)}}
+  @media (prefers-reduced-motion:reduce){
+    #card.rx-anim *,.g-n.tick{animation:none!important}
+  }
+
+  /* 게이지를 옆에 둘 자리가 없으면 카드 아래 가로 막대로 */
+  @media (max-width:1100px){
+    #modal{padding:60px 20px 20px}
+    .rx-gauge{
+      position:static;grid-column:1 / -1;width:auto;flex-direction:row;align-items:stretch;
+      border-width:2px;
+    }
+    .g-h{padding:6px 10px;display:flex;align-items:center}
+    .g-track{margin:5px 0;height:26px;flex:1}
+    .g-fill{top:0;bottom:0;height:auto;width:var(--p)}
+    .g-n{font-size:15px;justify-content:flex-end;padding-right:8px;color:#fff}
+    .g-foot{margin:5px;display:flex;align-items:center}
+    #card.rx-anim.is-new .g-fill{animation:rxGaugeX .9s .25s cubic-bezier(.3,.7,.3,1) both}
+    @keyframes rxGaugeX{from{width:var(--p0)}to{width:var(--p)}}
+  }
+
+  @media (max-width:700px){
+    #modal{padding:10px;align-items:center}
+    #card{grid-template-columns:1fr;gap:10px;padding:12px;max-height:calc(100dvh - 20px);overflow:auto}
+    .rx-x{top:10px;right:10px;z-index:3;width:34px;height:34px}
+    .rx-spark{display:none!important}
+    .rx-wire{visibility:hidden}
+    .rx-head{padding-right:40px;min-height:44px}
+    .rx-head .rt{width:44px;height:44px}
+    .rx-head .rt b{font-size:16px}
+    .rx-stage{grid-row:auto;min-height:0;height:250px}
+    .rx-side{grid-column:1;grid-row:auto;min-height:0}
+    .rx-info{padding:4px 0 0}
+    #card .formula{font-size:34px}
+    #card .formula.long{font-size:26px}
+    #card .formula.xlong{font-size:20px}
+    #card .csub{font-size:13px}
+    .rx-state{font-size:15px}
+  }
+  .rx-info[hidden],.rx-more[hidden]{display:none!important}
+
+  /* ══════════ 결과 창 v2.7 · 움직임 ══════════ */
+  #card.rx-anim{animation:rxIn .34s cubic-bezier(.2,.9,.3,1.15) both}
+  @keyframes rxIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+
+  .rx-stage{touch-action:none;cursor:grab;--glow:transparent}
+  .rx-stage.grab{cursor:grabbing}
+  .rx-stage::before{
+    content:"";position:absolute;left:50%;top:44%;width:340px;height:340px;
+    transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,var(--glow) 0%,transparent 62%);
+    opacity:.22;animation:rxBreath 5s ease-in-out infinite;
+  }
+  @keyframes rxBreath{0%,100%{opacity:.16;transform:translate(-50%,-50%) scale(.92)}50%{opacity:.3;transform:translate(-50%,-50%) scale(1.05)}}
+  #mMol{position:relative}
+  .mol-fog{fill:#0b0f16;pointer-events:none}
+  .mol-fl{transform-box:fill-box;transform-origin:center}
+  .mol-at.loose .mol-fl{animation:molFloat 3.2s var(--fd) ease-in-out infinite}
+  @keyframes molFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(3px,-7px)}}
+
+  .rx-hint{
+    position:absolute;right:10px;top:10px;font-size:11px;color:#9aa4b5;
+    padding:4px 9px;border:1px solid #3a4050;border-radius:20px;background:rgba(15,18,24,.7);
+    pointer-events:none;animation:rxHint 2.4s 1.2s ease-in-out 2 both;
+  }
+  .rx-hint[hidden]{display:none}
+  @keyframes rxHint{0%,100%{transform:none}30%{transform:translateX(-6px)}60%{transform:translateX(6px)}}
+
+  @keyframes rxType{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -10% -20% 0)}}
+
+  .rx-burst{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:5}
+  .rx-burst i{
+    position:absolute;display:block;background:var(--c);margin:-3px 0 0 -3px;
+    box-shadow:0 0 6px var(--c);
+    animation:rxPt 1.1s cubic-bezier(.15,.7,.35,1) both;
+  }
+  @keyframes rxPt{
+    0%{opacity:1;transform:translate(0,0) rotate(0) scale(1.2)}
+    70%{opacity:1}
+    100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 40px)) rotate(var(--rot)) scale(.4)}
+  }
+
+  #card.rx-anim.is-new .rx-spark{animation:rxSpark 1.1s .2s ease-out both,rxTwinkle 2.8s 1.4s ease-in-out infinite}
+  @keyframes rxTwinkle{0%,100%{transform:scale(1) rotate(0);opacity:1}50%{transform:scale(.72) rotate(45deg);opacity:.65}}
+  .rx-spark path{filter:drop-shadow(0 0 4px var(--rx-acc))}
+
+  .g-fill{overflow:hidden}
+  .g-fill::after{
+    content:"";position:absolute;left:0;right:0;height:60px;bottom:-60px;
+    background:linear-gradient(to top,transparent,rgba(255,255,255,.55),transparent);
+  }
+  #card.rx-anim.is-new .g-fill::after{animation:rxShine 1.2s .9s ease-out both}
+  @keyframes rxShine{from{bottom:-60px}to{bottom:110%}}
+  #card.is-new .g-track{box-shadow:inset 0 0 18px rgba(122,155,207,.35)}
+
+  @media (prefers-reduced-motion:reduce){
+    #card.rx-anim,.rx-stage::before,.mol-fl,.rx-hint,.rx-burst i{animation:none!important}
+  }
+  .rx-stage,.rx-stage *{user-select:none;-webkit-user-select:none}
+  #card.rx-settled .mol-in{animation:none!important}
+
+  /* ══════════ 결과 창 v2.7 · 어두운 유리 + 물결 ══════════ */
+  #modal{background:rgba(2,3,6,.8);backdrop-filter:blur(6px) saturate(.7);-webkit-backdrop-filter:blur(6px) saturate(.7)}
+  #card{
+    --rx-card:rgba(22,27,38,.78);
+    background:linear-gradient(180deg,rgba(18,22,31,.74),rgba(8,10,15,.82));
+    backdrop-filter:blur(5px) saturate(1.2);-webkit-backdrop-filter:blur(5px) saturate(1.2);
+    border:1px solid rgba(122,155,207,.32);border-radius:10px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(0,0,0,.6),0 30px 80px rgba(0,0,0,.7);
+  }
+  #rxWaves{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  #modal.on #rxWaves{animation:molFade .9s ease-out both}
+  #card{z-index:1}
+  .rx-head,.rx-stage,.rx-side{position:relative;z-index:1}
+  .rx-wire{z-index:2}
+  .rx-stage{
+    background-color:rgba(5,7,11,.5);
+    background-image:radial-gradient(circle,rgba(122,155,207,.14) 1px,transparent 1.2px);
+    border:1px solid rgba(122,155,207,.22);border-radius:6px;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.55);
+  }
+  .rx-cap{background:rgba(14,18,26,.82);border:1px solid rgba(122,155,207,.2);border-radius:4px;margin:0 6px 6px}
+  .rx-x{background:rgba(18,22,31,.8);border:1px solid rgba(122,155,207,.35);border-radius:8px;box-shadow:none;backdrop-filter:blur(8px)}
+  .rx-x:hover{background:rgba(40,48,66,.9)}
+  .rx-gauge{
+    background:rgba(12,15,21,.8);border:1px solid rgba(122,155,207,.5);border-radius:8px;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 0 24px rgba(122,155,207,.15),0 30px 80px rgba(0,0,0,.6);overflow:hidden;
+  }
+  .g-track{background:rgba(0,0,0,.75);border-radius:3px}
+  .g-foot{border-radius:3px}
+  .rx-head .rt{box-shadow:0 4px 14px rgba(0,0,0,.45)}
+  .rplus{background:#c9d3e3}
+  .rplus::before{background:#c9d3e3}
+  #card .cbtns .btn{border:1px solid rgba(0,0,0,.6);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  #card .formula{text-shadow:0 2px 18px rgba(122,155,207,.35)}
+  @media (max-width:1100px){ .rx-gauge{border-radius:6px} }
+
+  .mol-bonds.crystal line{stroke:#b9c6da;stroke-width:2.2;opacity:.5}
+
+  /* ══════════ 폭발 ══════════ */
+  #card.is-boom{--st:#ff922b}
+  #card.is-boom .rx-stage{
+    background-image:radial-gradient(circle,#3a2a22 1px,transparent 1.2px);
+  }
+  .rx-fx{position:absolute;inset:0 0 auto 0;height:calc(100% - 44px);pointer-events:none;overflow:hidden}
+  .rx-fx i{position:absolute;left:50%;top:50%;display:block;border-radius:50%}
+  .fx-core{
+    width:40px;height:40px;margin:-20px 0 0 -20px;
+    background:radial-gradient(circle,#fff 0%,#fff3bf 25%,#ff922b 55%,rgba(255,80,40,0) 72%);
+    animation:fxCore .75s ease-out both;
+  }
+  @keyframes fxCore{0%{transform:scale(.3);opacity:1}25%{transform:scale(calc(5 * var(--lv)));opacity:1}100%{transform:scale(calc(7 * var(--lv)));opacity:0}}
+  .fx-ring{
+    width:30px;height:30px;margin:-15px 0 0 -15px;border:3px solid #ffd8a8;
+    animation:fxRing .7s cubic-bezier(.1,.7,.3,1) both;
+  }
+  @keyframes fxRing{from{transform:scale(.4);opacity:.95;border-width:6px}to{transform:scale(calc(11 * var(--lv)));opacity:0;border-width:1px}}
+  .fx-spark{
+    width:14px;height:2.5px;margin:-1px 0 0 -7px;border-radius:2px;
+    background:linear-gradient(90deg,rgba(255,146,43,0),#ffd43b 60%,#fff);
+    box-shadow:0 0 6px #ff922b;
+    transform:rotate(var(--ang));
+    animation:fxSpark .6s cubic-bezier(.15,.8,.3,1) both;
+  }
+  @keyframes fxSpark{
+    from{transform:translate(0,0) rotate(var(--ang)) scaleX(.5);opacity:1}
+    to{transform:translate(var(--dx),var(--dy)) rotate(var(--ang)) scaleX(1.6);opacity:0}
+  }
+  .fx-smoke{
+    width:var(--sz);height:var(--sz);margin:calc(var(--sz) / -2) 0 0 calc(var(--sz) / -2);
+    background:radial-gradient(circle,rgba(120,110,105,.55),rgba(80,75,72,0) 70%);
+    animation:fxSmoke 2.6s ease-out both;
+  }
+  @keyframes fxSmoke{
+    0%{transform:translate(0,0) scale(.3);opacity:0}
+    15%{opacity:.9}
+    100%{transform:translate(var(--sx),var(--sy)) scale(2.4);opacity:0}
+  }
+  .fx-scorch{
+    width:180px;height:60px;margin:0 0 0 -90px;top:auto!important;bottom:-10px;
+    background:radial-gradient(ellipse,rgba(10,6,4,.85),rgba(40,20,10,.4) 45%,rgba(0,0,0,0) 70%);
+    animation:molFade .5s .25s ease-out both;
+  }
+
+  .rx-flash{
+    position:fixed;inset:0;pointer-events:none;z-index:6;
+    background:radial-gradient(circle at 40% 45%,#fff 0%,#fff3bf 30%,#ff922b 70%,#e8590c 100%);
+    mix-blend-mode:screen;animation:fxFlash .75s ease-out both;
+  }
+  @keyframes fxFlash{0%{opacity:calc(.55 + var(--lv) * .2)}100%{opacity:0}}
+
+  .rx-crack{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;animation:molFade .08s both}
+  .ck-shade{fill:none;stroke:rgba(0,0,0,.6);stroke-width:4;transform:translate(1.5px,1.5px)}
+  .ck-line{fill:none;stroke:rgba(235,242,255,.8);stroke-width:1.4;stroke-linejoin:round}
+  .ck-hit{fill:rgba(255,255,255,.35);stroke:rgba(255,255,255,.7);stroke-width:1.5}
+  @media (prefers-reduced-motion:reduce){
+    .rx-fx,.rx-flash{display:none}
+  }
+  .mol-at.frag .mol-ball{stroke:none;filter:drop-shadow(0 0 3px var(--c))}
+  .mol-at.frag .mol-hi{display:none}
+  .mol-atoms.liquid .mol-ball{stroke:none}
+  .mol-atoms.liquid .mol-hi{display:none}
+  .mol-atoms.neon .mol-ball{fill:#ff8a5c;stroke:#ffd8c2;stroke-width:1.2;filter:drop-shadow(0 0 6px #ff5a36) drop-shadow(0 0 14px #ff5a36)}
+  .mol-atoms.neon .mol-sym{fill:#3a0d05}
+  .mol-atoms.neon{animation:neonFlick 4s steps(1) infinite}
+  @keyframes neonFlick{0%,100%{opacity:1}42%{opacity:1}43%{opacity:.35}44%{opacity:1}46%{opacity:.5}47%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.mol-atoms.neon{animation:none}}
+  .mol-atoms.clear{opacity:.78}
+  .mol-glyphs{pointer-events:none}
+  .mol-glyphs line{stroke:rgba(20,30,45,.55);stroke-width:1.3}
+  .mol-glyphs circle{stroke:rgba(11,13,17,.6);stroke-width:.6}
+  .rx-grav{
+    position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:50%;
+    border:1px solid #3a4050;background:rgba(15,18,24,.7);pointer-events:none;
+  }
+  .rx-grav[hidden]{display:none}
+  .rx-grav i{
+    position:absolute;left:50%;top:50%;width:2px;height:calc(4px + 9px * var(--gm,1));
+    margin-left:-1px;background:var(--rx-acc);transform-origin:top center;
+    transform:rotate(var(--ga,0deg));border-radius:1px;
+  }
+  .rx-grav i::after{
+    content:"";position:absolute;left:-3px;bottom:-4px;
+    border:4px solid transparent;border-top:5px solid var(--rx-acc);border-bottom:0;
+  }
+  /* 개수는 모서리 배지로 */
+  .rx-head .rt{overflow:visible;box-shadow:inset 0 -4px 0 var(--cc)}
+  .rx-head .rt::after{display:none}
+  .rx-head .rt em{
+    left:auto;right:-7px;top:-8px;bottom:auto;
+    min-width:20px;height:18px;padding:0 5px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    background:#141821;color:#fff;border:1.5px solid var(--rx-paper);
+    font-size:10px;font-weight:800;line-height:1;z-index:1;
+  }
+  .rx-head{padding-top:6px}
+  .mol-faces polygon{stroke-width:.8;stroke-linejoin:round}
+  #card.rx-anim .mol-faces{animation:rxGrow .8s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:50% 50%;transform-box:fill-box}
+  @keyframes rxGrow{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+  /* 광물 / 원자 구조 탭 */
+  .rx-tabs{
+    position:absolute;left:10px;top:10px;z-index:2;display:flex;padding:3px;gap:2px;
+    background:rgba(15,18,24,.78);border:1px solid #3a4050;border-radius:9px;
+  }
+  .rx-tabs[hidden]{display:none}
+  .rx-tabs button{
+    font:inherit;font-size:12px;font-weight:700;color:#9aa4b5;background:transparent;border:0;
+    padding:5px 11px;border-radius:6px;cursor:pointer;
+  }
+  .rx-tabs button.on{background:var(--rx-paper);color:#141821}
+  .rx-tabs button:focus-visible{outline:2px solid var(--rx-acc);outline-offset:1px}
+  .rx-stage.swap #mMol{animation:rxSwap .35s ease-out}
+  @keyframes rxSwap{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+  .mol-rods path{fill:none;stroke-linecap:round}
+
   /* ══════════ 담을 개수 ══════════ */
   #qtyBox{
     display:inline-flex;align-items:center;flex-shrink:0;
@@ -1211,6 +1654,32 @@
     font-style:normal;font-size:.88em;color:#b08d3a;
     border:1px solid rgba(255,212,59,.3);border-radius:3px;
     padding:0 4px;margin-left:4px;white-space:nowrap;
+  }
+
+  /* ══════════ 특수 발견 ══════════ */
+  #spRow{margin-top:18px}
+  #spRow .shellTitle{margin-bottom:9px}
+  .sprow{
+    display:grid;gap:6px;
+    grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));
+  }
+  .sp{
+    background:#10141b;border:1px dashed var(--line2);border-radius:7px;
+    padding:9px 11px;opacity:.6;
+  }
+  .sp.on{border-style:solid;border-color:#5E8569;background:rgba(127,168,138,.06);opacity:1}
+  .sp .spf{font-size:13px;font-weight:700;color:#5f6a7a}
+  .sp.on .spf{color:#9FD3AC}
+  .sp .spf sub{font-size:.72em}
+  .sp .spn{font-size:12.5px;font-weight:650;color:var(--dim);margin-top:2px}
+  .sp.on .spn{color:var(--text)}
+  .sp .sps{
+    font-size:11px;color:#5f6a7a;margin-top:3px;
+    word-break:keep-all;font-variant-numeric:tabular-nums;
+  }
+  @media (max-width:700px){
+    .sprow{grid-template-columns:repeat(auto-fill, minmax(124px, 1fr))}
+    .sp{padding:8px 9px}
   }
 
   /* ══════════ 업적 ══════════ */
@@ -1575,6 +2044,7 @@
   </div>
   <div id="achRow"></div>
 <div id="dexList"></div>
+<div id="spRow"></div>
 </div></div>
 
 <div id="settings"><div id="setBox">
@@ -1592,16 +2062,41 @@
 <div id="fuse"><canvas id="fuseCv"></canvas></div>
 
 <div id="modal">
-  <div id="card">
-    <div class="eq" id="mEq"></div>
-    <div class="formula" id="mFormula"></div>
-    <div class="cname" id="mName"></div>
-    <div class="csub" id="mSub"></div>
-    <div class="cdex" id="mDex"></div>
-    <div class="cbtns">
-      <button class="btn" id="mWipe">비우고 계속</button>
-      <button class="btn close" id="mClose">닫기</button>
+  <canvas id="rxWaves" aria-hidden="true"></canvas>
+  <div id="card" role="dialog" aria-modal="true" aria-labelledby="mName">
+    <svg class="rx-spark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16 Z"/></svg>
+    <button class="rx-x" id="mClose" aria-label="담은 채로 닫기" title="담은 채로 닫기">✕</button>
+    <div class="rx-head" id="mIn"></div>
+    <div class="rx-wire" id="mWire" aria-hidden="true"></div>
+    <div class="rx-stage" id="mStage">
+      <svg id="mMol" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <div class="rx-tabs" id="mTabs" role="tablist" hidden><button type="button" role="tab" data-v="min" id="mTabMin">광물</button><button type="button" role="tab" data-v="atom" id="mTabAtom">원자 구조</button></div>
+      <div class="rx-hint" id="mHint">드래그해서 돌려보기</div>
+      <div class="rx-grav" id="mGrav" hidden title="중력 방향"><i></i></div>
+      <div class="rx-cap">
+        <div class="rx-strip" id="mStrip"></div>
+        <div class="csub" id="mSub"></div>
+      </div>
     </div>
+    <div class="rx-side">
+      <div class="rx-info" id="mInfo">
+        <div class="formula" id="mFormula"></div>
+        <div class="cname" id="mName"></div>
+      </div>
+      <div class="rx-more" id="mMore" hidden></div>
+      <div class="eq" id="mEq" hidden></div>
+      <div class="rx-state" id="mState"></div>
+      <div class="cdex" id="mDex"></div>
+      <div class="cbtns">
+        <button class="btn" id="mWipe"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16 Z"/></svg><span id="mWipeT">비우고 계속</span></button>
+        <button class="btn" id="mMoreBtn">자세히 알아보기</button>
+      </div>
+    </div>
+    <aside class="rx-gauge" id="mGauge" aria-live="polite">
+      <div class="g-h" id="mGH">도감 등록!</div>
+      <div class="g-track"><i class="g-fill" id="mGFill"></i><b class="g-n" id="mGN">0</b></div>
+      <div class="g-foot" id="mGFoot">/ 0</div>
+    </aside>
   </div>
 </div>
 
@@ -2014,7 +2509,7 @@ const SUB_FALLBACK = {
 const RECIPES = {
   "Cl+Na":["NaCl","소금","음식에 넣으면 존나 맛있어짐"],
   "H+O":["H₂O","물","그냥 물임"],
-  "C+O":["CO₂","이산화탄소","탄산음료의 그것 / 지구 데우는 중"],
+  "C+O":["CO₂","이산화탄소","탄산음료의 그것 / 드라이아이스 그거 / 지구 데우는 중"],
   "C+H":["CH₄","메테인","소가 뀌면 나옴"],
   "H+N":["NH₃","암모니아","화장실 냄새"],
   "H+S":["H₂S","황화수소","썩은 달걀"],
@@ -2045,7 +2540,7 @@ const RECIPES = {
   "C+Si":["SiC","탄화규소","사포랑 방탄판"],
   "B+N":["BN","질화붕소","다이아 다음으로 단단함"],
   "Ag+Br":["AgBr","브로민화은","옛날 필름 사진"],
-    "Fe+S":["FeS₂","황철석","바보의 금이라 불림"],
+    "C+S":["CS₂","이황화탄소","레이온 만드는 용매 / 불이 아주 잘 붙음"],"Fe+S":["FeS₂","황철석","바보의 금이라 불림"],
   "C+Cu+O":["Cu₂CO₃(OH)₂","녹청","자유의 여신상이 초록인 이유"],
   "H+He":["H→He","핵융합","별이 하는 일"],
   "Mg+O":["MgO","산화마그네슘","위장약"],
@@ -2053,7 +2548,7 @@ const RECIPES = {
   "I+K":["KI","아이오딘화칼륨","방사능 사고 때 먹는 거"],
   "Cl+Cu":["CuCl₂","염화구리","불이 청록색이 됨"],
   "Ba+O+S":["BaSO₄","황산바륨","위 촬영할 때 마시는 흰 물"],
-  "O+U":["U₃O₈","옐로케이크","이름은 귀여운데 우라늄임"],
+  
   "Cl+O":["ClO₂","이산화염소","수돗물 소독"],
   "Cl+F+H":["HCl + HF","산성 혼합","섞지 마세요 진짜로"],
   "Na+O":["Na₂O₂","과산화나트륨","우주선 산소 공급"],
@@ -2061,7 +2556,7 @@ const RECIPES = {
   "N+Ti":["TiN","질화타이타늄","금색인데 금 아님"],
   "C+H+N":["HCN","사이안화수소","청산가리 가스"],
   "C+H+N+O+P":["C₁₀H₁₄N₅O₆P","핵산","DNA / RNA 부품"],
-  "C+H+N+O":["-","유기 화합물","생명체 재료 다 모임"],
+  "C+H+N+O":["C₂H₅NO₂","유기 화합물","생명체 재료 다 모임. 그림은 가장 단순한 아미노산 글라이신"],
 
   "C+Cl":["CCl₄","염화탄소 계열","옛날 소화기"],
   "H+O+P":["H₃PO₄","인산","콜라 신맛"],
@@ -2079,7 +2574,7 @@ const RECIPES = {
       "C+Ca+H+N+O":["CaCO₃ + 콘키올린","진주","아라고나이트 층을 겹겹이 쌓은 것"],
   "C+Ca+H+O":["CaCO₃","자개","진주층. 무지개빛 반사"],
 "Al+Cr+O":["Al₂O₃:Cr","루비","빨간 강옥"],
-  "Al+O+Ti":["Al₂O₃:Ti","사파이어","파란 강옥"],
+  
   "Al+Be+Cr+O+Si":["Be₃Al₂Si₆O₁₈","에메랄드","초록"],
   "Al+Be+Fe+O+Si":["Be₃Al₂Si₆O₁₈","아쿠아마린","연한 하늘색"],
   "Al+Be+O+Si":["Be₃Al₂Si₆O₁₈","녹주석","색 없으면 그냥 베릴"],
@@ -2091,7 +2586,7 @@ const RECIPES = {
   "Al+Mg+O":["MgAl₂O₄","스피넬","루비 사칭"],
   "Al+Cu+H+O+P":["CuAl₆(PO₄)₄(OH)₈","터키석","하늘색"],
   "H+O+Si":["SiO₂·nH₂O","오팔","무지개 반사"],
-  "Al+Na+O+S+Si":["-","라피스라줄리","울트라마린 물감 원료"],
+  "Al+Na+O+S+Si":["Na₈Al₆Si₆O₂₄S₄","라피스라줄리","울트라마린 물감 원료"],
   "Ca+F":["CaF₂","형석","형광의 어원"],
 "Cs+H+O":["CsOH","수산화세슘","제일 센 염기 중 하나"],
   "N+Na+O":["NaNO₃","질산나트륨","비료이자 화약"],
@@ -2113,6 +2608,29 @@ const RECIPES = {
 const EXACT = {
   /* ── 스케일 조합: 원소 55개를 다 써서 만드는 것들 ──
      질량비가 아니라 원자 개수비 기준. 실제 조성을 55개로 반올림했다. */
+  /* ── v2.7 추가 ── */
+  "K2+O4+S1":["K₂SO₄","황산칼륨","비료 포대에 적힌 칼륨이 대개 이거"],
+  "K2+O3+S1":["K₂SO₃","아황산칼륨","와인이 식초로 변하지 않게 막아줌"],
+  "Br1+K1+O3":["KBrO₃","브로민산칼륨","옛날 빵 반죽 개량제. 지금은 여러 나라에서 금지"],
+  "K2+O1":["K₂O","산화칼륨","비료 성분표에 칼륨 함량을 이걸로 적음"],
+  "K2+O2":["K₂O₂","과산화칼륨","물에 닿으면 산소를 뿜어냄"],
+  "Ca1+O4+S1":["CaSO₄","황산칼슘","물 빠진 석고. 두부 응고제로도 씀"],
+  "Be1+Cl2":["BeCl₂","염화베릴륨","독성이 강해서 실험실에서도 조심히 다루는 가루"],
+  "Be1+O1":["BeO","산화베릴륨","열은 금속만큼 잘 통하는데 전기는 안 통함"],
+  "B1+H3+O3":["H₃BO₃","붕산","바퀴벌레 약이자 눈 세척액 성분"],
+  "B1+Cl3":["BCl₃","삼염화붕소","반도체 식각 공정에 쓰는 기체"],
+  "B4+H20+Na2+O17":["Na₂[B₄O₅(OH)₄]·8H₂O","붕사","액체괴물 만들 때 넣는 그 가루"],
+  "H4+N2+O3":["NH₄NO₃","질산암모늄","질소 비료. 잘못 보관하면 대형 폭발"],
+  "H4+N1":["NH₄⁺","암모늄 이온","혼자서는 못 다니고 늘 음이온이랑 붙어 있음"],
+  "F6+S1":["SF₆","육플루오린화황","공기보다 다섯 배 무거워서 컵에 담아 부을 수 있는 기체"],
+  "Na2+S1":["Na₂S","황화나트륨","가죽에서 털을 벗겨냄. 썩은 달걀 냄새"],
+  "Na2+O4+S1":["Na₂SO₄","황산나트륨","가루 세제의 부피를 채우는 성분"],
+  "Mg1+N2+O6":["Mg(NO₃)₂","질산마그네슘","물을 잘 빨아들이는 비료 성분"],
+  "Cl2+Mg1":["MgCl₂","염화마그네슘","두부 굳히는 간수의 주성분"],
+  "Al2+O12+S3":["Al₂(SO₄)₃","황산알루미늄","흙탕물 속 찌꺼기를 뭉쳐 가라앉힘"],
+  "C3+H9+O4+P1":["O=P(OCH₃)₃","인산트라이메틸","O=P(OR)₃에서 R 자리에 메틸이 들어간 것"],
+  "Cl2+S1":["SCl₂","이염화황","새빨간 액체. 공기 중에서 금방 분해됨"],
+  "Cl2+S2":["S₂Cl₂","일염화황","고무를 단단하게 만드는 데 씀"],
   "Ar1+N43+O11":["N₂ + O₂ + Ar","대기","질소가 대부분인데 다들 산소만 기억함"],
   "Al4+Ca1+Fe1+K1+Mg1+Na1+O34+Si12":["O + Si + Al","지각","발밑. 절반 이상이 산소라는 게 안 믿김"],
   "Al1+Ca1+Fe8+Mg8+Ni1+O27+S1+Si8":["Fe + O + Si + Mg","지구","지각이랑 완전 다름. 핵이 철덩어리라서"],
@@ -2170,7 +2688,7 @@ const EXACT = {
   "C5+H14+N2":["C₅H₁₄N₂","카다베린","이름이 '시체'라는 뜻에서 나옴"],
   "C9+H9+N1":["C₉H₉N","스카톨","똥 냄새의 정체. 근데 옅으면 꽃향기라 향수에 씀"],
   "C1+O1":["CO","일산화탄소","무색무취인데 조용히 죽임"],
-  "C1+O2":["CO₂","이산화탄소","탄산음료의 그것 / 지구 데우는 중"],
+  "C1+O2":["CO₂","이산화탄소","탄산음료의 그것 / 드라이아이스 그거 / 지구 데우는 중"],
   "H2+O1":["H₂O","물","그냥 물임"],
   "H1+O1":["OH·","하이드록시 라디칼","1초도 못 살고 사라짐"],
   "H2+O2":["H₂O₂","과산화수소","머리 탈색이랑 소독"],
@@ -2180,7 +2698,7 @@ const EXACT = {
   "N2+O1":["N₂O","아산화질소","웃음가스"],
   "N1+O1":["NO","일산화질소","혈관 넓혀줌"],
   "N1+O2":["NO₂","이산화질소","갈색 스모그"],
-  "O2+S1":["SO₂","이산화황","성냥 태운 냄새"],
+  "B1+Fe14+Nd2":["Nd₂Fe₁₄B","네오디뮴 자석","이어폰이랑 하드디스크에 들어있는 그거"],"Pd1+Pt1+Rh1":["Pt-Pd-Rh","촉매변환기","차 밑에 달린 비싼 거. 그래서 훔쳐감"],"As2+S3":["As₂S₃","웅황","노란 물감인데 독임"],"N2+O6+Sr1":["Sr(NO₃)₂","질산스트론튬","불꽃놀이 빨간색 담당"],"Ce1+O2":["CeO₂","산화세륨","유리 닦는 가루"],"Al7+B1+O18+Si3":["Al₇BO₃(SiO₄)₃O₃","듀모티어라이트","꽤 이쁨"],"C1+S2":["CS₂","이황화탄소","레이온 만드는 용매 / 불이 아주 잘 붙음"],"O2+S1":["SO₂","이산화황","성냥 태운 냄새"],
   "O3+S1":["SO₃","삼산화황","물 만나면 황산됨"],
   "H2+O4+S1":["H₂SO₄","황산","만지면 안 됨"],
   "Cl1+Na1":["NaCl","소금","음식에 넣으면 존나 맛있어짐"],
@@ -2229,7 +2747,7 @@ const EXACT = {
   "H2+K1+O1":["💥💥","더 큰 폭발","칼륨은 나트륨보다 더 신남"],
   "Cs1+H2+O1":["💥💥💥","존나 큰 폭발","세슘은 욕조를 부숨"],
   "H2+O1+Rb1":["💥💥","루비듐 폭발","이것도 만만치 않음"],
-  "H2+N1+O2":["-","뭔가 위험한 것","이런 건 안 만드는 게 좋음"],
+  "H2+N1+O2":["H₂NO₂","뭔가 위험한 것","이런 건 안 만드는 게 좋음"],
   "C1+H1+N1":["HCN","사이안화수소","청산가리 가스. 아몬드 냄새 남"],
   "C1+H2+O1":["HCHO","폼알데하이드","새 가구 냄새 그거"],
   "C2+H2":["C₂H₂","아세틸렌","용접 불꽃"],
@@ -2264,7 +2782,7 @@ const EXACT = {
   "F4+Xe1":["XeF₄","사플루오린화제논","안 섞인다던 놈이 섞임"],
     "C1+Ca1+H1+N1+O3":["CaCO₃ + 단백질","진주","조개가 만든 아라고나이트"],
 "Al2+Cr1+O3":["Al₂O₃:Cr","루비","크로뮴 조금 섞였더니 빨개짐"],
-  "Al2+O3+Ti1":["Al₂O₃:Ti","사파이어","타이타늄 조금 섞였더니 파래짐"],
+  "O8+U3":["U₃O₈","팔산화삼우라늄","옐로케이크라 불림. 이름은 귀여운데 우라늄임"],"Al2+O3+Ti1":["Al₂O₃:Ti","사파이어","타이타늄 조금 섞였더니 파래짐"],"Al2+Fe1+O3+Ti1":["Al₂O₃:Ti,Fe","사파이어","철까지 함께여야 제대로 파래짐"],
   "Al2+Fe1+O3":["Al₂O₃:Fe","황옥강옥","노란 사파이어"],
   "Al2+Mg1+O4":["MgAl₂O₄","스피넬","루비인 줄 알았던 것"],
   "O4+Si1+Zr1":["ZrSiO₄","지르콘","가짜 다이아 소리 듣지만 진짜 보석임"],
@@ -2277,7 +2795,7 @@ const EXACT = {
   "Al2+F2+O4+Si1":["Al₂SiO₄F₂","토파즈","11월 탄생석"],
   "H2+O3+Si1":["SiO₂·nH₂O","오팔","각도 따라 색 바뀜"],
   "Al6+Cu1+H8+O24+P4":["CuAl₆(PO₄)₄(OH)₈","터키석","하늘색 그 돌"],
-  "C1+H1+O1":["-","유기 조각","이걸로는 아직 아무것도 안 됨"],
+  "C1+H1+O1":["·CHO","유기 조각","포밀 라디칼. 이걸로는 아직 아무것도 안 됨"],
   "O3":["O₃","오존","높으면 고맙고 낮으면 해로움"],
 };
 
@@ -2431,12 +2949,10 @@ mixBtn.addEventListener('click', () => {
     }
   }
 
-  (() => {
-    const order = [], c = {};
-    mix.forEach(n => { if(c[n] === undefined){ order.push(n); c[n] = 0; } c[n]++; });
-    document.getElementById('mEq').textContent =
-      order.map(n => c[n] > 1 ? `${byNum[n].s}×${c[n]}` : byNum[n].s).join('  +  ');
-  })();
+  const order = [], c = {};
+  mix.forEach(n => { if(c[n] === undefined){ order.push(n); c[n] = 0; } c[n]++; });
+  document.getElementById('mEq').textContent =
+    order.map(n => c[n] > 1 ? `${byNum[n].s}×${c[n]}` : byNum[n].s).join('  +  ');
 
   const rl = locRec(r);
   // found.add 는 아래에서 일어나므로 여기서는 아직 '처음인지' 알 수 있다
@@ -2444,15 +2960,16 @@ mixBtn.addEventListener('click', () => {
   if(rl && rl[0]){
     document.getElementById('mFormula').innerHTML = fmtFormula(rl[0]);
     document.getElementById('mFormula').className = 'formula';
-    document.getElementById('mName').innerHTML =
-      `<span class="badge">${loose ? t('loose') : t('ok')}</span><br>${rl[1]}`;
+    document.getElementById('mName').textContent = rl[1];
+    RX_RAW = r[1];
+    rxRender(loose ? 'loose' : 'ok', rl[0], order, c);
     document.getElementById('mSub').textContent = rl[2];
   } else {
     const FL = (LANG === 'en') ? FAIL_EN : FAIL;
     document.getElementById('mFormula').textContent = '???';
     document.getElementById('mFormula').className = 'formula fail';
-    document.getElementById('mName').innerHTML =
-      `<span class="badge">${t('failBadge')}</span><br>${t('unknown')}`;
+    document.getElementById('mName').textContent = t('unknown');
+    rxRender('fail', '', order, c);
     document.getElementById('mSub').textContent = FL[Math.floor(Math.random()*FL.length)];
   }
   mixExtra(r, wasNew);
@@ -2474,6 +2991,7 @@ mixBtn.addEventListener('click', () => {
     else if(r && r[0]) SFX.ok();
     else SFX.fail();
     modal.classList.add('on');
+    rxReveal();
   }, boom, gem);
 });
 
@@ -2983,7 +3501,25 @@ const PROPS = {
    true  = 순화 모드 고정 (토글 버튼 숨김)
    false = 사용자가 켜고 끌 수 있음
    ───────────────────────────────────────────── */
-const APP_MODE = false;
+/* 빌드할 때 true로 박아도 되고, 그대로 두면 아래에서 앱 안인지 알아서 판단한다 */
+const APP_FORCE = false;
+const APP_MODE = APP_FORCE || (() => {
+  try{
+    // Capacitor 같은 네이티브 래퍼
+    const cap = window.Capacitor;
+    if(cap && (typeof cap.isNativePlatform !== 'function' || cap.isNativePlatform())) return true;
+    // 안드로이드 웹뷰 (User-Agent에 "; wv)" 가 붙는다)
+    if(/; wv\)/.test(navigator.userAgent)) return true;
+    // TWA: 시작 주소에 ?app=1 을 붙이거나, 앱에서 열린 첫 화면의 referrer
+    // (TWA는 크롬 저장소를 웹과 같이 쓰므로 localStorage가 아니라 sessionStorage에만 기억)
+    if(/[?&]app=1(&|$)/.test(location.search) || document.referrer.indexOf('android-app://') === 0){
+      sessionStorage.setItem('pt_app', '1');
+      return true;
+    }
+    if(sessionStorage.getItem('pt_app') === '1') return true;
+  }catch(e){}
+  return false;
+})();
 
 let LANG = 'ko', SAFE = APP_MODE;
 try{
@@ -3052,14 +3588,16 @@ const UI = {
     addOff:"＋ 담기", addOn:"담는 중",
     addMixN:"조합에 담기", qtyNote:"55개가 최대입니다",
     trayPhAdd:"표에서 원소를 눌러 담으세요",
-    mixNew:"NEW", mixKnown:"이미 발견함", mixWipe:"비우고 계속",
+    mixNew:"NEW", mixKnown:"이미 있음", mixWipe:"비우고 계속", rxAdded:"도감 등록!", rxBoom:"펑!", rxTabMin:"광물", rxTabAtom:"원자 구조", rxThrow:"잡아서 던져보기", rxThrowTilt:"잡아서 던지거나 기울여 보기", rxDrag:"드래그해서 돌려보기", rxDexH:"도감", keepClose:"담은 채로 닫기",
+    rxMore:"자세히 알아보기", rxBack:"요약으로", rxMolar:"몰질량", rxMass:"질량 구성",
+    rxNoMass:"이 결과는 질량 구성을 계산하지 않아요", rxMixNote:"혼합물이라 한 묶음 기준으로 나눴어요",
     mixHintSome:"담은 원소로 만들 수 있는 게 {n}개 있어요. 개수를 바꿔보세요",
     mixHintNone:"이 원소들로는 아직 만들 수 있는 게 없어요",
     eggFound:"새로운 원소를 발견했습니다!", eggOk:"확인",
     eggNone:"없음", eggIon:"모든 원소가 이온이 되었습니다", eggWhy:"왜요?",
     eggBust:"뻥인데요", eggBust2:"존재한다고 믿으면 존재함",
     eggReal:"진짜 119번은 아직 이름이 없어요. 임시로 우누넨늄(Uue)이라 부릅니다",
-    anyRatio:"비율 무관", achGot:"업적 달성", achFail:"실패 업적", achTitle:"업적",
+    spTitle:"특수 발견", anyRatio:"비율 무관", achGot:"업적 달성", achFail:"실패 업적", achTitle:"업적",
     useTitle:"이 원소가 들어가는 조합", useMore:"그 밖에 {n}개 더",
     setLog:"업데이트", setAbout:"정보", setStorageNote:"모든 기록은 이 기기에만 저장되며 어디로도 전송되지 않습니다.",
   },
@@ -3121,14 +3659,16 @@ const UI = {
     addOff:"＋ Add", addOn:"Adding",
     addMixN:"Add to mix", qtyNote:"55 is the maximum",
     trayPhAdd:"Tap elements on the table to add them",
-    mixNew:"NEW", mixKnown:"Already found", mixWipe:"Clear and continue",
+    mixNew:"NEW", mixKnown:"Already found", mixWipe:"Clear and continue", rxAdded:"New entry!", rxBoom:"Boom!", rxTabMin:"Mineral", rxTabAtom:"Atoms", rxThrow:"Grab and throw", rxThrowTilt:"Grab, throw or tilt your phone", rxDrag:"Drag to rotate", rxDexH:"Codex", keepClose:"Close, keep tray",
+    rxMore:"Learn more", rxBack:"Back", rxMolar:"Molar mass", rxMass:"Mass composition",
+    rxNoMass:"No mass breakdown for this result", rxMixNote:"A mixture, so split per one of each part",
     mixHintSome:"{n} compound(s) possible from these elements. Try other amounts",
     mixHintNone:"Nothing can be made from these elements yet",
     eggFound:"A new element has been discovered!", eggOk:"OK",
     eggNone:"None", eggIon:"Every element has become an ion", eggWhy:"Why?",
     eggBust:"Just kidding", eggBust2:"It exists if you believe it does",
     eggReal:"Element 119 has no name yet. For now it is ununennium (Uue)",
-    anyRatio:"any ratio", achGot:"Achievement unlocked", achFail:"Failure unlocked", achTitle:"Achievements",
+    spTitle:"Special finds", anyRatio:"any ratio", achGot:"Achievement unlocked", achFail:"Failure unlocked", achTitle:"Achievements",
     useTitle:"Compounds using this element", useMore:"and {n} more",
     setLog:"What's new", setAbout:"About", setStorageNote:"All records stay on this device and are never sent anywhere.",
   }
@@ -3257,12 +3797,34 @@ const SAFE_REC = {
 
 /* ═══ 레시피 영어명: 한국어 이름 → [영어 이름, 영어 설명] ═══ */
 const REC_EN = {
+"황산칼륨":["Potassium sulfate","Usually the potassium on a fertiliser bag"],
+"아황산칼륨":["Potassium sulfite","Keeps wine from turning to vinegar"],
+"브로민산칼륨":["Potassium bromate","Old bread improver, now banned in many countries"],
+"산화칼륨":["Potassium oxide","Fertiliser labels list potassium as this"],
+"과산화칼륨":["Potassium peroxide","Gives off oxygen when it touches water"],
+"황산칼슘":["Calcium sulfate","Dry gypsum, also used to set tofu"],
+"염화베릴륨":["Beryllium chloride","So toxic that even labs handle it with care"],
+"산화베릴륨":["Beryllium oxide","Conducts heat like a metal but not electricity"],
+"붕산":["Boric acid","Cockroach bait and eyewash ingredient"],
+"삼염화붕소":["Boron trichloride","A gas used to etch semiconductors"],
+"붕사":["Borax","The powder that turns glue into slime"],
+"질산암모늄":["Ammonium nitrate","Nitrogen fertiliser that explodes if stored badly"],
+"암모늄 이온":["Ammonium ion","Never goes anywhere without a negative ion"],
+"육플루오린화황":["Sulfur hexafluoride","A gas so heavy you can pour it like water"],
+"황화나트륨":["Sodium sulfide","Strips hair from hides. Smells of rotten eggs"],
+"황산나트륨":["Sodium sulfate","Bulks out powdered detergent"],
+"질산마그네슘":["Magnesium nitrate","A fertiliser salt that soaks up water"],
+"염화마그네슘":["Magnesium chloride","The main part of nigari for setting tofu"],
+"황산알루미늄":["Aluminium sulfate","Clumps up the muck in cloudy water"],
+"인산트라이메틸":["Trimethyl phosphate","O=P(OR)₃ with methyl groups as R"],
+"이염화황":["Sulfur dichloride","A cherry-red liquid that breaks down in air"],
+"일염화황":["Disulfur dichloride","Used to harden rubber"],
 "소금":["Table salt","Sodium chloride. The basic seasoning"],
 "물":["Water","Just water"],
-"이산화탄소":["Carbon dioxide","The fizz in soda, and what is warming the planet"],
+"이산화탄소":["Carbon dioxide","The fizz in soda, the stuff of dry ice, and what is warming the planet"],
 "메테인":["Methane","What cows burp out"],
 "암모니아":["Ammonia","That toilet smell"],
-"황화수소":["Hydrogen sulfide","Rotten eggs"],
+"네오디뮴 자석":["Neodymium magnet","The one inside your earbuds and hard drive"],"촉매변환기":["Catalytic converter","The pricey bit under a car. Which is why they get stolen"],"웅황":["Orpiment","A yellow pigment that happens to be poison"],"질산스트론튬":["Strontium nitrate","In charge of the red in fireworks"],"산화세륨":["Cerium oxide","The powder that polishes glass"],"듀모티어라이트":["Dumortierite","Quite pretty"],"이황화탄소":["Carbon disulfide","The solvent behind rayon, and it catches fire easily"],"황화수소":["Hydrogen sulfide","Rotten eggs"],
 "포도당":["Glucose","What your blood sugar is made of"],
 "녹":["Rust","What happens if you leave iron alone"],
 "석영":["Quartz","Sand, glass and semiconductors all at once"],
@@ -3298,7 +3860,7 @@ const REC_EN = {
 "아이오딘화칼륨":["Potassium iodide","Taken after radiation accidents"],
 "염화구리":["Copper chloride","Turns flames blue-green"],
 "황산바륨":["Barium sulfate","The white liquid you drink before a stomach scan"],
-"옐로케이크":["Yellowcake","Cute name, but it is uranium"],
+"팔산화삼우라늄":["Triuranium octoxide","Known as yellowcake. Cute name, but it is uranium"],
 "이산화염소":["Chlorine dioxide","Disinfects tap water"],
 "산성 혼합":["Acid mixture","Please do not mix these. Seriously"],
 "과산화나트륨":["Sodium peroxide","Supplies oxygen on spacecraft"],
@@ -3306,7 +3868,7 @@ const REC_EN = {
 "질화타이타늄":["Titanium nitride","Gold coloured, but not gold"],
 "사이안화수소":["Hydrogen cyanide","Extremely toxic gas"],
 "핵산":["Nucleic acid","Parts of DNA and RNA"],
-"유기 화합물":["Organic compound","All the ingredients of life in one place"],
+"유기 화합물":["Organic compound","All the ingredients of life in one place. Pictured: glycine, the simplest amino acid"],
 "염화탄소 계열":["Chlorocarbons","Old fire extinguishers"],
 "인산":["Phosphoric acid","The tang in cola"],
 "염화칼슘":["Calcium chloride","Road de-icer"],
@@ -3407,7 +3969,7 @@ const REC_EN = {
 "사플루오린화제논":["Xenon tetrafluoride","The gas that supposedly reacts with nothing"],
 "황옥강옥":["Yellow sapphire","Corundum with iron"],
 "파얄라이트":["Fayalite","The iron end of olivine. More iron, duller colour"],
-"유기 조각":["Organic fragment","Not enough to make anything yet"],
+"유기 조각":["Organic fragment","A formyl radical. Not enough to make anything yet"],
 "오존":["Ozone","Helpful up high, harmful down low"],
 "페닐에프린":["Phenylephrine","One oxygen short of adrenaline. A decongestant"],
 /* SINGLE 결과 */
@@ -3825,9 +4387,89 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '2.3';
+const APP_VER = '2.7';
 
 const CHANGELOG = [
+  {
+    v: '2.7', date: '2026-09-15',
+    title: { ko: '결과 창 새 단장', en: 'A new result window' },
+    items: {
+      ko: ['넣은 원소에서 화학식까지 선이 이어지고, 왼쪽에 분자 구조가 그려집니다',
+           '분자 구조는 화학식을 읽어 자동으로 그립니다. 금속과 이온 결정은 격자로',
+           '분자는 입체로 천천히 흔들리고, 끌어서 직접 돌려볼 수 있습니다',
+           '결과 창 뒤로 입체 웨이브가 흐르고, 창은 반투명 유리처럼',
+           '창 배경을 어둡고 반투명하게, 뒤에 물결이 입체로 흐릅니다',
+           '새로 발견하면 화학식이 찍히고 파편이 터지며 도감 게이지가 차오릅니다',
+           '"자세히 알아보기" — 몰질량과 원소별 질량 구성',
+           '닫기는 오른쪽 위 ✕ 로 옮김 (담은 원소는 그대로 남음)',
+           '결정은 실제 결정 모양으로 — 황철석·소금은 정육면체, 다이아몬드는 사면체 그물, 흑연은 육각 판, 비스무트는 무지갯빛 계단 결정',
+           '폭발 리메이크 — 화면이 흔들리고 번쩍이며, 원자가 튕겨 나가 잔해로 쌓입니다. 셀수록 더 세게, 제일 센 건 화면에 금이 감',
+           '물리 놀이 — 잔해를 잡아서 던지고, 휴대폰을 기울이면 굴러감. 기체는 떠다니고(무거운 기체는 가라앉음) 수은·브로민·갈륨은 방울처럼 뭉침',
+           '물과 상온 액체도 흐름 — 물 · 바닷물 · 라면 국물 · 에탄올 · 황산 등이 물방울처럼 퍼지고, 그 안에 분자와 이온이 떠다님',
+           '광물 보기 — 보석·광물 28종은 실물 결정 모양으로 볼 수 있고, 원자 구조 탭으로 바꿔 볼 수 있음',
+           '앱에서는 순화 모드가 자동으로 고정됩니다 (앱 안에서 열리면 스스로 알아챔)',
+           '새 조합 22종 — 황산칼륨, 붕사, 질산암모늄, 육플루오린화황, 간수(염화마그네슘) 등 (도감 222종)',
+           '라피스라줄리 · 유기 화합물 · 유기 조각 · 뭔가 위험한 것의 화학식이 "-"로 나오던 문제 수정'],
+      en: ['A line now runs from your elements to the formula, with the molecule drawn on the left',
+           'Structures are drawn from the formula; metals and ionic crystals show as lattices',
+           'Molecules sway in 3D and can be dragged to rotate',
+           '3D waves flow behind a translucent glass window',
+           'A darker, see-through window with 3D waves flowing behind it',
+           'New finds type out, burst with colour and fill the codex gauge',
+           '"Learn more" shows molar mass and mass composition',
+           'Close moved to the ✕ at the top right, and keeps your tray',
+           'Crystals keep their real shape — cubic pyrite and salt, tetrahedral diamond, layered graphite, rainbow stepped bismuth',
+           'Explosions remade — the screen shakes and flashes, atoms fly and pile up as debris; the biggest ones crack the screen',
+           'Physics toys — grab and throw debris, tilt your phone to roll it; gases drift (heavy ones sink) and mercury, bromine and gallium pool into droplets',
+           'Water and other room-temperature liquids now flow, with their molecules and ions drifting inside',
+           'Mineral view — 28 gems and minerals show their real crystal shape, with an Atoms tab to switch',
+           'Clean mode is locked on automatically inside the app',
+           '22 new combinations, including potassium sulfate, borax, ammonium nitrate and SF₆ (222 in the codex)',
+           'Lapis lazuli and three others no longer show "-" as their formula'],
+    },
+  },
+  {
+    v: '2.6', date: '2026-09-12',
+    title: { ko: '조합 5종 추가', en: 'Five more recipes' },
+    items: {
+      ko: ['조합에 한 번도 안 쓰이던 원소가 41개나 있어서 몇 개를 살렸습니다',
+           '네오디뮴 자석(Nd₂Fe₁₄B) · 촉매변환기(Pt-Pd-Rh) · 웅황(As₂S₃) · 질산스트론튬 · 산화세륨',
+           '도감 200종'],
+      en: ['41 elements had never appeared in a recipe — a few now do',
+           'Neodymium magnet, catalytic converter, orpiment, strontium nitrate and cerium oxide',
+           '200 compounds'],
+    },
+  },
+  {
+    v: '2.5', date: '2026-09-11',
+    title: { ko: '조합 판정 정리', en: 'Tidier recipes' },
+    items: {
+      ko: ['듀모티어라이트 추가 — Al×7 + B + Si×3 + O×18. 29개짜리 조합입니다',
+           '이황화탄소 추가 — 황 조합이 14개나 있는데 탄소와 결합하는 게 없었습니다 (도감 195종)',
+           '이산화탄소 설명에 드라이아이스 추가',
+           '도감에 "특수 발견" 구역 추가 — 원소 하나만 잔뜩 모아서 나오는 12종을 따로 모았습니다',
+           '사파이어와 팔산화삼우라늄을 정확 비율 조합으로 옮김. 이름에 비율이 박혀 있는데 종류만 맞으면 되던 문제',
+           '도감 193종은 그대로입니다'],
+      en: ['Added dumortierite — 7 aluminium, 1 boron, 3 silicon and 18 oxygen',
+           'Added carbon disulfide — sulfur had 14 recipes but none with carbon (195 compounds)',
+           'Carbon dioxide now mentions dry ice',
+           'New "Special finds" section — the 12 results you get from hoarding a single element',
+           'Sapphire and triuranium octoxide now need exact ratios, as their formulas imply',
+           'The 193-compound codex is unchanged'],
+    },
+  },
+  {
+    v: '2.4', date: '2026-09-11',
+    title: { ko: '이름 바로잡기', en: 'A name corrected' },
+    items: {
+      ko: ['사파이어에 타이타늄 + 철 조합 추가 — 실제로 둘이 함께 있어야 파란색이 납니다',
+           '옐로케이크 → 팔산화삼우라늄. 옐로케이크는 우라늄 정광을 부르는 통칭이지 화합물 이름이 아니라서',
+           '통칭은 설명으로 옮겼습니다'],
+      en: ['Sapphire now also accepts titanium with iron — the blue needs both',
+           'Yellowcake is now triuranium octoxide — yellowcake names the concentrate, not the compound',
+           'The nickname moved into the description'],
+    },
+  },
   {
     v: '2.3', date: '2026-09-09',
     title: { ko: '그날에만 나오는 것', en: 'Only on certain days' },
@@ -4598,6 +5240,8 @@ function openDex(){
   document.getElementById('dexCnt').textContent = `${got} / ${list.length}`;
   const ar = document.getElementById('achRow');
   if(ar) ar.innerHTML = (typeof achHTML === 'function') ? achHTML() : '';
+  const sr = document.getElementById('spRow');
+  if(sr) sr.innerHTML = (typeof specialHTML === 'function') ? specialHTML() : '';
   document.getElementById('dexList').innerHTML = list.map(x => {
     if(found.has(x.koName)){
       return `<div class="dx">
@@ -4963,9 +5607,15 @@ function applyStaticText(){
   document.getElementById('randBtn').textContent = t('rand');
   document.getElementById('clearBtn').textContent = t('clear');
   document.getElementById('mixBtn').textContent = t('mixBtn');
-  document.getElementById('mClose').textContent = t('close');
+  const mcl = document.getElementById('mClose');
+  mcl.title = t('keepClose'); mcl.setAttribute('aria-label', t('keepClose'));
+  const mtm = document.getElementById('mTabMin'), mta = document.getElementById('mTabAtom');
+  if(mtm){ mtm.textContent = t('rxTabMin'); mta.textContent = t('rxTabAtom'); }
+  const mmb = document.getElementById('mMoreBtn');
+  if(mmb) mmb.textContent = (typeof RX_OPEN !== 'undefined' && RX_OPEN) ? t('rxBack') : t('rxMore');
   const wipe = document.getElementById('mWipe');
-  if(wipe) wipe.textContent = t('mixWipe');
+  const wipeT = document.getElementById('mWipeT');
+  if(wipeT) wipeT.textContent = t('mixWipe');
   // ADD_MODE 는 var 라 초기화 전에도 typeof 가 안전
   const qn = document.getElementById('qtyNote');
   if(qn) qn.textContent = t('qtyNote');
@@ -5867,9 +6517,7 @@ function mixExtra(r, wasNew){
     try{ const l = allEntries(); total = l.length; got = l.filter(x => found.has(x.name)).length; }catch(e){}
     // found.add 는 이 함수 다음에 실행되므로 새 발견이면 아직 반영 전
     const shown = got + (wasNew ? 1 : 0);
-    el.innerHTML = wasNew
-      ? `<span class="newbadge">${t('mixNew')}</span> <span class="dexprog">${t('dex')} ${shown} / ${total}</span>`
-      : `<span class="dexprog">${t('mixKnown')} · ${t('dex')} ${shown} / ${total}</span>`;
+    rxDex(shown, total, wasNew);
     return;
   }
 
@@ -5880,6 +6528,1957 @@ function mixExtra(r, wasNew){
     ? `<span class="hintline">${t('mixHintSome').replace('{n}', n)}</span>`
     : `<span class="hintline">${t('mixHintNone')}</span>`;
 }
+
+
+/* ═══════════════════════════════════════════════════
+   결과 창 v2.7
+   왼쪽: 화학식을 읽어 자동으로 그린 분자 구조
+   오른쪽: 설명 / 자세히 알아보기
+   같은 물질은 늘 같은 그림이 나오도록 화학식으로 시드를 정한다.
+   ═══════════════════════════════════════════════════ */
+var RX = null;
+var RX_RAW = '';   // 순화·번역 전 원본 이름 (광물·액체·폭발 인식용)
+var RX_OPEN = false;
+var RX_KEY = false;
+addEventListener('keydown', () => { RX_KEY = true; }, true);
+addEventListener('pointerdown', () => { RX_KEY = false; }, true);
+
+var RX_SYM = null;
+function rxSym(s){
+  if(!RX_SYM) RX_SYM = new Map(EL.map(e => [e.s, e]));
+  return RX_SYM.get(s);
+}
+const RX_METAL = new Set(['alkali','alkaline','transition','post','lanthanide','actinide','unknown']);
+
+/* ── 화학식 읽기 ──
+   Ca(OH)₂, Be₃Al₂Si₆O₁₈:Cr, Na₂O·CaO·3SiO₂, HNO₃ + 3HCl, Au-Cu, (Mg,Fe)₂SiO₄
+   → [[기호, 개수], ...]  읽을 수 없으면 null */
+function rxParse(f){
+  if(!f) return null;
+  f = String(f);
+  if(/[💥→]/u.test(f) || f.trim() === '-') return null;
+  const SUB = '₀₁₂₃₄₅₆₇₈₉';
+  f = f.replace(/[₀-₉]/g, d => SUB.indexOf(d))
+       .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]/g, '')
+       .replace(/,/g, '');
+  const acc = new Map();
+  const pieces = f.split(/\s*\+\s*|·|:|-/);
+  for(const raw of pieces){
+    let p = raw.trim();
+    if(!p) continue;
+    if(/[가-힣]/.test(p)) continue;          // "단백질" 같은 말은 건너뜀
+    const m = p.match(/^(\d+)?n?(?=[A-Z(])/);
+    const k = m && m[1] ? +m[1] : 1;
+    if(m) p = p.slice(m[0].length);
+    const stack = [new Map()];
+    let i = 0;
+    const num = () => { let d = ''; while(/\d/.test(p[i] || '')) d += p[i++]; return d ? +d : 1; };
+    while(i < p.length){
+      const ch = p[i];
+      if(ch === '(' || ch === '['){ stack.push(new Map()); i++; }
+      else if(ch === ')' || ch === ']'){
+        i++;
+        const n = num();
+        const top = stack.pop();
+        const into = stack[stack.length - 1] || stack[0];
+        if(!into) return null;
+        top.forEach((v, key) => into.set(key, (into.get(key) || 0) + v * n));
+      }
+      else if(/[A-Z]/.test(ch)){
+        let sym = ch; i++;
+        if(/[a-z]/.test(p[i] || '') && rxSym(ch + p[i])){ sym = ch + p[i]; i++; }
+        if(!rxSym(sym)) return null;
+        const n = num();
+        const top = stack[stack.length - 1];
+        top.set(sym, (top.get(sym) || 0) + n);
+      }
+      else i++;
+    }
+    while(stack.length > 1){
+      const top = stack.pop();
+      top.forEach((v, key) => stack[0].set(key, (stack[0].get(key) || 0) + v));
+    }
+    stack[0].forEach((v, key) => acc.set(key, (acc.get(key) || 0) + v * k));
+  }
+  if(!acc.size) return null;
+  return [...acc.entries()];
+}
+
+/* ── 시드 난수 ── */
+function rxRand(str){
+  let h = 2166136261;
+  for(const ch of String(str)){ h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); }
+  return () => {
+    h += 0x6D2B79F5;
+    let x = h;
+    x = Math.imul(x ^ (x >>> 15), x | 1);
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* 원자 크기: 원자 반지름(pm)을 대충 0.7~1.15 배로 */
+function rxSize(sym){
+  let r = null;
+  try{ r = PROPS[sym] && PROPS[sym].r; }catch(e){}
+  if(!r) return 1;
+  return 0.7 + 0.45 * Math.max(0, Math.min(1, (r - 30) / 200));
+}
+var RX_VAL_OVR = null;   // 이번 분자에서만 쓰는 원자가 (황산의 S 등)
+function rxValence(sym){
+  if(RX_VAL_OVR && RX_VAL_OVR[sym]) return RX_VAL_OVR[sym];
+  const e = rxSym(sym);
+  if(!e) return 2;
+  const g = e.g;
+  if(g === 1 || g === 17) return 1;
+  if(g === 2 || g === 16) return 2;
+  if(g === 13 || g === 15) return 3;
+  if(g === 14) return 4;
+  if(g === 18) return sym === 'Xe' ? 4 : 1;
+  return 4;
+}
+function rxColor(sym){
+  const e = rxSym(sym);
+  return e ? cssv(CAT[e.c].v) : '#868e96';
+}
+
+/* 개수가 너무 많으면 비율을 유지한 채 줄인다 */
+function rxScale(atoms, cap){
+  const total = atoms.reduce((a, [, n]) => a + n, 0);
+  if(total <= cap) return atoms;
+  const f = cap / total;
+  return atoms.map(([s, n]) => [s, Math.max(1, Math.round(n * f))]);
+}
+function rxExpand(atoms){
+  const out = [];
+  atoms.forEach(([s, n]) => { for(let i = 0; i < n; i++) out.push(s); });
+  return out;
+}
+
+/* ── 분자: 원자가로 뼈대를 잇고 힘 배치로 편다 ── */
+function rxMolecule(atoms, rnd){
+  const list = rxExpand(rxScale(atoms, 34));
+  // 산소와 결합하는 중심 원자는 원자가를 넉넉히
+  const hasO = list.includes('O');
+  const hasHal = list.some(x => x === 'F' || x === 'Cl' || x === 'Br');
+  RX_VAL_OVR = hasO ? { S: 6, P: 5, N: 4, Cl: 4, I: 5, Se: 6 }
+             : hasHal ? { S: 6, P: 5, Se: 6, Xe: 6, I: 5 } : null;
+  let heavy = list.filter(s => s !== 'H');
+  let hs = list.filter(s => s === 'H');
+  if(!heavy.length){ heavy = [hs.shift()]; }
+  heavy = heavy.map((s, i) => ({ s, i, v: rxValence(s) }))
+               .sort((a, b) => (b.v - a.v) || (a.i - b.i));
+  // 중심 원자 다음엔 다리 역할(원자가 2)부터 붙여야 P-O-C 같은 사슬이 나온다
+  if(heavy.length > 2){
+    const root = heavy[0];
+    const rest = heavy.slice(1).sort((a, b) =>
+      ((a.v === 2 ? 0 : 1) - (b.v === 2 ? 0 : 1)) || (b.v - a.v) || (a.i - b.i));
+    heavy = [root, ...rest];
+  }
+  const nodes = [], edges = [];
+  const add = s => { nodes.push({ s, deg: 0, val: rxValence(s), kids: [], par: -1 }); return nodes.length - 1; };
+  const link = (a, b) => { edges.push([a, b]); nodes[a].deg++; nodes[b].deg++; nodes[a].kids.push(b); nodes[b].par = a; };
+  const pickParent = (pool, pref) => {
+    let best = -1, bs = -1e9;
+    pool.forEach(i => {
+      const nd = nodes[i];
+      const room = nd.val - nd.deg;
+      const sc = (room > 0 ? 100 + room : -nd.deg) + (pref ? pref(nd.s) : 0);
+      if(sc > bs){ bs = sc; best = i; }
+    });
+    return best;
+  };
+  add(heavy[0].s);
+  const heavyIdx = [0];
+  for(let k = 1; k < heavy.length; k++){
+    const cs = heavy[k].s;
+    // 탄소는 산소·질소에 먼저 붙는다 (P-O-C, 에스터)
+    const p = pickParent(heavyIdx, ps => cs === 'C' && (ps === 'O' || ps === 'N') ? 0.5 : 0);
+    const me = add(cs);
+    link(p, me);
+    heavyIdx.push(me);
+  }
+  const HP = { O: 3, N: 2, S: 1.5, C: 1 };
+  hs.forEach(() => {
+    const p = pickParent(heavyIdx, s => HP[s] || 0);
+    link(p, add('H'));
+  });
+
+  RX_VAL_OVR = null;
+
+  // 비공유 전자쌍: 보이지 않는 점을 붙여 물이 굽고 암모니아가 벌어지게
+  const real = nodes.length;
+  for(let i = 0; i < real; i++){
+    const nd = nodes[i], e = rxSym(nd.s);
+    if(!e) continue;
+    const lp = e.g === 16 && nd.deg === 2 ? 2 : e.g === 15 && nd.deg === 3 ? 1 : 0;
+    for(let k = 0; k < lp; k++){
+      const g = add(nd.s);
+      nodes[g].ghost = true;
+      link(i, g);
+    }
+  }
+
+  // 초기 배치: 트리를 방사형으로
+  const R0 = 16;
+  nodes.forEach(n => { n.r = n.ghost ? 7 : R0 * rxSize(n.s); n.x = 0; n.y = 0; });
+  const place = (i, ang, spreadAll) => {
+    const n = nodes[i];
+    const m = n.kids.length;
+    if(!m) return;
+    const span = spreadAll ? Math.PI * 2 : Math.min(Math.PI * 1.4, 1.1 * m);
+    const step = spreadAll ? span / m : (m > 1 ? span / (m - 1) : 0);
+    n.kids.forEach((c, k) => {
+      const a = spreadAll ? ang + k * step : ang - span / 2 + k * step + (m === 1 ? span / 2 : 0);
+      const L = (n.r + nodes[c].r) * 1.5 + 6;
+      nodes[c].x = n.x + Math.cos(a) * L + (rnd() - .5) * 2;
+      nodes[c].y = n.y + Math.sin(a) * L + (rnd() - .5) * 2;
+      place(c, a, false);
+    });
+  };
+  place(0, rnd() * Math.PI * 2, true);
+
+  // 힘 배치
+  const N = nodes.length;
+  for(let it = 0; it < 320; it++){
+    const cool = 1 - it / 320;
+    const fx = new Float32Array(N), fy = new Float32Array(N);
+    for(let a = 0; a < N; a++){
+      for(let b = a + 1; b < N; b++){
+        let dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+        let d2 = dx*dx + dy*dy;
+        if(d2 < .01){ dx = rnd() - .5; dy = rnd() - .5; d2 = .5; }
+        const d = Math.sqrt(d2);
+        const want = nodes[a].r + nodes[b].r + 8;
+        let f = 1400 / d2;
+        if(d < want) f += (want - d) * 0.6;
+        fx[a] -= dx / d * f; fy[a] -= dy / d * f;
+        fx[b] += dx / d * f; fy[b] += dy / d * f;
+      }
+    }
+    edges.forEach(([a, b]) => {
+      const dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+      const d = Math.sqrt(dx*dx + dy*dy) || 1;
+      const L = (nodes[a].r + nodes[b].r) * 1.35 + 6;
+      const f = (d - L) * 0.25;
+      fx[a] += dx / d * f; fy[a] += dy / d * f;
+      fx[b] -= dx / d * f; fy[b] -= dy / d * f;
+    });
+    for(let i = 0; i < N; i++){
+      fx[i] -= nodes[i].x * 0.012; fy[i] -= nodes[i].y * 0.012;
+      const lim = 6 * cool + 0.3;
+      nodes[i].x += Math.max(-lim, Math.min(lim, fx[i] * 0.4));
+      nodes[i].y += Math.max(-lim, Math.min(lim, fy[i] * 0.4));
+    }
+  }
+  // 유령 점은 빼고 번호를 다시 매긴다
+  const map = new Map(), outA = [];
+  nodes.forEach((n, i) => { if(!n.ghost){ map.set(i, outA.length); outA.push({ s: n.s, x: n.x, y: n.y, z: (rnd() - .5) * n.r * 2.2, r: n.r }); } });
+  const outB = edges.filter(([a, b]) => map.has(a) && map.has(b)).map(([a, b]) => [map.get(a), map.get(b)]);
+  return { atoms: outA, bonds: outB, maxScale: 1.9 };
+}
+
+/* ── 격자: 금속·이온 결정·원소 덩어리 ── */
+function rxLattice(atoms, rnd){
+  const unit = rxExpand(rxScale(atoms, 30));
+  const len = unit.length;
+  let cells = Math.max(len, 20);
+  cells = Math.min(42, Math.ceil(cells / len) * len);
+  const cols = Math.max(3, Math.round(Math.sqrt(cells * 4 / 3)));
+  const rows = Math.ceil(cells / cols);
+  let pool = [];
+  while(pool.length < cols * rows) pool = pool.concat(unit);
+  pool = pool.slice(0, cols * rows);
+  if(new Set(unit).size > 1 && !(len === 2)){
+    for(let i = pool.length - 1; i > 0; i--){
+      const j = Math.floor(rnd() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+  }
+  const R0 = 14;
+  const gap = R0 * 2 + 10;
+  const out = [], bonds = [];
+  for(let r = 0; r < rows; r++){
+    for(let c = 0; c < cols; c++){
+      const idx = r * cols + c;
+      const s = len === 2 ? unit[(r + c) % 2] : pool[idx];
+      out.push({ s, x: c * gap + (r % 2 ? gap / 2 : 0), y: r * gap * 0.87, z: (r % 2 ? -1 : 1) * 6, r: R0 * rxSize(s) });
+      if(c > 0) bonds.push([idx - 1, idx]);
+      if(r > 0){
+        bonds.push([idx - cols, idx]);
+        const k = r % 2 ? idx - cols + 1 : idx - cols - 1;
+        const kc = r % 2 ? c + 1 : c - 1;
+        if(kc >= 0 && kc < cols) bonds.push([k, idx]);
+      }
+    }
+  }
+  return { atoms: out, bonds, faint: true, maxScale: 1.25 };
+}
+
+/* ── 실패: 흩어진 채 이어지지 않음 ── */
+function rxScatter(atoms, rnd, burst){
+  const list = rxExpand(rxScale(atoms, 26));
+  const out = [];
+  list.forEach((s, i) => {
+    const a = (i / list.length) * Math.PI * 2 + rnd() * 0.9;
+    const d = (burst ? 90 : 30) + rnd() * (burst ? 60 : 85);
+    out.push({ s, x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8, r: 14 * rxSize(s) });
+  });
+  // 겹침만 살짝 밀어냄
+  for(let it = 0; it < 60; it++){
+    for(let a = 0; a < out.length; a++) for(let b = a + 1; b < out.length; b++){
+      const dx = out[b].x - out[a].x, dy = out[b].y - out[a].y;
+      const d = Math.sqrt(dx*dx + dy*dy) || 1, w = out[a].r + out[b].r + 6;
+      if(d < w){ const f = (w - d) / 2; out[a].x -= dx/d*f; out[a].y -= dy/d*f; out[b].x += dx/d*f; out[b].y += dy/d*f; }
+    }
+  }
+  return { atoms: out, bonds: [], loose: !burst, burst: !!burst, maxScale: 1.3, static: true };
+}
+
+/* ── 핵반응: 왼쪽 → 오른쪽 ── */
+function rxNuclear(f){
+  const [l, r] = String(f).split('→');
+  const L = rxParse(l) || [['H', 1]];
+  const R = rxParse(r) || [['He', 1]];
+  const out = [];
+  const lx = rxExpand(L);
+  lx.forEach((s, i) => out.push({ s, x: -90 + (i - (lx.length - 1) / 2) * 14, y: (i % 2 ? 10 : -10) * (lx.length > 1), r: 16 * rxSize(s) }));
+  const rx = rxExpand(R);
+  rx.forEach((s, i) => out.push({ s, x: 90 + (i - (rx.length - 1) / 2) * 30, y: 0, r: 26 * rxSize(s), glow: true }));
+  return { atoms: out, bonds: [], arrow: true, maxScale: 1.6, static: true };
+}
+
+/* ═══ 그리기: 입체로 흔들리고, 끌면 돌아간다 ═══ */
+var RX_M = null, RX_RAF = 0, RX_DRAG = null;
+var RX_YAW = 0, RX_PITCH = 0, RX_PH = 0, RX_LAST = 0, RX_TOUCHED = false;
+const RX_REDUCED = (() => { try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } })();
+
+function rxMount(model){
+  const W = 400, H = 300, M = 22;
+  const svg = document.getElementById('mMol');
+  const A = model.atoms;
+  if(!A.length && !model.faces){ svg.innerHTML = ''; RX_M = null; return; }
+  let cx = 0, cy = 0;
+  A.forEach(a => { cx += a.x; cy += a.y; if(a.z == null) a.z = 0; });
+  if(A.length){ cx /= A.length; cy /= A.length; }
+  if(!model.kin) A.forEach(a => { a.x -= cx; a.y -= cy; });
+  let hw = 1, hh = 1;
+  A.forEach(a => {
+    hw = Math.max(hw, (model.static ? Math.abs(a.x) : Math.hypot(a.x, a.z)) + a.r);
+    hh = Math.max(hh, (model.tilt ? Math.hypot(a.y, a.z) : Math.abs(a.y)) + a.r);
+  });
+  if(model.faces){
+    // 면 꼭짓점으로 크기와 중심을 잡는다
+    let mx = 0, my = 0, mz = 0, n = 0;
+    model.faces.forEach(f => f.p.forEach(q => { mx += q[0]; my += q[1]; mz += q[2]; n++; }));
+    mx /= n; my /= n; mz /= n;
+    model.faces.forEach(f => f.p.forEach(q => { q[0] -= mx; q[1] -= my; q[2] -= mz;
+      hw = Math.max(hw, Math.hypot(q[0], q[2])); hh = Math.max(hh, Math.hypot(q[1], q[2])); }));
+    if(model.rods) model.rods.forEach(r => [r.a, r.b].forEach(q => { q[0] -= mx; q[1] -= my; q[2] -= mz; }));
+  }
+  model.sc = model.kin ? 1 : Math.min((W/2 - M) / hw, (H/2 - M) / hh, model.maxScale || 1.6);
+  model.cx = W/2; model.cy = H/2;
+  model.depth = hw;
+
+  let html = '';
+  if(model.arrow){
+    html += `<g class="mol-arrow"><line x1="${W/2-26}" y1="${H/2}" x2="${W/2+22}" y2="${H/2}"/><path d="M${W/2+22} ${H/2-6} L${W/2+32} ${H/2} L${W/2+22} ${H/2+6}Z"/></g>`;
+  }
+  if(model.burst){
+    for(let i = 0; i < 14; i++){
+      const a = i / 14 * Math.PI * 2, L = 46 + (i % 3) * 12;
+      html += `<line class="mol-burst" x1="${W/2 + Math.cos(a)*18}" y1="${H/2 + Math.sin(a)*18}" x2="${W/2 + Math.cos(a)*L}" y2="${H/2 + Math.sin(a)*L}"/>`;
+    }
+  }
+  if(model.liquid){
+    html += `<defs><filter id="rxGoo" x="-20%" y="-20%" width="140%" height="140%">` +
+      `<feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>` +
+      `<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="g"/>` +
+      `<feSpecularLighting in="b" surfaceScale="4" specularConstant=".6" specularExponent="22" lighting-color="#fff" result="sp"><feDistantLight azimuth="235" elevation="55"/></feSpecularLighting>` +
+      `<feComposite in="sp" in2="g" operator="in" result="spc"/>` +
+      `<feComposite in="g" in2="g" operator="over" result="body"/>` +
+      `<feMerge><feMergeNode in="body"/><feMergeNode in="spc"/></feMerge></filter></defs>`;
+  }
+  if(model.rods){
+    // 투명 결정의 뒷면 → 바늘 → 앞면 순서로 겹친다
+    html += '<g class="mol-faces back"></g><g class="mol-rods">';
+    for(let d = 0; d < 4; d++) for(let c = 0; c < RX_ROD_COL.length; c++) html += '<path/>';
+    html += '</g>';
+  }
+  if(model.faces) html += '<g class="mol-faces">' + model.faces.map(() => '<polygon/>').join('') + '</g>';
+  html += `<g class="mol-bonds${model.faint ? ' faint' : ''}${model.crystal ? ' crystal' : ''}">` + model.bonds.map(() => '<line/>').join('') + '</g>' +
+    `<g class="mol-atoms${model.liquid ? ' liquid' : ''}${model.clear ? ' clear' : ''}${model.neon ? ' neon' : ''}"${model.liquid ? ' filter="url(#rxGoo)"' : ''}>`;
+  A.forEach((a, i) => {
+    const r = a.r * model.sc;
+    const fs = Math.min(r * 0.95, 22);
+    const e = rxSym(a.s);
+    const d = Math.min(i * 22, 700);
+    html += `<g class="mol-at${model.loose ? ' loose' : ''}${a.col && !a.s && !a.liq ? ' frag' : ''}" style="--c:${a.col || rxColor(a.s)}">` +
+      `<title>${e ? elName(e) : ''} ${a.s}</title>` +
+      `<g class="mol-fl" style="--fd:${(i * 0.37) % 2}s"><g class="mol-in" style="--d:${d}ms">` +
+      (a.glow ? `<circle class="mol-glow" r="${(r * 1.9).toFixed(1)}"/>` : '') +
+      `<circle class="mol-ball" r="${r.toFixed(1)}"/>` +
+      (model.loose ? '' : `<circle class="mol-hi" cx="${(-r*.32).toFixed(1)}" cy="${(-r*.36).toFixed(1)}" r="${(r*.28).toFixed(1)}"/>`) +
+      (r >= 8 && !model.noLabel ? `<text class="mol-sym" y="${(fs * 0.35).toFixed(1)}" font-size="${fs.toFixed(1)}">${a.s}</text>` : '') +
+      (model.static ? '' : `<circle class="mol-fog" r="${(r + 0.8).toFixed(1)}"/>`) +
+      `</g></g></g>`;
+  });
+  html += '</g>';
+  if(model.glyphs){
+    html += '<g class="mol-glyphs">' + A.map(a => `<g class="gl">${rxGlyphSvg(a.gl, a.ion)}</g>`).join('') + '</g>';
+  }
+  svg.innerHTML = html;
+  model.gAt = [...svg.querySelectorAll('.mol-at')];
+  model.fog = model.gAt.map(g => g.querySelector('.mol-fog'));
+  model.lines = [...svg.querySelectorAll('.mol-bonds line')];
+  model.layer = svg.querySelector('.mol-atoms');
+  model.polys = model.faces ? [...svg.querySelectorAll('.mol-faces polygon')] : null;
+  model.faceLayer = svg.querySelector('.mol-faces:not(.back)');
+  model.backLayer = svg.querySelector('.mol-faces.back');
+  model.rodPaths = model.rods ? [...svg.querySelectorAll('.mol-rods path')] : null;
+  if(model.rods){
+    // 바늘도 중심 맞추기와 크기 계산에 넣는다 (면과 같은 중심으로 옮김)
+  }
+  model.faceOrder = '';
+  if(model.polys) model.polys.forEach((pg, i) => {
+    const M = model.faces[i].m;
+    if(!M) return;
+    if(M.clear) pg.setAttribute('fill-opacity', M.clear);
+    if(M.gem){ pg.setAttribute('stroke', 'rgba(255,255,255,.42)'); pg.setAttribute('stroke-width', '.9'); }
+  });
+  model.gGl = model.glyphs ? [...svg.querySelectorAll('.mol-glyphs .gl')] : null;
+  model.order = '';
+  model.sortAt = performance.now() + 1300;   // 등장 연출이 끝나기 전엔 순서를 바꾸지 않는다
+  RX_M = model;
+  RX_YAW = model.static ? 0 : (model.yaw0 != null ? model.yaw0 : -0.35);
+  RX_PITCH = model.tilt || 0; RX_PH = 0;
+  rxDraw(RX_YAW, RX_PITCH);
+
+  const grav = document.getElementById('mGrav');
+  if(grav) grav.hidden = !(model.kin && RX_TILT.on);
+  const hint = document.getElementById('mHint');
+  if(hint){
+    hint.hidden = !!model.static || (model.kin && !!RX.boom && RX_TOUCHED) || (!model.kin && RX_TOUCHED);
+    hint.textContent = model.kin ? (matchMedia('(pointer: coarse)').matches ? t('rxThrowTilt') : t('rxThrow')) : t('rxDrag');
+  }
+}
+
+function rxDraw(yaw, pitch){
+  const m = RX_M;
+  if(!m) return;
+  const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+  const D = 420;
+  const P = m.atoms.map(a => {
+    const x1 = a.x * cY + a.z * sY;
+    const z1 = -a.x * sY + a.z * cY;
+    const y1 = a.y * cX - z1 * sX;
+    const z2 = a.y * sX + z1 * cX;
+    const f = D / (D - z2);
+    return { X: m.cx + x1 * m.sc * f, Y: m.cy + y1 * m.sc * f, z: z2, f };
+  });
+  if(m.polys){
+    const L = [-0.35, -0.82, 0.45];
+    const depth = [];
+    m.faces.forEach((fc, i) => {
+      const [nx0, ny0, nz0] = fc.n;
+      const nx1 = nx0 * cY + nz0 * sY, nz1 = -nx0 * sY + nz0 * cY;
+      const ny1 = ny0 * cX - nz1 * sX, nz2 = ny0 * sX + nz1 * cX;
+      const poly = m.polys[i];
+      const back = nz2 <= 0.02;
+      if(back && !(fc.m && m.twoSided)){ poly.setAttribute('visibility', 'hidden'); depth.push(-1e9); return; }
+      let zs = 0, pts = '';
+      fc.p.forEach(([x, y, z]) => {
+        const x1 = x * cY + z * sY, z1 = -x * sY + z * cY;
+        const y1 = y * cX - z1 * sX, z2 = y * sX + z1 * cX;
+        const f = D / (D - z2);
+        pts += `${(m.cx + x1 * m.sc * f).toFixed(1)},${(m.cy + y1 * m.sc * f).toFixed(1)} `;
+        zs += z2;
+      });
+      depth.push(zs / fc.p.length);
+      const dif = Math.max(0, nx1 * L[0] + ny1 * L[1] + nz2 * L[2]);
+      // 얇은 산화막: 보는 각도에 따라 색이 흐른다
+      const cxp = (fc.p[0][0] + fc.p[2][0]) / 2, czp = (fc.p[0][2] + fc.p[2][2]) / 2;
+      // 산화막 두께: 위치에 따라 부드럽게 변하고, 보는 각도에 따라 조금 밀린다
+      const th = 0.12 + (fc.lv || 0) * 0.07 + 0.07 * Math.sin(cxp * 0.016 + czp * 0.012 + fc.lv * 0.9)
+               + nx1 * 0.08 + Math.sin(yaw) * 0.06;
+      const film = fc.m ? null : rxFilm(th);
+      // 정반사: 빛이 면에 반사돼 눈으로 들어오는 정도
+      const nd = nx1 * L[0] + ny1 * L[1] + nz2 * L[2];
+      const rz = 2 * nd * nz2 - L[2];
+      const spec = Math.pow(Math.max(0, rz), 18);
+      let fill;
+      if(fc.m){
+        fill = rxMatFill(fc, nx1, ny1, nz2, dif, spec, yaw, back);
+      } else if(fc.pal){
+        // 보는 각도에 따라 이웃 산화막 색으로 흐른다
+        const pos = (cxp * 0.018 - czp * 0.012) + (fc.p[0][1] + fc.p[2][1]) * 0.02;
+        const tint = rxBiPal(fc.lv * 0.8 + pos + nx1 * 0.7 + ny1 * 0.3 + Math.sin(yaw) * 0.5);
+        // 금속 바탕(은회색)에 산화막 색이 얹힌다
+        if(fc.top){
+          fill = rxShade(rxMix(tint, [168, 176, 190], 0.28), 0.62 + dif * 0.62, spec * 0.85);
+        } else {
+          fill = rxShade(rxMix(tint, [70, 78, 92], 0.5), 0.4 + dif * 0.65, spec * 0.45);
+        }
+      } else if(fc.top){
+        fill = rxShade(film, 0.42 + dif * 0.5, spec * 0.75);
+      } else {
+        // 옆면은 강철색에 막 색이 살짝 비친다
+        fill = rxShade(rxMix(film, [120, 126, 138], 0.55), 0.22 + dif * 0.45, spec * 0.4);
+      }
+      poly.setAttribute('visibility', 'visible');
+      poly.setAttribute('points', pts);
+      poly.setAttribute('fill', fill);
+      if(!(fc.m && fc.m.gem)) poly.setAttribute('stroke', fill);
+    });
+    const idx = depth.map((d, i) => i).sort((a, b) => depth[a] - depth[b]);
+    if(m.rods){
+      // 면이 적으니 매번 앞/뒤 레이어로 나눠 담는다
+      idx.forEach(i => {
+        const fc = m.faces[i];
+        const [nx0, ny0, nz0] = fc.n;
+        const nz1 = -nx0 * sY + nz0 * cY;
+        const nzz = ny0 * sX + nz1 * cX;
+        (nzz <= 0.02 ? m.backLayer : m.faceLayer).appendChild(m.polys[i]);
+      });
+      rxDrawRods(m, cY, sY, cX, sX, D);
+    } else {
+      const key = idx.join(',');
+      if(key !== m.faceOrder){ m.faceOrder = key; idx.forEach(i => m.faceLayer.appendChild(m.polys[i])); }
+    }
+  }
+  m.gAt.forEach((g, i) => {
+    const p = P[i];
+    g.setAttribute('transform', `translate(${p.X.toFixed(1)} ${p.Y.toFixed(1)}) scale(${p.f.toFixed(3)})`);
+    const fg = m.fog[i];
+    if(fg) fg.setAttribute('opacity', Math.max(0, Math.min(.5, -p.z / m.depth * .5)).toFixed(2));
+  });
+  if(m.gGl) m.gGl.forEach((g, i) => {
+    const a = m.atoms[i], p = P[i];
+    g.setAttribute('transform', `translate(${p.X.toFixed(1)} ${p.Y.toFixed(1)}) rotate(${((a.rot || 0) + a.x * 1.4).toFixed(0)})`);
+  });
+  m.lines.forEach((ln, k) => {
+    const [a, b] = m.bonds[k];
+    ln.setAttribute('x1', P[a].X.toFixed(1)); ln.setAttribute('y1', P[a].Y.toFixed(1));
+    ln.setAttribute('x2', P[b].X.toFixed(1)); ln.setAttribute('y2', P[b].Y.toFixed(1));
+  });
+  // 먼 것부터 그린다
+  if(performance.now() < m.sortAt || m.kin) return;
+  const card = document.getElementById('card');
+  if(!card.classList.contains('rx-settled')) card.classList.add('rx-settled');
+  const idx = P.map((p, i) => i).sort((i, j) => (P[i].z - P[j].z) || (i - j));
+  const key = idx.join(',');
+  if(key !== m.order){
+    m.order = key;
+    idx.forEach(i => m.layer.appendChild(m.gAt[i]));
+  }
+}
+
+function rxLoop(now){
+  if(!RX_M || RX_M.static || !modal.classList.contains('on')){ RX_RAF = 0; return; }
+  const dt = RX_LAST ? Math.min(50, now - RX_LAST) : 16;
+  RX_LAST = now;
+  if(!RX_DRAG && !RX_REDUCED) RX_PH += dt;
+  if(RX_M.kin){
+    const gv = document.getElementById('mGrav');
+    if(gv){
+      gv.hidden = !RX_TILT.on;
+      if(RX_TILT.on){
+        const mag = Math.min(1, Math.hypot(RX_TILT.x, RX_TILT.y));
+        gv.style.setProperty('--ga', (Math.atan2(RX_TILT.y, RX_TILT.x) * 180 / Math.PI - 90).toFixed(0) + 'deg');
+        gv.style.setProperty('--gm', mag.toFixed(2));
+      }
+    }
+    if(RX_M.wait > 0) RX_M.wait -= dt;
+    else rxPhysFrame(RX_M, dt);
+    rxDraw(0, 0);
+    RX_RAF = requestAnimationFrame(rxLoop);
+    return;
+  }
+  if(RX_M.crystal) rxDraw(RX_YAW + RX_PH * 0.00032, RX_PITCH + Math.sin(RX_PH / 3600) * 0.06);
+  else rxDraw(RX_YAW + Math.sin(RX_PH / 2400) * 0.55, RX_PITCH + Math.sin(RX_PH / 3300) * 0.18);
+  RX_RAF = requestAnimationFrame(rxLoop);
+}
+function rxStart(){
+  if(RX_RAF || !RX_M || RX_M.static) return;
+  RX_LAST = 0;
+  RX_RAF = requestAnimationFrame(rxLoop);
+}
+
+(() => {
+  const st = document.getElementById('mStage');
+  st.addEventListener('pointerdown', e => {
+    if(!RX_M || RX_M.static) return;
+    if(RX_M.kin){
+      rxGrabStart(e);
+      try{ st.setPointerCapture(e.pointerId); }catch(_){}
+      st.classList.add('grab');
+      const h = document.getElementById('mHint');
+      if(h) h.hidden = true;
+      return;
+    }
+    RX_DRAG = { x: e.clientX, y: e.clientY, id: e.pointerId };
+    try{ st.setPointerCapture(e.pointerId); }catch(_){}
+    st.classList.add('grab');
+    if(!RX_TOUCHED){
+      RX_TOUCHED = true;
+      const h = document.getElementById('mHint');
+      if(h) h.hidden = true;
+    }
+  });
+  st.addEventListener('pointermove', e => {
+    if(RX_GRAB){ rxGrabMove(e); return; }
+    if(!RX_DRAG || e.pointerId !== RX_DRAG.id) return;
+    RX_YAW += (e.clientX - RX_DRAG.x) * 0.012;
+    RX_PITCH = Math.max(-1.3, Math.min(1.3, RX_PITCH + (e.clientY - RX_DRAG.y) * 0.012));
+    RX_DRAG.x = e.clientX; RX_DRAG.y = e.clientY;
+    if(RX_REDUCED || !RX_RAF) rxDraw(RX_YAW, RX_PITCH);
+  });
+  const end = e => { rxGrabEnd(e); RX_DRAG = null; st.classList.remove('grab'); };
+  st.addEventListener('pointerup', end);
+  st.addEventListener('pointercancel', end);
+})();
+
+/* ── 새로 발견: 원소 색 파편이 터진다 ── */
+function rxBurst(){
+  if(RX_REDUCED || !RX_M) return;
+  const card = document.getElementById('card');
+  const f = document.getElementById('mFormula');
+  const cr = card.getBoundingClientRect(), fr = f.getBoundingClientRect();
+  const k = card.offsetWidth ? cr.width / card.offsetWidth : 1;
+  const ox = (fr.left + fr.width / 2 - cr.left) / k;
+  const oy = (fr.top + fr.height / 2 - cr.top) / k;
+  const cols = [...new Set(RX_M.atoms.map(a => rxColor(a.s)))];
+  cols.push('#ffffff', '#7a9bcf');
+  const box = document.createElement('div');
+  box.className = 'rx-burst';
+  let h = '';
+  for(let i = 0; i < 26; i++){
+    const a = (i / 26) * Math.PI * 2 + Math.random() * .4;
+    const d = 70 + Math.random() * 110;
+    const sz = 4 + Math.random() * 6;
+    h += `<i style="left:${ox}px;top:${oy}px;--dx:${(Math.cos(a) * d).toFixed(0)}px;--dy:${(Math.sin(a) * d * .8 - 20).toFixed(0)}px;` +
+      `--c:${cols[i % cols.length]};--rot:${(Math.random() * 540 - 270).toFixed(0)}deg;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;` +
+      `animation-delay:${(Math.random() * 80).toFixed(0)}ms${i % 3 === 0 ? ';border-radius:50%' : ''}"></i>`;
+  }
+  box.innerHTML = h;
+  card.appendChild(box);
+  setTimeout(() => box.remove(), 1500);
+}
+
+/* ── 화학식이 타자기처럼 찍힌다 ── */
+function rxType(){
+  const f = document.getElementById('mFormula');
+  f.style.animation = 'none';
+  void f.offsetWidth;
+  if(RX_REDUCED){ f.style.animation = ''; return; }
+  const n = Math.max(1, [...f.textContent].length);
+  f.style.animation = `rxType ${Math.min(900, n * 60)}ms steps(${n}) 120ms both`;
+}
+
+/* ═══ 결정 모양: 실제 결정 구조대로 입체로 쌓는다 ═══ */
+const RX_ROCKSALT = new Set(['NaCl','KCl','KI','NaF','MgO','CaO','FeO','AgCl','AgBr','TiN']);
+const RX_ZINCBLENDE = new Set(['SiC','CdS']);
+function rxPlain(f){
+  const SUB = '₀₁₂₃₄₅₆₇₈₉';
+  return String(f || '').replace(/[₀-₉]/g, d => SUB.indexOf(d)).replace(/\s/g, '');
+}
+function rxAt(s, x, y, z, R0){ return { s, x, y, z, r: R0 * rxSize(s) }; }
+function rxNear(A, dist, tol){
+  const out = [];
+  for(let i = 0; i < A.length; i++) for(let j = i + 1; j < A.length; j++){
+    const d = Math.hypot(A[i].x - A[j].x, A[i].y - A[j].y, A[i].z - A[j].z);
+    if(Math.abs(d - dist) < tol) out.push([i, j]);
+  }
+  return out;
+}
+
+/* 암염형: 양이온과 음이온이 3×3×3 정육면체로 번갈아 */
+function rxRockSalt(a, b){
+  const G = 40, A = [];
+  for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++) for(let k = 0; k < 3; k++)
+    A.push(rxAt((i + j + k) % 2 ? b : a, (i - 1) * G, (j - 1) * G, (k - 1) * G, 8));
+  return { atoms: A, bonds: rxNear(A, G, 1), crystal: true, tilt: -0.5, yaw0: 0.62, maxScale: 1.7 };
+}
+
+/* 황철석: 철은 암염형 자리에, 황은 대각선 방향 황-황 쌍으로 */
+function rxPyrite(){
+  const G = 44, A = [], site = [];
+  const D = [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(v => v.map(x => x / Math.sqrt(3)));
+  const d = 10;
+  for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++) for(let k = 0; k < 3; k++){
+    const x = (i - 1) * G, y = (j - 1) * G, z = (k - 1) * G;
+    if((i + j + k) % 2 === 0){
+      site.push({ i, j, k, fe: A.length });
+      A.push(rxAt('Fe', x, y, z, 8.5));
+    } else {
+      const v = D[(i + 2 * j + 3 * k) % 4];
+      site.push({ i, j, k, s: [A.length, A.length + 1] });
+      A.push(rxAt('S', x + v[0] * d, y + v[1] * d, z + v[2] * d, 6.5));
+      A.push(rxAt('S', x - v[0] * d, y - v[1] * d, z - v[2] * d, 6.5));
+    }
+  }
+  const bonds = [];
+  site.forEach(p => { if(p.s) bonds.push([p.s[0], p.s[1]]); });
+  site.forEach(p => {
+    if(p.fe == null) return;
+    site.forEach(q => {
+      if(!q.s) return;
+      if(Math.abs(p.i - q.i) + Math.abs(p.j - q.j) + Math.abs(p.k - q.k) !== 1) return;
+      const F = A[p.fe];
+      const [s0, s1] = q.s;
+      const d0 = Math.hypot(F.x - A[s0].x, F.y - A[s0].y, F.z - A[s0].z);
+      const d1 = Math.hypot(F.x - A[s1].x, F.y - A[s1].y, F.z - A[s1].z);
+      bonds.push([p.fe, d0 < d1 ? s0 : s1]);
+    });
+  });
+  return { atoms: A, bonds, crystal: true, tilt: -0.5, yaw0: 0.62, maxScale: 1.6 };
+}
+
+/* 다이아몬드형: 면심입방 + 사면체 자리. 원소가 둘이면 섬아연석형 */
+function rxDiamond(a, b){
+  const L = 104, A = [];
+  const fcc = [];
+  for(const x of [0, 1]) for(const y of [0, 1]) for(const z of [0, 1]) fcc.push([x, y, z]);
+  [[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]].forEach(p => fcc.push(p));
+  fcc.forEach(([x, y, z]) => A.push(rxAt(a, (x - .5) * L, (y - .5) * L, (z - .5) * L, 9)));
+  [[.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75]].forEach(([x, y, z]) =>
+    A.push(rxAt(b, (x - .5) * L, (y - .5) * L, (z - .5) * L, 9)));
+  return { atoms: A, bonds: rxNear(A, Math.sqrt(3) / 4 * L, 1), crystal: true, tilt: -0.42, yaw0: 0.5, maxScale: 1.6 };
+}
+
+/* 흑연형: 육각 판 두 겹, 엇갈려 쌓임. 원소가 둘이면 질화붕소 */
+function rxGraphite(a, b){
+  const B = 22, R = 56, H = 64, A = [];
+  const a1 = [Math.sqrt(3) * B, 0], a2 = [Math.sqrt(3) / 2 * B, 1.5 * B];
+  [-1, 1].forEach((layer, li) => {
+    const shift = li ? [0, B] : [0, 0];
+    for(let i = -5; i <= 5; i++) for(let j = -5; j <= 5; j++){
+      const px = i * a1[0] + j * a2[0], pz = i * a1[1] + j * a2[1];
+      [[0, 0, a], [0, B, b]].forEach(([ox, oz, el], bi) => {
+        const x = px + ox + shift[0], z = pz + oz + shift[1] - B / 2;
+        if(Math.hypot(x, z) > R) return;
+        // 질화붕소는 층마다 B와 N이 위아래로 엇갈린다
+        const s = a === b ? a : ((bi + li) % 2 ? b : a);
+        A.push(rxAt(s, x, layer * H / 2, z, 6.5));
+      });
+    }
+  });
+  return { atoms: A, bonds: rxNear(A, B, 0.6), crystal: true, tilt: -0.42, yaw0: 0.3, maxScale: 1.8 };
+}
+
+/* 박막 간섭 색 순서 (산화막이 두꺼워지는 순서) */
+const RX_FILM = [
+  [190, 194, 202], [214, 186, 120], [200, 140, 80], [176, 84, 122], [118, 80, 170],
+  [62, 104, 200], [92, 170, 214], [200, 190, 110], [206, 120, 160], [96, 176, 140], [190, 194, 202],
+];
+function rxFilm(t){
+  t = ((t % 1) + 1) % 1 * (RX_FILM.length - 1);
+  const i = Math.floor(t), f = t - i;
+  const a = RX_FILM[i], b = RX_FILM[i + 1];
+  const e = f * f * (3 - 2 * f);
+  return [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e];
+}
+function rxMix(a, b, k){ return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; }
+function rxShade(c, lum, spec){
+  const r = Math.min(255, c[0] * lum + 255 * spec);
+  const g = Math.min(255, c[1] * lum + 255 * spec);
+  const b = Math.min(255, c[2] * lum + 255 * spec);
+  return `rgb(${r | 0},${g | 0},${b | 0})`;
+}
+
+/* ═══ 비스무트 호퍼 결정: 계단형 사각 나선 + 무지개빛 산화막 ═══ */
+function rxBoxFaces(x0, x1, y0, y1, z0, z1, lv, rot, off, sc, mask){
+  const c = Math.cos(rot), s = Math.sin(rot);
+  const T = (x, y, z) => {
+    const X = x * c - z * s, Z = x * s + z * c;
+    return [X * sc + off[0], y * sc + off[1], Z * sc + off[2]];
+  };
+  const R = (nx, ny, nz) => [nx * c - nz * s, ny, nx * s + nz * c];
+  const M = mask || { pz: 1, nz: 1, nx: 1, px: 1 };
+  const out = [{ p: [T(x0,y0,z0), T(x1,y0,z0), T(x1,y0,z1), T(x0,y0,z1)], n: R(0,-1,0), lv, top: true }];
+  if(M.pz) out.push({ p: [T(x0,y0,z1), T(x1,y0,z1), T(x1,y1,z1), T(x0,y1,z1)], n: R(0,0,1), lv });
+  if(M.nz) out.push({ p: [T(x0,y0,z0), T(x1,y0,z0), T(x1,y1,z0), T(x0,y1,z0)], n: R(0,0,-1), lv });
+  if(M.nx) out.push({ p: [T(x0,y0,z0), T(x0,y0,z1), T(x0,y1,z1), T(x0,y1,z0)], n: R(-1,0,0), lv });
+  if(M.px) out.push({ p: [T(x1,y0,z0), T(x1,y0,z1), T(x1,y1,z1), T(x1,y1,z0)], n: R(1,0,0), lv });
+  return out;
+}
+function rxHopper(levels, off, sc, twist, rot0){
+  const F = [];
+  const S0 = 72, step = 6.2, w = 6.2, h = 7;
+  for(let i = 0; i < levels; i++){
+    const S = S0 - i * step, y = i * 6.4, r = rot0 + i * twist;
+    if(S - w <= 2){  // 가운데 바닥
+      F.push(...rxBoxFaces(-S, S, y, y + h, -S, S, i, r, off, sc, { pz: 0, nz: 0, nx: 0, px: 0 }));
+      break;
+    }
+    const I = S - w;
+    // 긴 막대는 짧게 잘라야 앞뒤 순서가 정확하다.
+    // 바깥 고리 속에 묻히는 면과 조각 사이 이음면은 만들지 않는다.
+    const outer = i === 0;
+    const bar = (x0, x1, z0, z1, side) => {
+      const alongX = side === 'f' || side === 'b';
+      const L = alongX ? x1 - x0 : z1 - z0;
+      const n = Math.max(1, Math.round(L / 34));
+      for(let k = 0; k < n; k++){
+        const a = k / n, b = (k + 1) / n;
+        const first = k === 0, last = k === n - 1;
+        if(side === 'f') F.push(...rxBoxFaces(x0 + L * a, x0 + L * b, y, y + h, z0, z1, i, r, off, sc,
+          { pz: outer, nz: 1, nx: first && outer, px: last && outer }));
+        if(side === 'b') F.push(...rxBoxFaces(x0 + L * a, x0 + L * b, y, y + h, z0, z1, i, r, off, sc,
+          { pz: 1, nz: outer, nx: first && outer, px: last && outer }));
+        if(side === 'l') F.push(...rxBoxFaces(x0, x1, y, y + h, z0 + L * a, z0 + L * b, i, r, off, sc,
+          { pz: 0, nz: 0, nx: outer, px: 1 }));
+        if(side === 'r') F.push(...rxBoxFaces(x0, x1, y, y + h, z0 + L * a, z0 + L * b, i, r, off, sc,
+          { pz: 0, nz: 0, nx: 1, px: outer }));
+      }
+    };
+    bar(-S, S, I, S, 'f');       // 앞
+    bar(-S, S, -S, -I, 'b');     // 뒤
+    bar(-S, -I, -I, I, 'l');     // 왼쪽
+    bar(I, S, -I, I, 'r');       // 오른쪽
+  }
+  return F;
+}
+
+/* 비스무트 결정 메시 (블렌더에서 가져옴): 꼭짓점 ×10 정수, 면 = 네 꼭짓점 + 산화막 단계 */
+const RX_BI_V = [-519,291,589,492,291,589,492,291,-422,-519,291,-422,-519,-37,589,492,-37,589,492,-37,-422,-519,-37,-422,-496,-37,566,469,-37,566,469,-37,-399,-496,-37,-399,-496,-20,566,469,-20,566,469,-20,-399,-496,-20,-399,-473,-20,543,446,-20,543,446,-20,-376,-473,-20,-376,-473,-2,543,446,-2,543,446,-2,-376,-473,-2,-376,-450,-2,519,423,-2,519,423,-2,-353,-450,-2,-353,-450,15,519,423,15,519,423,15,-353,-450,15,-353,-427,15,496,400,15,496,400,15,-330,-427,15,-330,-427,32,496,400,32,496,400,32,-330,-427,32,-330,-403,32,472,376,32,472,376,32,-306,-403,32,-306,-403,49,472,376,49,472,376,49,-306,-403,49,-306,-380,49,450,353,49,450,353,49,-284,-380,49,-284,-380,67,450,353,67,450,353,67,-284,-380,67,-284,-357,67,427,330,67,427,330,67,-261,-357,67,-261,-357,84,427,330,84,427,330,84,-261,-357,84,-261,-333,84,403,306,84,403,306,84,-237,-333,84,-237,-333,101,403,306,101,403,306,101,-237,-333,101,-237,-310,101,380,283,101,380,283,101,-213,-310,101,-213,-310,118,380,283,118,380,283,118,-213,-310,118,-213,-286,118,355,259,118,355,259,118,-189,-286,118,-189,-286,136,355,259,136,355,259,136,-189,-286,136,-189,-263,136,333,236,136,333,236,136,-166,-263,136,-166,-263,153,333,236,153,333,236,153,-166,-263,153,-166,-240,153,310,213,153,310,213,153,-144,-240,153,-144,-240,170,310,213,170,310,213,170,-144,-240,170,-144,-218,170,288,191,170,288,191,170,-121,-218,170,-121,-218,188,288,191,188,288,191,188,-121,-218,188,-121,-196,188,266,169,188,266,169,188,-99,-196,188,-99,-196,205,266,169,205,266,169,205,-99,-196,205,-99,-174,205,244,147,205,244,147,205,-77,-174,205,-77,-174,222,244,147,222,244,147,222,-77,-174,222,-77,-151,222,221,124,222,221,124,222,-54,-151,222,-54,-151,239,221,124,239,221,124,239,-54,-151,239,-54,-128,239,198,101,239,198,101,239,-32,-128,239,-32,-128,257,198,101,257,198,101,257,-32,-128,257,-32,-105,257,175,78,257,175,78,257,-8,-105,257,-8,-105,274,175,78,274,175,78,274,-8,-105,274,-8,-80,274,150,53,274,150,53,274,16,-80,274,16,-80,291,150,53,291,150,53,291,16,-80,291,16,-285,285,35,472,165,-5,404,-19,-747,-353,101,-708,-324,12,106,433,-108,66,365,-291,-676,-392,-171,-637,-304,4,83,409,-110,46,345,-282,-654,-368,-169,-616,-302,21,78,411,-93,41,347,-265,-658,-366,-152,-621,-282,12,56,388,-94,21,328,-257,-636,-343,-150,-601,-280,29,52,391,-77,17,330,-240,-641,-340,-133,-605,-262,21,31,369,-79,-2,312,-232,-620,-318,-132,-587,-259,38,27,371,-62,-6,315,-215,-624,-316,-115,-591,-241,30,6,349,-64,-25,296,-207,-603,-294,-113,-572,-238,47,1,352,-47,-29,299,-190,-608,-291,-96,-577,-218,38,-21,328,-48,-50,279,-181,-585,-268,-94,-557,-216,55,-25,330,-31,-54,281,-164,-590,-265,-77,-561,-198,47,-46,309,-33,-72,263,-156,-569,-243,-76,-543,-195,64,-50,311,-16,-77,266,-139,-574,-241,-58,-547,-176,56,-73,288,-18,-97,246,-130,-551,-218,-57,-527,-173,73,-77,290,-1,-101,249,-113,-556,-215,-40,-532,-155,65,-98,269,-3,-120,230,-105,-535,-193,-38,-513,-153,82,-102,271,14,-124,233,-88,-540,-191,-21,-518,-134,74,-123,249,13,-143,214,-80,-519,-169,-19,-499,-132,91,-128,251,30,-148,217,-63,-523,-166,-2,-503,-113,82,-149,229,28,-167,198,-55,-502,-144,0,-484,-110,99,-153,231,45,-171,200,-38,-506,-141,17,-488,-91,90,-176,207,43,-192,180,-29,-483,-117,18,-468,-88,108,-180,210,60,-196,183,-12,-488,-115,35,-472,-69,99,-202,186,59,-216,164,-3,-466,-92,37,-453,-66,116,-207,189,76,-220,166,14,-470,-89,54,-457,-47,107,-229,165,74,-240,146,22,-448,-66,56,-437,-44,124,-234,168,91,-245,149,39,-453,-63,73,-441,-26,116,-254,146,89,-263,131,47,-432,-41,75,-423,-23,133,-259,148,106,-268,133,65,-436,-39,92,-427,-5,125,-280,126,104,-286,115,73,-415,-17,93,-408,-3,142,-284,129,121,-291,117,90,-420,-14,110,-413,17,134,-306,105,120,-311,97,98,-397,9,112,-393,20,151,-311,108,137,-315,100,115,-402,12,129,-397,-601,63,491,-235,141,517,-217,179,144,-583,101,119,-569,-85,478,-203,-7,503,-185,31,130,-551,-47,105,-550,-79,461,-220,-9,484,-203,25,147,-534,-45,124,-553,-63,462,-223,7,485,-207,42,149,-537,-28,126,-534,-57,445,-240,5,465,-226,36,166,-520,-26,146,-538,-41,446,-244,22,467,-230,53,168,-523,-10,147,-520,-35,430,-260,20,449,-247,47,184,-508,-8,165,-524,-19,432,-264,37,450,-251,64,185,-511,8,167,-507,-14,416,-279,35,432,-268,59,201,-495,10,185,-510,3,418,-283,51,434,-272,75,202,-499,27,186,-492,8,401,-300,49,415,-290,69,219,-482,28,206,-495,25,403,-303,66,416,-294,86,220,-486,45,207,-477,30,386,-320,64,397,-312,80,237,-470,47,226,-481,47,388,-323,80,399,-316,97,238,-473,63,227,-463,52,372,-340,79,380,-334,91,255,-457,65,246,-467,69,373,-343,95,382,-337,108,256,-461,82,247,-447,75,356,-361,93,362,-357,102,274,-443,84,268,-451,91,357,-364,109,363,-360,119,275,-447,100,269,-431,97,339,-382,107,343,-380,113,293,-429,102,289,-435,113,341,-386,124,344,-383,129,294,-432,119,291,-27,270,720,401,232,705,381,172,279,-48,210,294,-43,79,747,386,41,732,366,-19,306,-63,19,321,-26,75,729,367,40,715,349,-14,325,-44,20,338,-24,94,726,369,59,712,350,5,322,-43,39,336,-8,90,708,350,58,696,333,9,340,-24,40,353,-6,109,705,352,78,693,335,28,337,-23,59,350,11,105,687,333,77,676,318,32,356,-4,60,367,12,124,684,335,96,673,319,51,353,-3,79,364,29,120,666,316,95,656,302,55,371,16,80,381,31,139,663,317,114,653,304,74,369,18,99,379,49,135,643,297,113,635,286,78,388,38,100,397,51,154,641,299,132,632,287,97,386,39,119,394,68,149,622,280,131,614,270,102,404,59,120,412,70,169,619,281,150,612,271,121,402,60,139,409,89,164,599,260,149,593,252,125,422,81,140,428,91,183,596,262,168,590,254,144,419,83,159,425,107,179,578,244,167,573,237,148,437,101,160,442,109,198,575,245,186,570,239,167,435,102,179,439,127,194,556,226,185,552,221,171,454,122,180,457,128,213,553,227,204,550,223,191,451,124,199,455,145,209,535,209,203,533,206,195,469,142,200,472,147,228,532,210,223,530,207,214,467,144,219,469,304,153,275,601,101,275,601,101,-27,304,153,-27,266,-60,275,563,-113,275,563,-113,-27,266,-60,-27,283,-63,258,546,-110,258,546,-110,-9,283,-63,-9,288,-37,258,551,-83,258,551,-83,-9,288,-37,-9,304,-39,242,535,-80,242,535,-80,7,304,-39,7,308,-13,242,540,-53,242,540,-53,7,308,-13,7,324,-15,226,524,-51,226,524,-51,23,324,-15,23,329,11,226,529,-24,226,529,-24,23,329,11,23,345,8,209,513,-21,209,513,-21,39,345,8,39,350,35,209,517,6,209,517,6,39,350,35,39,367,32,192,500,9,192,500,9,56,367,32,56,371,59,192,505,35,192,505,35,56,371,59,56,387,56,177,490,38,177,490,38,72,387,56,72,391,83,177,495,65,177,495,65,72,391,83,72,407,80,161,479,67,161,479,67,87,407,80,87,412,107,161,484,94,161,484,94,87,412,107,87,429,104,144,467,97,144,467,97,105,429,104,105,433,130,144,472,124,144,472,124,105,433,130,105,354,80,-76,545,39,-90,528,22,-285,336,63,-271,324,-63,-62,516,-104,-75,499,-121,-270,307,-80,-256,337,-67,-76,501,-102,-88,486,-117,-255,322,-82,-243,342,-43,-79,506,-78,-90,491,-93,-257,327,-58,-246,353,-47,-93,491,-77,-103,479,-89,-243,341,-59,-233,358,-24,-96,496,-53,-105,484,-65,-246,346,-36,-236,372,-28,-112,480,-51,-119,470,-61,-230,362,-37,-222,377,-4,-114,485,-27,-122,475,-37,-232,367,-14,-224,390,-9,-130,469,-25,-136,462,-32,-216,383,-16,-210,395,15,-133,474,-2,-138,467,-9,-218,388,8,-213,408,11,-148,459,0,-151,454,-4,-204,403,7,-200,412,35,-150,464,24,-154,459,19,-206,408,30,-202,425,31,-165,449,26,-166,447,23,-192,422,29,-190,429,55,-167,454,49,-169,452,47,-194,427,52,-192,-443,-10,-157,-264,-10,-157,-264,-41,-333,-443,-41,-333,-443,-114,-139,-264,-114,-139,-264,-145,-315,-443,-145,-315,-428,-116,-153,-279,-116,-153,-279,-142,-300,-428,-142,-300,-428,-95,-157,-279,-95,-157,-279,-121,-304,-428,-121,-304,-412,-98,-172,-295,-98,-172,-295,-119,-288,-412,-119,-288,-412,-77,-176,-295,-77,-176,-295,-98,-292,-412,-98,-292,-396,-80,-192,-311,-80,-192,-311,-95,-276,-396,-95,-276,-396,-59,-196,-311,-59,-196,-311,-74,-280,-396,-74,-280,-380,-62,-211,-327,-62,-211,-327,-71,-264,-380,-71,-264,-380,-41,-215,-327,-41,-215,-327,-51,-267,-380,-51,-267,-364,-44,-231,-343,-44,-231,-343,-48,-252,-364,-48,-252,-364,-23,-235,-343,-23,-235,-343,-27,-255,-364,-27,-255,-312,252,669,-78,272,669,-78,272,435,-312,252,435,-302,135,669,-68,155,669,-68,155,435,-302,135,435,-288,136,655,-82,154,655,-82,154,449,-288,136,449,-289,153,655,-84,171,655,-84,171,449,-289,153,449,-275,154,641,-98,170,641,-98,170,463,-275,154,463,-276,171,641,-99,186,641,-99,186,463,-276,171,463,-262,172,626,-114,185,626,-114,185,478,-262,172,478,-263,189,626,-116,202,626,-116,202,478,-263,189,478,-248,190,611,-131,200,611,-131,200,493,-248,190,493,-250,207,611,-132,217,611,-132,217,493,-250,207,493,-235,208,597,-147,216,597,-147,216,508,-235,208,508,-237,225,597,-148,232,597,-148,232,508,-237,225,508,-222,226,582,-163,231,582,-163,231,522,-222,226,522,-223,243,582,-164,248,582,-164,248,522,-223,243,522,-209,244,568,-178,247,568,-178,247,537,-209,244,537,-211,261,568,-180,263,568,-180,263,537,-211,261,537,-550,195,4,-444,195,4,-444,195,-101,-550,195,-101,-550,136,4,-444,136,4,-444,136,-101,-550,136,-101,-538,136,-8,-456,136,-8,-456,136,-89,-538,136,-89,-538,151,-8,-456,151,-8,-456,151,-89,-538,151,-89,-526,151,-20,-468,151,-20,-468,151,-77,-526,151,-77,-526,166,-20,-468,166,-20,-468,166,-77,-526,166,-77,-514,166,-31,-480,166,-31,-480,166,-66,-514,166,-66,-514,180,-31,-480,180,-31,-480,180,-66,-514,180,-66,-502,180,-43,-492,180,-43,-492,180,-54,-502,180,-54,-502,195,-43,-492,195,-43,-492,195,-54,-502,195,-54,309,162,499,426,162,499,426,162,382,309,162,382,309,98,499,426,98,499,426,98,382,309,98,382,322,98,486,413,98,486,413,98,395,322,98,395,322,114,486,413,114,486,413,114,395,322,114,395,335,114,473,400,114,473,400,114,408,335,114,408,335,130,473,400,130,473,400,130,408,335,130,408,347,130,461,388,130,461,388,130,420,347,130,420,347,146,461,388,146,461,388,146,420,347,146,420,360,146,448,375,146,448,375,146,433,360,146,433,360,162,448,375,162,448,375,162,433,360,162,433,209,-128,-353,303,-128,-353,303,-128,-447,209,-128,-447,209,-179,-353,303,-179,-353,303,-179,-447,209,-179,-447,219,-179,-364,293,-179,-364,293,-179,-437,219,-179,-437,219,-167,-364,293,-167,-364,293,-167,-437,219,-167,-437,230,-167,-374,282,-167,-374,282,-167,-427,230,-167,-427,230,-154,-374,282,-154,-374,282,-154,-427,230,-154,-427,241,-154,-385,271,-154,-385,271,-154,-416,241,-154,-416,241,-141,-385,271,-141,-385,271,-141,-416,241,-141,-416,252,-141,-396,261,-141,-396,261,-141,-405,252,-141,-405,252,-128,-396,261,-128,-396,261,-128,-405,252,-128,-405,-312,-22,-441,-213,-22,-441,-213,-22,-541,-312,-22,-541,-312,-77,-441,-213,-77,-441,-213,-77,-541,-312,-77,-541,-301,-77,-452,-224,-77,-452,-224,-77,-530,-301,-77,-530,-301,-63,-452,-224,-63,-452,-224,-63,-530,-301,-63,-530,-290,-63,-463,-235,-63,-463,-235,-63,-519,-290,-63,-519,-290,-50,-463,-235,-50,-463,-235,-50,-519,-290,-50,-519,-280,-50,-474,-245,-50,-474,-245,-50,-509,-280,-50,-509,-280,-36,-474,-245,-36,-474,-245,-36,-509,-280,-36,-509,-270,-36,-484,-255,-36,-484,-255,-36,-498,-270,-36,-498,-270,-22,-484,-255,-22,-484,-255,-22,-498,-270,-22,-498];
+const RX_BI_F = [0,1,5,4,2,1,2,6,5,2,2,3,7,6,3,3,0,4,7,3,4,5,9,8,3,5,6,10,9,3,6,7,11,10,4,7,4,8,11,4,8,9,13,12,3,9,10,14,13,3,10,11,15,14,4,11,8,12,15,4,12,13,17,16,4,13,14,18,17,4,14,15,19,18,5,15,12,16,19,5,16,17,21,20,5,17,18,22,21,5,18,19,23,22,6,19,16,20,23,6,20,21,25,24,5,21,22,26,25,5,22,23,27,26,6,23,20,24,27,6,24,25,29,28,6,25,26,30,29,6,26,27,31,30,7,27,24,28,31,7,28,29,33,32,6,29,30,34,33,6,30,31,35,34,7,31,28,32,35,7,32,33,37,36,7,33,34,38,37,7,34,35,39,38,8,35,32,36,39,8,36,37,41,40,8,37,38,42,41,8,38,39,43,42,9,39,36,40,43,9,40,41,45,44,8,41,42,46,45,8,42,43,47,46,9,43,40,44,47,9,44,45,49,48,9,45,46,50,49,9,46,47,51,50,10,47,44,48,51,10,48,49,53,52,10,49,50,54,53,10,50,51,55,54,11,51,48,52,55,11,52,53,57,56,10,53,54,58,57,10,54,55,59,58,11,55,52,56,59,11,56,57,61,60,11,57,58,62,61,11,58,59,63,62,12,59,56,60,63,12,60,61,65,64,11,61,62,66,65,11,62,63,67,66,12,63,60,64,67,12,64,65,69,68,12,65,66,70,69,12,66,67,71,70,13,67,64,68,71,13,68,69,73,72,13,69,70,74,73,13,70,71,75,74,14,71,68,72,75,14,72,73,77,76,13,73,74,78,77,13,74,75,79,78,14,75,72,76,79,14,76,77,81,80,14,77,78,82,81,14,78,79,83,82,15,79,76,80,83,15,80,81,85,84,15,81,82,86,85,15,82,83,87,86,16,83,80,84,87,16,84,85,89,88,15,85,86,90,89,15,86,87,91,90,16,87,84,88,91,16,88,89,93,92,16,89,90,94,93,16,90,91,95,94,17,91,88,92,95,17,92,93,97,96,16,93,94,98,97,16,94,95,99,98,17,95,92,96,99,17,96,97,101,100,17,97,98,102,101,17,98,99,103,102,18,99,96,100,103,18,100,101,105,104,18,101,102,106,105,18,102,103,107,106,19,103,100,104,107,19,104,105,109,108,18,105,106,110,109,18,106,107,111,110,19,107,104,108,111,19,108,109,113,112,19,109,110,114,113,19,110,111,115,114,20,111,108,112,115,20,112,113,117,116,19,113,114,118,117,19,114,115,119,118,20,115,112,116,119,20,116,117,121,120,20,117,118,122,121,20,118,119,123,122,21,119,116,120,123,21,120,121,125,124,21,121,122,126,125,21,122,123,127,126,22,123,120,124,127,22,124,125,129,128,21,125,126,130,129,21,126,127,131,130,22,127,124,128,131,22,128,129,133,132,22,129,130,134,133,22,130,131,135,134,23,131,128,132,135,23,132,133,137,136,23,133,134,138,137,23,134,135,139,138,24,135,132,136,139,24,136,137,141,140,23,137,138,142,141,23,138,139,143,142,24,139,136,140,143,24,140,141,145,144,24,141,142,146,145,24,142,143,147,146,25,143,140,144,147,25,144,145,149,148,24,145,146,150,149,24,146,147,151,150,25,147,144,148,151,25,148,149,153,152,25,149,150,154,153,25,150,151,155,154,26,151,148,152,155,26,152,153,157,156,26,153,154,158,157,26,154,155,159,158,27,155,152,156,159,27,0,3,2,1,2,156,157,158,159,10,160,161,165,164,4,161,162,166,165,4,162,163,167,166,5,163,160,164,167,5,164,165,169,168,5,165,166,170,169,5,166,167,171,170,6,167,164,168,171,6,168,169,173,172,5,169,170,174,173,5,170,171,175,174,6,171,168,172,175,6,172,173,177,176,6,173,174,178,177,6,174,175,179,178,7,175,172,176,179,7,176,177,181,180,7,177,178,182,181,7,178,179,183,182,8,179,176,180,183,8,180,181,185,184,7,181,182,186,185,7,182,183,187,186,8,183,180,184,187,8,184,185,189,188,8,185,186,190,189,8,186,187,191,190,9,187,184,188,191,9,188,189,193,192,8,189,190,194,193,8,190,191,195,194,9,191,188,192,195,9,192,193,197,196,9,193,194,198,197,9,194,195,199,198,10,195,192,196,199,10,196,197,201,200,10,197,198,202,201,10,198,199,203,202,11,199,196,200,203,11,200,201,205,204,10,201,202,206,205,10,202,203,207,206,11,203,200,204,207,11,204,205,209,208,11,205,206,210,209,11,206,207,211,210,12,207,204,208,211,12,208,209,213,212,12,209,210,214,213,12,210,211,215,214,13,211,208,212,215,13,212,213,217,216,12,213,214,218,217,12,214,215,219,218,13,215,212,216,219,13,216,217,221,220,13,217,218,222,221,13,218,219,223,222,14,219,216,220,223,14,220,221,225,224,13,221,222,226,225,13,222,223,227,226,14,223,220,224,227,14,224,225,229,228,14,225,226,230,229,14,226,227,231,230,15,227,224,228,231,15,228,229,233,232,15,229,230,234,233,15,230,231,235,234,16,231,228,232,235,16,232,233,237,236,15,233,234,238,237,15,234,235,239,238,16,235,232,236,239,16,236,237,241,240,16,237,238,242,241,16,238,239,243,242,17,239,236,240,243,17,240,241,245,244,17,241,242,246,245,17,242,243,247,246,18,243,240,244,247,18,244,245,249,248,17,245,246,250,249,17,246,247,251,250,18,247,244,248,251,18,248,249,253,252,18,249,250,254,253,18,250,251,255,254,19,251,248,252,255,19,252,253,257,256,18,253,254,258,257,18,254,255,259,258,19,255,252,256,259,19,256,257,261,260,19,257,258,262,261,19,258,259,263,262,20,259,256,260,263,20,260,261,265,264,20,261,262,266,265,20,262,263,267,266,21,263,260,264,267,21,264,265,269,268,20,265,266,270,269,20,266,267,271,270,21,267,264,268,271,21,268,269,273,272,21,269,270,274,273,21,270,271,275,274,22,271,268,272,275,22,272,273,277,276,21,273,274,278,277,21,274,275,279,278,22,275,272,276,279,22,276,277,281,280,22,277,278,282,281,22,278,279,283,282,23,279,276,280,283,23,280,281,285,284,23,281,282,286,285,23,282,283,287,286,24,283,280,284,287,24,284,285,289,288,23,285,286,290,289,23,286,287,291,290,24,287,284,288,291,24,288,289,293,292,24,289,290,294,293,24,290,291,295,294,25,291,288,292,295,25,160,163,162,161,4,292,293,294,295,12,296,297,301,300,5,297,298,302,301,5,298,299,303,302,6,299,296,300,303,6,300,301,305,304,6,301,302,306,305,6,302,303,307,306,7,303,300,304,307,7,304,305,309,308,6,305,306,310,309,6,306,307,311,310,7,307,304,308,311,7,308,309,313,312,7,309,310,314,313,7,310,311,315,314,8,311,308,312,315,8,312,313,317,316,8,313,314,318,317,8,314,315,319,318,9,315,312,316,319,9,316,317,321,320,8,317,318,322,321,8,318,319,323,322,9,319,316,320,323,9,320,321,325,324,9,321,322,326,325,9,322,323,327,326,10,323,320,324,327,10,324,325,329,328,9,325,326,330,329,9,326,327,331,330,10,327,324,328,331,10,328,329,333,332,10,329,330,334,333,10,330,331,335,334,11,331,328,332,335,11,332,333,337,336,11,333,334,338,337,11,334,335,339,338,12,335,332,336,339,12,336,337,341,340,11,337,338,342,341,11,338,339,343,342,12,339,336,340,343,12,340,341,345,344,12,341,342,346,345,12,342,343,347,346,13,343,340,344,347,13,344,345,349,348,13,345,346,350,349,13,346,347,351,350,14,347,344,348,351,14,348,349,353,352,13,349,350,354,353,13,350,351,355,354,14,351,348,352,355,14,352,353,357,356,14,353,354,358,357,14,354,355,359,358,15,355,352,356,359,15,356,357,361,360,14,357,358,362,361,14,358,359,363,362,15,359,356,360,363,15,360,361,365,364,15,361,362,366,365,15,362,363,367,366,16,363,360,364,367,16,364,365,369,368,16,365,366,370,369,16,366,367,371,370,17,367,364,368,371,17,368,369,373,372,16,369,370,374,373,16,370,371,375,374,17,371,368,372,375,17,296,299,298,297,5,372,373,374,375,13,376,377,381,380,3,377,378,382,381,3,378,379,383,382,4,379,376,380,383,4,380,381,385,384,4,381,382,386,385,4,382,383,387,386,5,383,380,384,387,5,384,385,389,388,4,385,386,390,389,4,386,387,391,390,5,387,384,388,391,5,388,389,393,392,5,389,390,394,393,5,390,391,395,394,6,391,388,392,395,6,392,393,397,396,6,393,394,398,397,6,394,395,399,398,7,395,392,396,399,7,396,397,401,400,6,397,398,402,401,6,398,399,403,402,7,399,396,400,403,7,400,401,405,404,7,401,402,406,405,7,402,403,407,406,8,403,400,404,407,8,404,405,409,408,7,405,406,410,409,7,406,407,411,410,8,407,404,408,411,8,408,409,413,412,8,409,410,414,413,8,410,411,415,414,9,411,408,412,415,9,412,413,417,416,9,413,414,418,417,9,414,415,419,418,10,415,412,416,419,10,416,417,421,420,9,417,418,422,421,9,418,419,423,422,10,419,416,420,423,10,420,421,425,424,10,421,422,426,425,10,422,423,427,426,11,423,420,424,427,11,424,425,429,428,11,425,426,430,429,11,426,427,431,430,12,427,424,428,431,12,428,429,433,432,11,429,430,434,433,11,430,431,435,434,12,431,428,432,435,12,432,433,437,436,12,433,434,438,437,12,434,435,439,438,13,435,432,436,439,13,436,437,441,440,12,437,438,442,441,12,438,439,443,442,13,439,436,440,443,13,440,441,445,444,13,441,442,446,445,13,442,443,447,446,14,443,440,444,447,14,444,445,449,448,14,445,446,450,449,14,446,447,451,450,15,447,444,448,451,15,448,449,453,452,14,449,450,454,453,14,450,451,455,454,15,451,448,452,455,15,452,453,457,456,15,453,454,458,457,15,454,455,459,458,16,455,452,456,459,16,456,457,461,460,16,457,458,462,461,16,458,459,463,462,17,459,456,460,463,17,376,379,378,377,3,460,461,462,463,11,464,465,469,468,0,465,466,470,469,0,466,467,471,470,1,467,464,468,471,1,468,469,473,472,1,469,470,474,473,1,470,471,475,474,2,471,468,472,475,2,472,473,477,476,1,473,474,478,477,1,474,475,479,478,2,475,472,476,479,2,476,477,481,480,2,477,478,482,481,2,478,479,483,482,3,479,476,480,483,3,480,481,485,484,3,481,482,486,485,3,482,483,487,486,4,483,480,484,487,4,484,485,489,488,3,485,486,490,489,3,486,487,491,490,4,487,484,488,491,4,488,489,493,492,4,489,490,494,493,4,490,491,495,494,5,491,488,492,495,5,492,493,497,496,4,493,494,498,497,4,494,495,499,498,5,495,492,496,499,5,496,497,501,500,5,497,498,502,501,5,498,499,503,502,6,499,496,500,503,6,500,501,505,504,6,501,502,506,505,6,502,503,507,506,7,503,500,504,507,7,504,505,509,508,6,505,506,510,509,6,506,507,511,510,7,507,504,508,511,7,508,509,513,512,7,509,510,514,513,7,510,511,515,514,8,511,508,512,515,8,512,513,517,516,8,513,514,518,517,8,514,515,519,518,9,515,512,516,519,9,516,517,521,520,8,517,518,522,521,8,518,519,523,522,9,519,516,520,523,9,520,521,525,524,9,521,522,526,525,9,522,523,527,526,10,523,520,524,527,10,524,525,529,528,9,525,526,530,529,9,526,527,531,530,10,527,524,528,531,10,528,529,533,532,10,529,530,534,533,10,530,531,535,534,11,531,528,532,535,11,464,467,466,465,0,532,533,534,535,8,536,537,541,540,0,537,538,542,541,0,538,539,543,542,1,539,536,540,543,1,540,541,545,544,1,541,542,546,545,1,542,543,547,546,2,543,540,544,547,2,544,545,549,548,1,545,546,550,549,1,546,547,551,550,2,547,544,548,551,2,548,549,553,552,2,549,550,554,553,2,550,551,555,554,3,551,548,552,555,3,552,553,557,556,3,553,554,558,557,3,554,555,559,558,4,555,552,556,559,4,556,557,561,560,3,557,558,562,561,3,558,559,563,562,4,559,556,560,563,4,560,561,565,564,4,561,562,566,565,4,562,563,567,566,5,563,560,564,567,5,564,565,569,568,4,565,566,570,569,4,566,567,571,570,5,567,564,568,571,5,568,569,573,572,5,569,570,574,573,5,570,571,575,574,6,571,568,572,575,6,572,573,577,576,6,573,574,578,577,6,574,575,579,578,7,575,572,576,579,7,576,577,581,580,6,577,578,582,581,6,578,579,583,582,7,579,576,580,583,7,580,581,585,584,7,581,582,586,585,7,582,583,587,586,8,583,580,584,587,8,584,585,589,588,8,585,586,590,589,8,586,587,591,590,9,587,584,588,591,9,536,539,538,537,0,588,589,590,591,8,592,593,597,596,5,593,594,598,597,5,594,595,599,598,6,595,592,596,599,6,596,597,601,600,6,597,598,602,601,6,598,599,603,602,7,599,596,600,603,7,600,601,605,604,6,601,602,606,605,6,602,603,607,606,7,603,600,604,607,7,604,605,609,608,7,605,606,610,609,7,606,607,611,610,8,607,604,608,611,8,608,609,613,612,8,609,610,614,613,8,610,611,615,614,9,611,608,612,615,9,612,613,617,616,8,613,614,618,617,8,614,615,619,618,9,615,612,616,619,9,616,617,621,620,9,617,618,622,621,9,618,619,623,622,10,619,616,620,623,10,620,621,625,624,9,621,622,626,625,9,622,623,627,626,10,623,620,624,627,10,624,625,629,628,10,625,626,630,629,10,626,627,631,630,11,627,624,628,631,11,628,629,633,632,11,629,630,634,633,11,630,631,635,634,12,631,628,632,635,12,632,633,637,636,11,633,634,638,637,11,634,635,639,638,12,635,632,636,639,12,592,595,594,593,5,636,637,638,639,13,640,641,645,644,5,641,642,646,645,5,642,643,647,646,6,643,640,644,647,6,644,645,649,648,6,645,646,650,649,6,646,647,651,650,7,647,644,648,651,7,648,649,653,652,6,649,650,654,653,6,650,651,655,654,7,651,648,652,655,7,652,653,657,656,7,653,654,658,657,7,654,655,659,658,8,655,652,656,659,8,656,657,661,660,8,657,658,662,661,8,658,659,663,662,9,659,656,660,663,9,660,661,665,664,8,661,662,666,665,8,662,663,667,666,9,663,660,664,667,9,664,665,669,668,9,665,666,670,669,9,666,667,671,670,10,667,664,668,671,10,668,669,673,672,9,669,670,674,673,9,670,671,675,674,10,671,668,672,675,10,672,673,677,676,10,673,674,678,677,10,674,675,679,678,11,675,672,676,679,11,676,677,681,680,11,677,678,682,681,11,678,679,683,682,12,679,676,680,683,12,680,681,685,684,11,681,682,686,685,11,682,683,687,686,12,683,680,684,687,12,684,685,689,688,12,685,686,690,689,12,686,687,691,690,13,687,684,688,691,13,688,689,693,692,13,689,690,694,693,13,690,691,695,694,14,691,688,692,695,14,692,693,697,696,13,693,694,698,697,13,694,695,699,698,14,695,692,696,699,14,696,697,701,700,14,697,698,702,701,14,698,699,703,702,15,699,696,700,703,15,640,643,642,641,5,700,701,702,703,13,704,705,709,708,3,705,706,710,709,3,706,707,711,710,4,707,704,708,711,4,708,709,713,712,4,709,710,714,713,4,710,711,715,714,5,711,708,712,715,5,712,713,717,716,4,713,714,718,717,4,714,715,719,718,5,715,712,716,719,5,716,717,721,720,5,717,718,722,721,5,718,719,723,722,6,719,716,720,723,6,720,721,725,724,6,721,722,726,725,6,722,723,727,726,7,723,720,724,727,7,724,725,729,728,6,725,726,730,729,6,726,727,731,730,7,727,724,728,731,7,728,729,733,732,7,729,730,734,733,7,730,731,735,734,8,731,728,732,735,8,732,733,737,736,7,733,734,738,737,7,734,735,739,738,8,735,732,736,739,8,736,737,741,740,8,737,738,742,741,8,738,739,743,742,9,739,736,740,743,9,704,707,706,705,3,740,741,742,743,11,744,745,749,748,4,745,746,750,749,4,746,747,751,750,5,747,744,748,751,5,748,749,753,752,5,749,750,754,753,5,750,751,755,754,6,751,748,752,755,6,752,753,757,756,5,753,754,758,757,5,754,755,759,758,6,755,752,756,759,6,756,757,761,760,6,757,758,762,761,6,758,759,763,762,7,759,756,760,763,7,760,761,765,764,7,761,762,766,765,7,762,763,767,766,8,763,760,764,767,8,764,765,769,768,7,765,766,770,769,7,766,767,771,770,8,767,764,768,771,8,768,769,773,772,8,769,770,774,773,8,770,771,775,774,9,771,768,772,775,9,772,773,777,776,8,773,774,778,777,8,774,775,779,778,9,775,772,776,779,9,776,777,781,780,9,777,778,782,781,9,778,779,783,782,10,779,776,780,783,10,744,747,746,745,4,780,781,782,783,12,784,785,789,788,5,785,786,790,789,5,786,787,791,790,6,787,784,788,791,6,788,789,793,792,6,789,790,794,793,6,790,791,795,794,7,791,788,792,795,7,792,793,797,796,6,793,794,798,797,6,794,795,799,798,7,795,792,796,799,7,796,797,801,800,7,797,798,802,801,7,798,799,803,802,8,799,796,800,803,8,800,801,805,804,8,801,802,806,805,8,802,803,807,806,9,803,800,804,807,9,804,805,809,808,8,805,806,810,809,8,806,807,811,810,9,807,804,808,811,9,808,809,813,812,9,809,810,814,813,9,810,811,815,814,10,811,808,812,815,10,812,813,817,816,9,813,814,818,817,9,814,815,819,818,10,815,812,816,819,10,816,817,821,820,10,817,818,822,821,10,818,819,823,822,11,819,816,820,823,11,784,787,786,785,5,820,821,822,823,13,824,825,829,828,6,825,826,830,829,6,826,827,831,830,7,827,824,828,831,7,828,829,833,832,7,829,830,834,833,7,830,831,835,834,8,831,828,832,835,8,832,833,837,836,7,833,834,838,837,7,834,835,839,838,8,835,832,836,839,8,836,837,841,840,8,837,838,842,841,8,838,839,843,842,9,839,836,840,843,9,840,841,845,844,9,841,842,846,845,9,842,843,847,846,10,843,840,844,847,10,844,845,849,848,9,845,846,850,849,9,846,847,851,850,10,847,844,848,851,10,848,849,853,852,10,849,850,854,853,10,850,851,855,854,11,851,848,852,855,11,852,853,857,856,10,853,854,858,857,10,854,855,859,858,11,855,852,856,859,11,856,857,861,860,11,857,858,862,861,11,858,859,863,862,12,859,856,860,863,12,824,827,826,825,6,860,861,862,863,14];
+
+/* 산화막 7색 순환 (블렌더 재질 순서 그대로) */
+const RX_BI_PAL = [[14,33,74],[11,97,120],[77,41,153],[163,33,99],[219,105,46],[217,173,61],[138,191,156]];
+function rxBiPal(t){
+  const n = RX_BI_PAL.length;
+  t = ((t % n) + n) % n;
+  const i = Math.floor(t), f = t - i;
+  const a = RX_BI_PAL[i], b = RX_BI_PAL[(i + 1) % n];
+  const e = f * f * (3 - 2 * f);
+  return [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e];
+}
+function rxBismuth(){
+  const V = RX_BI_V, Fc = RX_BI_F, SEG = 16;
+  const P = i => [V[i * 3] / 10, V[i * 3 + 1] / 10, V[i * 3 + 2] / 10];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  const faces = [];
+  for(let k = 0; k < Fc.length; k += 5){
+    const q = [P(Fc[k]), P(Fc[k + 1]), P(Fc[k + 2]), P(Fc[k + 3])];
+    const u = sub(q[1], q[0]), w = sub(q[2], q[0]);
+    // 좌표계 손잡이가 바뀌었으니 외적 방향을 뒤집는다
+    let n = [-(u[1] * w[2] - u[2] * w[1]), -(u[2] * w[0] - u[0] * w[2]), -(u[0] * w[1] - u[1] * w[0])];
+    const nl = Math.hypot(n[0], n[1], n[2]) || 1;
+    n = [n[0] / nl, n[1] / nl, n[2] / nl];
+    // 긴 면은 잘게 나눠야 앞뒤 순서가 정확하다
+    const nu = Math.max(1, Math.round(Math.hypot(...u) / SEG));
+    const nv = Math.max(1, Math.round(Math.hypot(...sub(q[3], q[0])) / SEG));
+    const at = (s, t) => lerp(lerp(q[0], q[1], s), lerp(q[3], q[2], s), t);
+    for(let a = 0; a < nu; a++) for(let b = 0; b < nv; b++){
+      const s0 = a / nu, s1 = (a + 1) / nu, t0 = b / nv, t1 = (b + 1) / nv;
+      faces.push({ p: [at(s0, t0), at(s1, t0), at(s1, t1), at(s0, t1)], n, lv: Fc[k + 4], top: n[1] < -0.6, pal: true });
+    }
+  }
+  return { atoms: [], bonds: [], faces, crystal: true, tilt: -0.5, yaw0: 0.6, maxScale: 1.9, col: '#1b8aa0' };
+}
+
+/* ═══ 광물 보기: 실물 결정 모양 ═══
+   볼록 다면체를 만들어 돌리고, 여러 개를 모아 결정 무리로 만든다.
+   재질: metal(금속) · clear(반투명, 값=불투명도) · gem(모서리 빛) · opal · pearl · fleck/vein(점·맥) */
+function rxShape(kind){
+  const V = [], F = [];
+  const ring = (n, r, y, rot = 0) => { const s = V.length; for(let i = 0; i < n; i++){ const a = rot + i / n * Math.PI * 2; V.push([Math.cos(a) * r, y, Math.sin(a) * r]); } return s; };
+  const side = (a, b, n) => { for(let i = 0; i < n; i++) F.push([a + i, a + (i + 1) % n, b + (i + 1) % n, b + i]); };
+  const cap = (a, n) => { const f = []; for(let i = 0; i < n; i++) f.push(a + i); F.push(f); };
+  const apex = (a, n, p) => { const t = V.length; V.push(p); for(let i = 0; i < n; i++) F.push([a + i, a + (i + 1) % n, t]); };
+  if(kind === 'cube' || kind === 'rhomb'){
+    for(const x of [-1, 1]) for(const y of [-1, 1]) for(const z of [-1, 1]) V.push([x, y, z]);
+    F.push([0,1,3,2],[4,5,7,6],[0,1,5,4],[2,3,7,6],[0,2,6,4],[1,3,7,5]);
+    if(kind === 'rhomb') V.forEach(v => { const [x, y, z] = v; v[0] = x + y * 0.42; v[1] = y; v[2] = z + x * 0.3 + y * 0.2; });
+  } else if(kind === 'octa'){
+    V.push([1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]);
+    for(const a of [0, 1]) for(const b of [2, 3]) F.push([a, b, 4], [a, b, 5]);
+  } else if(kind === 'quartz'){
+    const b = ring(6, 0.5, 0), t = ring(6, 0.5, -2.3);
+    side(b, t, 6); cap(b, 6); apex(t, 6, [0, -3.05, 0]);
+  } else if(kind === 'beryl'){
+    const b = ring(6, 0.62, 0.9), t = ring(6, 0.62, -1.4), u = ring(6, 0.5, -1.55);
+    side(b, t, 6); side(t, u, 6); cap(b, 6); cap(u, 6);
+  } else if(kind === 'corundum'){
+    const a = ring(6, 0.42, -1.15), m = ring(6, 0.72, 0), c = ring(6, 0.42, 1.15);
+    side(a, m, 6); side(m, c, 6); cap(a, 6); cap(c, 6);
+  } else if(kind === 'zircon'){
+    const a = ring(4, 0.55, -0.8, Math.PI / 4), c = ring(4, 0.55, 0.8, Math.PI / 4);
+    side(a, c, 4); apex(a, 4, [0, -1.55, 0]); apex(c, 4, [0, 1.55, 0]);
+  } else if(kind === 'topaz'){
+    const s = V.length;
+    const sec = [[0.8,0],[0,0.45],[-0.8,0],[0,-0.45]];
+    sec.forEach(([x, z]) => V.push([x, 0.9, z]));
+    sec.forEach(([x, z]) => V.push([x, -0.9, z]));
+    side(s, s + 4, 4); cap(s, 4);
+    const t = V.length;
+    V.push([0.35, -1.55, 0], [-0.35, -1.55, 0]);
+    F.push([s + 4, s + 5, t], [s + 5, s + 6, t + 1, t], [s + 6, s + 7, t + 1], [s + 7, s + 4, t, t + 1]);
+  } else if(kind === 'plate'){
+    const b = ring(6, 1, 0.07), t = ring(6, 1, -0.07);
+    side(b, t, 6); cap(b, 6); cap(t, 6);
+  } else if(kind === 'sphere' || kind === 'lump'){
+    // 정이십면체를 두 번 쪼갠 구
+    const g = (1 + Math.sqrt(5)) / 2;
+    let P = [[-1,g,0],[1,g,0],[-1,-g,0],[1,-g,0],[0,-1,g],[0,1,g],[0,-1,-g],[0,1,-g],[g,0,-1],[g,0,1],[-g,0,-1],[-g,0,1]];
+    let T = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
+             [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
+    const norm = p => { const l = Math.hypot(...p); return p.map(x => x / l); };
+    P = P.map(norm);
+    for(let it = 0; it < 2; it++){
+      const mid = {}, NT = [];
+      const m = (a, b) => { const k = a < b ? a + ',' + b : b + ',' + a; if(mid[k] == null){ mid[k] = P.length; P.push(norm(P[a].map((v, i) => (v + P[b][i]) / 2))); } return mid[k]; };
+      T.forEach(([a, b, c]) => { const ab = m(a, b), bc = m(b, c), ca = m(c, a); NT.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); });
+      T = NT;
+    }
+    P.forEach(p => V.push(p.slice()));
+    T.forEach(t => F.push(t));
+    if(kind === 'lump'){
+      const r = rxRand('lump');
+      const k1 = [r() * 9, r() * 9, r() * 9];
+      V.forEach(v => {
+        const n = 1 + 0.22 * Math.sin(v[0] * 2.3 + k1[0]) * Math.cos(v[1] * 2.1 + k1[1]) + 0.14 * Math.sin(v[2] * 3.7 + k1[2]);
+        v[0] *= n * 1.25; v[1] *= n * 0.85; v[2] *= n;
+      });
+    }
+  }
+  return { V, F };
+}
+
+function rxRotM(ax, ay, az){
+  const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay), cz = Math.cos(az), sz = Math.sin(az);
+  return p => {
+    let [x, y, z] = p;
+    [y, z] = [y * cx - z * sx, y * sx + z * cx];
+    [x, z] = [x * cy + z * sy, -x * sy + z * cy];
+    [x, y] = [x * cz - y * sz, x * sz + y * cz];
+    return [x, y, z];
+  };
+}
+
+/* 다면체 하나를 면 목록으로. 긴 면은 쪼개서 앞뒤 순서를 정확하게 */
+function rxSolid(kind, mat, S, rot, off, rnd, subdiv){
+  const { V, F } = rxShape(kind);
+  const R = rxRotM(...rot);
+  const W = V.map(v => { const q = R([v[0] * S[0], v[1] * S[1], v[2] * S[2]]); return [q[0] + off[0], q[1] + off[1], q[2] + off[2]]; });
+  let cx = 0, cy = 0, cz = 0;
+  W.forEach(p => { cx += p[0]; cy += p[1]; cz += p[2]; });
+  cx /= W.length; cy /= W.length; cz /= W.length;
+  const out = [];
+  const push = pts => {
+    const a = pts[0], b = pts[1], c = pts[2];
+    const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], w = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    let n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
+    const l = Math.hypot(...n) || 1; n = n.map(x => x / l);
+    const m = pts.reduce((s, p) => [s[0] + p[0], s[1] + p[1], s[2] + p[2]], [0, 0, 0]).map(x => x / pts.length);
+    if((m[0] - cx) * n[0] + (m[1] - cy) * n[1] + (m[2] - cz) * n[2] < 0) n = n.map(x => -x);
+    const f = { p: pts.map(q => q.slice()), n, m: mat, top: n[1] < -0.6 };
+    if(mat.fleck || mat.vein) f.alt = rnd() < (mat.fleck ? 0.14 : 0.1);
+    out.push(f);
+  };
+  F.forEach(idx => {
+    const pts = idx.map(i => W[i]);
+    if(subdiv && pts.length === 4){
+      const L = (p, q, t) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
+      const at = (s, t) => L(L(pts[0], pts[1], s), L(pts[3], pts[2], s), t);
+      for(let i = 0; i < subdiv; i++) for(let j = 0; j < subdiv; j++)
+        push([at(i / subdiv, j / subdiv), at((i + 1) / subdiv, j / subdiv), at((i + 1) / subdiv, (j + 1) / subdiv), at(i / subdiv, (j + 1) / subdiv)]);
+    } else push(pts);
+  });
+  return out;
+}
+
+const RX_MINERALS = {
+  '황철석':   { habit: 'cube', n: 4, mat: { c: [214, 182, 96], metal: 1 } },
+  '소금':     { habit: 'cube', n: 5, mat: { c: [236, 240, 245], clear: 0.5 } },
+  '형석':     { habit: 'cube', n: 3, mat: { c: [150, 92, 214], clear: 0.62, gem: 1 } },
+  '다이아몬드': { habit: 'octa', n: 1, mat: { c: [228, 238, 250], clear: 0.32, gem: 1, fire: 1 } },
+  '스피넬':   { habit: 'octa', n: 2, mat: { c: [206, 34, 76], clear: 0.72, gem: 1 } },
+  '자철석':   { habit: 'octa', n: 3, mat: { c: [70, 72, 80], metal: 1 } },
+  '석영':     { habit: 'quartz', n: 6, mat: { c: [232, 240, 248], clear: 0.4, gem: 1 } },
+  '자수정':   { habit: 'quartz', n: 7, mat: { c: [150, 80, 204], clear: 0.62, gem: 1 } },
+  '에메랄드': { habit: 'beryl', n: 1, mat: { c: [28, 170, 92], clear: 0.72, gem: 1 } },
+  '아쿠아마린': { habit: 'beryl', n: 1, mat: { c: [124, 200, 232], clear: 0.55, gem: 1 } },
+  '녹주석':   { habit: 'beryl', n: 2, mat: { c: [186, 214, 150], clear: 0.66 } },
+  '루비':     { habit: 'corundum', n: 1, mat: { c: [214, 22, 62], clear: 0.74, gem: 1 } },
+  '사파이어': { habit: 'corundum', n: 1, mat: { c: [34, 74, 206], clear: 0.74, gem: 1 } },
+  '황옥강옥': { habit: 'corundum', n: 1, mat: { c: [242, 192, 44], clear: 0.7, gem: 1 } },
+  '석회석':   { habit: 'rhomb', n: 3, mat: { c: [242, 228, 194], clear: 0.55 } },
+  '석회석 / 아라고나이트': { habit: 'rhomb', n: 3, mat: { c: [242, 228, 194], clear: 0.55 } },
+  '황산구리': { habit: 'rhomb', n: 2, mat: { c: [34, 112, 224], clear: 0.72, gem: 1 } },
+  '지르콘':   { habit: 'zircon', n: 2, mat: { c: [204, 112, 52], clear: 0.7, gem: 1 } },
+  '토파즈':   { habit: 'topaz', n: 1, mat: { c: [242, 172, 72], clear: 0.62, gem: 1 } },
+  '페리도트': { habit: 'topaz', n: 2, mat: { c: [150, 204, 52], clear: 0.66, gem: 1 } },
+  '포르스테라이트': { habit: 'topaz', n: 2, mat: { c: [192, 212, 124], clear: 0.6 } },
+  '흑연':     { habit: 'plate', n: 5, mat: { c: [78, 80, 88], metal: 1 } },
+  '라피스라줄리': { habit: 'lump', mat: { c: [30, 52, 164], fleck: [226, 186, 84] } },
+  '터키석':   { habit: 'lump', mat: { c: [72, 192, 182], vein: [74, 62, 50] } },
+  '오팔':     { habit: 'lump', mat: { c: [228, 234, 240], opal: 1 } },
+  '웅황':     { habit: 'lump', mat: { c: [240, 160, 34] } },
+  '진주':     { habit: 'sphere', mat: { c: [242, 236, 228], pearl: 1 } },
+};
+
+/* 라운드 브릴리언트 컷 다이아몬드 (블렌더에서 가져옴): 꼭짓점 ×10 정수, 면 = [개수, 번호...] */
+const RX_DIA_V = [448,-258,0,317,-258,-317,0,-258,-448,-317,-258,-317,-448,-258,0,-317,-258,317,0,-258,448,317,-258,317,584,-159,-242,242,-159,-584,-242,-159,-584,-584,-159,-242,-584,-159,242,-242,-159,584,242,-159,584,584,-159,242,800,-2,0,739,-2,-306,566,-2,-566,306,-2,-739,0,-2,-800,-306,-2,-739,-566,-2,-566,-739,-2,-306,-800,-2,0,-739,-2,306,-566,-2,566,-306,-2,739,0,-2,800,306,-2,739,566,-2,566,739,-2,306,800,18,0,739,18,-306,566,18,-566,306,18,-739,0,18,-800,-306,18,-739,-566,18,-566,-739,18,-306,-800,18,0,-739,18,306,-566,18,566,-306,18,739,0,18,800,306,18,739,566,18,566,739,18,306,480,297,-199,199,297,-480,-199,297,-480,-480,297,-199,-480,297,199,-199,297,480,199,297,480,480,297,199,0,718,0];
+const RX_DIA_F = [8,0,1,2,3,4,5,6,7,3,8,1,0,4,15,16,8,0,3,17,18,8,3,16,17,8,3,9,2,1,4,8,18,9,1,3,19,20,9,3,18,19,9,3,10,3,2,4,9,20,10,2,3,21,22,10,3,20,21,10,3,11,4,3,4,10,22,11,3,3,23,24,11,3,22,23,11,3,12,5,4,4,11,24,12,4,3,25,26,12,3,24,25,12,3,13,6,5,4,12,26,13,5,3,27,28,13,3,26,27,13,3,14,7,6,4,13,28,14,6,3,29,30,14,3,28,29,14,3,15,0,7,4,14,30,15,7,3,31,16,15,3,30,31,15,4,32,33,17,16,4,33,34,18,17,4,34,35,19,18,4,35,36,20,19,4,36,37,21,20,4,37,38,22,21,4,38,39,23,22,4,39,40,24,23,4,40,41,25,24,4,41,42,26,25,4,42,43,27,26,4,43,44,28,27,4,44,45,29,28,4,45,46,30,29,4,46,47,31,30,4,47,32,16,31,4,48,32,55,56,3,33,32,48,3,34,33,48,4,49,34,48,56,3,35,34,49,3,36,35,49,4,50,36,49,56,3,37,36,50,3,38,37,50,4,51,38,50,56,3,39,38,51,3,40,39,51,4,52,40,51,56,3,41,40,52,3,42,41,52,4,53,42,52,56,3,43,42,53,3,44,43,53,4,54,44,53,56,3,45,44,54,3,46,45,54,4,55,46,54,56,3,47,46,55,3,32,47,55];
+
+function rxDiamondGem(){
+  const V = RX_DIA_V, Fd = RX_DIA_F;
+  const P = i => [V[i * 3] / 10, V[i * 3 + 1] / 10, V[i * 3 + 2] / 10];
+  const mat = { c: [236, 242, 250], clear: 0.86, gem: 1, brill: 1 };
+  const faces = [];
+  for(let k = 0; k < Fd.length; ){
+    const n = Fd[k];
+    const pts = [];
+    for(let j = 1; j <= n; j++) pts.push(P(Fd[k + j]));
+    k += n + 1;
+    // 뉴웰 방법으로 법선, 중심에서 바깥쪽으로 맞춘다 (볼록한 보석이라 가능)
+    let nx = 0, ny = 0, nz = 0, mx = 0, my = 0, mz = 0;
+    pts.forEach((a, i) => {
+      const b = pts[(i + 1) % pts.length];
+      nx += (a[1] - b[1]) * (a[2] + b[2]); ny += (a[2] - b[2]) * (a[0] + b[0]); nz += (a[0] - b[0]) * (a[1] + b[1]);
+      mx += a[0]; my += a[1]; mz += a[2];
+    });
+    const l = Math.hypot(nx, ny, nz) || 1;
+    let nrm = [nx / l, ny / l, nz / l];
+    if(nrm[0] * mx + nrm[1] * my + nrm[2] * mz < 0) nrm = nrm.map(x => -x);
+    faces.push({ p: pts, n: nrm, m: mat, top: nrm[1] < -0.9, seed: faces.length });
+  }
+  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, twoSided: true,
+           tilt: -0.62, yaw0: 0.3, maxScale: 1.9, col: '#a5d8ff' };
+}
+
+/* 듀모티어라이트 인 석영 (블렌더에서 가져옴)
+   바늘 1000개는 양 끝점·굵기만 남겨 선으로 그린다: [x1,y1,z1,x2,y2,z2,색번호] ×10 정수 */
+const RX_DUMO_N = [191,449,106,220,375,93,4,-79,330,-272,-22,86,-105,4,141,250,-216,91,-38,-179,0,75,364,-115,17,292,-45,2,112,369,-79,107,213,-100,2,-16,110,-67,-169,-10,-84,0,-3,265,72,16,192,91,2,-197,549,142,-167,272,133,2,15,534,-180,90,461,-123,2,-154,198,-217,-161,163,-222,4,-44,332,-218,-101,294,-213,0,138,580,-186,148,490,-196,0,205,318,47,204,261,55,0,-147,367,52,-177,349,31,1,133,105,151,139,65,139,2,17,413,-195,7,366,-201,1,228,515,-15,200,496,-55,0,99,208,116,130,124,141,4,19,552,164,-21,458,140,4,-145,604,197,-135,548,207,0,-215,327,-65,-222,233,-70,4,-19,166,-73,-48,99,-49,4,57,41,122,66,-10,157,2,80,89,77,-49,-7,131,2,207,568,-20,213,434,-37,3,45,557,-56,91,267,-16,4,113,129,-185,74,63,-145,4,145,319,145,163,228,165,1,138,381,-220,168,253,-198,3,-203,345,-55,-206,255,-63,2,157,569,178,-151,396,192,4,113,71,128,79,23,121,3,28,335,18,41,260,10,1,81,685,265,198,397,133,0,-42,134,-232,37,61,-190,4,21,423,-73,6,324,-101,3,145,496,135,120,456,132,2,-79,413,-15,-122,349,46,2,163,298,235,233,246,49,1,214,646,-141,223,347,2,4,27,608,-168,38,317,-207,2,-168,696,57,-145,581,60,0,-38,520,0,-35,481,6,4,-118,415,25,-138,378,14,2,42,635,-233,-60,386,-50,2,-32,471,-120,-24,421,-108,2,64,230,196,122,-26,90,0,22,89,-228,29,59,-150,2,-1,455,-133,17,225,-123,4,34,448,-91,33,406,-86,3,-66,325,-140,-101,312,-101,3,195,116,-133,206,0,-137,1,-95,452,150,-15,365,136,3,-41,108,-198,34,81,-192,2,86,429,-16,104,395,122,1,-62,141,230,-48,39,198,1,33,399,39,55,280,0,3,-193,425,-171,-143,289,-263,3,-119,228,174,-99,206,222,0,-240,224,-75,-202,-195,-5,4,-203,406,-112,-212,343,-151,3,-105,248,8,-141,56,46,0,0,430,-190,26,313,-179,4,-193,366,-42,-214,339,-130,4,-66,-92,-97,-75,-145,-136,1,-116,245,73,-32,-4,103,3,-245,304,71,-189,221,45,1,94,426,-120,51,407,-104,0,47,-51,44,-49,-220,235,1,-41,607,45,-38,523,31,0,-110,577,-191,-141,507,-156,2,-104,-3,28,-128,-68,24,2,214,484,76,217,449,66,3,-119,680,-123,-148,467,-243,2,53,669,64,20,412,56,1,-114,334,144,-130,290,134,3,66,264,-35,56,218,-29,4,33,503,-115,36,422,-125,0,-165,457,66,-116,393,140,0,183,557,232,163,343,178,1,140,199,-194,129,117,-145,1,21,453,150,-15,420,133,0,70,283,37,-159,146,-179,1,-133,277,-155,-129,233,-171,0,14,554,232,-8,273,212,1,-216,577,-116,-200,382,-116,3,36,455,-121,-71,355,9,3,51,114,-195,12,28,-206,1,-226,695,-164,-176,487,-221,2,-173,304,-153,-165,256,-178,3,-217,242,74,-210,221,97,2,-99,174,-228,-186,70,-97,3,-25,435,181,-40,412,251,2,-63,442,-30,-30,378,-33,0,216,300,98,194,287,128,3,-75,504,228,-60,381,201,2,55,630,122,-3,376,16,1,-126,518,-246,-84,140,-47,3,116,21,-193,122,-87,-180,1,-31,8,-44,-17,-49,-94,1,151,256,-84,145,216,-96,4,-33,118,136,-17,53,75,3,150,433,219,138,383,206,2,-72,635,-194,-112,606,-165,1,191,126,68,203,72,107,3,-13,419,216,-85,358,174,1,206,608,56,64,188,-216,0,170,514,50,178,479,35,1,-162,165,-85,-105,-89,-30,4,114,551,126,113,457,169,4,51,341,210,21,285,205,2,-41,368,-2,12,259,-16,3,-29,671,-15,27,620,-48,1,131,607,-79,127,575,-67,1,-82,288,-132,-65,253,-132,0,-62,239,19,-115,165,20,4,125,522,136,205,354,175,2,199,263,87,224,22,9,4,-122,454,-111,-127,414,-94,0,-28,472,-146,-123,261,-74,2,-163,551,66,-137,369,78,0,-66,112,-174,-80,18,-183,4,151,75,42,138,48,56,1,-181,410,67,-212,299,57,0,154,373,-51,135,354,-24,0,97,445,100,93,413,107,2,108,686,150,126,621,170,3,93,-40,27,91,-95,63,0,30,565,-74,84,541,-130,1,3,408,-152,120,201,-149,4,32,24,174,-1,-48,91,2,-3,564,54,-21,473,44,4,-161,603,-171,-68,575,-236,0,-17,294,-88,-25,256,-111,2,244,168,32,189,71,58,4,-190,150,167,-135,40,197,1,139,366,239,157,252,191,1,-149,178,215,-147,141,207,1,159,559,151,121,496,109,3,-50,242,-24,-87,199,-40,3,-165,595,-209,-176,498,-218,0,216,240,84,154,173,103,2,-110,386,-233,-115,351,-212,0,-192,409,-206,130,185,-190,0,-228,712,67,-58,255,96,4,105,369,146,126,207,165,1,7,449,81,-25,373,81,1,-9,628,109,-20,431,157,2,-85,373,22,-96,314,-90,1,140,397,-134,141,374,-166,0,-201,428,24,-199,388,65,3,225,269,-100,202,153,-135,3,57,430,-29,-228,248,-81,0,-196,139,56,-195,63,49,2,-126,646,174,-299,561,-38,2,168,640,268,209,223,176,3,-90,238,12,-71,210,35,1,91,405,-179,77,325,-136,1,70,80,47,86,37,-12,2,50,536,-125,31,421,-132,1,-152,370,-241,-131,356,-202,4,58,540,-121,27,482,-116,4,-77,214,58,-75,181,130,2,201,433,33,231,406,79,1,108,47,-152,138,-112,-154,3,67,139,-13,164,-176,8,3,16,322,20,65,309,-11,0,-127,480,-77,-141,443,-67,4,-49,492,153,-78,350,188,2,204,215,131,189,148,144,1,-175,343,225,-129,265,208,0,6,216,-215,14,64,-202,2,-51,461,-102,-151,221,-23,0,-73,672,-76,-57,615,-42,4,25,340,-184,-9,263,-178,2,22,440,-170,-18,363,-132,3,-125,432,97,-172,338,59,3,-4,-33,139,22,-65,168,4,-131,229,-14,-119,109,-55,2,21,219,107,87,188,78,1,44,364,-135,88,302,-173,3,-96,120,-194,-77,85,-179,0,141,513,180,156,458,202,3,-105,624,-96,-75,376,-1,2,-99,104,174,-108,-92,39,3,93,288,-122,99,249,-147,0,179,501,-131,171,451,-105,2,225,400,-75,207,283,-83,0,166,383,228,177,352,213,1,-201,530,-120,-210,453,-104,4,18,714,-233,74,340,-211,3,222,663,-155,97,444,-215,1,-92,543,-60,-2,331,-59,4,181,562,-1,133,495,-32,3,-179,655,-20,-142,620,-29,4,137,134,171,122,109,152,3,-153,426,45,-209,256,96,3,101,24,52,114,-42,65,1,-87,228,-53,-81,124,-73,4,-149,419,41,-139,373,31,4,-174,107,-81,-204,60,-92,4,121,143,21,112,33,6,2,87,557,-34,61,479,76,3,89,277,-158,86,237,-111,0,214,5,80,211,-17,49,3,-66,168,-91,30,-17,-218,0,-71,487,-71,-81,454,-59,0,68,479,-128,103,380,-139,4,225,36,52,217,-64,80,1,175,180,-228,142,76,-180,3,-188,204,-110,-173,126,-120,0,-91,448,214,-83,407,186,3,-169,402,-138,-167,40,-96,1,-208,616,154,-230,409,41,0,30,452,-165,-29,268,-119,1,202,167,-103,217,126,-99,3,-137,265,253,-95,215,155,1,176,616,110,207,563,94,0,94,523,-163,79,440,-177,3,-177,459,204,-208,384,179,2,-218,539,-7,-202,470,188,4,220,331,-134,213,297,-94,2,19,563,-47,32,525,-66,2,-200,555,23,-136,337,-25,3,-137,436,-135,-160,352,-122,2,-238,469,-51,4,289,-237,2,-131,733,5,-239,360,127,3,15,369,-67,20,327,-77,2,66,256,-122,116,175,-156,4,88,224,95,43,169,133,1,-53,353,180,-63,229,207,1,85,686,-205,84,566,-188,0,-69,334,-204,-32,294,-106,0,-151,266,-144,-172,240,-165,4,105,389,9,73,320,21,0,51,319,-138,129,82,-199,0,57,465,229,12,357,189,1,-210,342,164,-226,311,145,4,-98,430,-21,50,354,98,0,-282,352,45,-151,145,112,4,110,225,143,121,168,153,3,102,448,-40,123,374,-89,3,-203,233,89,-167,136,-3,1,-97,344,151,61,179,125,3,16,14,17,-161,-68,-91,3,36,120,212,54,93,211,2,-81,492,107,-1,346,-12,1,-88,453,223,-225,197,161,0,-230,377,-106,-175,272,-100,2,178,217,-154,136,113,-135,2,98,345,38,21,154,31,2,-119,554,-12,-119,519,-7,2,-46,543,-144,-72,518,-156,0,174,576,128,149,550,142,4,-142,623,-172,17,458,-218,2,-211,489,0,-230,430,-157,1,215,495,-115,221,458,-137,0,-223,121,86,-214,56,92,0,-134,636,-176,-131,590,-168,2,-33,553,111,32,523,118,0,193,449,22,192,405,18,1,212,-1,29,206,-37,14,0,-191,387,-107,-169,250,-82,0,51,487,163,59,447,144,1,-141,157,138,-45,83,260,3,-102,97,105,-109,16,94,3,12,127,67,3,82,67,0,17,115,31,21,46,45,4,129,269,-58,97,245,-40,0,181,715,-46,239,473,-26,4,91,686,185,58,594,198,1,-212,510,88,-185,438,62,3,6,341,123,18,316,158,3,114,652,96,117,612,109,2,107,-10,-181,55,-96,-220,4,-94,276,199,-70,213,131,0,-31,510,-193,141,74,-189,4,-1,-40,-202,-13,-89,-220,0,112,392,-44,54,196,4,4,-130,588,207,-66,548,214,4,-44,581,64,-33,484,125,2,86,476,-21,14,444,-74,2,-36,529,7,-150,280,-90,4,68,478,126,61,229,156,3,125,370,-205,207,346,-135,2,69,157,63,2,-48,-107,3,73,563,26,52,478,43,3,-36,537,248,-86,485,155,1,-188,237,-1,-197,208,-26,4,169,435,-245,161,149,-188,0,168,472,-220,138,394,-218,3,-87,399,67,-120,362,13,2,-83,425,17,-67,361,13,1,0,252,-59,3,132,-28,3,97,474,-186,107,324,-215,3,-88,280,145,137,107,142,4,-52,383,175,-37,306,175,1,-190,348,29,-195,278,25,0,-88,376,-92,-56,297,-109,2,41,145,-88,19,19,-83,3,106,219,92,124,160,103,4,73,561,17,12,500,9,3,134,463,-37,135,381,-30,2,-15,91,-14,4,1,-21,1,172,448,-50,209,430,-31,2,-82,426,111,-78,387,135,2,-124,598,-35,-46,470,87,4,-125,274,-20,-137,242,-102,2,-207,236,136,-140,137,119,2,94,281,-36,110,200,-42,0,-190,98,-203,-215,77,-161,0,-88,110,-57,-78,70,-30,1,96,527,-143,205,314,-137,3,0,625,37,23,561,7,4,-148,286,-157,-186,271,-151,4,6,509,154,37,431,171,3,-218,342,19,-196,255,40,0,-165,361,-100,-145,324,-144,2,85,636,-141,-10,415,-87,3,44,551,-214,19,491,-219,3,-177,253,63,-138,180,55,1,47,490,-69,44,443,-92,2,-53,485,24,-77,366,-27,4,31,259,-33,28,226,-31,4,5,464,-13,79,227,139,2,120,465,108,133,380,61,4,74,497,-116,91,447,-113,4,-135,27,3,-217,-37,69,2,126,463,-116,169,396,-209,0,-10,243,142,-37,21,45,0,-151,366,188,-129,110,165,2,136,477,-195,145,284,-72,2,128,333,175,107,284,237,2,-164,333,28,-195,160,20,2,26,228,-44,89,162,-65,1,-52,571,-114,-50,477,-92,1,93,79,-182,85,30,-188,1,-75,629,-211,0,431,-174,4,50,383,-151,77,353,-129,0,95,338,-102,26,248,-224,2,120,639,-177,112,398,-70,2,-58,260,-199,-103,156,-163,2,176,663,37,151,417,127,0,-70,324,71,-47,315,44,4,187,146,119,204,54,122,1,123,101,64,91,27,90,3,-171,104,0,-158,53,37,4,-113,181,-85,-96,133,-62,4,-46,350,201,-24,291,195,2,-6,525,-122,-49,438,-167,1,-71,195,113,-26,94,143,0,-25,534,-50,-187,346,-173,1,149,349,193,171,298,175,3,-11,155,-164,-11,199,-157,3,220,484,140,201,395,110,1,-56,516,-134,24,327,6,0,115,-70,117,73,-145,65,1,7,504,78,16,441,93,1,188,122,-74,168,0,-88,2,-37,667,129,-51,472,140,1,-211,346,192,-181,67,203,1,-19,638,-252,-136,490,-60,3,127,383,189,94,279,172,0,23,505,-215,52,388,-212,1,186,639,-26,140,372,81,2,-56,442,183,-80,348,171,1,28,354,-40,69,158,-127,0,180,445,-108,164,266,-55,0,-64,340,119,-48,222,125,3,34,363,147,31,141,181,4,17,679,-222,63,332,-110,4,99,342,-73,42,114,-130,0,1,-72,-116,-28,-128,-135,3,91,409,-25,95,378,-14,3,212,687,28,202,570,39,3,-149,166,-56,-123,79,-65,4,-136,474,115,-172,60,22,4,120,264,-134,78,200,-108,2,-53,554,-140,-73,488,-131,1,-57,596,217,-6,306,205,2,-174,707,-153,-61,368,-60,4,-143,393,86,-181,316,87,0,-125,661,-162,-253,412,105,1,131,527,20,143,473,30,4,-35,505,114,-13,408,77,1,1,432,-153,-113,208,-119,0,174,344,84,217,309,81,1,-25,495,6,-2,419,33,0,260,498,21,159,445,208,3,85,427,-226,103,351,-198,3,-148,282,-219,-129,232,-200,2,67,312,114,54,242,115,1,162,205,36,130,194,25,4,-45,484,255,24,452,186,3,-18,114,244,-94,52,189,3,46,110,56,-42,48,80,2,-69,478,-174,-104,444,-160,2,146,429,-19,94,232,25,2,209,341,-121,151,317,-65,3,135,393,-149,108,336,-188,3,98,492,46,132,422,109,4,161,557,117,205,417,104,4,186,447,-118,183,400,-126,0,11,474,-126,20,222,-155,3,71,711,18,77,660,15,2,-201,41,149,-208,-2,159,2,-113,440,-121,-119,404,-126,1,-96,396,41,-49,361,70,2,-102,186,78,-95,71,86,4,181,525,135,165,437,152,1,-211,552,119,-228,520,150,4,-111,129,28,-67,41,44,2,91,272,-169,-10,239,-138,4,-52,398,48,-313,259,-12,3,169,436,-144,228,170,-147,3,-11,398,1,-46,362,-18,4,-99,492,-161,-122,219,-45,3,202,359,-63,-106,172,87,2,121,168,195,103,81,209,0,195,376,77,230,263,61,3,165,505,203,183,456,178,0,-183,537,48,-163,453,82,1,-104,469,-88,-105,259,30,2,-196,43,180,-235,10,58,1,-146,-76,-86,-210,-138,-171,4,-21,372,-3,-46,198,-2,3,-45,393,45,-41,227,61,2,54,30,-185,25,-87,-189,2,-110,487,-17,-90,396,-6,0,150,517,-140,90,337,-33,1,-178,195,56,-199,115,94,0,-112,628,100,13,376,55,1,-235,333,-64,-202,300,-42,4,-87,146,106,-101,113,110,0,-127,588,174,25,479,-16,1,-87,424,-230,-134,205,-167,4,-151,401,118,-96,283,113,3,41,23,43,-3,-24,-81,2,-1,271,-194,-47,-3,-144,1,-57,356,-139,-27,271,-156,2,-4,326,103,65,97,162,1,81,185,-161,81,249,-154,0,73,300,218,107,206,199,2,-38,584,124,-40,517,96,4,-157,132,183,-174,101,188,3,-67,81,203,-77,18,176,3,42,428,-182,191,375,-93,4,-132,673,161,-144,638,149,0,201,517,11,154,461,-42,3,-119,490,198,-164,426,194,2,224,317,28,216,295,104,1,-49,468,82,-8,424,54,1,57,569,131,88,287,68,2,-6,361,-197,18,322,-190,3,29,483,-44,35,460,-16,2,189,653,-51,184,617,-65,1,-193,338,36,-179,248,-25,4,236,699,-125,157,252,-164,1,206,72,55,201,-16,-2,3,130,301,-187,135,212,-196,3,-179,1,-56,-168,-49,-110,1,-177,725,-37,-197,502,-41,4,151,299,177,164,261,178,0,157,498,67,176,351,37,2,51,360,110,122,112,55,2,-67,343,-135,-88,293,-134,4,89,473,15,81,437,24,1,-26,577,36,-49,493,127,0,-89,200,43,-263,51,97,1,17,419,149,36,376,195,0,-178,392,163,-214,337,145,2,-173,-34,27,-166,-74,4,4,104,365,157,107,279,48,4,120,96,-192,83,19,-179,3,-192,492,110,-171,392,68,1,-104,196,18,-107,144,93,1,168,216,47,140,122,-9,3,-78,717,-212,-79,636,-204,1,-176,639,43,-217,614,19,1,36,460,-135,67,372,-92,4,-78,59,39,-65,11,-13,3,-33,39,69,37,-83,96,0,34,437,-196,48,335,-195,2,-136,135,-4,-161,-68,6,1,46,245,88,14,202,99,2,63,2,159,99,-17,113,0,-33,240,173,-48,206,208,1,-155,266,243,-92,127,50,2,178,490,-127,168,443,-156,0,-58,406,-39,-65,354,-26,0,29,286,-148,17,227,-142,3,95,122,-28,99,79,-11,0,135,232,-66,101,150,-79,1,-30,407,-107,157,333,33,4,-102,172,102,-112,147,49,3,91,440,-144,78,398,-121,0,12,552,-157,71,462,-90,4,-72,507,1,-61,443,-19,0,-59,6,-173,10,-18,-138,0,-142,202,-13,-115,161,-2,3,216,113,-94,245,186,-79,4,-54,223,287,3,471,126,4,166,304,233,116,593,203,0,100,192,129,42,266,60,2,137,189,93,132,344,118,2,9,448,87,-143,567,107,0,22,296,-55,41,369,-73,2,-172,13,-132,-142,291,-117,2,40,21,190,115,96,135,2,-129,357,235,-136,391,241,4,-19,222,232,-76,261,229,0,163,-25,195,173,65,207,0,230,242,-32,229,299,-39,0,-122,194,-38,-152,211,-16,1,158,458,-131,164,498,-118,2,42,142,208,32,189,215,1,253,44,26,225,62,66,0,124,354,-98,155,438,-121,4,45,11,-154,4,104,-128,4,-120,-40,-188,-110,16,-197,0,-190,231,80,-196,325,87,4,7,391,92,-23,459,69,4,82,521,-100,91,573,-134,2,105,472,-56,-24,570,-109,2,232,-9,30,238,124,49,3,70,2,65,116,292,33,4,138,427,204,99,493,166,4,170,244,-129,188,335,-148,1,163,174,234,193,302,215,3,-178,213,69,-181,303,79,2,182,-6,-169,-126,168,-178,4,138,492,-107,104,539,-99,3,53,225,-3,66,300,7,1,106,-120,-258,224,166,-119,0,-17,420,251,62,494,211,4,46,135,86,31,233,116,3,170,67,-123,145,106,-120,2,-54,146,28,-97,212,-31,2,188,267,-220,258,315,-32,1,239,-89,148,248,212,12,4,52,-53,176,63,238,222,2,-143,-135,-51,-119,-20,-51,0,-13,39,11,-10,79,5,4,-92,145,-12,-113,182,-1,2,67,-81,240,-35,172,64,2,-7,85,132,2,136,121,2,89,334,-179,147,587,-67,0,47,465,249,54,496,171,2,25,101,145,43,331,141,4,59,109,103,58,152,99,3,-41,231,155,-76,245,116,3,220,441,153,231,556,159,1,-70,111,-138,10,197,-122,3,-16,447,218,59,474,213,2,111,130,28,129,168,-108,1,-37,423,-211,-23,525,-176,1,58,161,-26,80,279,17,3,-168,131,184,-118,265,278,3,-94,335,-156,-74,358,-204,0,-215,334,92,-177,754,32,4,-178,150,125,-187,213,165,3,-80,311,8,-116,504,-25,0,25,125,202,51,242,194,4,-168,192,56,-189,217,145,4,-41,649,122,-50,701,162,1,-91,316,-56,-7,566,-80,3,-220,257,-55,-164,339,-28,1,119,131,132,76,150,117,0,72,611,-20,-24,784,-208,1,-16,-47,-37,-13,38,-21,0,-85,-22,200,-116,49,167,2,-79,563,-5,-103,628,0,2,239,77,-64,242,112,-54,3,-94,-124,129,-123,87,255,2,78,-108,-57,46,149,-43,1,-89,229,-129,-105,273,-118,3,91,295,52,81,341,46,4,58,54,126,61,135,137,0,-140,104,-54,-91,170,-126,0,208,7,-223,189,220,-163,1,165,356,212,154,439,165,1,46,110,-138,10,143,-120,0,95,277,-21,-134,409,198,1,-108,278,171,-104,322,188,0,39,11,-222,17,291,-195,1,-191,-20,126,-175,175,129,3,61,101,133,-46,205,5,3,76,441,215,37,526,228,1,-201,-140,171,-151,67,232,2,-148,252,169,-140,299,195,3,-192,319,-57,-185,340,-80,2,-74,380,246,-161,487,118,3,0,128,-168,-15,154,-238,2,-38,117,42,-5,181,46,0,241,262,-82,220,275,-112,3,-50,60,-218,-34,183,-187,2,80,-67,-114,22,183,-2,1,-101,36,257,-59,418,67,3,141,533,215,147,642,205,1,-6,550,66,8,606,118,1,176,302,101,170,342,113,4,-7,445,-116,8,508,-53,3,175,131,-206,163,181,-193,2,-47,-80,202,-87,-51,173,1,216,435,-48,228,490,-86,3,12,146,-203,-60,206,-160,1,231,-48,-47,89,366,234,0,195,47,-39,203,82,-24,1,-137,392,104,-80,648,55,4,139,11,-116,138,106,-157,4,76,223,-195,46,279,-189,2,-16,191,16,38,300,32,3,-4,-112,22,52,-62,56,1,156,-50,87,152,-17,76,1,-56,269,148,-40,303,148,0,-37,321,-2,-90,394,-1,4,150,40,-126,230,210,-160,2,224,299,-71,249,537,13,4,-96,103,123,-101,143,107,0,-3,84,158,-98,297,91,2,-138,10,-56,-112,192,-64,0,-41,444,194,-55,537,205,4,176,485,-21,163,513,-35,1,-156,151,-54,-187,262,-41,0,180,186,65,160,205,38,0,122,117,-87,119,149,-94,2,133,-123,-143,151,-57,-162,3,118,600,-4,116,655,-39,0,55,-8,84,109,16,140,1,28,148,165,145,355,167,4,57,540,-152,24,610,-68,2,22,-3,-45,4,87,-33,4,-136,-48,179,-43,-21,245,0,8,263,104,0,301,128,2,269,392,-13,214,490,-37,4,-165,413,-148,-110,524,-175,1,164,199,-225,183,312,-174,1,-124,386,-196,-122,424,-188,1,184,4,-141,146,66,-98,3,-25,317,41,-62,359,58,3,-140,-40,218,-151,56,229,0,241,322,-67,179,388,-85,2,-85,168,246,-90,204,227,0,-167,146,219,155,370,208,0,-203,-151,-61,-33,307,-79,4,130,194,-132,151,356,-147,1,32,112,-69,0,188,-67,1,16,-66,-101,5,132,-144,2,-60,187,-9,-71,243,105,1,165,159,148,166,181,180,0,-175,132,-12,-174,173,-51,3,250,289,117,227,403,154,3,82,129,42,-203,309,98,0,-171,421,-36,-169,497,-28,2,-101,-82,-166,-274,-2,48,2,193,-74,-260,234,341,-158,3,-64,321,5,-46,350,-18,1,116,150,193,102,231,151,1,95,480,-26,111,522,34,2,75,20,136,56,135,145,1,-127,184,255,-106,198,216,4,83,17,131,52,75,128,4,-52,346,-40,-50,381,-111,2,226,127,-20,256,155,-65,1,134,509,174,163,668,179,3,92,420,32,189,736,19,3,41,238,-5,90,250,26,0,-102,78,88,-116,115,79,4,-24,71,-142,-53,213,-173,2,229,348,-114,214,415,-125,1,-150,222,-211,-104,299,-191,0,31,339,233,39,491,223,2,-25,96,114,-126,338,41,0,-48,-114,83,-32,-57,50,4,50,215,199,16,292,194,2,47,115,183,7,193,147,3,-100,130,-84,-147,223,-44,3,21,595,-115,48,629,-144,4,-106,330,31,-94,449,75,2,46,343,-89,112,374,-60,1,69,193,149,113,253,189,3,-71,435,214,-52,470,199,0,166,51,-169,181,106,-190,3,-80,-67,104,-50,183,15,2,-74,459,-154,-83,653,-15,3,119,269,138,124,307,164,0,204,56,142,196,106,117,2,250,158,89,232,274,99,0,191,182,-214,202,213,-199,1,-176,27,130,-184,104,116,4,43,-160,239,99,214,225,3,247,-107,162,122,110,227,1,-67,15,70,23,227,74,4,206,-2,10,158,64,43,3,-154,-96,27,-117,-61,37,4,162,429,-151,147,454,-132,3,-128,135,-33,-184,305,-80,3,126,537,-30,139,603,-42,1,-62,330,70,-56,434,93,4,-124,142,-29,-114,187,-17,4,-149,450,101,-179,497,113,4,146,417,-2,137,527,16,2,112,1,43,87,82,-64,3,114,279,175,111,320,128,0,240,556,-58,236,577,-26,3,-41,390,109,55,571,241,0,-46,71,82,-56,104,71,0,93,78,139,128,176,153,4,250,524,-30,242,625,-56,1,200,374,246,167,479,200,3,-163,353,128,-148,430,140,0,-66,116,-202,-58,157,-172,3,-144,154,151,-142,517,117,1,-183,-53,-146,-205,151,-27,0,55,104,177,-4,289,135,1,227,390,122,242,431,119,3,-112,300,-236,-70,348,-138,1,201,-54,-101,232,-1,-85,0,119,33,174,104,116,189,3,-151,105,-192,-183,180,-165,2,-193,20,17,-177,94,-176,4,245,225,149,238,260,110,2,44,-5,57,57,33,77,2,-175,5,-13,-111,222,40,3,-112,121,147,-134,205,137,2,-213,89,63,29,265,253,2,-106,-173,0,-214,202,-113,3,41,189,81,45,231,92,2,91,301,138,141,381,175,4,113,338,-78,68,393,-114,1,-28,210,-166,-38,335,-190,1,110,-131,212,109,-11,198,0,-44,220,219,-7,263,122,0,-126,290,160,-147,316,182,4,130,171,5,98,240,-6,0,76,237,153,154,473,220,0,82,99,-217,37,207,-175,1,-185,221,-149,-200,252,-130,4,-73,129,33,75,207,-83,0,-257,209,-30,-126,417,-93,4,135,337,-125,146,395,-134,3,127,110,53,148,184,103,3,-177,328,-72,-142,423,22,1,-72,219,-136,86,384,-106,3,41,545,5,-136,625,115,3,61,444,-192,79,471,-191,2,-56,70,-96,24,213,26,1,-63,111,-211,-200,366,-143,0,-205,180,119,-150,285,116,2,204,339,171,161,443,155,2,123,215,-23,46,406,-12,2,-94,5,22,-94,40,18,2,-21,13,154,-47,38,166,0,199,-13,-119,174,13,-133,4,-116,-68,180,42,96,230,2,-186,70,11,-205,126,169,1,240,61,126,246,98,149,0,-198,440,-66,-189,505,-70,0,-109,-81,184,-106,-35,177,2,-8,9,-101,57,40,-108,0,218,111,-10,217,155,-5,1,237,561,-6,231,597,9,0,-166,170,121,-144,307,99,0,76,76,-152,84,115,-132,1,-116,406,-119,-20,482,-239,3,-77,465,-85,-84,545,-72,3,37,434,-47,28,479,-46,0,42,446,-11,46,514,-24,4,154,289,74,122,314,57,0,206,-156,52,264,85,38,4,116,-122,-178,83,-30,-189,1,-187,51,-77,-159,123,-49,3,31,221,-109,44,247,-143,3,139,-90,-88,142,-50,-100,2,132,565,203,80,651,245,4,-69,288,-183,-44,349,-113,0,-6,45,204,166,481,209,4,24,594,225,12,643,245,0,137,167,58,79,363,14,4,-105,-24,-198,-41,17,-204,4,-19,-20,-55,-8,78,-114,2,111,83,33,40,114,87,2,-11,31,4,-124,277,106,4,93,84,-115,86,334,-139,3,150,185,219,232,211,150,2,94,403,-44,27,605,130,3,99,-3,-17,77,83,-31,3,-11,29,-238,-61,79,-144,1,-163,323,19,-172,350,44,4,194,119,257,186,406,207,0,193,82,232,163,160,231,3,-62,162,-54,-95,198,1,2,-58,134,-4,-42,199,1,1,25,306,76,28,427,47,3,122,81,197,132,230,230,3,-63,283,-128,162,456,-122,4,-27,181,-161,-12,258,-160,1,-165,212,-15,-170,282,-9,0,-63,182,106,-31,260,124,2,66,412,107,44,538,105,3,131,342,-75,149,402,-84,4,98,-1,-8,37,59,2,3,159,96,48,160,177,44,2,11,468,35,30,558,44,1,197,110,62,234,129,44,2,-56,136,-98,-53,176,-121,2,-98,-39,44,-21,91,-76,4,-100,285,37,-111,315,119,2,-182,326,-119,-114,425,-100,2,119,278,52,135,359,60,0,-165,457,224,-190,478,181,0,-63,448,77,-53,489,51,1,121,29,153,230,242,152,3,25,-65,-29,48,-2,3,4,-123,270,173,-160,285,168,4,31,54,-143,62,132,-159,3,-193,218,-4,-171,305,-24,0,-140,196,114,-120,232,159,2,110,-79,149,15,143,100,3,69,4,224,44,63,230,3,-152,308,-47,-113,381,-36,1,72,68,80,69,114,104,2,-28,75,-12,-51,193,41,4,56,300,50,53,333,48,4,30,95,25,104,336,-122,2,146,97,-96,158,181,-47,4,99,59,127,116,110,125,4,-110,532,19,-192,597,-46,2,151,93,128,194,158,223,0,16,319,-125,-12,539,-23,0,-126,198,-174,-104,453,-145,2,161,78,206,170,274,88,2,153,230,-160,132,281,-221,2,-139,227,-13,-170,400,-2,2,51,330,61,114,396,84,1,-27,-14,124,-25,80,103,1,118,476,202,110,525,210,1,-50,-74,219,25,124,186,4,75,172,165,102,204,144,0,120,219,117,51,306,241,2,145,-84,185,137,160,83,2,-33,295,215,-78,400,182,2,201,-102,-30,176,145,-114,0,-45,237,-56,-22,245,-29,4,213,416,-100,230,508,-101,1,148,460,-44,116,534,-68,3,-146,455,20,-133,507,-15,4,-88,377,103,-71,425,81,4,-21,214,-187,1,272,-179,2,19,31,132,-24,118,180,1,-46,367,-95,-1,469,-122,0,0,24,61,-162,209,187,1,174,215,-179,196,266,-159,3,14,401,183,14,357,175,3,245,78,-129,226,167,-96,1,-30,40,144,49,233,9,0,140,632,-93,98,706,-39,1,32,57,-67,41,121,-81,1,213,435,94,193,557,110,2,-12,-104,-122,-26,90,-129,1,-185,218,-177,-156,497,-182,1,6,-84,260,-111,68,71,3,152,180,-175,119,284,-156,0,48,50,226,77,166,225,1,211,-80,34,165,189,-67,2,-31,121,-171,-55,216,-156,1,53,205,54,94,398,146,0,205,112,121,189,292,72,0,-39,222,-104,-23,341,-107,3,59,200,-133,56,423,-162,4,42,-125,229,88,225,125,4,124,216,87,67,443,150,0,26,629,140,-3,684,160,3,116,150,38,120,181,28,3,237,-127,-21,227,-10,-29,3,-124,392,75,-98,479,86,4,-111,88,-103,-147,499,-1,4,145,292,151,103,357,126,2,-28,3,149,-47,69,143,1,-32,-31,-208,20,258,-189,2,-149,-151,159,-36,190,74,4,-118,169,-72,-156,246,-72,0,-100,-105,169,-228,150,-92,1,156,33,-10,168,87,-19,4,-10,57,-103,12,153,-64,1,26,124,165,-88,348,136,0,199,217,-70,242,253,-66,1,0,65,5,23,141,-20,0,285,62,-10,184,119,-196,3,110,127,239,128,204,213,3,-123,272,235,-104,323,218,2,92,250,-99,79,320,-98,1,187,355,-18,156,366,-7,4,-20,82,-244,49,112,-174,3,7,451,-224,-69,511,-168,3,71,451,-36,-17,514,-59,2,-44,77,185,-79,112,172,2,172,130,32,119,328,-8,2,234,216,135,176,240,80,3,160,163,163,133,219,202,3,123,69,-35,157,140,-96,4,186,6,-107,230,145,-91,4,211,110,130,208,157,139,0,36,83,138,45,333,172,3,96,-151,-12,102,-100,-8,2,-176,522,-127,-183,565,-136,2,-87,116,133,-94,152,139,1,-71,164,-28,-24,200,-55,2,-77,375,-59,-70,490,-65,4,207,37,-125,190,126,-140,1,-185,10,-109,-203,43,-140,4,-86,431,-8,-42,519,-22,2,116,283,185,16,318,155,4,-27,162,-35,-288,300,29,3,194,120,156,253,386,165,3,14,162,12,-21,197,32,4,-73,64,172,-97,339,63,3,227,199,78,-81,390,-69,2,146,396,-176,129,483,-189,0,220,185,-63,255,298,-45,3,190,59,-192,208,108,-166,0,-158,24,-38,-138,108,-69,1,-79,88,100,-80,301,-13,2,-171,521,-158,-210,551,-36,1,-121,633,110,-185,693,197,4,4,187,17,-21,361,20,3,-20,167,-32,-16,334,-44,2,79,525,207,50,642,214,2,-84,72,28,-65,163,19,0,175,39,151,115,222,48,1,-152,365,-38,-174,447,-74,0,-87,-66,-92,39,184,-41,1,-210,225,79,-177,258,57,4,-62,416,-86,-76,449,-90,0,-102,-24,-165,51,80,27,1,-62,130,243,-109,351,185,4,-126,161,-105,-71,279,-97,3,66,537,-21,22,582,104,2,24,284,210,-22,559,167,1,-32,200,154,-2,285,172,2,21,235,-88,90,466,-141,1,106,371,180,106,307,171,0,98,264,-202,132,358,-181,2,-13,-22,-115,-15,45,-85,4,-132,431,-163,-149,463,-168,3,-42,483,-182,-52,545,-154,3,67,127,195,216,183,107,4,-107,-110,-154,-119,-75,-141,0,226,42,0,179,98,54,3,-94,74,-187,-138,138,-181,2,249,243,-13,241,267,-88,1,-24,93,-70,17,137,-41,1,82,-6,-122,113,274,-52,2,19,194,211,43,233,205,3,54,75,55,60,99,28,2,214,-95,58,209,-59,74,1,-168,223,-21,-154,310,42,4,261,-142,131,182,304,181,1,232,488,-34,226,575,25,3,155,254,203,160,343,213,3,-154,557,79,-143,606,134,1,-152,-166,43,-172,57,52,4,176,265,-161,189,303,-161,0,182,63,-56,201,210,-23,2,77,202,-96,147,448,-35,2,-42,214,149,-63,263,150,4,114,87,-3,106,123,-11,1,-1,-16,-27,-24,70,-116,0,-63,360,-25,-238,510,-75,1,42,144,-137,61,188,-181,0,-153,171,-149,-189,226,-130,2,-148,594,-4,-141,633,21,4,129,198,-143,132,281,-32,4,145,459,212,108,536,201,3,-167,70,-99,-146,169,-55,1,-79,364,0,-82,418,-74,1,193,345,-29,165,437,29,3,-53,-162,218,-54,-82,212,1,-151,-78,-35,-192,-54,-11,1,61,97,147,92,185,106,4,-53,502,-18,-39,548,36,3,-8,521,-48,62,644,-71,0,59,118,209,73,220,209,2,-111,425,23,-136,627,19,1,71,317,-71,39,360,-81,2,88,561,-136,124,579,-90,0,-8,324,-156,-23,358,-191,1,-130,299,-227,-67,434,-30,2,203,66,139,193,113,169,0,-33,153,52,-40,205,41,0,54,270,163,42,329,159,3,120,437,48,124,480,32,0,160,325,83,126,408,98,1,-5,150,120,182,227,-18,4,-77,390,-84,-86,413,-30,3,117,116,156,103,158,135,0,37,4,166,96,95,102,4,-47,52,10,-36,116,31,0,-34,549,196,36,574,160,0,-117,357,31,-90,399,21,3];
+const RX_DUMO_HV = [337,780,0,169,780,-292,-169,780,-292,-337,780,0,-169,780,292,169,780,292,337,-465,0,169,-465,-292,-169,-465,-292,-337,-465,0,-169,-465,292,169,-465,292,0,-785,0];
+const RX_DUMO_HF = [6,5,4,3,2,1,0,4,0,1,7,6,4,1,2,8,7,4,2,3,9,8,4,3,4,10,9,4,4,5,11,10,4,5,0,6,11,3,6,7,12,3,7,8,12,3,8,9,12,3,9,10,12,3,10,11,12,3,11,6,12];
+
+function rxDumo(){
+  const H = RX_DUMO_HV, HF = RX_DUMO_HF;
+  const P = i => [H[i * 3] / 10, H[i * 3 + 1] / 10, H[i * 3 + 2] / 10];
+  const mat = { c: [232, 240, 248], clear: 0.2, gem: 1 };
+  const faces = [];
+  let cx = 0, cy = 0, cz = 0;
+  const nv = H.length / 3;
+  for(let i = 0; i < nv; i++){ const p = P(i); cx += p[0]; cy += p[1]; cz += p[2]; }
+  cx /= nv; cy /= nv; cz /= nv;
+  for(let k = 0; k < HF.length; ){
+    const n = HF[k], pts = [];
+    for(let j = 1; j <= n; j++) pts.push(P(HF[k + j]));
+    k += n + 1;
+    let nx = 0, ny = 0, nz = 0, mx = 0, my = 0, mz = 0;
+    pts.forEach((a, i) => {
+      const b = pts[(i + 1) % pts.length];
+      nx += (a[1] - b[1]) * (a[2] + b[2]); ny += (a[2] - b[2]) * (a[0] + b[0]); nz += (a[0] - b[0]) * (a[1] + b[1]);
+      mx += a[0] / n; my += a[1] / n; mz += a[2] / n;
+    });
+    const l = Math.hypot(nx, ny, nz) || 1;
+    let nrm = [nx / l, ny / l, nz / l];
+    if(nrm[0] * (mx - cx) + nrm[1] * (my - cy) + nrm[2] * (mz - cz) < 0) nrm = nrm.map(x => -x);
+    faces.push({ p: pts, n: nrm, m: mat, top: nrm[1] < -0.6 });
+  }
+  const N = RX_DUMO_N, rods = [];
+  for(let i = 0; i < N.length; i += 7)
+    rods.push({ a: [N[i] / 10, N[i + 1] / 10, N[i + 2] / 10], b: [N[i + 3] / 10, N[i + 4] / 10, N[i + 5] / 10], c: N[i + 6] });
+  return { atoms: [], bonds: [], faces, rods, crystal: true, mineral: true, twoSided: true,
+           tilt: -0.22, yaw0: 0.4, maxScale: 1.9, col: '#3b5bdb' };
+}
+const RX_ROD_COL = [[44, 72, 196], [62, 102, 222], [32, 56, 164], [86, 128, 236], [52, 84, 206]];
+
+/* 바늘 결정: 색 5 × 깊이 4 묶음을 경로 20개로 한 번에 그린다 */
+function rxDrawRods(m, cY, sY, cX, sX, D){
+  const NC = RX_ROD_COL.length;
+  const buf = new Array(4 * NC).fill('');
+  const pr = q => {
+    const x1 = q[0] * cY + q[2] * sY, z1 = -q[0] * sY + q[2] * cY;
+    const y1 = q[1] * cX - z1 * sX, z2 = q[1] * sX + z1 * cX;
+    const f = D / (D - z2);
+    return [m.cx + x1 * m.sc * f, m.cy + y1 * m.sc * f, z2];
+  };
+  const R = m.depth || 80;
+  for(const r of m.rods){
+    const A = pr(r.a), B = pr(r.b);
+    const z = (A[2] + B[2]) / 2;
+    const d = Math.max(0, Math.min(3, Math.floor((z / R + 1) * 2)));
+    buf[d * NC + r.c] += `M${A[0].toFixed(1)} ${A[1].toFixed(1)}L${B[0].toFixed(1)} ${B[1].toFixed(1)}`;
+  }
+  for(let d = 0; d < 4; d++) for(let c = 0; c < NC; c++){
+    const p = m.rodPaths[d * NC + c];
+    if(!p) continue;
+    p.setAttribute('d', buf[d * NC + c]);
+    if(!p.dataset.set){
+      const k = 0.45 + d * 0.2;          // 가까울수록 밝고 굵다
+      const col = RX_ROD_COL[c].map(v => Math.min(255, Math.round(v * k + (d === 3 ? 40 : 0))));
+      p.setAttribute('stroke', `rgb(${col.join(',')})`);
+      p.setAttribute('stroke-width', (0.9 + d * 0.45).toFixed(2));
+      p.setAttribute('stroke-opacity', (0.55 + d * 0.15).toFixed(2));
+      p.dataset.set = '1';
+    }
+  }
+}
+function rxMineral(name){
+  if(name === '비스무트 결정') return rxBismuth();
+  if(name === '다이아몬드') return rxDiamondGem();
+  if(name === '듀모티어라이트') return rxDumo();
+  const spec = RX_MINERALS[name];
+  if(!spec) return null;
+  const rnd = rxRand('min:' + name);
+  const K = 30, faces = [];
+  const H = spec.habit, M = spec.mat;
+  const n = spec.n || 1;
+  const sub = H === 'cube' || H === 'rhomb' ? 2 : H === 'plate' ? 0 : 1;
+  for(let i = 0; i < n; i++){
+    const main = i === 0;
+    let S, rot, off;
+    if(H === 'quartz'){
+      // 한 점에서 부채꼴로 뻗는 기둥 무리
+      const sc = main ? 1.15 : 0.55 + rnd() * 0.45;
+      S = [K * sc, K * sc, K * sc];
+      const a = rnd() * Math.PI * 2, tilt = main ? 0.08 : 0.35 + rnd() * 0.5;
+      rot = [Math.cos(a) * tilt, rnd() * 3, Math.sin(a) * tilt];
+      off = main ? [0, 30, 0] : [Math.cos(a) * 14, 34 + rnd() * 6, Math.sin(a) * 14];
+    } else if(H === 'plate'){
+      S = [K * (1.3 - i * 0.12), K, K * (1.3 - i * 0.12)];
+      rot = [(rnd() - .5) * 0.25, rnd() * 3, (rnd() - .5) * 0.25];
+      off = [(rnd() - .5) * 18, i * -6 + 12, (rnd() - .5) * 18];
+    } else if(H === 'lump' || H === 'sphere'){
+      S = H === 'sphere' ? [K * 1.5, K * 1.5, K * 1.5] : [K * 1.7, K * 1.7, K * 1.7];
+      rot = [0.3, 0.5, 0.2]; off = [0, 0, 0];
+    } else {
+      const sc = main ? 1 : 0.45 + rnd() * 0.35;
+      const base = H === 'octa' ? 1.9 : H === 'cube' || H === 'rhomb' ? 1.05 : 1.25;
+      S = [K * sc * base, K * sc * base, K * sc * base];
+      rot = main ? [0.2, 0.5, 0.15] : [rnd() * 3, rnd() * 3, rnd() * 3];
+      const d = main ? 0 : 26 + rnd() * 18, a = rnd() * Math.PI * 2;
+      off = [Math.cos(a) * d, (rnd() - .3) * 22, Math.sin(a) * d];
+    }
+    faces.push(...rxSolid(H === 'sphere' ? 'sphere' : H, M, S, rot, off, rnd, sub));
+  }
+  const clear = !!M.clear;
+  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, twoSided: clear,
+           tilt: H === 'plate' ? -0.6 : -0.3, yaw0: 0.5, maxScale: 1.9, col: `rgb(${M.c.join(',')})` };
+}
+
+/* 광물 재질 칠하기 */
+function rxMatFill(fc, nx1, ny1, nz2, dif, spec, yaw, back){
+  const M = fc.m;
+  let c = M.c;
+  if(fc.alt) c = M.fleck || M.vein;
+  let lum = 0.45 + dif * 0.7, sp = spec;
+  if(M.metal){ lum = 0.32 + dif * 0.8; sp = spec * 0.95; }
+  if(M.opal){
+    // 보는 각도에 따라 색이 번뜩인다
+    const h = (nx1 * 260 + ny1 * 180 + yaw * 220 + fc.p[0][0] * 4) % 360;
+    const k = Math.max(0, Math.sin(nx1 * 6 + ny1 * 5 + yaw * 3)) * 0.55;
+    c = rxMix(c, rxHsl((h + 360) % 360, 0.9, 0.6), k);
+    lum = 0.7 + dif * 0.4;
+  }
+  if(M.pearl){
+    const t = nx1 * 0.5 + 0.5;
+    c = rxMix(c, [255, 214, 222], t * 0.25);
+    c = rxMix(c, [214, 240, 228], (1 - t) * 0.18);
+    lum = 0.62 + dif * 0.45; sp = Math.pow(Math.max(0, spec), 0.35) * 0.35;
+  }
+  if(M.fire && !back){
+    const h = (nx1 * 400 + yaw * 300 + ny1 * 200) % 360;
+    c = rxMix(c, rxHsl((h + 360) % 360, 1, 0.62), 0.28);
+  }
+  if(M.brill){
+    // 브릴리언스: 면마다 밝은 반사와 어두운 반사가 각도에 따라 번갈아 번쩍인다
+    const s0 = (fc.seed || 0) * 1.7;
+    const e = 0.5 + 0.5 * Math.sin(nx1 * 9 + ny1 * 7 + nz2 * 5 + s0 + yaw * 2.2);
+    const lit = Math.pow(e, 2.2);
+    let col = rxMix([14, 16, 22], [252, 253, 255], lit);
+    // 파이어: 밝은 면에 무지갯빛이 섞인다
+    const h = ((nx1 * 520 + ny1 * 300 + yaw * 380 + s0 * 40) % 360 + 360) % 360;
+    col = rxMix(col, rxHsl(h, 1, 0.6), 0.42 * Math.pow(Math.abs(Math.sin(s0 + yaw * 3 + nx1 * 4)), 3) * lit + 0.03);
+    if(back) col = rxMix(col, [10, 14, 24], 0.55);
+    return rxShade(col, 1, back ? 0 : Math.min(1, spec * 1.4 + Math.pow(e, 14) * 0.6));
+  }
+  if(back) lum *= 0.5;
+  return rxShade(c, lum, sp * (back ? 0.2 : M.metal ? 0.95 : 0.8));
+}
+function rxHsl(h, s, l){
+  const a = s * Math.min(l, 1 - l);
+  const f = n => { const k = (n + h / 30) % 12; return 255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))); };
+  return [f(0), f(8), f(4)];
+}
+
+function rxCrystal(formula, name, atoms){
+  const f = rxPlain(formula);
+  if(f === 'FeS2') return rxPyrite();
+  // 비스무트의 원자 배열은 살짝 찌그러진 단순 입방에 가깝다
+  if(f === 'Bi' && /결정|crystal/i.test(name)) return rxRockSalt('Bi', 'Bi');
+  if(RX_ROCKSALT.has(f) && atoms.length === 2) return rxRockSalt(atoms[0][0], atoms[1][0]);
+  if(RX_ZINCBLENDE.has(f) && atoms.length === 2) return rxDiamond(atoms[0][0], atoms[1][0]);
+  if(f === 'BN') return rxGraphite('B', 'N');
+  if(f === 'C' && /다이아몬드|Diamond/i.test(name)) return rxDiamond('C', 'C');
+  if(f === 'C' && /흑연|Graphite/i.test(name)) return rxGraphite('C', 'C');
+  return null;
+}
+
+/* ═══ 폭발 리메이크 ═══
+   세기(boomScale): 폭발 1 · 더 큰 1.3 · 루비듐 1.45 · 세슘 1.7 · 임계질량 2 */
+const RX_BOOM_NAMES = ['트라이나이트로톨루엔', '나이트로글리세린'];
+function rxBoomLevel(name, formula){
+  const isBoom = String(formula || '').includes('💥') || /폭발/.test(name) || RX_BOOM_NAMES.includes(name);
+  if(!isBoom) return 0;
+  return typeof boomScale === 'function' ? boomScale(name) : 1;
+}
+
+/* 원자가 중심에서 튕겨 나가 벽에 부딪히고 바닥에 쌓인다 */
+function rxBoomModel(atoms, rnd, lv){
+  const list = rxExpand(rxScale(atoms, 24));
+  const A = list.map(s => {
+    const a = rnd() * Math.PI * 2;
+    const sp = (5 + rnd() * 7) * (0.8 + lv * 0.4);
+    return { s, x: (rnd() - .5) * 6, y: (rnd() - .5) * 6, z: 0, r: 17 * rxSize(s),
+             vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3 };
+  });
+  // 불씨 파편: 글자 없는 작은 조각들
+  const EMB = ['#ffd43b', '#ff922b', '#ff6b6b', '#868e96', '#5c636e'];
+  const nf = Math.round(10 + lv * 8);
+  for(let i = 0; i < nf; i++){
+    const a = rnd() * Math.PI * 2, sp = (7 + rnd() * 9) * (0.8 + lv * 0.4);
+    A.push({ s: '', col: EMB[i % EMB.length], x: 0, y: 0, z: 0, r: 2.5 + rnd() * 3,
+             vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 4 });
+  }
+  return { atoms: A, bonds: [], kin: true, lv, maxScale: 1 };
+}
+/* 분자 칸 안의 불꽃·충격파·연기·그을음 */
+function rxBoomFx(lv){
+  const st = document.getElementById('mStage');
+  st.querySelectorAll('.rx-fx').forEach(e => e.remove());
+  const fx = document.createElement('div');
+  fx.className = 'rx-fx';
+  fx.style.setProperty('--lv', lv);
+  let h = '<i class="fx-scorch"></i><i class="fx-core"></i>';
+  for(let i = 0; i < 3; i++) h += `<i class="fx-ring" style="animation-delay:${i * 110}ms"></i>`;
+  const n = Math.round(22 * lv);
+  for(let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2, d = (90 + Math.random() * 140) * (0.7 + lv * 0.3);
+    h += `<i class="fx-spark" style="--dx:${(Math.cos(a) * d).toFixed(0)}px;--dy:${(Math.sin(a) * d).toFixed(0)}px;` +
+         `--ang:${(a * 180 / Math.PI).toFixed(0)}deg;animation-delay:${(Math.random() * 90).toFixed(0)}ms"></i>`;
+  }
+  for(let i = 0; i < 6; i++){
+    h += `<i class="fx-smoke" style="--sx:${((Math.random() - .5) * 120).toFixed(0)}px;--sy:${(-60 - Math.random() * 80).toFixed(0)}px;` +
+         `--sz:${(50 + Math.random() * 50).toFixed(0)}px;animation-delay:${200 + i * 90}ms"></i>`;
+  }
+  fx.innerHTML = h;
+  st.appendChild(fx);
+}
+
+/* 화면 전체: 흔들림 · 번쩍임 · 진동 · 금 */
+var RX_QUAKE = 0;
+function rxQuake(lv){
+  const el = modal;
+  const dur = 420 + lv * 380, amp = 7 * Math.pow(lv, 1.6);
+  const t0 = performance.now();
+  cancelAnimationFrame(RX_QUAKE);
+  const step = now => {
+    const t = (now - t0) / dur;
+    if(t >= 1 || !modal.classList.contains('on')){ el.style.transform = ''; return; }
+    const e = Math.pow(1 - t, 2) * amp;
+    el.style.transform = `translate(${((Math.random() - .5) * 2 * e).toFixed(1)}px,${((Math.random() - .5) * 2 * e).toFixed(1)}px) rotate(${((Math.random() - .5) * e * 0.12).toFixed(2)}deg)`;
+    RX_QUAKE = requestAnimationFrame(step);
+  };
+  RX_QUAKE = requestAnimationFrame(step);
+}
+function rxCrack(){
+  const W = innerWidth, H = innerHeight;
+  const cx = W * (0.35 + Math.random() * 0.3), cy = H * (0.3 + Math.random() * 0.3);
+  const f = v => v.toFixed(0);
+  let d = '';
+  const arms = 9, ends = [];
+  for(let i = 0; i < arms; i++){
+    let a = (i / arms) * Math.PI * 2 + Math.random() * 0.5;
+    let x = cx, y = cy;
+    d += `M${f(x)} ${f(y)}`;
+    const L = Math.max(W, H) * (0.25 + Math.random() * 0.45);
+    let went = 0, seg = 0;
+    while(went < L){
+      const st = 18 + Math.random() * 40;
+      a += (Math.random() - .5) * 0.7;
+      x += Math.cos(a) * st; y += Math.sin(a) * st; went += st; seg++;
+      d += `L${f(x)} ${f(y)}`;
+      if(seg === 3) ends.push([x, y]);
+      if(Math.random() < 0.12){      // 잔가지
+        let bx = x, by = y, ba = a + (Math.random() < .5 ? 1 : -1) * (0.5 + Math.random() * 0.6);
+        d += `M${f(bx)} ${f(by)}`;
+        for(let q = 0; q < 3; q++){
+          const bl = 12 + Math.random() * 20;
+          bx += Math.cos(ba) * bl; by += Math.sin(ba) * bl; ba += (Math.random() - .5) * .8;
+          d += `L${f(bx)} ${f(by)}`;
+        }
+        d += `M${f(x)} ${f(y)}`;
+      }
+    }
+  }
+  // 충격 지점을 두르는 고리 모양 금
+  for(let i = 0; i < ends.length; i++){
+    const p = ends[i], q = ends[(i + 1) % ends.length];
+    d += `M${f(p[0])} ${f(p[1])}Q${f((p[0] + q[0]) / 2 + (Math.random() - .5) * 20)} ${f((p[1] + q[1]) / 2 + (Math.random() - .5) * 20)} ${f(q[0])} ${f(q[1])}`;
+  }
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'rx-crack');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('aria-hidden', 'true');
+  svg.innerHTML = `<path class="ck-shade" d="${d}"/><path class="ck-line" d="${d}"/><circle class="ck-hit" cx="${f(cx)}" cy="${f(cy)}" r="10"/>`;
+  modal.appendChild(svg);
+}
+function rxBoomScreen(lv){
+  modal.querySelectorAll('.rx-flash,.rx-crack').forEach(e => e.remove());
+  const fl = document.createElement('div');
+  fl.className = 'rx-flash';
+  fl.style.setProperty('--lv', lv);
+  modal.appendChild(fl);
+  setTimeout(() => fl.remove(), 900);
+  rxQuake(lv);
+  if(lv >= 1.6) setTimeout(rxCrack, 60);
+  try{ if(navigator.vibrate) navigator.vibrate(lv >= 1.6 ? [140, 50, 220, 60, 120] : lv >= 1.3 ? [110, 40, 160] : [90, 40, 90]); }catch(e){}
+  if(typeof RXW !== 'undefined') RXW.kick = 0.9 + lv * 0.9;
+}
+
+/* ═══ 물리: 폭발 잔해 · 기체 · 액체 ═══
+   phys: g(중력 세기, 음수면 뜸) rest(벽 반발) floorRest(바닥 반발) damp(공기 저항)
+         brown(떨림) cohesion(끌어당김) friction(바닥 마찰) maxV(속도 상한) */
+var RX_TILT = { x: 0, y: 1, on: false, asked: false };
+var RX_GRAB = null;
+
+const RX_GAS = new Set(['H','He','N','O','F','Ne','Cl','Ar','Kr','Xe','Rn']);
+const RX_LIQUID = { Hg: '#c9d1dc', Ga: '#aeb9c9', Br: '#a8402c' };
+
+function rxGasModel(sym, cnt, rnd, name){
+  const n = Math.max(2, Math.min(cnt, 30));
+  const e = rxSym(sym);
+  const m = e ? e.m : 29;
+  // 공기(평균 분자량 약 29)보다 가벼우면 뜨고 무거우면 가라앉는다
+  const g = Math.max(-0.05, Math.min(0.22, 0.06 * (m - 29) / 29));
+  const A = [];
+  for(let i = 0; i < n; i++){
+    const a = rnd() * Math.PI * 2, sp = 1.5 + rnd() * 2.5;
+    A.push({ s: sym, x: (rnd() - .5) * 320, y: (rnd() - .5) * 220, z: 0, r: 13 * rxSize(sym),
+             vx: Math.cos(a) * sp, vy: Math.sin(a) * sp });
+  }
+  return { atoms: A, bonds: [], kin: true, gas: true, neon: /네온사인|Neon sign/i.test(name),
+           phys: { g, rest: 0.96, floorRest: 0.9, damp: 0.999, brown: 0.22, friction: 1, maxV: 5 } };
+}
+
+function rxLiquidModel(sym, cnt, rnd){
+  const n = Math.max(3, Math.min(cnt, 26));
+  const A = [];
+  for(let i = 0; i < n; i++){
+    A.push({ s: sym, col: RX_LIQUID[sym], x: (rnd() - .5) * 300, y: -60 - rnd() * 80, z: 0, r: 15,
+             vx: (rnd() - .5) * 3, vy: rnd() * 2 });
+  }
+  return { atoms: A, bonds: [], kin: true, liquid: true, noLabel: true,
+           phys: { g: 0.34, rest: 0.25, floorRest: 0.1, damp: 0.975, cohesion: 0.011, friction: 0.97, maxV: 18 } };
+}
+
+function rxKinStep(m, k){
+  const P = m.phys || { g: 0.32, rest: 0.62, floorRest: 0.45, damp: 0.992, friction: 0.86, maxV: 40 };
+  const W = 200 - 6, H = 150 - 4;
+  const gx = RX_TILT.x * P.g, gy = RX_TILT.y * P.g;
+  const damp = Math.pow(P.damp, k);
+  const A = m.atoms;
+  // 벽에 부딪힐 때: 중력이 향하는 벽이면 '바닥' 반발
+  const wall = (a, nx, ny) => {
+    const floor = (-nx * RX_TILT.x - ny * RX_TILT.y) > 0.5;
+    const e = floor ? P.floorRest : P.rest;
+    if(nx){ a.vx = nx * Math.abs(a.vx) * e; if(floor) a.vy *= P.friction; }
+    if(ny){ a.vy = ny * Math.abs(a.vy) * e; if(floor) a.vx *= P.friction; }
+  };
+  A.forEach(a => {
+    if(a.held) return;
+    a.vx += gx * k; a.vy += gy * k;
+    if(P.brown){ a.vx += (Math.random() - .5) * P.brown * k; a.vy += (Math.random() - .5) * P.brown * k; }
+    a.vx *= damp; a.vy *= damp;
+    const v = Math.hypot(a.vx, a.vy);
+    if(P.maxV && v > P.maxV){ a.vx *= P.maxV / v; a.vy *= P.maxV / v; }
+    a.x += a.vx * k; a.y += a.vy * k;
+    if(a.x < -W + a.r){ a.x = -W + a.r; wall(a, 1, 0); }
+    if(a.x >  W - a.r){ a.x =  W - a.r; wall(a, -1, 0); }
+    if(a.y < -H + a.r){ a.y = -H + a.r; wall(a, 0, 1); }
+    if(a.y >  H - a.r){ a.y =  H - a.r; wall(a, 0, -1); }
+  });
+  for(let i = 0; i < A.length; i++) for(let j = i + 1; j < A.length; j++){
+    const p = A[i], q = A[j];
+    const dx = q.x - p.x, dy = q.y - p.y;
+    const d = Math.hypot(dx, dy) || 0.01, w = p.r + q.r;
+    const nx = dx / d, ny = dy / d;
+    // 액체: 가까우면 서로 끌어당겨 한 덩어리가 된다
+    if(P.cohesion && d < w * 2.4){
+      if(d > w * 0.8){
+        const f = Math.min(0.6, P.cohesion * (d - w * 0.8)) * k;
+        if(!p.held){ p.vx += nx * f; p.vy += ny * f; }
+        if(!q.held){ q.vx -= nx * f; q.vy -= ny * f; }
+      }
+      // 점성: 이웃끼리 속도를 비슷하게 맞춰 출렁임을 가라앉힌다
+      const vis = Math.min(0.5, (P.visc || 0.12) * k) * (1 - d / (w * 2.4));
+      const dvx = (q.vx - p.vx) * vis, dvy = (q.vy - p.vy) * vis;
+      if(!p.held){ p.vx += dvx; p.vy += dvy; }
+      if(!q.held){ q.vx -= dvx; q.vy -= dvy; }
+    }
+    if(d < w){
+      const f = (w - d) / 2 * (P.cohesion ? 0.6 : 1);
+      const pi = p.held ? 0 : (q.held ? 2 : 1), qi = q.held ? 0 : (p.held ? 2 : 1);
+      p.x -= nx * f * pi; p.y -= ny * f * pi; q.x += nx * f * qi; q.y += ny * f * qi;
+      const rv = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
+      if(rv < 0){
+        const e = P.brown ? 1 : (P.cohesion ? 0.55 : 0.5);   // 기체는 탄성 충돌
+        const im = rv * e;
+        if(!p.held){ p.vx += nx * im; p.vy += ny * im; }
+        if(!q.held){ q.vx -= nx * im; q.vy -= ny * im; }
+      }
+    }
+  }
+}
+
+/* ── 고정 간격으로 잘게 나눠 계산 (화면 주사율과 무관하게 안정) ── */
+function rxPhysFrame(m, dt){
+  const H = 6;                          // 한 걸음 6ms
+  m.acc = Math.min(64, (m.acc || 0) + dt);
+  let n = 0;
+  while(m.acc >= H && n < 10){ rxKinStep(m, H / 16); m.acc -= H; n++; }
+  // 거의 멈춘 알갱이는 완전히 멈춘다 (바닥에서 떨지 않게)
+  const P = m.phys || {};
+  if(P.cohesion) m.atoms.forEach(a => {
+    if(!a.held && Math.abs(a.vx) < 0.03 && Math.abs(a.vy) < 0.03){ a.vx = 0; a.vy = 0; }
+  });
+}
+
+/* ── 기울이기: 가속도 센서로 중력 방향을 읽는다 ──
+   devicemotion 의 accelerationIncludingGravity 는 중력의 '반작용'이라
+   세워 든 휴대폰에서 y ≈ +9.8 (안드로이드). 아이폰은 부호가 반대. */
+const RX_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function rxScreenAngle(){
+  const a = (screen.orientation && typeof screen.orientation.angle === 'number')
+    ? screen.orientation.angle : (typeof window.orientation === 'number' ? window.orientation : 0);
+  return a * Math.PI / 180;
+}
+function rxSetGravity(dx, dy){
+  // 기기 기준 (오른쪽 +x, 화면 아래쪽 +y) → 화면 회전 반영
+  const th = rxScreenAngle(), c = Math.cos(th), s = Math.sin(th);
+  const sx = dx * c + dy * s, sy = -dx * s + dy * c;
+  RX_TILT.x += (sx - RX_TILT.x) * 0.3;
+  RX_TILT.y += (sy - RX_TILT.y) * 0.3;
+  RX_TILT.on = true;
+}
+function rxTiltHook(){
+  if(RX_TILT.hooked) return;
+  RX_TILT.hooked = true;
+  addEventListener('devicemotion', ev => {
+    const g = ev.accelerationIncludingGravity;
+    if(!g || g.x == null || g.y == null) return;
+    RX_TILT.motion = true;
+    let dx = -g.x / 9.81, dy = g.y / 9.81;
+    if(RX_IOS){ dx = -dx; dy = -dy; }
+    const m = Math.hypot(dx, dy);
+    if(m > 1.2){ dx *= 1.2 / m; dy *= 1.2 / m; }
+    rxSetGravity(dx, dy);
+  });
+  // 가속도 센서가 없는 기기용 예비
+  addEventListener('deviceorientation', ev => {
+    if(RX_TILT.motion || ev.beta == null || ev.gamma == null) return;
+    const b = ev.beta * Math.PI / 180, gm = ev.gamma * Math.PI / 180;
+    rxSetGravity(Math.sin(gm) * Math.cos(b), Math.sin(b));
+  });
+}
+function rxTiltAsk(){
+  if(RX_TILT.asked) return;
+  if(!matchMedia('(pointer: coarse)').matches) return;   // 컴퓨터에선 안 켬
+  RX_TILT.asked = true;
+  try{
+    const DM = window.DeviceMotionEvent, DO = window.DeviceOrientationEvent;
+    if(DM && typeof DM.requestPermission === 'function'){
+      // 아이폰: 사용자가 누른 순간에만 물어볼 수 있다
+      DM.requestPermission().then(r => { if(r === 'granted') rxTiltHook(); }).catch(() => {});
+      if(DO && typeof DO.requestPermission === 'function') DO.requestPermission().catch(() => {});
+    } else rxTiltHook();
+  }catch(e){}
+}
+// 조합하기 버튼을 누르는 순간 센서를 켠다
+(() => {
+  const b = document.getElementById('mixBtn');
+  if(b) b.addEventListener('click', rxTiltAsk, true);
+})();
+
+/* ── 잡아서 던지기 / 톡 치기 ── */
+function rxStagePoint(e){
+  const svg = document.getElementById('mMol');
+  const r = svg.getBoundingClientRect();
+  const sc = Math.min(r.width / 400, r.height / 300);
+  const ox = (r.width - 400 * sc) / 2, oy = (r.height - 300 * sc) / 2;
+  return { x: (e.clientX - r.left - ox) / sc - 200, y: (e.clientY - r.top - oy) / sc - 150 };
+}
+function rxGrabStart(e){
+  const m = RX_M;
+  const p = rxStagePoint(e);
+  rxTiltAsk();
+  let best = null, bd = 1e9;
+  m.atoms.forEach(a => {
+    const d = Math.hypot(a.x - p.x, a.y - p.y) - a.r;
+    if(d < 10 && d < bd){ bd = d; best = a; }
+  });
+  if(!best){
+    // 빈 곳을 누르면 주변을 밀어낸다
+    m.atoms.forEach(a => {
+      const dx = a.x - p.x, dy = a.y - p.y, d = Math.hypot(dx, dy) || 1;
+      if(d < 110){ const f = (110 - d) / 110 * 9; a.vx += dx / d * f; a.vy += dy / d * f; }
+    });
+    if(m.wait > 0) m.wait = 0;
+    return false;
+  }
+  if(m.wait > 0) m.wait = 0;
+  best.held = true;
+  RX_GRAB = { a: best, id: e.pointerId, ox: best.x - p.x, oy: best.y - p.y, lx: p.x, ly: p.y, lt: performance.now() };
+  return true;
+}
+function rxGrabMove(e){
+  if(!RX_GRAB || e.pointerId !== RX_GRAB.id) return;
+  const p = rxStagePoint(e);
+  const g = RX_GRAB, a = g.a;
+  const now = performance.now(), dt = Math.max(8, now - g.lt);
+  const nx = Math.max(-194 + a.r, Math.min(194 - a.r, p.x + g.ox));
+  const ny = Math.max(-146 + a.r, Math.min(146 - a.r, p.y + g.oy));
+  // 속도는 최근 움직임을 부드럽게 섞는다 (놓을 때 던지는 힘)
+  a.vx = a.vx * 0.5 + (nx - a.x) / dt * 16 * 0.5;
+  a.vy = a.vy * 0.5 + (ny - a.y) / dt * 16 * 0.5;
+  a.x = nx; a.y = ny;
+  g.lt = now;
+}
+function rxGrabEnd(e){
+  if(!RX_GRAB || (e && e.pointerId !== RX_GRAB.id)) return;
+  const a = RX_GRAB.a;
+  a.held = false;
+  const v = Math.hypot(a.vx, a.vy);
+  if(v > 30){ a.vx *= 30 / v; a.vy *= 30 / v; }
+  RX_GRAB = null;
+}
+
+/* ═══ 분자 액체: 물 · 용액 · 상온 액체 ═══
+   방울은 액체 필터로 뭉치고, 그 위에 작은 분자 모양 알갱이가 떠다닌다 */
+const RX_LIQ_NAMED = {
+  '물':            { col: '#4dabf7' },
+  '바닷물':        { col: '#1c7ed6', sol: 'NaCl', glyph: 'H₂O' },
+  '눈물':          { col: '#a5d8ff', sol: 'NaCl', glyph: 'H₂O' },
+  '라면 국물':     { col: '#e8590c', sol: 'NaCl', glyph: 'H₂O' },
+  '과산화수소':    { col: '#d0ebff' },
+  '메탄올':        { col: '#e3fafc' },
+  '에탄올':        { col: '#e7f5ff' },
+  '아세트산':      { col: '#f1f3f5' },
+  '폼산':          { col: '#f8f9fa' },
+  '이황화탄소':    { col: '#fff3bf' },
+  '황산':          { col: '#f1f3f5', thick: true },
+  '질산':          { col: '#ffe066' },
+  '인산트라이메틸': { col: '#f8f9fa' },
+  '염산':          { col: '#e6fcf5', sol: 'HCl', glyph: 'H₂O' },
+  '플루오린화수소산': { col: '#ebfbee', sol: 'HF', glyph: 'H₂O' },
+};
+
+var RX_GLYPH_CACHE = {};
+function rxGlyph(formula){
+  if(RX_GLYPH_CACHE[formula]) return RX_GLYPH_CACHE[formula];
+  const atoms = rxParse(formula);
+  if(!atoms) return null;
+  let pts, bonds;
+  if(formula === 'NaCl'){
+    // 용액 속에선 이온으로 흩어진다: 알갱이 하나에 이온 하나
+    pts = null;
+  } else {
+    const mol = rxMolecule(atoms, rxRand(formula));
+    pts = mol.atoms; bonds = mol.bonds;
+  }
+  let g;
+  if(pts){
+    let cx = 0, cy = 0;
+    pts.forEach(p => { cx += p.x; cy += p.y; });
+    cx /= pts.length; cy /= pts.length;
+    let ext = 1;
+    pts.forEach(p => { ext = Math.max(ext, Math.hypot(p.x - cx, p.y - cy) + p.r); });
+    const k = 10 / ext;
+    g = { pts: pts.map(p => ({ s: p.s, x: (p.x - cx) * k, y: (p.y - cy) * k, r: Math.max(1.6, p.r * k) })), bonds };
+  } else g = null;
+  RX_GLYPH_CACHE[formula] = g;
+  return g;
+}
+const RX_CPK = { H:'#f8f9fa', O:'#ff5c5c', C:'#5c636e', N:'#5c9dff', S:'#ffd43b', Cl:'#40c057', F:'#8ce99a', P:'#ff922b', Na:'#b197fc', K:'#9775fa' };
+const rxCpk = s => RX_CPK[s] || rxColor(s);
+function rxGlyphSvg(g, ion){
+  if(ion){
+    return `<circle r="4.2" fill="${rxCpk(ion)}" stroke="#0b0d11" stroke-width=".8"/>`;
+  }
+  if(!g) return '';
+  let h = '';
+  g.bonds.forEach(([a, b]) => {
+    const p = g.pts[a], q = g.pts[b];
+    h += `<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}"/>`;
+  });
+  g.pts.forEach(p => {
+    h += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" fill="${rxCpk(p.s)}"/>`;
+  });
+  return h;
+}
+
+function rxSolutionModel(info, formula, rnd){
+  const n = 18;
+  const main = rxGlyph(info.glyph || formula);
+  const solG = info.sol && info.sol !== 'NaCl' ? rxGlyph(info.sol) : null;
+  const A = [];
+  for(let i = 0; i < n; i++){
+    let gl = main, ion = null;
+    if(info.sol && i % 4 === 1){
+      if(info.sol === 'NaCl') ion = (i % 8 === 1) ? 'Na' : 'Cl';
+      else gl = solG;
+    }
+    A.push({ s: '', liq: true, col: info.col, x: (rnd() - .5) * 300, y: -70 - rnd() * 70, z: 0, r: 15,
+             vx: (rnd() - .5) * 3, vy: rnd() * 2, rot: rnd() * 360, gl, ion });
+  }
+  const water = !info.thick;
+  return { atoms: A, bonds: [], kin: true, liquid: true, noLabel: true, glyphs: true, col: info.col, clear: true,
+           phys: water
+             ? { g: 0.34, rest: 0.25, floorRest: 0.08, damp: 0.98, cohesion: 0.007, friction: 0.985, maxV: 20 }
+             : { g: 0.3, rest: 0.2, floorRest: 0.05, damp: 0.95, cohesion: 0.012, friction: 0.95, maxV: 14 } };
+}
+
+/* ── 광물 / 원자 구조 탭 ── */
+var RX_VIEW = 'min';
+function rxTabsSync(){
+  document.querySelectorAll('#mTabs button').forEach(b => {
+    const on = b.dataset.v === RX_VIEW;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+function rxSetView(v){
+  if(!RX || !RX.views || v === RX_VIEW) return;
+  RX_VIEW = v;
+  rxTabsSync();
+  const model = RX.views[v];
+  rxMount(model);
+  const col = model.col || (RX.dom ? rxColor(RX.dom[0]) : 'transparent');
+  document.getElementById('mStage').style.setProperty('--glow', col);
+  const st = document.getElementById('mStage');
+  st.classList.remove('swap'); void st.offsetWidth; st.classList.add('swap');
+  rxStart();
+}
+document.querySelectorAll('#mTabs button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); rxSetView(b.dataset.v); }));
+document.getElementById('mTabs').addEventListener('pointerdown', e => e.stopPropagation());
+
+function rxRender(kind, formula, order, c){
+  RX = { kind, formula, order, c };
+  const card = document.getElementById('card');
+  card.classList.remove('is-ok', 'is-loose', 'is-fail', 'is-new', 'is-boom');
+  modal.querySelectorAll('.rx-flash,.rx-crack').forEach(e => e.remove());
+  document.getElementById('mStage').querySelectorAll('.rx-fx').forEach(e => e.remove());
+  const rawName = RX_RAW || document.getElementById('mName').textContent;
+  RX_RAW = '';
+  RX.boom = kind === 'fail' ? 0 : rxBoomLevel(rawName, formula);
+  if(RX.boom) card.classList.add('is-boom');
+  card.classList.add('is-' + kind);
+  document.getElementById('mState').textContent = RX.boom ? t('rxBoom') :
+    kind === 'ok' ? t('ok') : kind === 'loose' ? t('loose') : t('failBadge');
+
+  const len = String(formula || '???').replace(/[₀-₉⁰-⁹⁺⁻\s]/g, '').length;
+  const f = document.getElementById('mFormula');
+  f.classList.toggle('long', len > 8);
+  f.classList.toggle('xlong', len > 14);
+
+  const fromMix = order.map(n => [byNum[n].s, c[n]]);
+  const comp = kind === 'fail' ? null : rxParse(formula);
+  RX.comp = comp;
+  const atoms = comp || fromMix;
+  const rnd = rxRand(formula || fromMix.join());
+
+  let model;
+  const fs = String(formula || '');
+  if(kind === 'fail') model = rxScatter(fromMix, rnd, false);
+  else if(fs.includes('💥')) model = RX_REDUCED ? rxScatter(fromMix, rnd, true) : rxBoomModel(fromMix, rnd, RX.boom || 1);
+  else if(fs.includes('→')) model = rxNuclear(fs);
+  else {
+    const total = atoms.reduce((a, [, n]) => a + n, 0);
+    const cats = atoms.map(([s]) => rxSym(s).c);
+    const hasMetal = cats.some(x => RX_METAL.has(x));
+    const organic = atoms.some(([s]) => s === 'C') && atoms.some(([s]) => s === 'H');
+    const single = atoms.length === 1;
+    const lattice = single
+      ? !(total >= 2 && total <= 3 && !hasMetal)
+      : (hasMetal && !organic) || /^(SiC|BN|SiO₂)/.test(fs);
+    const nm = rawName;
+    const one = fromMix.length === 1 && single && /^[A-Z][a-z]?$/.test(rxPlain(fs)) ? fromMix[0] : null;
+    const liq = !RX_REDUCED && RX_LIQ_NAMED[nm];
+    if(liq) model = rxSolutionModel(liq, fs, rnd);
+    else if(one && !RX_REDUCED && RX_GAS.has(one[0])) model = rxGasModel(one[0], one[1], rnd, nm);
+    else if(one && !RX_REDUCED && RX_LIQUID[one[0]]) model = rxLiquidModel(one[0], one[1], rnd);
+    else model = rxCrystal(fs, nm, atoms)
+         || (lattice ? rxLattice(atoms, rnd) : rxMolecule(atoms, rnd));
+    const mineral = RX.boom ? null : rxMineral(nm);
+    if(mineral && !model.kin) RX.views = { min: mineral, atom: model };
+  }
+  const tabs = document.getElementById('mTabs');
+  if(RX.views){
+    RX_VIEW = 'min';            // 새 결과는 늘 광물 보기로 시작
+    model = RX.views[RX_VIEW];
+    tabs.hidden = false;
+    rxTabsSync();
+  } else tabs.hidden = true;
+  rxMount(model);
+  RX.dom = null;
+  // 배경 발광: 가장 많이 들어간 원소 색
+  let dom = atoms[0];
+  atoms.forEach(x => { if(x[1] > dom[1]) dom = x; });
+  RX.dom = dom; RX.kindNow = kind;
+  const glowCol = RX_M && RX_M.col ? RX_M.col : RX_M && RX_M.liquid ? RX_LIQUID[dom[0]] : RX_M && RX_M.neon ? '#ff5a36' : rxColor(dom[0]);
+  document.getElementById('mStage').style.setProperty('--glow', kind === 'fail' ? 'transparent' : glowCol);
+
+  // 머리: 넣은 원소 타일
+  const head = document.getElementById('mIn');
+  head.className = 'rx-head' + (order.length > 6 ? ' tight' : '');
+  head.innerHTML = order.map(n => {
+    const e = byNum[n];
+    return `<span class="rt${c[n] > 1 ? ' has-n' : ''}" style="--cc:${cssv(CAT[e.c].v)}" title="${elName(e)}">` +
+      `<i>${n}</i><b>${e.s}</b>${c[n] > 1 ? `<em>×${c[n]}</em>` : ''}</span>`;
+  }).join('<span class="rplus" aria-hidden="true">+</span>');
+  head.setAttribute('aria-label', document.getElementById('mEq').textContent);
+
+  document.getElementById('mStrip').innerHTML = atoms.map(([s, n]) =>
+    `<i style="flex-grow:${n};background:${kind === 'fail' ? 'var(--line2)' : rxColor(s)}"></i>`).join('');
+
+  rxShowMore(false);
+}
+
+function rxMoreHtml(){
+  if(!RX) return '';
+  let html = '';
+  const comp = RX.comp;
+  if(!comp){
+    html += `<p class="mm-note">${t('rxNoMass')}</p>`;
+    return html;
+  }
+  const masses = comp.map(([s, n]) => [s, n, rxSym(s).m * n]);
+  const total = masses.reduce((a, x) => a + x[2], 0);
+  const mixture = /[+\-:·]| n|,/.test(RX.formula) || /^\d/.test(RX.formula);
+  if(!mixture){
+    html += `<div class="mm-sec"><div class="mm-h">${t('rxMolar')}</div>` +
+      `<div class="mm-big">${total.toFixed(total < 100 ? 2 : 1)}<small> g/mol</small></div></div>`;
+  }
+  html += `<div class="mm-sec"><div class="mm-h">${t('rxMass')}</div>`;
+  masses.sort((a, b) => b[2] - a[2]).forEach(([s, n, m]) => {
+    const e = rxSym(s);
+    const pct = m / total * 100;
+    html += `<div class="mm-row" style="--cc:${rxColor(s)}">` +
+      `<span class="mm-el"><b>${s}</b> ${elName(e)}</span>` +
+      `<span class="mm-n">×${n}</span>` +
+      `<span class="mm-p">${pct < 0.1 ? '<0.1' : pct.toFixed(1)}%</span>` +
+      `<span class="mm-bar"><i style="width:${pct.toFixed(1)}%"></i></span></div>`;
+  });
+  html += '</div>';
+  if(mixture) html += `<p class="mm-note">${t('rxMixNote')}</p>`;
+  return html;
+}
+
+function rxShowMore(open){
+  RX_OPEN = !!open;
+  const info = document.getElementById('mInfo');
+  const more = document.getElementById('mMore');
+  const btn = document.getElementById('mMoreBtn');
+  if(open) more.innerHTML = rxMoreHtml();
+  info.hidden = RX_OPEN;
+  more.hidden = !RX_OPEN;
+  btn.textContent = RX_OPEN ? t('rxBack') : t('rxMore');
+  btn.setAttribute('aria-expanded', RX_OPEN ? 'true' : 'false');
+  rxWire();
+}
+
+/* ── 도감 줄 + 게이지 ── */
+var RX_GAUGE_T = 0;
+function rxDex(shown, total, wasNew){
+  const card = document.getElementById('card');
+  card.classList.toggle('is-new', !!wasNew);
+  document.getElementById('mDex').innerHTML =
+    (wasNew ? `<span class="rx-new">${t('mixNew')}</span>` : `<span class="rx-old">${t('mixKnown')}</span>`) +
+    `<span class="dexprog">${t('dex')} <b>${shown}</b> / ${total}</span>`;
+  const pct = total ? shown / total * 100 : 0;
+  const from = wasNew ? Math.max(0, shown - 1) : shown;
+  const fill = document.getElementById('mGFill');
+  const num = document.getElementById('mGN');
+  document.getElementById('mGH').textContent = wasNew ? t('rxAdded') : t('rxDexH');
+  document.getElementById('mGFoot').textContent = `/ ${total}`;
+  fill.style.setProperty('--p', pct + '%');
+  fill.style.setProperty('--p0', (total ? from / total * 100 : 0) + '%');
+  num.textContent = from;
+  clearTimeout(RX_GAUGE_T);
+  if(wasNew){
+    RX_GAUGE_T = setTimeout(() => { num.textContent = shown; num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick'); }, 650);
+  } else num.textContent = shown;
+}
+
+/* ── 넣은 원소 → 화학식 선 ── */
+function rxWire(){
+  const wire = document.getElementById('mWire');
+  const card = document.getElementById('card');
+  if(!wire || !card || !modal.classList.contains('on')) return;
+  const tiles = document.getElementById('mIn').querySelectorAll('.rt');
+  const target = document.getElementById(RX_OPEN ? 'mMore' : 'mFormula');
+  if(!tiles.length || !target || getComputedStyle(wire).visibility === 'hidden'){ wire.style.display = 'none'; return; }
+  const cr = card.getBoundingClientRect();
+  const tr = tiles[tiles.length - 1].getBoundingClientRect();
+  const side = card.querySelector('.rx-side').getBoundingClientRect();
+  const fr = target.getBoundingClientRect();
+  const k = card.offsetWidth ? cr.width / card.offsetWidth : 1;
+  const x0 = (tr.right - cr.left) / k + 10;
+  const y0 = (tr.top + tr.height / 2 - cr.top) / k;
+  const x1 = (side.left + side.width / 2 - cr.left) / k;
+  const y1 = (fr.top - cr.top) / k - 10;
+  if(x1 - x0 < 24 || y1 - y0 < 16){ wire.style.display = 'none'; return; }
+  wire.style.display = 'block';
+  wire.style.left = x0 + 'px';
+  wire.style.top = y0 + 'px';
+  wire.style.width = (x1 - x0) + 'px';
+  wire.style.height = (y1 - y0) + 'px';
+}
+addEventListener('resize', () => rxWire());
+document.getElementById('mMoreBtn').addEventListener('click', () => rxShowMore(!RX_OPEN));
+
+function rxReveal(){
+  const card = document.getElementById('card');
+  card.classList.remove('rx-anim', 'rx-settled'); void card.offsetWidth; card.classList.add('rx-anim');
+  rxWire();
+  requestAnimationFrame(rxWire);
+  if(RX && RX.boom && !RX_REDUCED){
+    if(RX_M && RX_M.kin) RX_M.wait = 120;
+    rxBoomFx(RX.boom);
+    rxBoomScreen(RX.boom);
+  }
+  rxStart();
+  if(typeof rxwStart === 'function') rxwStart();
+  rxType();
+  if(card.classList.contains('is-new')) setTimeout(rxBurst, 380);
+  // 키보드로 조작하던 사람에게만 포커스를 옮긴다
+  if(RX_KEY){
+    const w = document.getElementById('mWipe');
+    if(w) try{ w.focus({ preventScroll: true }); }catch(e){}
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════
+   결과 창 배경 물결
+   원본 그림(티달 와베)의 네 줄을 벡터로 따서 담았다. 값은 중심선 기준 픽셀.
+   좌우를 뒤집어 이어 붙이면 끊김 없이 흐른다.
+   한 줄을 깊이 방향으로 여러 겹 복제해 입체감을 낸다.
+   ═══════════════════════════════════════════════════ */
+const RXW_DATA = {
+  b1: [-38,-38,-38,-38,-37,-37,-36,-36,-34,-33,-31,-30,-27,-23,-16,-7,5,14,21,26,28,28,28,27,26,24,22,21,18,16,14,13,12,11,10,10,10,10,10,10,10,10,10,10,11,11,13,14,16,18,20,23,27,31,36,42,48,54,60,65,70,75,80,85,90,95,100,105,110,115,121,126,130,134,136,137,137,137,137,135,130,123,112,97,81,65,48,31,16,1,-13,-26,-38,-50,-62,-73,-84,-94,-102,-110,-118,-125,-132,-139,-144,-147,-149,-149,-148,-146,-143,-139,-135,-130,-126,-122,-120,-119,-119,-121,-124,-127,-129,-131,-132,-133,-133,-134,-135,-137,-139,-140,-142,-142,-143,-143,-142,-141,-138,-135,-132,-129,-126,-123,-120,-116,-111,-107,-103,-98,-95,-91,-88,-84,-81,-77,-73,-69,-66,-63],
+  b2: [129,116,99,81,66,56,51,49,49,48,45,42,37,34,31,29,28,31,38,45,53,60,63,63,63,63,62,62,62,62,61,60,58,55,53,50,48,45,41,39,37,36,36,36,37,38,39,40,40,40,40,40,41,43,46,50,54,58,63,69,78,89,100,111,119,126,131,135,139,142,145,148,151,154,157,160,160,158,153,147,141,136,133,131,129,126,121,116,110,104,98,91,84,75,64,52,40,27,15,4,-7,-18,-28,-37,-46,-54,-61,-67,-74,-80,-86,-91,-96,-100,-104,-108,-111,-113,-114,-114,-113,-113,-112,-110,-108,-106,-103,-100,-98,-95,-93,-91,-89,-88,-86,-83,-80,-76,-73,-70,-68,-66,-65,-64,-62,-59,-53,-46,-36,-25,-14,-4,4,11,16,20,25,28,31,33],
+  d2: [42,42,41,40,37,33,28,22,16,9,3,-3,-9,-16,-21,-26,-32,-37,-42,-47,-53,-58,-64,-70,-75,-80,-85,-89,-93,-97,-100,-104,-107,-110,-114,-117,-120,-123,-125,-127,-128,-128,-128,-129,-130,-131,-133,-136,-138,-141,-144,-146,-149,-150,-152,-153,-154,-154,-155,-156,-156,-156,-156,-157,-157,-158,-157,-157,-156,-154,-152,-150,-148,-145,-142,-139,-135,-132,-129,-126,-123,-120,-116,-113,-109,-106,-102,-98,-94,-88,-82,-76,-70,-63,-57,-51,-45,-40,-35,-31,-27,-22,-18,-14,-9,-4,0,3,7,10,13,16,19,21,24,27,29,32,34,37,39,41,43,44,44,43,41,39,38,37,37,37,36,35,34,33,31,29,26,23,20,18,15,13,11,8,5,2,0,-3,-4,-5,-5,-6,-5,-5,-5,-5,-5,-5],
+  d1: [144,143,140,136,132,126,120,114,108,103,97,91,84,77,70,63,57,52,48,44,41,39,36,34,31,27,22,18,13,8,3,-2,-7,-13,-19,-26,-34,-42,-50,-58,-65,-73,-80,-87,-95,-103,-111,-120,-126,-132,-137,-141,-146,-150,-154,-159,-164,-169,-173,-177,-180,-182,-182,-181,-177,-172,-165,-157,-150,-142,-134,-127,-120,-112,-106,-100,-94,-88,-82,-76,-70,-65,-59,-55,-51,-47,-43,-40,-37,-34,-30,-27,-23,-18,-13,-8,-2,3,8,12,17,21,26,30,36,41,45,49,52,55,58,61,63,65,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,67,67,67,67,67,67,67,67,66,64,62,59,56,53,50,47,43,40,36,32,27,22,19,16]
+};
+
+var RXW = { cv: null, ctx: null, raf: 0, t0: 0, w: 0, h: 0, mx: 0, my: 0, cx: 0, cy: 0, kick: 0 };
+const RXW_LINES = [
+  { d: RXW_DATA.d1, rgb: '44,58,78',   a: .9, sp: 0.0000105, off: .31, lw: 1.3, dz: 0 },
+  { d: RXW_DATA.d2, rgb: '58,76,100',  a: .9, sp: 0.0000140, off: .77, lw: 1.3, dz: 10 },
+  { d: RXW_DATA.b2, rgb: '112,146,190', a: .85, sp: 0.0000170, off: .12, lw: 1.6, dz: 18, glow: true },
+  { d: RXW_DATA.b1, rgb: '112,146,190', a: 1,  sp: 0.0000215, off: .55, lw: 1.8, dz: 0, glow: true },
+];
+const RXW_ECHO = 9;
+
+function rxwSample(arr, s){
+  // s: 0~2 주기. 1 넘으면 뒤집어서
+  s = ((s % 2) + 2) % 2;
+  const u = s <= 1 ? s : 2 - s;
+  const f = u * (arr.length - 1);
+  const i = Math.floor(f), k = f - i;
+  return arr[i] + ((arr[Math.min(arr.length - 1, i + 1)] - arr[i]) * k);
+}
+
+function rxwInit(){
+  if(RXW.cv) return;
+  const cv = document.getElementById('rxWaves');
+  if(!cv) return;
+  RXW.cv = cv;
+  RXW.ctx = cv.getContext('2d');
+}
+
+function rxwSize(){
+  const cv = RXW.cv;
+  if(!cv) return false;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if(!w || !h) return false;
+  if(w !== RXW.w || h !== RXW.h){
+    RXW.w = w; RXW.h = h;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    RXW.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  return true;
+}
+
+function rxwDraw(t){
+  const ctx = RXW.ctx, W = RXW.w, H = RXW.h;
+  ctx.clearRect(0, 0, W, H);
+  // 시점이 마우스를 천천히 따라간다
+  RXW.cx += (RXW.mx - RXW.cx) * 0.035;
+  RXW.cy += (RXW.my - RXW.cy) * 0.035;
+  const base = H * (0.66 + RXW.cy * 0.02);   // 원본처럼 아래쪽에 깔린다
+  RXW.kick *= 0.965;                         // 폭발 충격이 서서히 가라앉음
+  const amp = H / 1181 * 1.35 * (1 + RXW.kick * (1 + 0.5 * Math.sin(t / 60)));
+  const STEPS = Math.max(60, Math.round(W / 7));
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+
+  // 뒤쪽 겹부터 그린다
+  for(let k = RXW_ECHO - 1; k >= 0; k--){
+    const z = k * 34;
+    const f = 1 / (1 + z / 260);
+    const fade = Math.pow(1 - k / RXW_ECHO, 1.7);
+    RXW_LINES.forEach((L, li) => {
+      const zz = z + L.dz;
+      const ff = 1 / (1 + zz / 260);
+      const breathe = 1 + 0.14 * Math.sin(t / 1900 + li * 1.7 + k * 0.25);
+      const shift = t * L.sp + L.off + k * 0.018;
+      const horizon = H * (0.38 - RXW.cy * 0.03);
+      ctx.beginPath();
+      for(let i = 0; i <= STEPS; i++){
+        const u = i / STEPS;
+        const v = rxwSample(L.d, u * 0.9 + shift);
+        const wx = (u - 0.5) * W * 1.12 - RXW.cx * 70;
+        const wy = base - horizon + v * amp * breathe - k * 5;
+        const x = W / 2 + wx * ff;
+        const y = horizon + wy * ff;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      if(k === 0 && L.glow){
+        ctx.strokeStyle = `rgba(${L.rgb},.13)`;
+        ctx.lineWidth = 7;
+        ctx.stroke();
+      }
+      ctx.strokeStyle = `rgba(${L.rgb},${(L.a * fade * (k ? .55 : 1)).toFixed(3)})`;
+      ctx.lineWidth = Math.max(.5, L.lw * ff);
+      ctx.stroke();
+    });
+  }
+}
+
+function rxwLoop(now){
+  if(!modal.classList.contains('on')){ RXW.raf = 0; return; }
+  if(rxwSize()) rxwDraw(now);
+  RXW.raf = RX_REDUCED ? 0 : requestAnimationFrame(rxwLoop);
+}
+function rxwStart(){
+  rxwInit();
+  if(RXW.raf) return;
+  RXW.raf = requestAnimationFrame(rxwLoop);
+}
+addEventListener('pointermove', e => {
+  if(!modal.classList.contains('on')) return;
+  RXW.mx = (e.clientX / innerWidth) * 2 - 1;
+  RXW.my = (e.clientY / innerHeight) * 2 - 1;
+}, { passive: true });
 
 /* ── 모달 버튼: 비우고 계속 ── */
 document.getElementById('mWipe').addEventListener('click', () => {
@@ -6541,6 +9140,45 @@ function achHTML(){
       <span class="achs">${sub}</span>
     </div>`;
   }).join('')}</div>`;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   특수 발견
+   원소 하나만 잔뜩 모아서 나오는 결과들.
+   화합물이 아니라 도감(193종)에는 넣지 않고 따로 모은다.
+   ═══════════════════════════════════════════════════ */
+function specialList(){
+  const out = [], seen = new Set();
+  const inDex = new Set(allEntries().map(x => x.name));
+  for(const sym in SINGLE){
+    for(const t of SINGLE[sym]){
+      const name = t[3];
+      if(!name || seen.has(name) || inDex.has(name)) continue;
+      seen.add(name);
+      out.push({ sym, lo:t[0], hi:t[1], formula:t[2], name, sub:t[4] });
+    }
+  }
+  return out;
+}
+
+function specialHTML(){
+  const list = specialList();
+  const got = list.filter(x => found.has(x.name)).length;
+  return `
+    <div class="shellTitle">${t('spTitle')}
+      <span class="usecnt">${got} / ${list.length}</span>
+    </div>
+    <div class="sprow">${list.map(x => {
+      const on = found.has(x.name);
+      const r = on ? locRec([x.formula, x.name, x.sub]) : null;
+      const hint = x.lo === x.hi ? `${x.sym}×${x.lo}` : `${x.sym}×${x.lo}~${x.hi}`;
+      return `<div class="sp${on ? ' on' : ''}">
+        <div class="spf">${on ? fmtFormula(r[0]) : '???'}</div>
+        <div class="spn">${on ? r[1] : '? ? ?'}</div>
+        <div class="sps">${on ? (r[2] || '') : hint}</div>
+      </div>`;
+    }).join('')}</div>`;
 }
 
 /* 도감이 저장될 때마다 확인 */
