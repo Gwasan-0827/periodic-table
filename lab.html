@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>실험실 (공사 중) — 주기율표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbit&display=swap">
+<style>
+  :root{
+    --bg:#0c1016; --floor:#131b25; --wall:#101722; --ink:#e8edf5; --dim:#8fa1b7;
+    --door:#1b2533; --frame:#2a3647; --tape:#ffd43b; --tape-ink:#15171b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--ink);
+    font-family:'Orbit','Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+    display:flex;flex-direction:column;min-height:100%;
+    padding:max(16px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, var(--wall) 0 68%, var(--floor) 68% 100%);
+  }
+  .top{display:flex;align-items:center;max-width:880px;width:100%;margin:0 auto}
+  .back{
+    display:inline-flex;align-items:center;gap:6px;color:#c9d3e0;font-size:14px;
+    border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 13px;background:none;font-family:inherit;cursor:pointer;
+  }
+  .back:hover{border-color:rgba(255,255,255,.32);color:#fff}
+  .back:focus-visible{outline:2px solid #a5d8ff;outline-offset:3px}
+
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:24px 0}
+
+  /* 실험실 문 */
+  .door{
+    position:relative;width:min(260px,62vw);aspect-ratio:5/9;border-radius:6px 6px 0 0;
+    background:linear-gradient(90deg,#18212d,var(--door) 30%,#1e2939 70%,#18212d);
+    border:10px solid var(--frame);border-bottom:none;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .door::after{   /* 문 밑 틈으로 새는 빛 */
+    content:'';position:absolute;left:-10px;right:-10px;bottom:-6px;height:6px;
+    background:radial-gradient(50% 100% at 50% 0,rgba(165,216,255,.35),transparent 70%);
+  }
+  .window{
+    position:absolute;left:18%;right:18%;top:12%;height:30%;border-radius:4px;
+    background:linear-gradient(160deg,rgba(159,199,232,.28),rgba(159,199,232,.08) 60%,rgba(159,199,232,.18));
+    border:3px solid #33415a;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:clamp(12px,3.4vw,15px);line-height:1.35;color:#dfeaf5;
+  }
+  .window b{display:block;font-size:1.25em}
+  .knob{position:absolute;right:12%;top:56%;width:14px;height:14px;border-radius:50%;background:#aab4c2;box-shadow:inset -2px -2px 3px rgba(0,0,0,.4)}
+  .sign{
+    position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+    font-size:11px;color:var(--dim);border:1px solid #33415a;border-radius:4px;padding:3px 8px;white-space:nowrap;
+  }
+  /* 공사 중 테이프 두 줄 (X자) */
+  .tape{
+    position:absolute;left:-18%;right:-18%;top:50%;height:30px;
+    background:repeating-linear-gradient(-45deg,var(--tape) 0 16px,var(--tape-ink) 16px 32px);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.45);
+  }
+  .tape span{background:var(--tape);color:var(--tape-ink);font-weight:800;font-size:12px;padding:2px 10px;white-space:nowrap}
+  .tape.a{transform:translateY(-50%) rotate(-24deg)}
+  .tape.b{transform:translateY(-50%) rotate(20deg);top:62%}
+
+  .copy{text-align:center;max-width:30em}
+  .copy h1{margin:0 0 10px;font-size:clamp(22px,5vw,30px);font-weight:800}
+  .copy p{margin:0;color:#c9d3e0;font-size:15px;line-height:1.7}
+  .copy .soon{margin-top:14px;font-size:13px;color:var(--dim)}
+
+  @media (prefers-reduced-motion:no-preference){
+    .door::after{animation:leak 3.2s ease-in-out infinite}
+    @keyframes leak{50%{opacity:.45}}
+  }
+</style>
+</head>
+<body>
+  <div class="top">
+    <button type="button" class="back" id="back">‹ 주기율표로 돌아가기</button>
+  </div>
+  <main>
+    <div class="door" role="img" aria-label="공사 중 테이프가 붙은 화학 실험실 문">
+      <div class="window"><div><b>화학 실험실</b>관계자 외 출입 금지</div></div>
+      <div class="knob"></div>
+      <div class="sign">실험실 · 공사 중</div>
+      <div class="tape a"><span>공사 중</span></div>
+      <div class="tape b"><span>출입 금지</span></div>
+    </div>
+    <div class="copy">
+      <h1>실험실은 아직 짓는 중이에요</h1>
+      <p>선반을 들이고 비커를 닦는 중이에요.<br>문이 열리면 주기율표에서 찾은 물질로 직접 실험할 수 있어요.</p>
+      <p class="soon">그동안 주기율표에서 조합을 더 찾아 두세요. 실험실 재료가 돼요.</p>
+    </div>
+  </main>
+<script>
+  // 주기율표에서 왔으면 뒤로, 바로 열었으면 같은 폴더의 index.html 로
+  document.getElementById('back').addEventListener('click', () => {
+    if(document.referrer && history.length > 1) history.back();
+    else location.href = 'index.html';
+  });
+  // 영어로 보던 사람은 영어로
+  try{
+    if(localStorage.getItem('pt_lang') === 'en'){
+      document.documentElement.lang = 'en';
+      document.title = 'Lab (under construction) — Periodic table';
+      document.getElementById('back').textContent = '‹ Back to the table';
+      document.querySelector('.window').innerHTML = '<div><b>Chemistry lab</b>Staff only</div>';
+      document.querySelector('.sign').textContent = 'Lab · under construction';
+      document.querySelector('.tape.a span').textContent = 'UNDER CONSTRUCTION';
+      document.querySelector('.tape.b span').textContent = 'DO NOT ENTER';
+      document.querySelector('.copy h1').textContent = 'The lab is still being built';
+      document.querySelectorAll('.copy p')[0].innerHTML = 'We are moving in shelves and washing beakers.<br>When the door opens you will be able to experiment with what you found on the table.';
+      document.querySelector('.soon').textContent = 'Meanwhile, find more combinations on the table — they will be your lab supplies.';
+      document.querySelector('.door').setAttribute('aria-label', 'A chemistry lab door taped off for construction');
+    }
+  }catch(e){}
+</script>
+</body>
+</html>
