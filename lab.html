@@ -8,114 +8,346 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbit&display=swap">
 <style>
   :root{
-    --bg:#0c1016; --floor:#131b25; --wall:#101722; --ink:#e8edf5; --dim:#8fa1b7;
-    --door:#1b2533; --frame:#2a3647; --tape:#ffd43b; --tape-ink:#15171b;
+    --wall:#101722; --floor:#131b25; --ink:#e8edf5; --dim:#8fa1b7;
+    --door:#1b2533; --frame:#2a3647; --tape:#ffd43b; --tape-ink:#15171b; --warm:#ffd8a8;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0;color:var(--ink);
+    margin:0;color:var(--ink);overflow-x:hidden;
     font-family:'Orbit','Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
     display:flex;flex-direction:column;min-height:100%;
     padding:max(16px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));
     background:linear-gradient(180deg, var(--wall) 0 68%, var(--floor) 68% 100%);
   }
-  .top{display:flex;align-items:center;max-width:880px;width:100%;margin:0 auto}
-  .back{
+  body.shake main{animation:shake .45s}
+  @keyframes shake{20%{transform:translate(-5px,2px)}40%{transform:translate(5px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .tbtn{
     display:inline-flex;align-items:center;gap:6px;color:#c9d3e0;font-size:14px;
     border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 13px;background:none;font-family:inherit;cursor:pointer;
   }
-  .back:hover{border-color:rgba(255,255,255,.32);color:#fff}
-  .back:focus-visible{outline:2px solid #a5d8ff;outline-offset:3px}
+  .tbtn:hover{border-color:rgba(255,255,255,.32);color:#fff}
+  button:focus-visible{outline:2px solid #a5d8ff;outline-offset:3px}
 
-  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:24px 0}
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px 0}
 
-  /* 실험실 문 */
+  /* ── 문 ── */
+  .stage{position:relative;width:min(260px,62vw);aspect-ratio:5/9;perspective:900px}
+  .frame{position:absolute;inset:0;border:10px solid var(--frame);border-bottom:none;border-radius:6px 6px 0 0;pointer-events:none;z-index:4}
+  .inside{   /* 문 뒤 실험실 (문이 열리면 보인다) */
+    position:absolute;inset:10px 10px 0;overflow:hidden;border-radius:2px;
+    background:radial-gradient(90% 70% at 50% 40%,#3a2f22,#17120d 80%);
+  }
+  .inside svg{width:100%;height:100%;display:block}
   .door{
-    position:relative;width:min(260px,62vw);aspect-ratio:5/9;border-radius:6px 6px 0 0;
+    position:absolute;inset:10px 10px 0;z-index:3;cursor:pointer;border:0;padding:0;
     background:linear-gradient(90deg,#18212d,var(--door) 30%,#1e2939 70%,#18212d);
-    border:10px solid var(--frame);border-bottom:none;
-    box-shadow:0 30px 60px -30px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.04);
+    transform-origin:0 50%;transition:transform .9s cubic-bezier(.3,.7,.3,1);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
   }
-  .door::after{   /* 문 밑 틈으로 새는 빛 */
-    content:'';position:absolute;left:-10px;right:-10px;bottom:-6px;height:6px;
-    background:radial-gradient(50% 100% at 50% 0,rgba(165,216,255,.35),transparent 70%);
+  .door.ajar{transform:rotateY(-34deg)}
+  .door.slam{transition:transform .12s ease-in}
+  .stage::after{   /* 문 밑 틈으로 새는 빛 */
+    content:'';position:absolute;left:0;right:0;bottom:-6px;height:6px;z-index:5;
+    background:radial-gradient(50% 100% at 50% 0,rgba(255,216,168,.35),transparent 70%);
   }
+  @media (prefers-reduced-motion:no-preference){ .stage::after{animation:leak 3.2s ease-in-out infinite} @keyframes leak{50%{opacity:.45}} }
+
   .window{
-    position:absolute;left:18%;right:18%;top:12%;height:30%;border-radius:4px;
-    background:linear-gradient(160deg,rgba(159,199,232,.28),rgba(159,199,232,.08) 60%,rgba(159,199,232,.18));
-    border:3px solid #33415a;
-    display:flex;align-items:center;justify-content:center;text-align:center;
-    font-size:clamp(12px,3.4vw,15px);line-height:1.35;color:#dfeaf5;
+    position:absolute;left:18%;right:18%;top:12%;height:30%;border-radius:4px;overflow:hidden;
+    border:3px solid #33415a;background:#241c14;cursor:pointer;padding:0;
   }
-  .window b{display:block;font-size:1.25em}
-  .knob{position:absolute;right:12%;top:56%;width:14px;height:14px;border-radius:50%;background:#aab4c2;box-shadow:inset -2px -2px 3px rgba(0,0,0,.4)}
-  .sign{
-    position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
-    font-size:11px;color:var(--dim);border:1px solid #33415a;border-radius:4px;padding:3px 8px;white-space:nowrap;
+  .window svg{position:absolute;inset:0;width:100%;height:100%}
+  .fog{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    background:linear-gradient(160deg,#5b7288,#3e5064 60%,#50667c);
+    font-size:clamp(12px,3.4vw,15px);line-height:1.35;color:#eef4fb;
+    transition:opacity .5s ease;
   }
-  /* 공사 중 테이프 두 줄 (X자) */
+  .fog b{display:block;font-size:1.25em}
+  .window.clear .fog{opacity:0;transition:opacity .35s ease}
+  .window .wipe{position:absolute;top:-20%;bottom:-20%;width:40%;left:-50%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);opacity:0}
+  .window.clear .wipe{animation:wipe .6s ease-out}
+  @keyframes wipe{0%{left:-50%;opacity:1}100%{left:120%;opacity:0}}
+
+  .knob{
+    position:absolute;right:10%;top:44%;width:22px;height:22px;z-index:7;border-radius:50%;border:0;padding:0;cursor:pointer;
+    background:radial-gradient(circle at 35% 35%,#dfe5ec,#8a94a3 70%);box-shadow:0 2px 4px rgba(0,0,0,.5);
+  }
+  .knob.rattle{animation:rattle .5s}
+  @keyframes rattle{15%{transform:rotate(-35deg)}30%{transform:rotate(5deg)}45%{transform:rotate(-30deg)}60%{transform:rotate(3deg)}80%{transform:rotate(-12deg)}}
+  .door.jiggle{animation:jiggle .5s}
+  @keyframes jiggle{20%,60%{translate:2px 0}40%,80%{translate:-2px 0}}
+  .sign{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);font-size:11px;color:var(--dim);border:1px solid #33415a;border-radius:4px;padding:3px 8px;white-space:nowrap;pointer-events:none}
+  .rip{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;border:2px solid rgba(255,255,255,.35);pointer-events:none;animation:rip .5s ease-out forwards}
+  @keyframes rip{to{transform:scale(4);opacity:0}}
+
+  /* 공사 중 테이프 (끌어서 뗄 수 있다) */
   .tape{
-    position:absolute;left:-18%;right:-18%;top:50%;height:30px;
+    position:absolute;left:-18%;right:-18%;top:50%;height:30px;z-index:6;border:0;padding:0;cursor:grab;touch-action:none;
     background:repeating-linear-gradient(-45deg,var(--tape) 0 16px,var(--tape-ink) 16px 32px);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 10px rgba(0,0,0,.45);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.45);
+    transition:transform .7s cubic-bezier(.3,1.5,.4,1);
   }
-  .tape span{background:var(--tape);color:var(--tape-ink);font-weight:800;font-size:12px;padding:2px 10px;white-space:nowrap}
-  .tape.a{transform:translateY(-50%) rotate(-24deg)}
-  .tape.b{transform:translateY(-50%) rotate(20deg);top:62%}
+  .tape span{background:var(--tape);color:var(--tape-ink);font-weight:800;font-size:12px;padding:2px 10px;white-space:nowrap;pointer-events:none}
+  .tape.a{transform-origin:6% 50%;transform:translateY(-50%) rotate(-24deg)}
+  .tape.b{transform-origin:94% 50%;transform:translateY(-50%) rotate(20deg);top:62%}
+  .tape.a.peeled{transform:translateY(-50%) rotate(58deg)}
+  .tape.b.peeled{transform:translateY(-50%) rotate(-66deg)}
+  .tape.wig{animation:wig .35s}
+  @keyframes wig{50%{filter:brightness(1.2);margin-top:-3px}}
+
+  /* 말풍선: 안에서 들리는 목소리 / 문 아래 자막 */
+  .say{
+    position:absolute;left:50%;top:-14px;transform:translate(-50%,-100%) scale(.9);z-index:8;opacity:0;pointer-events:none;
+    background:#f1f3f5;color:#15171b;font-weight:700;font-size:14px;padding:8px 12px;border-radius:12px;white-space:nowrap;
+    transition:opacity .2s, transform .2s;
+  }
+  .say::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#f1f3f5}
+  .say.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+  .cap{min-height:1.5em;font-size:14px;color:#c9d3e0;text-align:center;transition:opacity .3s}
+  .cap:empty{opacity:0}
 
   .copy{text-align:center;max-width:30em}
   .copy h1{margin:0 0 10px;font-size:clamp(22px,5vw,30px);font-weight:800}
   .copy p{margin:0;color:#c9d3e0;font-size:15px;line-height:1.7}
   .copy .soon{margin-top:14px;font-size:13px;color:var(--dim)}
-
-  @media (prefers-reduced-motion:no-preference){
-    .door::after{animation:leak 3.2s ease-in-out infinite}
-    @keyframes leak{50%{opacity:.45}}
-  }
+  .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;z-index:20;
+    background:#141a22;border:1px solid #c9a227;border-radius:12px;padding:10px 16px;text-align:center;transition:.3s}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast small{display:block;color:#ffd43b;font-size:11px;margin-bottom:2px}
+  @media (prefers-reduced-motion:reduce){ body.shake main,.knob.rattle,.door.jiggle{animation:none} .door{transition:none} }
 </style>
 </head>
 <body>
   <div class="top">
-    <button type="button" class="back" id="back">‹ 주기율표로 돌아가기</button>
+    <button type="button" class="tbtn" id="back">‹ 주기율표로 돌아가기</button>
+    <button type="button" class="tbtn" id="snd" aria-pressed="true">🔊</button>
   </div>
   <main>
-    <div class="door" role="img" aria-label="공사 중 테이프가 붙은 화학 실험실 문">
-      <div class="window"><div><b>화학 실험실</b>관계자 외 출입 금지</div></div>
-      <div class="knob"></div>
-      <div class="sign">실험실 · 공사 중</div>
-      <div class="tape a"><span>공사 중</span></div>
-      <div class="tape b"><span>출입 금지</span></div>
+    <div class="stage" id="stage">
+      <!-- 문 뒤: 짓다 만 실험실 -->
+      <div class="inside" aria-hidden="true">
+        <svg viewBox="0 0 100 180" preserveAspectRatio="xMidYMid slice">
+          <rect x="0" y="0" width="100" height="180" fill="#2a2119"/>
+          <circle cx="70" cy="30" r="26" fill="#ffd8a8" opacity=".18"/>
+          <path d="M66 10 v10 M58 20 h16 l-3 8 h-10 z" stroke="#caa66e" fill="#ffe0a8" stroke-width="1.2"/>
+          <g stroke="#6b5840" stroke-width="2"><path d="M8 52 h58 M8 80 h58"/></g>
+          <g>
+            <rect x="12" y="40" width="6" height="12" rx="1.5" fill="#74c0fc"/><rect x="21" y="43" width="5" height="9" rx="1.5" fill="#ff8787"/>
+            <rect x="29" y="38" width="7" height="14" rx="1.5" fill="#8ce99a"/><rect x="40" y="44" width="5" height="8" rx="1.5" fill="#ffd43b"/>
+            <rect x="15" y="69" width="7" height="11" rx="1.5" fill="#b197fc"/><rect x="26" y="72" width="5" height="8" rx="1.5" fill="#63e6be"/>
+          </g>
+          <rect x="6" y="120" width="60" height="6" fill="#8a6d4a"/><path d="M10 126 v34 M62 126 v20" stroke="#8a6d4a" stroke-width="3"/>
+          <path d="M40 112 q4 -10 8 0 z" fill="#cfe9ff" opacity=".8"/><rect x="41" y="108" width="6" height="4" fill="#cfe9ff" opacity=".8"/>
+          <g stroke="#9c8a6e" stroke-width="2.4"><path d="M78 70 l10 100 M92 70 l-4 100"/><path d="M80 90 h11 M82 112 h9 M84 134 h7 M86 156 h5"/></g>
+          <rect x="70" y="160" width="14" height="12" rx="2" fill="#f59f00"/>
+        </svg>
+      </div>
+      <div class="door" id="door" role="button" tabindex="0" aria-label="문 두드리기">
+        <button type="button" class="window" id="win" aria-label="창문 들여다보기">
+          <svg viewBox="0 0 100 60" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect width="100" height="60" fill="#2a2119"/>
+            <circle cx="70" cy="18" r="18" fill="#ffd8a8" opacity=".25"/>
+            <path d="M8 34 h60" stroke="#6b5840" stroke-width="2"/>
+            <rect x="12" y="22" width="6" height="12" rx="1.5" fill="#74c0fc"/><rect x="21" y="25" width="5" height="9" rx="1.5" fill="#ff8787"/>
+            <rect x="29" y="20" width="7" height="14" rx="1.5" fill="#8ce99a"/><rect x="40" y="26" width="5" height="8" rx="1.5" fill="#ffd43b"/>
+            <g stroke="#9c8a6e" stroke-width="2"><path d="M78 10 l8 50 M92 10 l-4 50 M80 24 h10 M82 40 h8"/></g>
+          </svg>
+          <span class="fog"><span><b>화학 실험실</b><span class="fog-sub">관계자 외 출입 금지</span></span></span>
+          <span class="wipe"></span>
+        </button>
+        <button type="button" class="knob" id="knob" aria-label="손잡이 돌리기"></button>
+        <span class="sign">실험실 · 공사 중</span>
+      </div>
+      <div class="frame"></div>
+      <button type="button" class="tape a" data-t="a" aria-label="테이프 떼기"><span>공사 중</span></button>
+      <button type="button" class="tape b" data-t="b" aria-label="테이프 떼기"><span>출입 금지</span></button>
+      <div class="say" id="say" aria-live="polite"></div>
     </div>
+    <p class="cap" id="cap" aria-live="polite"></p>
     <div class="copy">
       <h1>실험실은 아직 짓는 중이에요</h1>
       <p>선반을 들이고 비커를 닦는 중이에요.<br>문이 열리면 주기율표에서 찾은 물질로 직접 실험할 수 있어요.</p>
       <p class="soon">그동안 주기율표에서 조합을 더 찾아 두세요. 실험실 재료가 돼요.</p>
     </div>
   </main>
+  <div class="toast" id="toast" role="status"></div>
 <script>
-  // 주기율표에서 왔으면 뒤로, 바로 열었으면 같은 폴더의 index.html 로
-  document.getElementById('back').addEventListener('click', () => {
-    if(document.referrer && history.length > 1) history.back();
-    else location.href = 'index.html';
+(() => {
+  const EN = (() => { try{ return localStorage.getItem('pt_lang') === 'en'; }catch(e){ return false; } })();
+  const T = EN ? {
+    back:'‹ Back to the table', win1:'Chemistry lab', win2:'Staff only', sign:'Lab · under construction',
+    tapeA:'UNDER CONSTRUCTION', tapeB:'DO NOT ENTER', h1:'The lab is still being built',
+    p1:'We are moving in shelves and washing beakers.<br>When the door opens you will be able to experiment with what you found on the table.',
+    soon:'Meanwhile, find more combinations on the table — they will be your lab supplies. (Feel free to poke at the door.)',
+    locked:'Locked.', retape:'…better stick that back on.', peekSay:'No peeking!',
+    replies:['Under construction!', 'Not yet~', 'Washing beakers!', 'Who is it?', 'Just a bit longer!'],
+    achTop:'Hidden achievement', achName:'No peeking', knock:'Knock on the door', win:'Look through the window', knob:'Turn the handle', tape:'Peel the tape',
+    title:'Lab (under construction) — Periodic table', doorLabel:'A chemistry lab door taped off for construction'
+  } : {
+    back:'‹ 주기율표로 돌아가기', win1:'화학 실험실', win2:'관계자 외 출입 금지', sign:'실험실 · 공사 중',
+    tapeA:'공사 중', tapeB:'출입 금지', h1:'실험실은 아직 짓는 중이에요',
+    p1:'선반을 들이고 비커를 닦는 중이에요.<br>문이 열리면 주기율표에서 찾은 물질로 직접 실험할 수 있어요.',
+    soon:'그동안 주기율표에서 조합을 더 찾아 두세요. 실험실 재료가 돼요. (문은 만져봐도 돼요)',
+    locked:'잠겨 있어요', retape:'…다시 붙여야겠다', peekSay:'엿보기 금지!',
+    replies:['공사 중이에요!', '아직이에요~', '비커 닦는 중!', '누구세요?', '조금만 기다려요!'],
+    achTop:'숨은 업적', achName:'엿보기 금지', knock:'문 두드리기', win:'창문 들여다보기', knob:'손잡이 돌리기', tape:'테이프 떼기',
+    title:'실험실 (공사 중) — 주기율표', doorLabel:'공사 중 테이프가 붙은 화학 실험실 문'
+  };
+  const $ = s => document.querySelector(s);
+  if(EN){
+    document.documentElement.lang = 'en'; document.title = T.title;
+    $('.fog b').textContent = T.win1; $('.fog-sub').textContent = T.win2; $('.sign').textContent = T.sign;
+    $('.tape.a span').textContent = T.tapeA; $('.tape.b span').textContent = T.tapeB;
+    $('.copy h1').textContent = T.h1; $('.copy p').innerHTML = T.p1;
+  }
+  $('#back').textContent = T.back;
+  $('.soon').textContent = T.soon;
+  $('#door').setAttribute('aria-label', T.knock); $('#win').setAttribute('aria-label', T.win);
+  $('#knob').setAttribute('aria-label', T.knob); document.querySelectorAll('.tape').forEach(t => t.setAttribute('aria-label', T.tape));
+
+  // 돌아가기: 주기율표에서 왔으면 뒤로, 바로 열었으면 같은 폴더의 index.html
+  $('#back').addEventListener('click', () => {
+    if(document.referrer && history.length > 1) history.back(); else location.href = 'index.html';
   });
-  // 영어로 보던 사람은 영어로
-  try{
-    if(localStorage.getItem('pt_lang') === 'en'){
-      document.documentElement.lang = 'en';
-      document.title = 'Lab (under construction) — Periodic table';
-      document.getElementById('back').textContent = '‹ Back to the table';
-      document.querySelector('.window').innerHTML = '<div><b>Chemistry lab</b>Staff only</div>';
-      document.querySelector('.sign').textContent = 'Lab · under construction';
-      document.querySelector('.tape.a span').textContent = 'UNDER CONSTRUCTION';
-      document.querySelector('.tape.b span').textContent = 'DO NOT ENTER';
-      document.querySelector('.copy h1').textContent = 'The lab is still being built';
-      document.querySelectorAll('.copy p')[0].innerHTML = 'We are moving in shelves and washing beakers.<br>When the door opens you will be able to experiment with what you found on the table.';
-      document.querySelector('.soon').textContent = 'Meanwhile, find more combinations on the table — they will be your lab supplies.';
-      document.querySelector('.door').setAttribute('aria-label', 'A chemistry lab door taped off for construction');
+
+  /* ── 소리 (코드로 만든다) ── */
+  let on = true; try{ on = localStorage.getItem('pt_labsnd') !== '0'; }catch(e){}
+  const sndBtn = $('#snd');
+  const syncSnd = () => { sndBtn.textContent = on ? '🔊' : '🔇'; sndBtn.setAttribute('aria-pressed', on); };
+  syncSnd();
+  sndBtn.addEventListener('click', () => { on = !on; syncSnd(); try{ localStorage.setItem('pt_labsnd', on ? '1' : '0'); }catch(e){} });
+  let AC = null;
+  const ac = () => { if(!on) return null; try{ AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if(AC.state === 'suspended') AC.resume(); }catch(e){ return null; } return AC; };
+  const tone = (f, d, type, v, at = 0, f2) => {
+    const a = ac(); if(!a) return; const t = a.currentTime + at;
+    const o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+    if(f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + 0.05);
+  };
+  const noise = (d, v, type, freq, at = 0, q = 1) => {
+    const a = ac(); if(!a) return; const t = a.currentTime + at;
+    const len = Math.floor(a.sampleRate * d), b = a.createBuffer(1, len, a.sampleRate), c = b.getChannelData(0);
+    for(let i = 0; i < len; i++) c[i] = Math.random() * 2 - 1;
+    const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = b; f.type = type; f.frequency.value = freq; f.Q.value = q;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+  };
+  const S = {
+    knock(){ noise(0.09, 0.5, 'lowpass', 420); tone(110, 0.1, 'sine', 0.35, 0, 70); },
+    rattle(){ for(let i = 0; i < 6; i++) tone(900 + Math.random() * 500, 0.03, 'square', 0.04, i * 0.07); noise(0.12, 0.25, 'lowpass', 300, 0.42); },
+    rip(){ noise(0.38, 0.25, 'highpass', 1800); tone(700, 0.3, 'sawtooth', 0.02, 0, 300); },
+    stick(){ noise(0.06, 0.2, 'bandpass', 1200, 0, 3); tone(1400, 0.05, 'sine', 0.05, 0.05); },
+    creak(){ tone(210, 0.8, 'sawtooth', 0.035, 0, 120); noise(0.8, 0.05, 'bandpass', 600, 0, 6); },
+    slam(){ noise(0.45, 0.8, 'lowpass', 260); tone(70, 0.45, 'sine', 0.6, 0, 40); },
+    wipe(){ noise(0.35, 0.12, 'bandpass', 3000, 0, 2); },
+    ding(){ [880, 1175, 1568].forEach((f, i) => tone(f, 0.5, 'triangle', 0.06, i * 0.08)); },
+  };
+
+  /* ── 말풍선·자막 ── */
+  const say = $('#say'), cap = $('#cap');
+  let sayT, capT;
+  const speak = (txt, ms = 1600) => { say.textContent = txt; say.classList.add('on'); clearTimeout(sayT); sayT = setTimeout(() => say.classList.remove('on'), ms); };
+  const caption = (txt, ms = 1800) => { cap.textContent = txt; clearTimeout(capT); capT = setTimeout(() => { cap.textContent = ''; }, ms); };
+  const shake = () => { document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); };
+  let busy = false;
+
+  /* ── 손잡이: 덜컥덜컥, 잠겨 있다 ── */
+  const knob = $('#knob'), door = $('#door');
+  knob.addEventListener('click', e => {
+    e.stopPropagation(); if(busy) return;
+    knob.classList.remove('rattle'); door.classList.remove('jiggle'); void knob.offsetWidth;
+    knob.classList.add('rattle'); door.classList.add('jiggle');
+    S.rattle(); caption(T.locked);
+  });
+
+  /* ── 창문: 김 서린 유리를 닦아 잠깐 들여다본다 ── */
+  const win = $('#win');
+  let winT;
+  win.addEventListener('click', e => {
+    e.stopPropagation(); if(busy) return;
+    win.classList.remove('clear'); void win.offsetWidth; win.classList.add('clear');
+    S.wipe(); clearTimeout(winT);
+    winT = setTimeout(() => win.classList.remove('clear'), 2400);
+  });
+
+  /* ── 노크: 가끔 대답이 온다. 빠르게 일곱 번이면 문이 열렸다가 쾅 ── */
+  let knocks = 0, lastKnock = 0;
+  const knock = (x, y) => {
+    if(busy) return;
+    S.knock();
+    const r = door.getBoundingClientRect(), dot = document.createElement('span');
+    dot.className = 'rip'; dot.style.left = (x - r.left) + 'px'; dot.style.top = (y - r.top) + 'px';
+    door.appendChild(dot); setTimeout(() => dot.remove(), 520);
+    const now = performance.now();
+    knocks = now - lastKnock < 1200 ? knocks + 1 : 1; lastKnock = now;
+    if(knocks >= 7){ knocks = 0; peek(); return; }
+    if(knocks === 2 || (knocks > 2 && Math.random() < 0.3)){
+      const rep = T.replies; setTimeout(() => speak(rep[Math.floor(Math.random() * rep.length)]), 260);
     }
-  }catch(e){}
+  };
+  door.addEventListener('click', e => knock(e.clientX, e.clientY));
+  door.addEventListener('keydown', e => {
+    if(e.target !== door || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault(); const r = door.getBoundingClientRect(); knock(r.left + r.width / 2, r.top + r.height * 0.7);
+  });
+  function peek(){
+    busy = true;
+    say.classList.remove('on');
+    setTimeout(() => { door.classList.add('ajar'); S.creak(); }, 250);
+    setTimeout(() => speak(T.peekSay, 1400), 1200);
+    setTimeout(() => {
+      door.classList.add('slam'); door.classList.remove('ajar'); S.slam(); shake();
+      setTimeout(() => { door.classList.remove('slam'); busy = false; }, 250);
+      // 숨은 업적: 주기율표 앱의 업적 목록에도 뜬다 (같은 저장 공간)
+      try{
+        const ev = JSON.parse(localStorage.getItem('pt_evt') || '[]');
+        if(!ev.includes('labPeek')){
+          ev.push('labPeek'); localStorage.setItem('pt_evt', JSON.stringify(ev));
+          const t = $('#toast'); t.innerHTML = `<small>${T.achTop}</small><b>${T.achName}</b>`;
+          setTimeout(() => { t.classList.add('on'); S.ding(); }, 500);
+          setTimeout(() => t.classList.remove('on'), 3600);
+        }
+      }catch(e){}
+    }, 2100);
+  }
+
+  /* ── 테이프: 끌어서 떼면 늘어진다. 둘 다 떼면 다시 붙인다 ── */
+  const tapes = [...document.querySelectorAll('.tape')];
+  let reT;
+  tapes.forEach(tp => {
+    let sx = 0, sy = 0, down = false, moved = false;
+    tp.addEventListener('pointerdown', e => { if(busy) return; down = true; moved = false; sx = e.clientX; sy = e.clientY; tp.setPointerCapture(e.pointerId); });
+    tp.addEventListener('pointermove', e => {
+      if(!down || moved || tp.classList.contains('peeled')) return;
+      if(Math.hypot(e.clientX - sx, e.clientY - sy) > 36){ moved = true; peel(tp); }
+    });
+    tp.addEventListener('pointerup', () => { down = false; });
+    tp.addEventListener('click', e => {
+      e.stopPropagation();
+      if(moved){ moved = false; return; }
+      // 끌지 않고 누르기만 하면 살짝 들썩 (키보드로는 바로 뗀다)
+      if(e.detail === 0) peel(tp);
+      else { tp.classList.remove('wig'); void tp.offsetWidth; tp.classList.add('wig'); }
+    });
+  });
+  function peel(tp){
+    if(busy || tp.classList.contains('peeled')) return;
+    tp.classList.add('peeled'); S.rip();
+    if(tapes.every(t => t.classList.contains('peeled'))){
+      clearTimeout(reT);
+      reT = setTimeout(() => {
+        caption(T.retape, 2000);
+        setTimeout(() => { tapes.forEach(t => t.classList.remove('peeled')); S.stick(); }, 700);
+      }, 900);
+    }
+  }
+})();
 </script>
 </body>
 </html>
