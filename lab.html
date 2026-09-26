@@ -106,17 +106,6 @@
   .peeker.full{left:28%;top:30%;transform:none;opacity:1;transition:left .01s, transform .3s}
   .knob.armed{box-shadow:0 0 0 3px #ffd43b,0 0 16px #ffd43b;animation:armed .8s ease-in-out infinite}
   @keyframes armed{50%{box-shadow:0 0 0 5px #ffd43b,0 0 26px #ffd43b}}
-  /* ── 실험실 입장 연출 (완성되면 LAB_READY = true, 지금은 #preview 로 미리보기) ── */
-  body.ready .tape,body.ready .sign{display:none}
-  .door.wide{transform:rotateY(-104deg);z-index:5;transition:transform .8s cubic-bezier(.3,.7,.3,1)}
-  main.cam{will-change:transform}
-  main.cam.back{transform:scale(.8);transition:transform .5s cubic-bezier(.15,.8,.3,1)}        /* 감속 */
-  main.cam.rush{transform:scale(9);transition:transform .6s cubic-bezier(.75,0,.95,.35)}        /* 가속 */
-  .whiteout{position:fixed;inset:0;z-index:30;background:#fff;opacity:0;pointer-events:none;transition:opacity .35s ease-in;
-    display:flex;align-items:center;justify-content:center;color:#15171b;font-size:22px;font-weight:800;text-align:center}
-  .whiteout.on{opacity:1;pointer-events:auto}
-  .whiteout span{opacity:0;transition:opacity .4s .25s}
-  .whiteout.on span{opacity:1}
   .rip{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;border:2px solid rgba(255,255,255,.35);pointer-events:none;animation:rip .5s ease-out forwards}
   @keyframes rip{to{transform:scale(4);opacity:0}}
 
@@ -154,6 +143,24 @@
     background:#141a22;border:1px solid #c9a227;border-radius:12px;padding:10px 16px;text-align:center;transition:.3s}
   .toast.on{opacity:1;transform:translate(-50%,0)}
   .toast small{display:block;color:#ffd43b;font-size:11px;margin-bottom:2px}
+  /* ═══ #preview: 완성된 문 → 카메라무빙 → 하얀 화면 → 실험실 입장 ═══ */
+  body.preview .tape{display:none}
+  body.preview .door{cursor:pointer}
+  .door.wide{transform:rotateY(-78deg);z-index:5;transition:transform .6s cubic-bezier(.3,.7,.3,1)}
+  .flood{position:absolute;inset:10px 10px 0;z-index:1;pointer-events:none;opacity:0;
+    background:radial-gradient(80% 60% at 60% 45%,#ffffff,rgba(255,255,255,.55) 45%,transparent 80%)}
+  .flood.on{opacity:1;transition:opacity .6s ease}
+  main{transform-origin:50% 50%}
+  #white{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:30}
+  #labIn{position:fixed;inset:0;z-index:29;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
+    padding:24px;color:#1b2533;background:linear-gradient(180deg,#f4f7fa 0 70%,#dfe5eb 70% 100%)}
+  #labIn.on{display:flex}
+  #labIn h2{margin:0;font-size:clamp(22px,5vw,32px);font-weight:800}
+  #labIn p{margin:0;max-width:30em;font-size:15px;line-height:1.7;color:#44536a}
+  #labIn .row{display:flex;gap:10px;margin-top:6px}
+  #labIn button{border:1px solid #c3ccd6;background:#fff;color:#1b2533;border-radius:10px;padding:9px 14px;font:inherit;font-size:14px;cursor:pointer}
+  #labIn button:hover{border-color:#8a99ab}
+  .pv-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;color:#fff;background:#4d8dff;border-radius:6px;padding:2px 8px}
   @media (prefers-reduced-motion:reduce){ body.shake main,.knob.rattle,.door.jiggle{animation:none} .door{transition:none} }
 </style>
 </head>
@@ -210,6 +217,7 @@
         <button type="button" class="knob" id="knob" aria-label="손잡이 돌리기"></button>
         <span class="sign">실험실 · 공사 중</span>
       </div>
+      <div class="flood" id="flood"></div>
       <div class="frame"></div>
       <button type="button" class="tape a" data-t="a" aria-label="테이프 떼기"><span>공사 중</span></button>
       <button type="button" class="tape b" data-t="b" aria-label="테이프 떼기"><span>출입 금지</span></button>
@@ -223,7 +231,13 @@
     </div>
   </main>
   <div class="toast" id="toast" role="status"></div>
-  <div class="whiteout" id="whiteout" aria-live="polite"><span></span></div>
+  <div id="white" aria-hidden="true"></div>
+  <section id="labIn" aria-live="polite">
+    <span class="pv-tag">PREVIEW</span>
+    <h2 id="liH">여기가 실험실이 될 곳이에요</h2>
+    <p id="liP">선반과 실험대는 아직 짓는 중이에요. 완성되면 이 문을 지나 바로 여기로 들어오게 돼요.</p>
+    <div class="row"><button type="button" id="liAgain">다시 보기</button><button type="button" id="liBack">주기율표로</button></div>
+  </section>
 <script>
 (() => {
   const EN = (() => { try{ return localStorage.getItem('pt_lang') === 'en'; }catch(e){ return false; } })();
@@ -413,7 +427,7 @@
   }, true);
 
   function ripDoor(){
-    if(busy) return;
+    if(busy || PREVIEW) return;
     busy = true;
     clearTimeout(reT); say.classList.remove('on'); cap.textContent = '';
     // 1) 미친 듯이 덜컹
@@ -466,40 +480,87 @@
     }, 5900);
   }
 
-  /* ── 실험실 입장: 문이 열리고 → 한 발 물러섰다가 → 문 안으로 돌진 → 하얗게 → 입장 ──
-     실험실이 완성되면 LAB_READY 를 true 로 바꾸고 enterLab() 안에서 실험실을 연다 */
+  /* ═══ #preview: 완성된 실험실 문과 입장 연출(카메라무빙) 미리보기 ═══ */
+  // 실험실이 완성되면 LAB_READY 를 true 로 바꾼다 → 테이프 없는 문을 누르면 이 연출로 입장 (미리보기 표시 없이)
   const LAB_READY = false;
+  const PREVIEW = LAB_READY || location.hash === '#preview';
+  window.addEventListener('hashchange', () => { if(!LAB_READY && (location.hash === '#preview') !== PREVIEW) location.reload(); });
+  const PV = EN ? { sign:'Lab', win2:'Come on in', h1:'Preview: entering the lab', soon:'Tap the door to go in.',
+                    liH:'This is where the lab will be', liP:'The shelves and benches are still being built. Once it is done, this door will bring you straight here.',
+                    again:'Watch again', back:'Back to the table' }
+                : { sign:'실험실', win2:'어서 오세요', h1:'미리보기: 실험실 입장', soon:'문을 눌러 들어가 보세요.',
+                    liH:'여기가 실험실이 될 곳이에요', liP:'선반과 실험대는 아직 짓는 중이에요. 완성되면 이 문을 지나 바로 여기로 들어오게 돼요.',
+                    again:'다시 보기', back:'주기율표로' };
+  if(PREVIEW){
+    document.body.classList.add('preview');
+    if(LAB_READY) $('.pv-tag').hidden = true;
+    $('.sign').textContent = PV.sign; $('.fog-sub').textContent = PV.win2;
+    $('.copy h1').textContent = PV.h1; $('.copy p').innerHTML = ''; $('.soon').textContent = PV.soon;
+    $('#liH').textContent = PV.liH; $('#liP').textContent = PV.liP;
+    $('#liAgain').textContent = PV.again; $('#liBack').textContent = PV.back;
+    $('#door').setAttribute('aria-label', EN ? 'Open the door' : '문 열기');
+  }
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function whoosh(){   // 빨려 들어가는 바람 소리: 점점 높고 크게
+    const a = ac(); if(!a) return; const t = a.currentTime;
+    const len = Math.floor(a.sampleRate * 0.9), b = a.createBuffer(1, len, a.sampleRate), c = b.getChannelData(0);
+    for(let i = 0; i < len; i++) c[i] = Math.random() * 2 - 1;
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = b; f.type = 'bandpass'; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(4200, t + 0.8);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+    src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
+  }
   function enterLab(){
-    // (완성되면) 여기서 실험실 화면으로 넘어간다
-  }
-  function entrance(preview){
-    if(busy) return;
-    busy = true;
-    document.body.classList.add('ready');
-    const cam = document.querySelector('main'), wo = $('#whiteout');
-    // 카메라 초점: 문 안쪽(열린 문틀 가운데)
-    const cr = cam.getBoundingClientRect(), sr = $('#stage').getBoundingClientRect();
-    cam.style.transformOrigin = `${sr.left - cr.left + sr.width * 0.5}px ${sr.top - cr.top + sr.height * 0.45}px`;
-    cam.classList.add('cam');
-    setTimeout(() => { door.classList.add('wide'); S.creak(); }, 700);
-    setTimeout(() => cam.classList.add('back'), 1300);
-    setTimeout(() => { cam.classList.remove('back'); cam.classList.add('rush'); S.whoosh(); }, 1800);
-    setTimeout(() => { wo.classList.add('on'); if(preview) wo.querySelector('span').innerHTML = T.enterPrev; }, 2200);
+    if(busy) return; busy = true;
+    const main = document.querySelector('main'), stage = $('#stage'), white = $('#white');
+    // 1) 문이 활짝 열리고 하얀 빛이 쏟아진다
+    door.classList.add('wide'); $('#flood').classList.add('on'); S.creak();
+    // 확대 중심: 열린 문틈 (문짝이 열리는 오른쪽)
+    const mr = main.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+    main.style.transformOrigin = `${sr.left - mr.left + sr.width * 0.66}px ${sr.top - mr.top + sr.height * 0.45}px`;
+    if(RM){
+      setTimeout(() => white.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, fill: 'forwards' }), 600);
+      setTimeout(showLabIn, 1150);
+      return;
+    }
+    // 2) 카메라무빙: 뒤로 스르륵(감속) → 문틈을 향해 확 돌진(가속)
     setTimeout(() => {
-      if(!preview){ enterLab(); return; }
-      // 미리보기: 잠깐 보여주고 공사 중인 문으로 돌아온다
-      setTimeout(() => {
-        cam.classList.remove('rush', 'cam'); cam.style.transformOrigin = '';
-        door.classList.remove('wide'); document.body.classList.remove('ready');
-        wo.classList.remove('on');
-        history.replaceState(null, '', location.pathname + location.search);
-        busy = false;
-      }, 1600);
-    }, 2600);
+      main.animate([
+        { transform: 'scale(1)', easing: 'cubic-bezier(.3,0,.2,1)' },
+        { transform: 'scale(.84)', offset: .38, easing: 'cubic-bezier(.8,0,.95,.35)' },
+        { transform: 'scale(9)' },
+      ], { duration: 1150, fill: 'forwards' });
+      setTimeout(whoosh, 380);
+      // 3) 돌진 끝 무렵 화면이 새하얘진다
+      white.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, delay: 820, easing: 'ease-in', fill: 'forwards' });
+      setTimeout(() => { try{ [1320, 1760, 2350].forEach((f, i) => tone(f, 0.6, 'sine', 0.05, i * 0.06)); }catch(e){} }, 1150);
+      setTimeout(showLabIn, 1350);
+    }, 600);
   }
-  if(LAB_READY) setTimeout(() => entrance(false), 300);
-  else if(location.hash === '#preview') setTimeout(() => entrance(true), 500);
-  window.addEventListener('hashchange', () => { if(location.hash === '#preview') entrance(true); });
+  function showLabIn(){
+    // 4) 하얀 화면이 걷히며 실험실 안 (지금은 자리 표시)
+    $('#labIn').classList.add('on');
+    if(LAB_READY){ /* 완성되면: 여기서 진짜 실험실 화면으로 넘어간다 */ }
+    $('#white').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' });
+    $('#liAgain').focus({ preventScroll: true });
+  }
+  function resetPreview(){
+    $('#labIn').classList.remove('on');
+    const main = document.querySelector('main');
+    main.getAnimations().forEach(a => a.cancel()); $('#white').getAnimations().forEach(a => a.cancel());
+    door.classList.remove('wide'); $('#flood').classList.remove('on');
+    busy = false;
+  }
+  $('#liAgain').addEventListener('click', resetPreview);
+  $('#liBack').addEventListener('click', () => { if(document.referrer && history.length > 1) history.back(); else location.href = 'index.html'; });
+  if(PREVIEW){
+    // 미리보기에서는 문을 누르면 (손잡이·창문 포함) 바로 입장
+    ['click', 'keydown'].forEach(ev => door.addEventListener(ev, e => {
+      if(ev === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault(); e.stopImmediatePropagation(); enterLab();
+    }, true));
+  }
 
   /* ── 테이프: 끌어서 떼면 늘어진다. 둘 다 떼면 다시 붙인다 ── */
   tapes.forEach(tp => {
