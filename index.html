@@ -1417,6 +1417,17 @@
   .mol-bonds line.bx{stroke-width:inherit}
   .mol-bonds line.bx.ar{stroke-dasharray:3 3}
 
+  /* 블렌더 렌더 천체: 태양은 천천히 돌며 빛이 일렁이고, 지구는 대기 빛이 은은하게 숨 쉰다 */
+  .pic .pic-img, .pic .pic-fb{transform-box:fill-box;transform-origin:50% 50%}
+  .pic-sun .pic-img{animation:picSpin 180s linear infinite, picSunGlow 4s ease-in-out infinite}
+  .pic-sun .pic-fb{filter:drop-shadow(0 0 18px #ff9a3c)}
+  .pic-earth .pic-img{animation:picEarth 6s ease-in-out infinite}
+  .pic-earth .pic-fb{filter:drop-shadow(0 0 10px #4d8dff)}
+  @keyframes picSpin{to{transform:rotate(360deg)}}
+  @keyframes picSunGlow{50%{filter:brightness(1.08) drop-shadow(0 0 10px rgba(255,154,60,.55))}}
+  @keyframes picEarth{50%{filter:drop-shadow(0 0 9px rgba(77,141,255,.55))}}
+  @media (prefers-reduced-motion:reduce){ .pic .pic-img{animation:none} }
+
   /* ══════════ v2.7 부가 기능 ══════════ */
   /* 결과 창 도구 */
   .rx-tools{
@@ -5277,6 +5288,7 @@ const CHANGELOG = [
            '도감 검색 — 이름·화학식·원소로 찾고, 찾은 것·아직 걸러보기',
            '효과음 새 단장 — 비커에 떨어지는 "팅", 종소리 성공음, 문 열림·결정 성장·도감 등록 소리',
            '크야수이트는 실제 크기(5.8mm)로 — 1mm 자와 돋보기',
+           '지구와 태양은 블렌더로 직접 렌더한 그림으로 — 태양은 천천히 돌며 빛이 일렁여요',
            '다이아몬드 만드는 법이 바뀌었어요 — 탄소만 담으면 흑연, 결과 창에서 꾸욱 압축하면 다이아몬드',
            '액체는 천천히 끌면 한 방울, 휙 끌면 방울째 떨어져 나옴',
            '숨은 것들이 몇 개 생겼어요 (뭔지는 비밀)',
@@ -5298,6 +5310,7 @@ const CHANGELOG = [
            'Codex search — by name, formula or element, with found / not yet filters',
            'New sounds — a glassy clink into the beaker, bell chimes for success, doors, growing crystals and new entries',
            'Kyawthuite at true size (5.8 mm) with a 1 mm scale bar and a magnifier',
+           'Earth and the Sun are now Blender renders — the Sun slowly turns and shimmers',
            'New diamond recipe — carbon alone gives graphite; squeeze it on the result card to make diamond',
            'Drag liquids slowly to pull one drop, flick them to tear off a droplet',
            'A few hidden things (no spoilers)',
@@ -9911,6 +9924,38 @@ function rxNanotube(){
   };
 }
 
+/* 블렌더 렌더 그림으로 보여주는 천체 (지구·태양). 그림 파일이 없으면 색 원만 보인다 */
+const RX_PICS = {
+  earth: { src: 'model_earth.webp', col: '#4d8dff', disc: 0.959, fb: ['#2f6fd6', '#0b2a5c'],
+           alt: '블렌더로 렌더한 지구: 아시아와 오세아니아가 보이고 가장자리에 푸른 대기가 얇게 빛난다' },
+  sun:   { src: 'model_sun.webp',   col: '#ff9a3c', disc: 0.78,  fb: ['#ffd8a0', '#e8781e'],
+           alt: '블렌더로 렌더한 태양: 쌀알 무늬 표면에 흑점 무리와 가장자리의 홍염 고리' },
+};
+function rxPicModel(key){
+  return { atoms: [], bonds: [], faces: [], pic: key, maxScale: 1, col: RX_PICS[key].col };
+}
+{
+  const _mt2 = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _mt2.apply(this, arguments);
+    if(model && model.pic){
+      const P = RX_PICS[model.pic], svg = svgEl || document.getElementById('mMol');
+      const W = 400, H = 300, size = Math.min(W, H) * 0.92, x = W / 2 - size / 2, y = H / 2 - size / 2;
+      const rr = size / 2 * P.disc, id = 'pic' + model.pic + Math.random().toString(36).slice(2, 6);
+      svg.insertAdjacentHTML('beforeend', `
+        <defs><radialGradient id="${id}" cx="40%" cy="38%" r="65%"><stop offset="0" stop-color="${P.fb[0]}"/><stop offset="1" stop-color="${P.fb[1]}"/></radialGradient></defs>
+        <g class="pic pic-${model.pic}">
+          <circle class="pic-fb" cx="${W / 2}" cy="${H / 2}" r="${rr}" fill="url(#${id})"/>
+          <image class="pic-img" href="${P.src}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet">
+            <title>${P.alt}</title></image>
+        </g>`);
+      const img = svg.querySelector('.pic-img');
+      if(img) img.addEventListener('error', () => img.remove());
+    }
+    return r;
+  };
+}
+
 function rxMineral(name){
   if(name === '비스무트 결정') return rxBismuth();
   if(name === '다이아몬드') return rxDiamondGem();
@@ -10859,6 +10904,8 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     else if(!RX_REDUCED && nm === '삼중수소') model = rxTritium(rnd);
     else if(!RX_REDUCED && nm === '핵산') model = rxDnaHelix();
     else if(!RX_REDUCED && nm === '풀러렌') model = rxFullerene();
+    else if(nm === '지구') model = rxPicModel('earth');
+    else if(nm === '태양') model = rxPicModel('sun');
     else if(!RX_REDUCED && nm === '탄소 나노튜브') model = rxNanotube();
     else if(one && !RX_REDUCED && RX_GAS.has(one[0])) model = rxGasModel(one[0], one[1], rnd, nm);
     else if(one && !RX_REDUCED && one[0] === 'Ga') model = rxGalliumModel(one[1], rnd);
