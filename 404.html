@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>404 — 아스리엘이 기절했어요 · 주기율표</title>
+<!-- 404 페이지는 아무 주소에서나 뜨므로 저장소 기준 주소로 고정한다.
+     (컴퓨터에서 파일로 열 때는 아래 스크립트가 같은 폴더 기준으로 바꾼다) -->
+<base href="/periodic-table/">
+<script>if(location.protocol === 'file:') document.querySelector('base').href = './';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbit&display=swap">
+<style>
+  :root{ --ink:#1b2533; --dim:#5b6a80; --red:#e8363a; --blue:#4d8dff; }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--ink);
+    font-family:'Orbit','Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+    background:
+      radial-gradient(90% 60% at 50% 0%,#ffffff,transparent 70%),
+      linear-gradient(180deg,#f7f9fc,#e9eef5);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    padding:max(18px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));
+  }
+  .art{position:relative;width:min(1100px,100%);margin:0;cursor:pointer;border:0;padding:0;background:none}
+  .art img{display:block;width:100%;height:auto;border-radius:18px;box-shadow:0 18px 50px -24px rgba(27,37,51,.45)}
+  .art:focus-visible{outline:3px solid var(--blue);outline-offset:4px;border-radius:20px}
+  /* 기절한 리엘이 잠꼬대 */
+  .zz{position:absolute;left:25%;top:44%;transform:translate(-50%,-100%) scale(.9);opacity:0;pointer-events:none;
+    background:#fff;border:2px solid #cfd8e3;border-radius:14px;padding:6px 12px;font-size:clamp(12px,1.6vw,16px);font-weight:700;white-space:nowrap;
+    transition:opacity .2s, transform .25s cubic-bezier(.3,1.6,.5,1)}
+  .zz::after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#cfd8e3}
+  .zz.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+  .msg{max-width:44em;text-align:center}
+  .msg h1{margin:0 0 6px;font-size:clamp(18px,3.4vw,24px);color:var(--red)}
+  .msg p{margin:0;color:var(--dim);font-size:clamp(13px,2.4vw,15px);line-height:1.7}
+  .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:15px;
+    padding:11px 18px;border-radius:12px;border:2px solid var(--ink);color:#fff;background:var(--ink)}
+  .btn.ghost{background:#fff;color:var(--ink)}
+  .btn:hover{filter:brightness(1.12)}
+  .btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  @media (prefers-reduced-motion:reduce){ .zz{transition:none} }
+</style>
+</head>
+<body>
+  <button type="button" class="art" id="art" aria-label="기절한 아스리엘 깨우기">
+    <img src="404_asriel.webp" width="1600" height="900"
+         alt="404 NOT FOUND. 404라고 적힌 야구 방망이에 맞아 눈이 뱅글뱅글 돈 채 서류 더미 위에 쓰러진 아스리엘.">
+    <span class="zz" id="zz" aria-live="polite"></span>
+  </button>
+  <div class="msg">
+    <h1>404 NOT FOUND — 페이지를 찾을 수 없어요</h1>
+    <p>유저님이 던진 404 야구배트에 아스리엘이 기절해 버렸어요! 잘못된 주소(빠진 글자나 오타)로 들어오셨거나 페이지가 폭발한 것 같아요.
+       아스리엘이 깨어나기 전에 얼른 메인 페이지로 돌아가세요!</p>
+  </div>
+  <div class="row">
+    <a class="btn" href="index.html">‹ 주기율표로 돌아가기</a>
+    <a class="btn ghost" href="lab.html">🧪 실험실</a>
+  </div>
+<script>
+(() => {
+  // 영어로 보던 사람은 영어로
+  let en = false; try{ en = localStorage.getItem('pt_lang') === 'en'; }catch(e){}
+  const L = en ? {
+    title:'404 — Asriel is out cold · Periodic table', h1:'404 NOT FOUND — this page does not exist',
+    p:'The 404 baseball bat you swung knocked Asriel out cold! You probably followed a wrong address (a typo or a missing letter), or the page blew up. Head back to the main page before she wakes up!',
+    back:'‹ Back to the table', lab:'🧪 Lab', wake:'Wake Asriel up',
+    alt:'404 NOT FOUND. Asriel lying dizzy on a pile of papers after being hit by a baseball bat labelled 404.',
+    zz:['Ugh… 404…', 'Five more minutes…', 'Who threw that bat…', 'Zzz… the page is… gone…', '…still dizzy']
+  } : {
+    zz:['으으… 404…', '오 분만 더…', '누가 방망이를…', '쿨… 페이지가… 없어요…', '…아직 어지러워요']
+  };
+  if(en){
+    document.documentElement.lang = 'en'; document.title = L.title;
+    document.querySelector('.msg h1').textContent = L.h1; document.querySelector('.msg p').textContent = L.p;
+    const a = document.querySelectorAll('.row a'); a[0].textContent = L.back; a[1].textContent = L.lab;
+    document.getElementById('art').setAttribute('aria-label', L.wake); document.querySelector('.art img').alt = L.alt;
+  }
+  // 기절한 리엘이를 누르면 잠꼬대
+  const zz = document.getElementById('zz'); let i = 0, t;
+  document.getElementById('art').addEventListener('click', () => {
+    zz.textContent = L.zz[i++ % L.zz.length]; zz.classList.add('on');
+    clearTimeout(t); t = setTimeout(() => zz.classList.remove('on'), 1600);
+  });
+})();
+</script>
+</body>
+</html>
