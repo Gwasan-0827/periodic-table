@@ -188,10 +188,42 @@
   #labIn button,#labIn .libtn{border:1px solid #c3ccd6;background:#fff;color:#1b2533;border-radius:10px;padding:9px 14px;font:inherit;font-size:14px;cursor:pointer}
   #labIn button:hover,#labIn .libtn:hover{border-color:#8a99ab}
   .pv-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;color:#fff;background:#4d8dff;border-radius:6px;padding:2px 8px}
+
+  /* ═══ 카메라무빙 깊이감: 방 레이어(패럴랙스) · 빛 속 먼지(줌 블러) · 비네팅 ═══ */
+  body{background:var(--wall)}
+  #room{position:fixed;inset:-10%;z-index:-1;pointer-events:none;will-change:transform;   /* 뒤로 물러날 때 가장자리가 비지 않게 화면보다 크게 */
+    background:linear-gradient(180deg, var(--wall) 0 65%, var(--floor) 65% 100%)}
+  #room .lamp{position:absolute;left:50%;top:8.3%;width:min(560px,130vw);height:56%;transform:translateX(-50%);
+    background:radial-gradient(50% 62% at 50% 0,rgba(190,215,255,.09),transparent 72%)}
+  #room svg{position:absolute;left:0;top:65%;width:100%;height:35%;display:block}
+  #vig{position:fixed;inset:0;z-index:27;pointer-events:none;opacity:0;
+    background:radial-gradient(circle farthest-corner at var(--vx,50%) var(--vy,50%),transparent 28%,rgba(3,6,12,.9) 100%)}
+  #fx{position:fixed;inset:0;width:100%;height:100%;z-index:28;pointer-events:none}
+  #fx.over{z-index:31}
+  .top{transition:opacity .3s}
+  body.moving .top{opacity:0;pointer-events:none}
+  /* 도착: 글씨가 차례로 떠오른다 */
+  #labIn.arrive > *{opacity:0;transform:translateY(14px)}
+  #labIn.arrive.go > *{opacity:1;transform:none;transition:opacity .45s ease, transform .7s cubic-bezier(.2,1.5,.4,1)}
+  #labIn.arrive.go > :nth-child(1){transition-delay:.28s}
+  #labIn.arrive.go > :nth-child(2){transition-delay:.36s}
+  #labIn.arrive.go > :nth-child(3){transition-delay:.46s}
+  #labIn.arrive.go > :nth-child(4){transition-delay:.56s}
   @media (prefers-reduced-motion:reduce){ body.shake main,.knob.rattle,.door.jiggle{animation:none} .door{transition:none} }
 </style>
 </head>
 <body>
+  <!-- 벽·바닥 (카메라무빙 때 문보다 느리게 움직여 깊이감을 준다) -->
+  <div id="room" aria-hidden="true">
+    <div class="lamp"></div>
+    <svg viewBox="0 0 100 32" preserveAspectRatio="none">
+      <g stroke="rgba(255,255,255,.045)" stroke-width="1" vector-effect="non-scaling-stroke" fill="none">
+        <path vector-effect="non-scaling-stroke" d="M0 .3 H100" stroke="rgba(255,255,255,.08)"/>
+        <path vector-effect="non-scaling-stroke" d="M-150 32 L50 -40 M-75 32 L50 -40 M-10 32 L50 -40 M30 32 L50 -40 M70 32 L50 -40 M110 32 L50 -40 M175 32 L50 -40 M250 32 L50 -40"/>
+        <path vector-effect="non-scaling-stroke" d="M0 2.2 H100 M0 5 H100 M0 9 H100 M0 14.5 H100 M0 22 H100"/>
+      </g>
+    </svg>
+  </div>
   <div class="top">
     <a class="tbtn" id="back" href="index.html">‹ 주기율표로 돌아가기</a>
     <button type="button" class="tbtn" id="snd" aria-pressed="true">🔊</button>
@@ -267,6 +299,8 @@
     </div>
   </main>
   <div class="toast" id="toast" role="status"></div>
+  <div id="vig" aria-hidden="true"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
   <div id="white" aria-hidden="true"></div>
   <section id="labIn" aria-live="polite">
     <span class="pv-tag">PREVIEW</span>
@@ -560,6 +594,42 @@
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
     src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
   }
+  /* 카메라: 뒤로 0.75초(느린 감속) → 앞으로 0.39초(강한 가속). 한 타임라인으로 문·벽·먼지·비네팅을 같이 움직인다 */
+  const T_BACK = 750, T_RUSH = 390, S_BACK = .82, S_END = 10;
+  const room = $('#room'), vig = $('#vig'), fx = $('#fx'), fxc = fx.getContext('2d');
+  let raf = 0, motes = [], dust = [];
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  function sizeFx(){
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    fx.width = Math.round(innerWidth * d); fx.height = Math.round(innerHeight * d); fxc.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function camAt(t){   // t(ms) → 배율, 기울기, 돌진 진행도
+    if(t < T_BACK){ const k = easeOut(t / T_BACK); return { s: 1 + (S_BACK - 1) * k, rot: -.7 * k, u: 0, k }; }
+    const u = Math.min(1, (t - T_BACK) / T_RUSH);
+    return { s: S_BACK * Math.pow(S_END / S_BACK, Math.pow(u, 2.6)), rot: -.7 * (1 - u), u, k: 1 };
+  }
+  function makeMotes(){   // 문틈으로 쏟아지는 빛 속 먼지: 문과 카메라 사이 여러 깊이에 흩어 둔다
+    motes = [];
+    for(let i = 0; i < 46; i++){
+      const a = Math.random() * Math.PI * 2, r = .05 + Math.pow(Math.random(), .7) * .55;
+      motes.push({ x: Math.cos(a) * r, y: Math.sin(a) * r * .9, d: .1 + Math.random() * .75, sz: .5 + Math.random() * 1.1, px: null, py: null, tw: Math.random() * 6 });
+    }
+  }
+  function drawMotes(c, t, ox, oy){
+    const W = innerWidth, H = innerHeight, K = Math.min(W, H) * .5, D = 1 / c.s;   // D: 카메라와 문 사이 거리
+    fxc.clearRect(0, 0, W, H); fxc.lineCap = 'round';
+    const fadeIn = Math.min(1, t / 300);
+    for(const m of motes){
+      const dz = D - m.d;
+      if(dz <= .02){ m.px = null; continue; }   // 카메라를 지나쳤다
+      const x = ox + m.x * K / dz, y = oy + m.y * K / dz, w = Math.min(16, m.sz * 1.1 / dz);
+      const tw = .75 + .25 * Math.sin(t / 260 + m.tw);
+      const a = fadeIn * tw * Math.min(.55, .12 + .1 / dz) * (1 - c.u * .2);
+      fxc.strokeStyle = `rgba(228,240,255,${a})`; fxc.lineWidth = w;
+      fxc.beginPath(); fxc.moveTo(m.px ?? x, m.py ?? y); fxc.lineTo(x + .01, y); fxc.stroke();   // 빠를수록 길게 늘어진 줄무늬
+      m.px = x; m.py = y;
+    }
+  }
   function enterLab(){
     if(busy) return; busy = true;
     const main = document.querySelector('main'), stage = $('#stage'), white = $('#white');
@@ -567,20 +637,30 @@
     door.classList.add('wide'); $('#flood').classList.add('on'); S.creak();
     // 확대 중심: 열린 문틈 (문짝이 열리는 오른쪽)
     const mr = main.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-    main.style.transformOrigin = `${sr.left - mr.left + sr.width * 0.66}px ${sr.top - mr.top + sr.height * 0.45}px`;
+    const ox = sr.left + sr.width * 0.66, oy = sr.top + sr.height * 0.45;   // 화면 좌표
+    main.style.transformOrigin = `${ox - mr.left}px ${oy - mr.top}px`;
     if(RM){
       setTimeout(() => white.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, fill: 'forwards' }), 600);
       setTimeout(showLabIn, 1150);
       return;
     }
-    // 2) 카메라무빙: 뒤로 스르륵(감속) → 문틈을 향해 확 돌진(가속)
+    room.style.transformOrigin = `${ox + innerWidth * .1}px ${oy + innerHeight * .1}px`;   // #room 은 화면보다 10% 크게 깔려 있다
+    vig.style.setProperty('--vx', ox + 'px'); vig.style.setProperty('--vy', oy + 'px');
+    sizeFx(); makeMotes();
+    // 2) 카메라무빙
     setTimeout(() => {
-      // 뒤로 0.75초(느린 감속) → 앞으로 0.39초(강한 가속)
-      main.animate([
-        { transform: 'scale(1)', easing: 'cubic-bezier(.25,0,.15,1)' },
-        { transform: 'scale(.82)', offset: .66, easing: 'cubic-bezier(.92,0,1,.25)' },
-        { transform: 'scale(10)' },
-      ], { duration: 1140, fill: 'forwards' });
+      document.body.classList.add('moving');
+      const t0 = performance.now();
+      const step = now => {
+        const t = now - t0, c = camAt(t);
+        main.style.transform = `scale(${c.s}) rotate(${c.rot}deg)`;
+        main.style.filter = c.u > .4 ? `blur(${((c.u - .4) / .6 * 2.6).toFixed(2)}px)` : '';
+        room.style.transform = `scale(${Math.pow(c.s, .55)}) rotate(${c.rot * .6}deg)`;   // 벽은 문보다 덜 움직인다 (패럴랙스)
+        vig.style.opacity = (.42 * c.k + .5 * c.u).toFixed(3);
+        drawMotes(c, t, ox, oy);
+        if(t < T_BACK + T_RUSH + 200) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
       setTimeout(whoosh, 440);
       // 3) 돌진 끝 무렵 화면이 새하얘진다
       white.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 230, delay: 920, easing: 'ease-in', fill: 'forwards' });
@@ -588,17 +668,61 @@
       setTimeout(showLabIn, 1320);
     }, 600);
   }
+  function landDust(){   // 도착하며 흩날리다 가라앉는 먼지
+    cancelAnimationFrame(raf); fx.classList.add('over');
+    const W = innerWidth, H = innerHeight;
+    dust = Array.from({ length: 30 }, () => {
+      const a = Math.random() * Math.PI * 2, r0 = Math.random() * Math.min(W, H) * .35, v = 1.5 + Math.random() * 6;
+      return { x: W / 2 + Math.cos(a) * r0, y: H * .45 + Math.sin(a) * r0 * .8, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .7, r: .8 + Math.random() * 2.4 };
+    });
+    const t0 = performance.now();
+    const step = now => {
+      const t = now - t0, life = 1 - t / 1100;
+      fxc.clearRect(0, 0, W, H);
+      if(life <= 0){ fx.classList.remove('over'); return; }
+      for(const p of dust){
+        p.x += p.vx; p.y += p.vy; p.vx *= .92; p.vy = p.vy * .92 + .05;   // 점점 느려지며 살짝 내려앉는다
+        fxc.fillStyle = `rgba(110,140,175,${(.4 * life).toFixed(3)})`;
+        fxc.beginPath(); fxc.arc(p.x, p.y, p.r, 0, Math.PI * 2); fxc.fill();
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  function thud(){ tone(96, 0.28, 'sine', 0.22, 0, 48); noise(0.16, 0.1, 'lowpass', 260); }
   function showLabIn(){
-    // 4) 하얀 화면이 걷히며 실험실 안 (지금은 자리 표시)
-    $('#labIn').classList.add('on');
+    // 4) 하얀 화면이 번쩍 걷히며 카메라가 '쿵' 멈춰 선다
+    const li = $('#labIn');
+    li.classList.add('on');
     if(LAB_READY){ /* 완성되면: 여기서 진짜 실험실 화면으로 넘어간다 */ }
-    $('#white').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' });
-    $('#liAgain').focus({ preventScroll: true });
+    if(RM){
+      $('#white').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' });
+      $('#liAgain').focus({ preventScroll: true });
+      return;
+    }
+    li.classList.add('arrive'); void li.offsetWidth; li.classList.add('go');
+    // 흰 빛: 순간 확 빠지고(섬광) 나머지는 천천히
+    $('#white').animate([{ opacity: 1 }, { opacity: .3, offset: .22 }, { opacity: 0 }], { duration: 820, easing: 'ease-out', fill: 'forwards' });
+    // 카메라: 앞으로 쏠린 채 들어와서(확대·흐림) 멈추며 살짝 가라앉았다 올라온다
+    li.animate([
+      { transform: 'scale(1.18)', filter: 'blur(9px)', easing: 'cubic-bezier(.15,.9,.3,1)' },
+      { transform: 'scale(1.02) translateY(7px)', filter: 'blur(0px)', offset: .5, easing: 'cubic-bezier(.4,0,.3,1)' },
+      { transform: 'scale(1.004) translateY(-2px)', filter: 'blur(0px)', offset: .78, easing: 'ease-in-out' },
+      { transform: 'none', filter: 'none' },
+    ], { duration: 950 });
+    setTimeout(thud, 330);
+    landDust();
+    document.body.classList.remove('moving');
+    setTimeout(() => $('#liAgain').focus({ preventScroll: true }), 700);
   }
   function resetPreview(){
-    $('#labIn').classList.remove('on');
+    const li = $('#labIn');
+    li.classList.remove('on', 'arrive', 'go'); li.getAnimations().forEach(a => a.cancel());
     const main = document.querySelector('main');
     main.getAnimations().forEach(a => a.cancel()); $('#white').getAnimations().forEach(a => a.cancel());
+    cancelAnimationFrame(raf); fxc.clearRect(0, 0, fx.width, fx.height); fx.classList.remove('over');
+    main.style.transform = main.style.filter = room.style.transform = ''; vig.style.opacity = 0;
+    document.body.classList.remove('moving');
     door.classList.remove('wide'); $('#flood').classList.remove('on');
     busy = false;
   }
