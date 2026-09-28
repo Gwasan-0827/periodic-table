@@ -17,7 +17,7 @@
     --door:#1b2533; --frame:#2a3647; --tape:#ffd43b; --tape-ink:#15171b; --warm:#ffd8a8;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;overscroll-behavior:none}   /* 폰에서 아래로 쓸어도 당겨서 새로고침이 되지 않게 (코나미 스와이프) */
+  html,body{height:100%;overscroll-behavior:none}   /* 폰에서 아래로 쓸어도 당겨서 새로고침이 되지 않게 */
   body{
     margin:0;color:var(--ink);overflow-x:hidden;
     font-family:'Orbit','Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
@@ -215,6 +215,58 @@
   #labIn.arrive.go > :nth-child(3){transition-delay:.46s}
   #labIn.arrive.go > :nth-child(4){transition-delay:.56s}
   @media (prefers-reduced-motion:reduce){ body.shake main,.knob.rattle,.door.jiggle{animation:none} .door{transition:none} }
+
+  /* ── 코나미 (폰): 아스리엘 전용 매뉴얼 UI 'B.l.u.e. 커맨드' ── */
+  .knob{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+  .knob.charging{box-shadow:0 0 0 3px rgba(116,192,252,.95),0 0 18px #74c0fc;transition:box-shadow .6s ease-in}
+  #bluecmd{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;
+    padding:0 10px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(4,10,20,.35);opacity:0;pointer-events:none;transition:opacity .2s;
+    user-select:none;-webkit-user-select:none;touch-action:manipulation}
+  #bluecmd.on{opacity:1;pointer-events:auto}
+  /* 작업 표시줄 (Windows 11 느낌의 알약 모양 하늘색 바) */
+  .bc-bar{display:flex;gap:2px;padding:6px 10px;max-width:100%;overflow-x:auto;scrollbar-width:none;border-radius:999px;
+    background:#b9dffd;border:2px solid #8cc0fb;box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.7);
+    transform:translateY(80px);transition:transform .3s cubic-bezier(.2,1.3,.4,1)}
+  .bc-bar::-webkit-scrollbar{display:none}
+  #bluecmd.on .bc-bar{transform:none}
+  .bc-app{position:relative;flex-shrink:0;width:38px;height:38px;padding:8px;border:0;border-radius:10px;background:transparent;color:#2a5a96;cursor:pointer}
+  .bc-app svg{display:block;width:100%;height:100%}
+  .bc-app:hover{background:rgba(255,255,255,.45)}
+  .bc-app.on{background:rgba(255,255,255,.6)}
+  .bc-app.on::after{content:'';position:absolute;left:50%;bottom:2px;width:14px;height:3px;margin-left:-7px;border-radius:2px;background:#2f7de1}
+  .bc-app.locked{animation:bcLock .35s}
+  @keyframes bcLock{25%{transform:translateX(-3px) rotate(-6deg)}75%{transform:translateX(3px) rotate(6deg)}}
+  .bc-tip{position:fixed;z-index:61;transform:translate(-50%,-100%) scale(.8);opacity:0;pointer-events:none;white-space:nowrap;
+    padding:6px 10px;border-radius:10px;background:#f4faff;border:1.5px solid #8cc0fb;color:#1f4f8a;font:700 12px/1.3 system-ui,sans-serif;
+    box-shadow:0 6px 16px rgba(0,0,0,.3);transition:opacity .15s,transform .15s}
+  .bc-tip.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+  /* 키보드 창 (작업 표시줄 위로 뜨는 플라이아웃) */
+  .bc-panel{width:min(360px,100%);padding:10px 14px 16px;border-radius:18px;background:#f0f8ff;border:2px solid #8cc0fb;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);transform:translateY(24px) scale(.96);opacity:0;transition:transform .3s cubic-bezier(.2,1.3,.4,1) .05s,opacity .2s .05s}
+  #bluecmd.on .bc-panel{transform:none;opacity:1}
+  #bluecmd.nokbd .bc-panel{transform:translateY(24px) scale(.96);opacity:0;pointer-events:none}
+  .bc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .bc-head b{font:800 12px/1 system-ui,sans-serif;letter-spacing:.06em;color:#2f7de1}
+  .bc-head span{font:600 12px/1 system-ui,sans-serif;color:#5b7ea8}
+  .bc-x{margin-left:auto;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#5b7ea8;font-size:14px;cursor:pointer}
+  .bc-x:hover{background:#dcecfc}
+  .bc-screen{padding:7px 8px;margin-bottom:14px;border-radius:10px;background:#dcecfc;border:1.5px solid #b9dffd}
+  .bc-slots{display:flex;gap:4px}
+  .bc-slots i{flex:1;height:24px;border-radius:6px;background:#fff;border:1px dashed #a9cff5;color:#2f7de1;font:800 14px/22px ui-monospace,monospace;font-style:normal;text-align:center}
+  .bc-slots i.on{border-style:solid;border-color:#74c0fc;background:#eaf5ff;box-shadow:0 0 6px rgba(116,192,252,.6)}
+  .bc-screen.miss{animation:bcMiss .3s}
+  @keyframes bcMiss{25%{transform:translateX(-6px);background:#ffe3e3}75%{transform:translateX(6px);background:#ffe3e3}}
+  .bc-screen.win .bc-slots i{background:#74c0fc;border-color:#2f7de1;color:#fff;transition:background .1s}
+  .bc-keys{display:flex;align-items:center;justify-content:space-between;padding:0 6px}
+  .bc-dpad{position:relative;width:138px;height:138px;flex-shrink:0}
+  .bc-dpad button,.bc-ab button{position:absolute;width:46px;height:46px;border:0;border-radius:12px;cursor:pointer;
+    background:#fff;color:#2a5a96;font:800 18px/1 system-ui,sans-serif;border:1.5px solid #b9dffd;box-shadow:0 3px 0 #a9cff5}
+  .bc-u{left:46px;top:0}.bc-d{left:46px;bottom:0}.bc-l{left:0;top:46px}.bc-r{right:0;top:46px}
+  .bc-ab{position:relative;width:128px;height:100px}
+  .bc-ab button{width:54px;height:54px;border-radius:50%;background:#74c0fc;color:#fff;border-color:#4dabf7;box-shadow:0 3px 0 #3b8fd6}
+  .bc-ab button[data-k="b"]{left:0;bottom:4px}.bc-ab button[data-k="a"]{right:0;top:4px}
+  .bc-dpad button.hit,.bc-ab button.hit{animation:bcHit .12s}
+  @keyframes bcHit{50%{transform:translateY(3px);box-shadow:0 0 0 transparent}}
 </style>
 </head>
 <body>
@@ -486,7 +538,7 @@
   }
 
   /* ── 코나미 커맨드: 문짝을 통째로 뜯어낸다 ──
-     키보드 ↑↑↓↓←→←→ B A / 폰은 같은 방향으로 스와이프한 뒤 반짝이는 손잡이를 누른다 */
+     키보드 ↑↑↓↓←→←→ B A / 폰은 손잡이를 길게 눌러 나오는 B.l.u.e. 커맨드의 키보드로 입력한다 */
   const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
   let kbuf = [];
   document.addEventListener('keydown', e => {
@@ -494,22 +546,101 @@
     kbuf.push(k); kbuf = kbuf.slice(-KONAMI.length);
     if(kbuf.join() === KONAMI.join()){ kbuf = []; ripDoor(); }
   });
-  const SWIPE = ['u','u','d','d','l','r','l','r'];
-  let sbuf = [], sx0 = 0, sy0 = 0, armedT;
-  document.addEventListener('touchstart', e => { const t = e.changedTouches[0]; sx0 = t.clientX; sy0 = t.clientY; }, { passive: true });
-  document.addEventListener('touchend', e => {
-    const t = e.changedTouches[0], dx = t.clientX - sx0, dy = t.clientY - sy0;
-    if(Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
-    sbuf.push(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'));
-    sbuf = sbuf.slice(-SWIPE.length);
-    if(sbuf.join() === SWIPE.join()){
-      sbuf = []; knob.classList.add('armed'); clearTimeout(armedT);
-      armedT = setTimeout(() => knob.classList.remove('armed'), 8000);
+  /* 폰: 손잡이를 길게 누르면 아스리엘 전용 매뉴얼 UI 'B.l.u.e. 커맨드'가 올라온다.
+     키보드 창에서 ↑↑↓↓←→←→ B A 를 누르면 문짝 뜯기. 나머지 앱은 리엘이 전용이라 잠겨 있다
+     (스와이프는 브라우저가 스크롤·뒤로 가기로 가로채서 폰에서 잘 안 먹혔다) */
+  const PAD_SEQ = ['u','u','d','d','l','r','l','r','b','a'];
+  const PAD_SYM = { u:'↑', d:'↓', l:'←', r:'→', b:'B', a:'A' };
+  const ico = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const BC_APPS = [
+    ['kbd',    EN ? 'Keyboard' : '키보드',      ico('<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M6 13.5h.01M18 13.5h.01M8.5 14.5h7"/>')],
+    ['table',  EN ? 'Periodic table' : '주기율표', ico('<rect x="3" y="4" width="4" height="4" rx=".8"/><rect x="17" y="4" width="4" height="4" rx=".8"/><rect x="3" y="10" width="4" height="4" rx=".8"/><rect x="10" y="10" width="4" height="4" rx=".8"/><rect x="17" y="10" width="4" height="4" rx=".8"/><rect x="6.5" y="16" width="11" height="4" rx=".8"/>')],
+    ['mix',    EN ? 'Combine' : '조합',        ico('<path d="M9 3h6M10 3v6l-5.5 9.2A1.5 1.5 0 0 0 5.8 20.5h12.4a1.5 1.5 0 0 0 1.3-2.3L14 9V3"/><path d="M7.5 15h9"/>')],
+    ['cursor', EN ? 'Cursor' : '커서',         ico('<ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(-60 12 12)"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>')],
+    ['search', EN ? 'Search' : '검색',         ico('<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/>')],
+    ['index',  EN ? 'Index' : '인덱스',        ico('<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6M9 10.5h4"/>')],
+    ['game',   EN ? 'Games' : '게임',          ico('<path d="M7 8h10a4 4 0 0 1 3.9 4.8l-.8 3.6a2.2 2.2 0 0 1-3.8 1L14.8 16H9.2l-1.5 1.4a2.2 2.2 0 0 1-3.8-1l-.8-3.6A4 4 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3M15.5 12h.01M17.5 13.5h.01"/>')],
+    ['float',  EN ? 'Float element' : '원소 띄우기', ico('<rect x="6" y="8" width="12" height="11" rx="2"/><path d="M12 5V2M9.5 4 12 2l2.5 2"/><path d="M9.5 16.5v-5h2.5M9.5 14h2M14 11.5v5"/>')],
+    ['set',    EN ? 'Settings' : '설정',       ico('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')],
+  ];
+  const LOCK_SAY = EN ? ['Asriel only!', 'Admin access required~', 'Hands off, that\'s mine!']
+                      : ['리엘이 전용이에요!', '관리자 권한이 필요해요~', '그건 제 거예요! 만지지 마세요'];
+  const pad = document.createElement('div');
+  pad.id = 'bluecmd'; pad.setAttribute('role', 'dialog'); pad.setAttribute('aria-label', 'B.l.u.e. COMMAND');
+  pad.innerHTML = `
+    <div class="bc-panel">
+      <div class="bc-head"><b>B.l.u.e. COMMAND</b><span>${EN ? 'Keyboard' : '키보드'}</span><button type="button" class="bc-x" aria-label="close">✕</button></div>
+      <div class="bc-screen"><div class="bc-slots">${PAD_SEQ.map(() => '<i></i>').join('')}</div></div>
+      <div class="bc-keys">
+        <div class="bc-dpad">
+          <button type="button" data-k="u" class="bc-u" aria-label="up">↑</button>
+          <button type="button" data-k="l" class="bc-l" aria-label="left">←</button>
+          <button type="button" data-k="r" class="bc-r" aria-label="right">→</button>
+          <button type="button" data-k="d" class="bc-d" aria-label="down">↓</button>
+        </div>
+        <div class="bc-ab">
+          <button type="button" data-k="b" aria-label="B">B</button>
+          <button type="button" data-k="a" aria-label="A">A</button>
+        </div>
+      </div>
+    </div>
+    <div class="bc-tip"></div>
+    <nav class="bc-bar">${BC_APPS.map(([k, n, svg]) => `<button type="button" class="bc-app${k === 'kbd' ? ' on' : ''}" data-app="${k}" aria-label="${n}" title="${n}">${svg}</button>`).join('')}</nav>`;
+  document.body.appendChild(pad);
+  const slots = [...pad.querySelectorAll('.bc-slots i')], screen = pad.querySelector('.bc-screen'), tip = pad.querySelector('.bc-tip');
+  let pos = 0, tipT = 0;
+  const beep = (f, d, t = 'sine', v = .04) => { try{ tone(f, d, t, v); }catch(e){} };
+  const drawSlots = () => slots.forEach((el, i) => { el.textContent = i < pos ? PAD_SYM[PAD_SEQ[i]] : ''; el.classList.toggle('on', i < pos); });
+  const openPad = () => {
+    if(busy || PREVIEW) return;
+    pos = 0; drawSlots(); pad.classList.add('on');
+    try{ const k = 'pt_evt', a = JSON.parse(localStorage.getItem(k) || '[]'); if(!a.includes('rielBlue')){ a.push('rielBlue'); localStorage.setItem(k, JSON.stringify(a)); } }catch(e){}   // 아스리엘 도감: B.l.u.e. 커맨드
+    try{ navigator.vibrate && navigator.vibrate(25); }catch(e){}
+    beep(880, .1); beep(1320, .16, 'sine', .035);
+  };
+  const closePad = () => { pad.classList.remove('on'); tip.classList.remove('on'); };
+  pad.querySelector('.bc-x').addEventListener('click', closePad);
+  pad.addEventListener('pointerdown', e => { if(e.target === pad) closePad(); });   // 바깥을 누르면 닫힘
+  // 작업 표시줄: 키보드만 쓸 수 있고, 나머지는 리엘이 전용이라 잠겨 있다
+  pad.querySelectorAll('.bc-app').forEach(btn => btn.addEventListener('click', () => {
+    if(btn.dataset.app === 'kbd'){ pad.classList.toggle('nokbd'); btn.classList.toggle('on', !pad.classList.contains('nokbd')); beep(990, .06); return; }
+    btn.classList.remove('locked'); void btn.offsetWidth; btn.classList.add('locked');
+    const r = btn.getBoundingClientRect();
+    tip.textContent = '🔒 ' + LOCK_SAY[Math.floor(Math.random() * LOCK_SAY.length)];
+    tip.style.left = (r.left + r.width / 2) + 'px'; tip.style.top = (r.top - 10) + 'px';
+    tip.classList.remove('on'); void tip.offsetWidth; tip.classList.add('on');
+    clearTimeout(tipT); tipT = setTimeout(() => tip.classList.remove('on'), 1400);
+    beep(220, .12, 'square', .03);
+  }));
+  pad.querySelectorAll('[data-k]').forEach(btn => btn.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    const k = btn.dataset.k;
+    btn.classList.remove('hit'); void btn.offsetWidth; btn.classList.add('hit');
+    try{ navigator.vibrate && navigator.vibrate(8); }catch(err){}
+    if(k === PAD_SEQ[pos]){
+      pos++; drawSlots(); beep(520 + pos * 60, .07);
+      if(pos === PAD_SEQ.length){   // 성공 → 반짝 → 닫고 문짝 뜯기
+        screen.classList.add('win'); beep(1760, .2, 'sine', .05);
+        setTimeout(() => { screen.classList.remove('win'); closePad(); ripDoor(); }, 550);
+      }
+    }else{                          // 틀림 → 흔들고 처음부터 (방금 누른 게 ↑면 첫 칸으로 인정)
+      pos = k === PAD_SEQ[0] ? 1 : 0; drawSlots();
+      screen.classList.remove('miss'); void screen.offsetWidth; screen.classList.add('miss');
+      beep(180, .15, 'square', .035);
     }
-  }, { passive: true });
-  knob.addEventListener('click', e => {
-    if(!knob.classList.contains('armed')) return;
-    e.stopImmediatePropagation(); knob.classList.remove('armed'); ripDoor();
+  }));
+  // 손잡이 길게 누르기 (0.6초). 누르는 동안 손잡이가 점점 빛나서 뭔가 있다는 걸 알려 준다
+  let lpT = 0, lpFired = false;
+  const lpStop = () => { clearTimeout(lpT); knob.classList.remove('charging'); };
+  knob.addEventListener('pointerdown', () => {
+    if(busy || PREVIEW) return;
+    lpFired = false; knob.classList.add('charging');
+    lpT = setTimeout(() => { lpFired = true; knob.classList.remove('charging'); openPad(); }, 600);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => knob.addEventListener(ev, lpStop));
+  knob.addEventListener('contextmenu', e => e.preventDefault());
+  knob.addEventListener('click', e => {   // 길게 눌렀을 땐 평소 '덜컹'을 건너뛴다
+    if(lpFired){ lpFired = false; e.stopImmediatePropagation(); }
   }, true);
 
   function ripDoor(){
