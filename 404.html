@@ -67,7 +67,14 @@
 <script>
 (() => {
   // 영어로 보던 사람은 영어로
-  let en = false; try{ en = localStorage.getItem('pt_lang') === 'en'; }catch(e){}
+/* 언어: 직접 고른 적이 있으면 그 언어, 처음이면 브라우저(폰) 언어가 한국어일 때만 한국어, 아니면 영어 */
+  function ptLang(){
+    try{ const s = localStorage.getItem('pt_lang'); if(s === 'ko' || s === 'en') return s; }catch(e){}
+    const l = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+    return l.startsWith('ko') ? 'ko' : 'en';
+  }
+  let en = ptLang() === 'en';
+  document.documentElement.lang = en ? 'en' : 'ko';
   const L = en ? {
     title:'404 — Asriel is out cold · Periodic table', h1:'404 NOT FOUND — this page does not exist',
     p:'The 404 baseball bat you swung knocked Asriel out cold! You probably followed a wrong address (a typo or a missing letter), or the page blew up. Head back to the main page before she wakes up!',

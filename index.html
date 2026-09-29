@@ -99,7 +99,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-<title>주기율표</title>
+<title>페리오딕//테이블 — 주기율표</title>
+<meta name="description" content="원소를 눌러 원자 모형을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 336종 도감, 원자 모형과 전자 구름, 퀴즈까지.">
 <!-- 파비콘: 리엘이 빼꼼 (작은 크기는 얼굴을 당기고 테두리를 진하게 한 전용 버전) -->
 <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADaklEQVR42m2TXUyVdQDGn///nNdzgLPDmxAcaXysJcHActYWgW00MifD1GlrblkjqXUDW9SiNZtujW7aXIFXbm4NKwppzalHyR0VXJYhk5SP6RHwAOfw0aADvufrPe/7f7pANy/6XT03z7M9Fz8BACSFEIIPcwWI1u4zM3UJG0WaU6IkL3O6aose0DRxVAgxCiEAUgCgeFQmCQAdx06Fm0/2LyEUWYEmLWjrJGIpgbKSPLz7qg5/x+HOTRePtxx5NNLb2ytJYj5s32g8Ok/3tgv8sP2mNXx7Wc2FVpmIWxwcmlZN7dctz84BVh+8Qm/O1hsA0NTUJB09PT2UsSc7u8Z9uwN/3TFHTtQ49u8olL68DOHJdsGpSXisuIim03I2ugJb5pjOwq2FnBjKvXb9vN8BoHQqvunkBEvU2PEXHPm5GcJM8eFNQEiBBwkbHirsKnOjtsSQl+byCSv5UnR2oNtZ+frHh5b1BrTt9XG97pamSazTBCABKMBOK+h5OnJ9OlJGHC4XRU1wVl1KvYW2xu2HpCfDV+fO8mJ3VbYEAIcEFNZQilBKItg/iNWoCZcnEzEtC09VFkoaUTybW1wnZ8aDBXoGUZSfJQBAWQp3BsdAC0jHbQgA5bWb4XWu4uJ3P+Hu7zfRWqMJiwr3V1ng3FL9Mu6bFoQTAIGYYaH8mXzACUjNAacLiAyO4oPPTmHR6cUb2VeQ+8VH8HozcWtJAL/4Q+EN+wY4GV5VJGnMLHOk7wL/Pt1HJkyS5PjVUb7z/Qr9UZI0ORFJKt+eq+zqmw7jtzHVtbFxmF91TVikxfe27ePm1zq468htGpElMpYgTcW0nSCng+SDZb7fEbRqWm6RTHbhmsHSL3+Y4/qGgD05uaiC/nMMRsmJBGmmU7STcaZjBteI8tjP95S2/bL947kpkiwFAJyfYeeLn86z7EB/aipOcjFCRkIkLZIGGV3gfHCE7V+fod4QSL3ySYh/Di12AoDjzbM98vPmCn/r/tROTWQUNh7+Awbctl68QdxdSIqF4SBW7i3x4Lej6kS/Levrqxxv12YO1Vfn7KmsrJCPyfQvAL2jOzDf/M2v/yAUXgYcBC3CEho2Pu3Djuc0tB0o7nRLtAgh1iz+X52T8dbTg0bdSsoqstOE7wnX9PPleqAg27mm82Od/wC+qf5e/kofjgAAAABJRU5ErkJggg==">
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,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">
@@ -1941,21 +1942,30 @@
 
   .in-foot{
     position:absolute;left:50%;bottom:9vh;transform:translateX(-50%);
-    width:min(520px,80vw);text-align:center;z-index:3;
+    width:min(520px,80vw);text-align:center;z-index:3;pointer-events:none;   /* 글자·로딩 바가 나이트로글리세린을 가려서 잡히지 않던 문제 */
     text-shadow:0 2px 10px rgba(0,0,0,.8);
   }
-  .in-msg{font-size:13.5px;color:var(--dim);margin-bottom:10px;min-height:1.3em}
+  .in-msg{font-size:13.5px;color:var(--dim);margin-bottom:10px;min-height:1.3em;word-break:keep-all}
   #rxIntro.stuck .in-msg{color:#ff922b;font-weight:700}
+  #rxIntro.stuck .in-foot{bottom:calc(2.5vh + 160px);transition:bottom .35s ease}   /* 나이트로글리세린이 나오면 안내 문구를 그 위로 */
   .in-bar{height:4px;background:#1b212b;border-radius:2px;overflow:hidden}
   .in-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4dabf7,#7a9bcf);border-radius:2px}
 
   .in-tnt{
     position:fixed;left:50%;bottom:2.5%;transform:translateX(-50%);
-    width:104px;text-align:center;cursor:grab;touch-action:none;color:#ffd9c6;
+    width:104px;text-align:center;cursor:grab;touch-action:none;color:#ffd9c6;z-index:5;
     animation:inDrop .5s cubic-bezier(.3,1.4,.5,1) both;user-select:none;
     filter:drop-shadow(0 10px 22px rgba(0,0,0,.65));
   }
-  .in-tnt svg{width:64px;height:96px;display:block;margin:0 auto}
+  .in-tnt svg{width:118px;height:108px;display:block;margin:0 auto;overflow:visible}
+  .in-tnt{width:130px!important}
+  /* 나이트로글리세린 분자 모형 (교과서 색: C 검정, H 흰색, O 빨강, N 파랑). 충격에 약해서 늘 파르르 떤다 */
+  .ng-bonds:not([stroke]) line{stroke:#c8ced6;stroke-width:2.2;stroke-linecap:round}   /* 예비용 그림 */
+  .ng-C{fill:url(#ngC);stroke:#9aa4b1!important}
+  .ng-O{fill:url(#ngO)}.ng-N{fill:url(#ngN)}.ng-H{fill:url(#ngH)}
+  .ng-mol{animation:ngWob 1.4s ease-in-out infinite;transform-origin:50% 55%}
+  @keyframes ngWob{0%,100%{transform:rotate(-2deg)}20%{transform:rotate(1.5deg) translateX(.6px)}22%{transform:rotate(-1deg) translateX(-.8px)}24%{transform:rotate(1deg)}50%{transform:rotate(2deg)}70%{transform:rotate(-1.5deg) translateX(-.6px)}72%{transform:rotate(1deg) translateX(.8px)}}
+  .in-tnt:active .ng-mol{animation-duration:.25s}
   .dy-sticks rect{fill:#b8402e;stroke:#4a150e;stroke-width:2}
   .dy-sticks rect:nth-child(2){fill:#c94a35}
   .dy-band rect{fill:#6b4a2a;stroke:#2e1c0d;stroke-width:1.5}
@@ -1963,6 +1973,9 @@
   .dy-spark{fill:#ffd43b;filter:drop-shadow(0 0 6px #ff922b);animation:dySpark .4s steps(2) infinite}
   @keyframes dySpark{50%{opacity:.4;r:2.4}}
   .in-tnt b{display:block;font-size:12px;font-weight:800;margin-top:2px}
+  /* 분자 오른쪽 설명 */
+  .ng-note{position:absolute;left:calc(100% + 2px);top:34%;width:max-content;max-width:min(230px,calc(50vw - 78px));text-align:left;font-style:normal;font-size:12px;font-weight:700;line-height:1.4;color:#ffd9c6;opacity:.85;word-break:keep-all;pointer-events:none}
+  .ng-note small{display:block;margin-top:2px;padding-left:1.25em;font-size:10.5px;font-weight:600;color:#74c0fc;opacity:.9}   /* 서브 텍스트: 화살표 뒤 글자에 맞춰 들여쓰기 */
   .in-tnt span{font-size:10px;opacity:.75}
   .in-tnt:active{cursor:grabbing}
   @keyframes inDrop{from{transform:translate(-50%,-160px) rotate(-12deg);opacity:0}to{transform:translateX(-50%);opacity:1}}
@@ -2763,7 +2776,9 @@
   /* 아스리엘 도감 옆에 서 있는 리엘이 */
   #rielBuddy{position:fixed;z-index:2;opacity:0;pointer-events:none;transform:translateX(-24px);transition:opacity .35s,transform .45s cubic-bezier(.2,1.2,.4,1)}
   #rielBuddy.on{opacity:1;pointer-events:auto;transform:none}
-  #rielBuddy.hide{display:none}
+  #rdStage{display:flex;justify-content:center}
+  #rielBuddy.inline{position:relative;margin:62px auto 16px;flex-shrink:0}
+  #rielBuddy.inline.on{transform:none}
   #rielBuddy::after{content:'';position:absolute;left:12%;right:12%;bottom:-2%;height:5%;border-radius:50%;
     background:radial-gradient(closest-side,rgba(116,192,252,.45),transparent);z-index:-1}
   .rdb-fig{width:100%;height:100%;display:flex;flex-direction:column;cursor:pointer;filter:drop-shadow(0 6px 12px rgba(0,0,0,.45))}
@@ -2806,12 +2821,17 @@
   .tu-card.angry .tu-mad{opacity:1;transform:scale(1);transition:transform .3s cubic-bezier(.3,1.8,.5,1),opacity .1s}
   .tu-card.angry{animation:rwHuff .4s cubic-bezier(.3,1.6,.5,1)}
   .tu-name{display:block;font-size:10.5px;font-weight:800;color:#74c0fc;margin-bottom:3px}
+  /* 영어 제목 Pᴇʀɪᴏᴅɪᴄ // Tᴀʙʟᴇ: 글꼴에 작은 대문자가 없어서 소문자를 대문자로 바꿔 작게 (글자 자체는 Periodic // Table 그대로) */
+  header h1 .sc{text-transform:uppercase;font-size:.76em;letter-spacing:.03em}
+  /* 제목: 원소를 누르면 그 분류 색으로 (커서가 물드는 것과 같은 색) */
+  header h1{transition:color .35s ease, text-shadow .35s ease}
+  header h1.tint{color:var(--tc);text-shadow:0 0 18px color-mix(in srgb, var(--tc) 45%, transparent)}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>주기율표</h1>
+  <h1>페리오딕//테이블</h1>
   <span class="sub">원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조</span>
   <div class="legend" id="legend"></div>
   <div id="tools">
@@ -4516,9 +4536,30 @@ const APP_MODE = APP_FORCE || (() => {
   return false;
 })();
 
+/* 언어: 직접 고른 적이 있으면 그 언어, 처음이면 브라우저(폰) 언어가 한국어일 때만 한국어, 아니면 영어 */
+function ptLang(){
+  try{ const s = localStorage.getItem('pt_lang'); if(s === 'ko' || s === 'en') return s; }catch(e){}
+  const l = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+  return l.startsWith('ko') ? 'ko' : 'en';
+}
+/* 화면엔 안 보이는 버튼 설명(화면 읽기·마우스 올렸을 때)도 언어에 맞춘다 */
+function ptA11y(){
+  const en = LANG === 'en';
+  const set = (sel, attr, ko, e) => document.querySelectorAll(sel).forEach(n => n.setAttribute(attr, en ? e : ko));
+  set('#qtyDn', 'aria-label', '줄이기', 'Decrease');
+  set('#qtyUp', 'aria-label', '늘리기', 'Increase');
+  set('[data-w="min"]', 'aria-label', '최소화', 'Minimize');
+  set('[data-w="max"]', 'aria-label', '최대화', 'Maximize');
+  set('[data-w="close"]', 'aria-label', '닫기', 'Close');
+  set('#mGrav', 'title', '중력 방향', 'Gravity direction');
+  set('#rpClose', 'aria-label', '닫기', 'Close');
+}
+document.addEventListener('DOMContentLoaded', ptA11y);
+setTimeout(ptA11y, 0);
 let LANG = 'ko', SAFE = APP_MODE;
 try{
-  LANG = localStorage.getItem('pt_lang') || 'ko';
+  LANG = ptLang();
+  document.documentElement.lang = LANG;
   // 처음 여는 사람은 순화로 시작 (원본을 직접 골라둔 사람만 원본)
   if(!APP_MODE) SAFE = localStorage.getItem('pt_safe') !== '0';
 }catch(err){}
@@ -4526,7 +4567,7 @@ try{
 /* ── UI 문자열 ── */
 const UI = {
   ko:{
-    title:"주기율표", sub:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
+    title:"페리오딕//테이블", docTitle:"페리오딕//테이블 — 주기율표", sub:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
     search:"원소 검색…", tox:"☠ 독성", dex:"도감", quiz:"퀴즈", safe:"순화",
     tray:"조합", trayPh:"원소를 담아보세요 (최대 150개)", total:"총",
     rand:"랜덤", clear:"비우기", mixBtn:"조합하기", close:"닫기",
@@ -4598,7 +4639,7 @@ const UI = {
     setLog:"업데이트", setAbout:"정보", setStorageNote:"모든 기록은 이 기기에만 저장되며 어디로도 전송되지 않습니다.",
   },
   en:{
-    title:"Periodic Table", sub:"Tap an element for its atom model · Tap group/period numbers to highlight",
+    title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Tap an element for its atom model · Tap group/period numbers to highlight",
     search:"Search elements…", tox:"☠ Toxic", dex:"Codex", quiz:"Quiz", safe:"Clean",
     tray:"Mix", trayPh:"Add some elements (max 150)", total:"Total",
     rand:"Random", clear:"Clear", mixBtn:"Combine", close:"Close",
@@ -5514,9 +5555,39 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '3.0';
+const APP_VER = '3.1';
 
 const CHANGELOG = [
+  {
+    v: '3.1', date: '2026-09-29',
+    title: { ko: '리엘이 등장!', en: 'Riel is here!' },
+    items: {
+      ko: ['마스코트 아스리엘(리엘이) 등장',
+           '튜토리얼에서 인사해요. 건너뛰면… 화내요 >:(',
+           '원소를 누르면 리엘이가 한마디씩 거들어요',
+           '가끔 호버보드로 표 위를 순찰하고 먼지도 털어요 (붙잡으면… 비밀)',
+           '가끔 하늘색 원자 커서가 돌아다녀요. 누구 커서일까요? (해커 아니에요)',
+           '아스리엘 도감: 리엘이 모습 12가지 모으기',
+           '도감 옆 리엘이: 쓰다듬기… 간지럼… 꿀밤… 아 꿀밤은 다음 버전에…',
+           '다이너마이트가 나이트로글리세린 분자 모형으로',
+           '사이트 아이콘(파비콘)이 리엘이로',
+           '실험실 문 앞 연출 다듬기 (폰은 손잡이를 꾸욱)',
+           '설정에서 아스리엘 켜고 끄기 (웬만해선 끄지 마세요;; 리엘이가 슬퍼해요)',
+           '고친 것 두 가지 (다이너마이트가 가려지던 문제, 폰에서 리엘이가 사라지던 문제)'],
+      en: ['Our mascot Asriel ("Riel") is here',
+           'She says hi in the tutorial. Skip it and… she gets mad >:(',
+           'Tap an element and Riel chimes in with a tip',
+           'Sometimes she patrols the table on a hoverboard and dusts things (catch her and… it\'s a secret)',
+           'Sometimes a sky-blue atom cursor wanders around. Whose could it be? (Not a hacker)',
+           'Asriel Index: collect 12 of Riel\'s forms',
+           'Riel beside the index: head pats… tickles… a flick on the forehead… oh wait, that\'s next version…',
+           'The dynamite is now a nitroglycerin molecule model',
+           'The site icon (favicon) is now Riel',
+           'Polished the lab door scene (on phones, press and hold the knob)',
+           'Asriel can be turned on or off in Settings (please don\'t turn her off;; Riel gets sad)',
+           'Two fixes (dynamite hidden behind the hint text, Riel vanishing on phones)'],
+    },
+  },
   {
     v: '3.0', date: '2026-09-24',
     title: { ko: '문이 열립니다', en: 'The doors open' },
@@ -6782,8 +6853,10 @@ function buildLegend(){
 
 function applyStaticText(){
   document.documentElement.lang = LANG;
-  document.title = t('title');
-  document.querySelector('header h1').textContent = t('title');
+  document.title = t('docTitle') || t('title');   // 탭 이름엔 '주기율표'도 같이 (검색용)
+  const h1 = document.querySelector('header h1');
+  if(LANG === 'en') h1.innerHTML = t('title').replace(/\b([A-Z])([a-z]+)/g, '$1<span class="sc">$2</span>');
+  else h1.textContent = t('title');
   document.querySelector('header .sub').textContent = t('sub');
   document.getElementById('search').placeholder = t('search');
   document.getElementById('toxBtn').textContent = t('tox');
@@ -6841,6 +6914,8 @@ safeBtn.addEventListener('click', () => {
 document.getElementById('langBtn').addEventListener('click', () => {
   LANG = LANG === 'ko' ? 'en' : 'ko';
   try{ localStorage.setItem('pt_lang', LANG); }catch(e){}
+  document.documentElement.lang = LANG;
+  try{ ptA11y(); }catch(e){}
   refreshAll();
 });
 
@@ -13844,7 +13919,7 @@ function rxPanel(title, sub, bodyHTML, onClose){
     p.id = 'rxPanel';
     p.innerHTML = `<div class="rp-box" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
       <div class="rp-head"><div><h2 id="rpTitle"></h2><div class="rp-sub" id="rpSub"></div></div>
-      <button type="button" class="rp-x" id="rpClose" aria-label="닫기">✕</button></div>
+      <button type="button" class="rp-x" id="rpClose" aria-label="${LANG === 'en' ? 'Close' : '닫기'}">✕</button></div>
       <div class="rp-body" id="rpBody"></div></div>`;
     document.body.appendChild(p);
     p.addEventListener('click', e => { if(e.target === p) rxPanelClose(); });
@@ -14386,7 +14461,7 @@ const RX_INTRO_FAIL = 0.2;
 
 Object.assign(RXT.ko, {
   introLoad:'원소 불러오는 중', introReady:'준비 완료', introOpen:'문 여는 중',
-  introFail:'문이 안 열림', introHint:'다이너마이트를 문 가운데로 끌어다 놓으세요',
+  introFail:'문이 안 열림', introHint:'나이트로글리세린을 문 가운데로 살살 끌어다 놓으세요',
   introBoom:'문짝 박살', introSkip:'건너뛰기', introNext:'다음', introGo:'시작하기',
   tut1:'원소를 누르면 정보와 원자 모형이 나와요',
   tut2:'＋ 담기를 켜고 원소를 누르면 조합할 재료로 담겨요',
@@ -14397,7 +14472,7 @@ Object.assign(RXT.ko, {
 });
 Object.assign(RXT.en, {
   introLoad:'Loading elements', introReady:'Ready', introOpen:'Opening',
-  introFail:'The door will not open', introHint:'Drag the dynamite to the middle of the door',
+  introFail:'The door will not open', introHint:'Gently drag the nitroglycerin to the middle of the door',
   introBoom:'Door demolished', introSkip:'Skip', introNext:'Next', introGo:'Start',
   tut1:'Tap an element to see its details and atom model',
   tut2:'Turn on ＋ Add, then tap elements to put them in the tray',
@@ -14454,17 +14529,18 @@ function rxIntro(force, forceFail){
       <div class="in-bar"><i id="inBar"></i></div>
     </div>
     <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린">
-      <svg viewBox="0 0 64 96" aria-hidden="true">
-        <g class="dy-sticks">
-          <rect x="6" y="26" width="16" height="62" rx="3"/>
-          <rect x="24" y="22" width="16" height="66" rx="3"/>
-          <rect x="42" y="26" width="16" height="62" rx="3"/>
-        </g>
-        <g class="dy-band"><rect x="4" y="44" width="56" height="9" rx="2"/><rect x="4" y="64" width="56" height="9" rx="2"/></g>
-        <path class="dy-fuse" d="M32 22 C32 10 46 12 48 2" fill="none"/>
-        <circle class="dy-spark" cx="48" cy="2" r="3.4"/>
+      <svg class="ng-mol" viewBox="0 0 96 96" aria-hidden="true">
+        <defs>
+          <radialGradient id="ngC" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#6b7280"/><stop offset="1" stop-color="#16181d"/></radialGradient>
+          <radialGradient id="ngO" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ff8787"/><stop offset="1" stop-color="#c92a2a"/></radialGradient>
+          <radialGradient id="ngN" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#91a7ff"/><stop offset="1" stop-color="#364fc7"/></radialGradient>
+          <radialGradient id="ngH" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ced4da"/></radialGradient>
+        </defs>
+        <g class="ng-bonds"><line x1="50" y1="30" x2="50" y2="50"/><line x1="50" y1="50" x2="50" y2="70"/><line x1="50" y1="30" x2="34" y2="24"/><line x1="34" y1="24" x2="20" y2="14"/><line x1="20" y1="14" x2="7" y2="19"/><line x1="21.7" y1="13.8" x2="20.7" y2="2.8"/><line x1="18.3" y1="14.2" x2="17.3" y2="3.2"/><line x1="50" y1="50" x2="66" y2="54"/><line x1="66" y1="54" x2="81" y2="47"/><line x1="81" y1="47" x2="91" y2="56"/><line x1="82.6" y1="47.5" x2="86.6" y2="33.5"/><line x1="79.4" y1="46.5" x2="83.4" y2="32.5"/><line x1="50" y1="70" x2="34" y2="76"/><line x1="34" y1="76" x2="20" y2="85"/><line x1="20" y1="85" x2="7" y2="79"/><line x1="18.3" y1="85.4" x2="20.3" y2="94.4"/><line x1="21.7" y1="84.6" x2="23.7" y2="93.6"/><line x1="50" y1="30" x2="61" y2="19"/><line x1="50" y1="30" x2="65" y2="31"/><line x1="50" y1="50" x2="36" y2="48"/><line x1="50" y1="70" x2="63" y2="77"/><line x1="50" y1="70" x2="57" y2="88"/></g>
+        <g class="ng-atoms"><circle class="ng-H" cx="61" cy="19" r="3.9"/><circle class="ng-H" cx="65" cy="31" r="3.9"/><circle class="ng-H" cx="36" cy="48" r="3.9"/><circle class="ng-H" cx="63" cy="77" r="3.9"/><circle class="ng-H" cx="57" cy="88" r="3.9"/><circle class="ng-O" cx="34" cy="24" r="5.6"/><circle class="ng-O" cx="7" cy="19" r="5.6"/><circle class="ng-O" cx="19" cy="3" r="5.6"/><circle class="ng-O" cx="66" cy="54" r="5.6"/><circle class="ng-O" cx="91" cy="56" r="5.6"/><circle class="ng-O" cx="85" cy="33" r="5.6"/><circle class="ng-O" cx="34" cy="76" r="5.6"/><circle class="ng-O" cx="7" cy="79" r="5.6"/><circle class="ng-O" cx="22" cy="94" r="5.6"/><circle class="ng-N" cx="20" cy="14" r="5.8"/><circle class="ng-N" cx="81" cy="47" r="5.8"/><circle class="ng-N" cx="20" cy="85" r="5.8"/><circle class="ng-C" cx="50" cy="30" r="6.2"/><circle class="ng-C" cx="50" cy="50" r="6.2"/><circle class="ng-C" cx="50" cy="70" r="6.2"/></g>
       </svg>
       <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
+      <i class="ng-note">${LANG === 'en' ? '← Dynamite shaped like nitroglycerin' : '← 나이트로글리세린 모양의 다이너마이트임'}<small>${LANG === 'en' ? '(It\'s Asriel\'s dynamite!)' : '(아스리엘의 다이너마이트예요!)'}</small></i>
     </div>`;
   document.body.appendChild(box);
   document.body.classList.add('rx-intro-on');
@@ -14525,10 +14601,44 @@ function rxIntroStuck(){
   // 덜컹거리는 소리는 sound.js 의 doorStuck 이 낸다
   setTimeout(() => {
     const tnt = document.getElementById('inTnt');
+    const ng = rxNgSvg(); if(ng) tnt.querySelector('svg').outerHTML = ng;   // 결과 창과 같은 분자 모형으로
     tnt.hidden = false;
     msg.textContent = rt('introHint');
     rxIntroTnt(tnt);
   }, 700);
+}
+
+/* 인트로 나이트로글리세린: 결과 창과 똑같이 실제 구조식(SMILES)에서 원자 배치를 만들고 같은 원자 색으로 그린다 */
+function rxNgSvg(){
+  try{
+    const m = rxSmilesModel(RX_SMILES['나이트로글리세린'], rxRand('C₃H₅N₃O₉'));
+    const A = m.atoms, B = m.bonds;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    A.forEach(a => { x0 = Math.min(x0, a.x - a.r); y0 = Math.min(y0, a.y - a.r); x1 = Math.max(x1, a.x + a.r); y1 = Math.max(y1, a.y + a.r); });
+    const pad = 4, w = x1 - x0 + pad * 2, h = y1 - y0 + pad * 2;
+    const X = v => (v - x0 + pad).toFixed(1), Y = v => (v - y0 + pad).toFixed(1);
+    const bw = 5.5;
+    let bonds = '';
+    B.forEach(([i, j, o]) => {
+      const a = A[i], b = A[j];
+      if(o >= 2){   // 이중 결합: 나란한 두 줄
+        const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, nx = -dy / L * 3.6, ny = dx / L * 3.6;
+        [-1, 1].forEach(k => { bonds += `<line x1="${X(a.x + nx * k)}" y1="${Y(a.y + ny * k)}" x2="${X(b.x + nx * k)}" y2="${Y(b.y + ny * k)}"/>`; });
+      } else bonds += `<line x1="${X(a.x)}" y1="${Y(a.y)}" x2="${X(b.x)}" y2="${Y(b.y)}"/>`;
+    });
+    const ids = {};
+    const grad = [...new Set(A.map(a => a.s))].map(sy => {
+      const c = rxCpk(sy), id = 'ngg' + sy; ids[sy] = id;
+      return `<radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".35" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity=".85"/></radialGradient>`;
+    }).join('');
+    const atoms = A.map((a, k) => [a, k]).sort((p, q) => p[0].z - q[0].z).map(([a]) => {   // 뒤에 있는 원자부터
+      const dark = a.s === 'H' || a.s === 'O';
+      return `<g><circle cx="${X(a.x)}" cy="${Y(a.y)}" r="${a.r.toFixed(1)}" fill="url(#${ids[a.s]})" stroke="rgba(0,0,0,.45)" stroke-width="1.2"/>`
+        + `<text x="${X(a.x)}" y="${Y(a.y)}" dy=".36em" text-anchor="middle" font-size="${(a.r * 1.05).toFixed(1)}" font-weight="800" fill="${dark ? '#1b1e24' : '#fff'}">${a.s}</text></g>`;
+    }).join('');
+    return `<svg class="ng-mol" viewBox="0 0 ${w.toFixed(1)} ${h.toFixed(1)}" aria-hidden="true"><defs>${grad}</defs>`
+      + `<g class="ng-bonds" stroke="#8a93a0" stroke-width="${bw}" stroke-linecap="round">${bonds}</g><g class="ng-atoms">${atoms}</g></svg>`;
+  }catch(e){ return null; }
 }
 
 /* 다이너마이트 끌어다 놓기 */
@@ -15503,7 +15613,7 @@ setTimeout(() => {
   }, true);
 }
 
-/* 더 쉬운 방법: 제목 "주기율표"를 빠르게 일곱 번 (안드로이드 빌드 번호 누르기처럼) */
+/* 더 쉬운 방법: 제목 "페리오딕//테이블"을 빠르게 일곱 번 (안드로이드 빌드 번호 누르기처럼) */
 Object.assign(RXT.ko, { eggTapLeft:'{n}번 더…' });
 Object.assign(RXT.en, { eggTapLeft:'{n} more…' });
 {
@@ -16583,6 +16693,7 @@ function rielDexRender(){
   let box = document.getElementById('rielDex');
   if(!box){
     box = document.createElement('div'); box.id = 'rielDex';
+    box.innerHTML = '<div id="rdStage"></div><div id="rdContent"></div>';   // rdStage: 폰에서 리엘이가 서는 자리
     document.getElementById('dexBox').appendChild(box);
     box.addEventListener('click', e => {
       const c = e.target.closest('.rd-card.got'); if(!c) return;
@@ -16590,7 +16701,7 @@ function rielDexRender(){
       rxPanel(`${t[0]}`, rt('rdTitle'), `<div class="rd-big">${rielFormArt(f)}</div><p class="rd-desc">${t[1]}</p>`);
     });
   }
-  box.innerHTML = `
+  document.getElementById('rdContent').innerHTML = `
     <div class="rd-prof">
       <img class="rd-av" alt="" src="${RIEL_SRC.peek}">
       <dl>${RIEL_PROFILE[L].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
@@ -16846,13 +16957,36 @@ function rielDexBuddyPlace(){
   const room = r.left - 24;                               // 도감 왼쪽 빈 자리
   let h = Math.min(r.height * .9, 640, innerHeight - 40), w = h * 234 / 620;
   if(w > room){ w = room; h = w * 620 / 234; }
-  b.classList.toggle('hide', h < 300);                    // 자리가 좁으면(폰 등) 안 나온다
+  const stage = document.getElementById('rdStage'), dex = document.getElementById('dex');
+  if(h < 300 && stage){
+    // 옆에 자리가 없으면(폰 등) 아스리엘 도감 맨 위에 선다 (스크롤하면 같이 올라간다)
+    if(b.parentNode !== stage) stage.appendChild(b);
+    b.classList.add('inline');
+    h = Math.min(330, Math.max(240, innerHeight * .4)); w = h * 234 / 620;
+    b.style.width = w + 'px'; b.style.height = h + 'px'; b.style.left = b.style.top = '';
+    return;
+  }
+  if(b.parentNode !== dex) dex.appendChild(b);
+  b.classList.remove('inline');
   b.style.width = w + 'px'; b.style.height = h + 'px';
   b.style.left = (r.left - 18 - w) + 'px'; b.style.top = (r.bottom - h) + 'px';
 }
 {
   const _rds = rielDexSet;
   rielDexSet = function(on){ const r = _rds.apply(this, arguments); try{ rielDexBuddy(on); }catch(e){} return r; };
+}
+
+/* 제목이 고른 원소의 분류 색으로 물든다 */
+{
+  const _selT = select;
+  select = function(n){
+    const r = _selT.apply(this, arguments);
+    try{
+      const e = byNum[n], h = document.querySelector('header h1');
+      if(e && h && CAT[e.c]){ h.style.setProperty('--tc', cssv(CAT[e.c].v)); h.classList.add('tint'); }
+    }catch(err){}
+    return r;
+  };
 }
 
 /* ═══ 점검 중 화면: 저장소의 status.json 에서 "maintenance": true 면 덮는다 ═══
@@ -16865,7 +16999,7 @@ function rielDexBuddyPlace(){
     en: { h:'Under maintenance', p:'We are fixing a few things right now. Please check back in a little while!', until:'Expected back', again:'Check again',
           still:'Still under maintenance', alt:'Under maintenance, please wait! Asriel with a tablet and clipboard and little robot helpers in hard hats fixing the lab.' },
   };
-  const lang = () => { try{ return localStorage.getItem('pt_lang') === 'en' ? 'en' : 'ko'; }catch(e){ return 'ko'; } };
+  const lang = () => ptLang();
   const check = () => fetch('status.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
   function show(st){
     if(document.getElementById('rxMaint')) return;

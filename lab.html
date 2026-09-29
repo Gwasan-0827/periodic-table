@@ -67,6 +67,9 @@
     border:3px solid #33415a;background:#e9eef2;cursor:pointer;padding:0;
   }
   .window svg{position:absolute;inset:0;width:100%;height:100%}
+  /* 창문 속 풍경 = 문 뒤 실험실 그림을 그대로 가져와 창문 자리만큼 보여 준다 (창문: 문의 가로 18~82%, 세로 12~42%) */
+  .win-view{position:absolute;left:-28.125%;top:-40%;width:156.25%;height:333.333%;pointer-events:none}
+  .win-view svg{position:static;width:100%;height:100%;display:block;transform:scaleX(-1)}
   .fog{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
     background:linear-gradient(160deg,#5b7288,#3e5064 60%,#50667c);
@@ -366,8 +369,23 @@
     <div class="row"><button type="button" id="liAgain">다시 보기</button><a id="liBack" href="index.html" class="libtn">주기율표로</a></div>
   </section>
 <script>
+/* 언어: 직접 고른 적이 있으면 그 언어, 처음이면 브라우저(폰) 언어가 한국어일 때만 한국어, 아니면 영어 */
+function ptLang(){
+  try{ const s = localStorage.getItem('pt_lang'); if(s === 'ko' || s === 'en') return s; }catch(e){}
+  const l = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+  return l.startsWith('ko') ? 'ko' : 'en';
+}
 (() => {
-  const EN = (() => { try{ return localStorage.getItem('pt_lang') === 'en'; }catch(e){ return false; } })();
+  /* 창문 속 풍경을 문 뒤 실험실 그림에서 복사 (둘이 늘 같은 방이 되게) */
+  (() => {
+    const src = document.querySelector('.inside svg'), win = document.getElementById('win');
+    const old = win && win.querySelector(':scope > svg');
+    if(!src || !old) return;
+    const v = document.createElement('div'); v.className = 'win-view'; v.setAttribute('aria-hidden', 'true');
+    v.appendChild(src.cloneNode(true)); old.replaceWith(v);
+  })();
+  const EN = ptLang() === 'en';
+  document.documentElement.lang = EN ? 'en' : 'ko';
   const T = EN ? {
     back:'‹ Back to the table', win1:'Chemistry lab', win2:'Staff only', sign:'Lab · under construction',
     tapeA:'UNDER CONSTRUCTION', tapeB:'DO NOT ENTER', h1:'The lab is still being built',
@@ -913,7 +931,7 @@
     en: { h:'Under maintenance', p:'We are fixing a few things right now. Please check back in a little while!', until:'Expected back', again:'Check again',
           still:'Still under maintenance', alt:'Under maintenance, please wait! Asriel with a tablet and clipboard and little robot helpers in hard hats fixing the lab.' },
   };
-  const lang = () => { try{ return localStorage.getItem('pt_lang') === 'en' ? 'en' : 'ko'; }catch(e){ return 'ko'; } };
+  const lang = () => ptLang();
   const check = () => fetch('status.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
   function show(st){
     if(document.getElementById('rxMaint')) return;
