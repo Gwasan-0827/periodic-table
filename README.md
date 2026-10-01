@@ -17,7 +17,7 @@
 
 - **원소 정보**: 원자 번호, 원자량, 전자 배치, 이름의 유래
 - **원자 모형**: 보어 모형과 전자 구름
-- **조합과 도감**: 원소를 섞어서 물질 336종 모으기. 결과는 실제 분자 구조식으로 그려져요
+- **조합과 도감**: 원소를 섞어서 물질 360종 모으기. 결과는 실제 분자 구조식으로 그려져요
 - **학습**: 퀴즈로 원소 외우기
 - **업적**: 숨겨진 것 포함 여러 개
 - **한국어 / English**: 폰이나 브라우저 언어에 맞춰 자동으로 바뀌어요
@@ -59,7 +59,7 @@
 <details>
 <summary><b>English</b></summary>
 
-**Periodic // Table** is an interactive periodic table on the web. Tap any of the 118 elements to see its atom model and details, then combine elements to discover 336 compounds, drawn from their real molecular structures. Collect them in the index, take quizzes, and unlock achievements.
+**Periodic // Table** is an interactive periodic table on the web. Tap any of the 118 elements to see its atom model and details, then combine elements to discover 360 compounds, drawn from their real molecular structures. Collect them in the index, take quizzes, and unlock achievements.
 
 Our mascot **Asriel ("Riel")** is a new researcher at the lab (self-proclaimed). She chimes in with tips, sometimes patrols the table on a hoverboard, and hides a few secrets of her own.
 
