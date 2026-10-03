@@ -18,7 +18,11 @@
 - **원소 정보**: 원자 번호, 원자량, 전자 배치, 이름의 유래
 - **원자 모형**: 보어 모형과 전자 구름
 - **조합과 도감**: 원소를 섞어서 물질 360종 모으기. 결과는 실제 분자 구조식으로 그려져요
-- **학습**: 퀴즈로 원소 외우기
+- **분자 모형**: 막대-공 / 공간 채움 두 가지로 보기. 공간 채움은 실제 반지름과 교과서식 중에 고를 수 있어요
+- **광물과 유리**: 광물 28종은 실물 결정 모양으로, 유리는 투명한 유리컵으로도 볼 수 있어요
+- **이상한 물질들**: 펭귄논, 큐베인, 나노키드, 도데카헤드레인처럼 모양이 특이한 분자도 실제 입체 구조로
+- **학습**: 원소 퀴즈, 외우기, 그리고 이온
+- **이온**: 전자가 건너가는 애니메이션, 이온 카드(쓰임·수용액 색·불꽃 반응 색), 물에 넣으면 앙금이 생기는지, 이온 결합 도감 100칸, 이온 이동 실험
 - **업적**: 숨겨진 것 포함 여러 개
 - **한국어 / English**: 폰이나 브라우저 언어에 맞춰 자동으로 바뀌어요
 
@@ -46,7 +50,13 @@
 
 ## 업데이트 기록
 
-사이트 안 **설정 → 업데이트**에서 볼 수 있어요.
+사이트 안 **설정 → 업데이트**에서 볼 수 있어요. 지금 버전은 **βV.3.₂**예요.
+
+| 표기 | 시대 |
+|---|---|
+| αV | 1.0 ~ 1.n |
+| βV | 2.0 ~ 4.n (지금) |
+| ΔV | 5.0부터 |
 
 ## 만든 사람
 
@@ -59,7 +69,7 @@
 <details>
 <summary><b>English</b></summary>
 
-**Periodic // Table** is an interactive periodic table on the web. Tap any of the 118 elements to see its atom model and details, then combine elements to discover 360 compounds, drawn from their real molecular structures. Collect them in the index, take quizzes, and unlock achievements.
+**Periodic // Table** is an interactive periodic table on the web. Tap any of the 118 elements to see its atom model and details, then combine elements to discover 360 compounds, drawn from their real molecular structures. Collect them in the index, take quizzes, and unlock achievements. View molecules as ball-and-stick or space-filling models, see minerals as real crystals, and explore ions with electron-transfer animations, flame test colors, and an ion migration experiment.
 
 Our mascot **Asriel ("Riel")** is a new researcher at the lab (self-proclaimed). She chimes in with tips, sometimes patrols the table on a hoverboard, and hides a few secrets of her own.
 
