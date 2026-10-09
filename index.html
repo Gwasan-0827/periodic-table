@@ -19843,7 +19843,11 @@ document.addEventListener('click', e => {
   /* 전자 구름일 때 나오는 전자 배치 칩은 '핵 속으로' 버튼 아래로 내린다 (둘 다 오른쪽 위라 겹쳤음) */
   #atomBox .atom-subs{top:38px}
   #nucBig{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,7,10,.82);padding:18px}
-  #nucBig.on{display:flex}
+  #nucBig.on{display:flex;animation:nucIn .28s ease-out}
+  #nucBig.on .orb-card{animation:nucCard .42s cubic-bezier(.2,.9,.25,1)}
+  @keyframes nucIn{from{background:rgba(5,7,10,0)}to{background:rgba(5,7,10,.82)}}
+  @keyframes nucCard{from{transform:scale(.86);opacity:0}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){ #nucBig.on, #nucBig.on .orb-card{animation:none} }
   .nuc-steps{display:flex;gap:5px;flex-wrap:wrap}
   .nuc-steps button{font:inherit;font-size:12px;padding:5px 10px;border-radius:7px;cursor:pointer;color:var(--dim);background:rgba(255,255,255,.04);border:1px solid var(--line2)}
   .nuc-steps button.on{background:var(--text);color:#0b0d11;font-weight:650;border-color:var(--text)}
@@ -19887,7 +19891,7 @@ const RX_NUC_T = {
   ko: {
     open:'핵 속으로', title:'핵 속으로', steps:['원자','원자핵','양성자·중성자','쿼크'],
     mag:['억','조'], magOf:'배 확대',
-    s0:(e,d)=>`<b>${e.s}</b> 원자예요. 가운데 점이 원자핵인데, 이 그림도 크게 그린 거예요. 원자는 핵보다 수만 배 커요. 원자가 축구장만 하다면 핵은 한가운데 놓인 <b>쌀알</b>쯤이에요. 원자는 거의 다 빈 곳이에요.`,
+    s0:(e,d)=>`<b>${e.s}</b> 원자예요. 뿌연 안개는 전자가 있을 확률이고(전자 구름 탭과 같은 그림), 가운데 점이 원자핵이에요. 그 점도 크게 그린 거예요. 원자는 핵보다 수만 배 커요. 원자가 축구장만 하다면 핵은 한가운데 놓인 <b>쌀알</b>쯤이에요. 원자는 거의 다 빈 곳이에요.`,
     s1:(e,z,n)=>`<b>${e.s}</b>의 원자핵이에요. 양성자 <b>${z}</b>개와 중성자 <b>${n}</b>개가 뭉쳐 있어요. 양성자 수가 곧 원자 번호예요.`,
     s1h:e=>`<b>${e.s}</b>의 원자핵이에요. 수소는 중성자 없이 <b>양성자 하나</b>가 핵의 전부예요.`,
     s2p:'양성자 하나 속이에요. <b>업</b> 쿼크 둘과 <b>다운</b> 쿼크 하나가 글루온이라는 끈으로 묶여 있어요.',
@@ -19918,7 +19922,7 @@ const RX_NUC_T = {
   en: {
     open:'Nucleus ›', title:'Into the nucleus', steps:['Atom','Nucleus','Proton · neutron','Quarks'],
     mag:['×10⁸','×10¹²'], magOf:'magnification',
-    s0:(e,d)=>`This is a <b>${e.s}</b> atom. The dot in the middle is the nucleus, and even that is drawn far too big. An atom is tens of thousands of times wider than its nucleus. If the atom were a football stadium, the nucleus would be a <b>grain of rice</b> at the centre. An atom is almost all empty space.`,
+    s0:(e,d)=>`This is a <b>${e.s}</b> atom. The haze is where its electrons are likely to be (the same picture as the Electron cloud tab), and the dot in the middle is the nucleus. Even that dot is drawn far too big. An atom is tens of thousands of times wider than its nucleus. If the atom were a football stadium, the nucleus would be a <b>grain of rice</b> at the centre. An atom is almost all empty space.`,
     s1:(e,z,n)=>`The nucleus of <b>${e.s}</b>: <b>${z}</b> protons and <b>${n}</b> neutrons packed together. The proton count is the atomic number.`,
     s1h:e=>`The nucleus of <b>${e.s}</b>. Hydrogen has no neutrons, so its whole nucleus is <b>one proton</b>.`,
     s2p:'Inside one proton: two <b>up</b> quarks and one <b>down</b> quark, tied together by strings called gluons.',
@@ -20023,6 +20027,7 @@ function rxNucBuild(){
   const pos = ev => { const r = cv.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top, r.width, r.height]; };
   cv.addEventListener('pointerdown', ev => {
     const N = RX_NUC, [x, y, w, h] = pos(ev);
+    if(N.tr) return;
     cv.setPointerCapture(ev.pointerId);
     if(N.st >= 2 && N.q){
       const S = Math.min(w, h) * 0.36;
@@ -20065,7 +20070,9 @@ function rxNucGo(st, kind){
   if(kind) N.kind = kind;
   const n = rxNucNeutrons(N.el);
   if(N.kind === 'n' && n === 0) N.kind = 'p';
+  const prev = N.st;
   N.st = st; N.drag = null; N.mesons = [];
+  rxNucTrStart(prev, st);
   if(st >= 2) N.q = rxNucQuarks(N.kind);
   if(st === 3) N.faq = N.faq || false;
   rxNucUI();
@@ -20081,7 +20088,7 @@ function rxNucUI(){
   const nucD = '≈' + (a === 1 ? '1.7' : (2.5 * Math.cbrt(a)).toFixed(0));   // R = 1.25fm × A^(1/3). 재는 방법에 따라 달라지는 어림값
   let body = '', mag = '', hint = '';
   if(N.st === 0){
-    mag = rxNucMag(2.5e-10);
+    mag = rxNucMag(2.5e-10); hint = T('drag');
     body = `<div class="nuc-lead">${T('s0')(e)}</div>
       <div class="nuc-row"><div class="nuc-stat"><u>${T('nucD')}</u><b>${nucD} fm</b></div><div class="nuc-stat"><u>${T('p')}</u><b>${z}</b></div><div class="nuc-stat"><u>${T('n')}</u><b>${n}</b></div></div>
       <button type="button" class="nuc-btn go" data-st="1">${st[1]} ›</button>`;
@@ -20161,22 +20168,23 @@ function rxNucTick(ts){
   const ctx = cv.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
   const dt = Math.min(0.05, (ts - (N.last || ts)) / 1000); N.last = ts; N.t += dt;
+  if(N.tr){ rxNucTrans(ctx, w, h, dpr, dt); return; }
+  rxNucDraw(ctx, w, h, dt, N.st);
+}
+/* 한 단계의 그림. st: 0 원자 · 1 원자핵 · 2 이상 양성자·중성자 속 (음수면 아무것도 안 그린다) */
+function rxNucDraw(ctx, w, h, dt, st){
+  const N = RX_NUC;
+  if(st < 0) return;
   const cx = w / 2, cy = h / 2, M = Math.min(w, h), e = N.el;
   const font = (px, wt) => `${wt || 500} ${px}px PTSym, Orbit, sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  if(N.st === 0){
-    const R = M * 0.4, col = (typeof catColor === 'function' && catColor(e)) || '#7fb2ff';
-    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-    g.addColorStop(0, 'rgba(150,190,255,.34)'); g.addColorStop(0.45, 'rgba(120,160,240,.16)'); g.addColorStop(1, 'rgba(120,160,240,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
-    // 전자: 구름 속에서 반짝이는 점
-    const rnd = rxNucRand(e.n * 31 + Math.floor(N.t * 9));
-    ctx.fillStyle = '#cfe2ff';
-    for(let i = 0; i < Math.min(60, 8 + e.n); i++){
-      const r = Math.pow(rnd(), 0.6) * R * 0.92, a = rnd() * 6.2832;
-      ctx.globalAlpha = 0.25 + rnd() * 0.5; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 1.3, 0, 6.2832); ctx.fill();
+  if(st === 0){
+    // 전자 구름 탭과 같은 구름: 그 원소의 실제 오비탈로 계산한 확률 안개
+    if(!N.drag) N.yaw += dt * 0.12;
+    if(N.cloud && N.cloud.length){
+      try{ rxCloudDraw(ctx, w, h, N.cloud, { yaw: N.yaw, pitch: N.pitch, zoom: 0.86 }, { fog: true, fogAlpha: 0.62 }); }catch(err){}
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     }
-    ctx.globalAlpha = 1;
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 1.6, 0, 6.2832); ctx.fill();
     const pulse = 9 + Math.sin(N.t * 3) * 2.5;
     ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, pulse, 0, 6.2832); ctx.stroke();
@@ -20185,7 +20193,7 @@ function rxNucTick(ts){
     ctx.fillText(LANG === 'en' ? 'nucleus' : '원자핵', cx + 50, cy - 50);
     return;
   }
-  if(N.st === 1){
+  if(st === 1){
     if(!N.drag) N.yaw += dt * 0.25;
     const P = N.pts, S = M * 0.4 / P.ext, cyw = Math.cos(N.yaw), syw = Math.sin(N.yaw), cp = Math.cos(N.pitch), sp = Math.sin(N.pitch);
     const out = P.p.map(q => {
@@ -20261,16 +20269,90 @@ function rxNucTick(ts){
     ctx.fillStyle = '#e8ecf3'; ctx.fillText(m.f + '̄', x + 11, y + 1); ctx.globalAlpha = 1;
   });
 }
+/* 단계 사이를 넘어갈 때: 안으로 빨려 들어가거나(확대) 밖으로 빠져나오는(축소) 연출.
+   앞 단계와 뒤 단계를 각각 따로 그려 두고, 크기와 투명도를 바꿔 겹친다. */
+function rxNucTrans(ctx, w, h, dpr, dt){
+  const N = RX_NUC, tr = N.tr;
+  if(!N.oc) N.oc = [document.createElement('canvas'), document.createElement('canvas')];
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
+  [tr.from, tr.to].forEach((st, k) => {
+    const c = N.oc[k];
+    if(c.width !== W || c.height !== H){ c.width = W; c.height = H; }
+    const x = c.getContext('2d');
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, w, h);
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    rxNucDraw(x, w, h, k ? dt : 0, st);
+  });
+  const raw = Math.min(1, (performance.now() - tr.t0) / tr.dur);
+  const p = raw < 0.5 ? 4 * raw * raw * raw : 1 - Math.pow(-2 * raw + 2, 3) / 2;   // 천천히 시작해서 천천히 멈춘다
+  const inward = tr.to > tr.from, cx = w / 2, cy = h / 2;
+  const put = (c, k, a) => {
+    if(a <= 0.01) return;
+    ctx.save(); ctx.globalAlpha = Math.min(1, a);
+    ctx.translate(cx, cy); ctx.scale(k, k); ctx.translate(-cx, -cy);
+    ctx.drawImage(c, 0, 0, w, h); ctx.restore();
+  };
+  if(inward){
+    put(N.oc[0], 1 + p * 7, 1 - p * 1.7);
+    put(N.oc[1], 0.1 + 0.9 * p, (p - 0.25) / 0.6);
+  } else {
+    put(N.oc[0], 1 - 0.9 * p, 1 - p * 1.7);
+    put(N.oc[1], 8 - 7 * p, (p - 0.25) / 0.6);
+  }
+  // 속도선: 가운데에서 바깥으로(확대) 또는 바깥에서 가운데로(축소) 뻗는 빛줄기
+  const pow = Math.sin(raw * Math.PI), R = Math.hypot(w, h) / 2;
+  ctx.save(); ctx.lineCap = 'round';
+  for(let i = 0; i < 46; i++){
+    const a = i * 2.39996 + (tr.seed || 0), f = (i * 0.6180339) % 1;
+    const prog = ((inward ? raw : 1 - raw) * 1.4 + f) % 1;
+    const r0 = (0.12 + prog * 0.88) * R, len = (18 + 90 * prog) * pow;
+    ctx.strokeStyle = `rgba(190,215,255,${(0.05 + 0.3 * prog) * pow})`; ctx.lineWidth = 0.8 + prog * 1.6;
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+    ctx.lineTo(cx + Math.cos(a) * (r0 + len), cy + Math.sin(a) * (r0 + len)); ctx.stroke();
+  }
+  ctx.restore();
+  if(raw >= 1) N.tr = null;
+}
+/* 단계 전환 연출을 건다 (움직임 줄이기를 켠 기기에서는 바로 바뀐다) */
+function rxNucTrStart(from, to, dur){
+  if(typeof RX_REDUCED !== 'undefined' && RX_REDUCED) return;
+  if(from === to || (from >= 2 && to >= 2)) return;   // 양성자 속 ↔ 쿼크 설명은 같은 그림
+  RX_NUC.tr = { from, to, t0: performance.now(), dur: dur || 750, seed: Math.random() * 6.28 };
+  RX_NUC.drag = null;
+  try{ rxNucWhoosh(to > from, (dur || 750) / 1000); }catch(e){}
+}
+/* 전환 소리: 삑 올라가는 음 대신 바람이 스치는 듯한 부드러운 소리.
+   잡음을 걸러서 음높이가 천천히 움직이게 하고, 서서히 커졌다 서서히 사라진다. 작게. */
+function rxNucWhoosh(inward, dur){
+  if(typeof sndOn === 'undefined' || !sndOn) return;
+  const a = ac(); if(!a) return;
+  const t = a.currentTime, n = Math.floor(a.sampleRate * (dur + 0.1));
+  const buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+  let last = 0;
+  for(let i = 0; i < n; i++){ const w = Math.random() * 2 - 1; last = last * 0.86 + w * 0.14; d[i] = last * 3; }   // 고음이 깎인 부드러운 잡음
+  const src = a.createBufferSource(); src.buffer = buf;
+  const f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 0.9;
+  const f0 = inward ? 260 : 900, f1 = inward ? 900 : 240;
+  f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  const g = a.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(0.075, t + dur * 0.45);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f); f.connect(g); g.connect(a.destination);
+  src.start(t); src.stop(t + dur + 0.05);
+}
 function rxNucOpen(e){
   e = e || (typeof atomEl !== 'undefined' && atomEl) || byNum[selected];
   if(!e) return;
   rxNucBuild();
   const N = RX_NUC;
   N.el = e; N.pts = rxNucPack(e.n, rxNucNeutrons(e));
+  try{ N.cloud = rxCloudPoints(e.s, innerWidth <= 760 ? 1200 : 1700).pts; }catch(err){ N.cloud = null; }
   N.kind = 'p'; N.st = 0; N.t = 0; N.last = 0; N.mesons = []; N.q = rxNucQuarks('p'); N.drag = null;
   N.on = true;
-  document.getElementById('nucBig').classList.add('on');
+  { const d = document.getElementById('nucBig'); d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); }
   rxNucUI();
+  N.tr = null; rxNucTrStart(-1, 0, 1100);
   cancelAnimationFrame(N.raf);
   N.raf = requestAnimationFrame(rxNucTick);
   try{ rxEvt('nucBig'); }catch(err){}
