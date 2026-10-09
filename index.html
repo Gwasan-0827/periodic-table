@@ -6090,6 +6090,7 @@ const CHANGELOG = [
            '전자 구름 오른쪽 위의 전자 배치(예: 3d⁷ 4s²)를 눌러 보세요. 그 껍질의 구름만 진하게 보여요',
            '"크게 보기"를 누르면 오비탈을 하나씩 골라 보거나, 전자가 1s부터 차례로 채워지는 걸 재생할 수 있어요. 크로뮴·구리처럼 규칙을 어기는 원소는 끝에 알려 주고, "진짜 이렇게 생겼나요?"에 대한 답도 들어 있어요',
            '히트맵에 "실제 크기"가 생겼어요. 칸마다 원자 반지름 비율 그대로 원을 그려서, 세슘이 헬륨보다 얼마나 큰지 한눈에 보여요',
+           '액체로 나오는 물질 14가지(메탄올, 에탄올, 식초의 아세트산, 황산, 브로민 등)도 물처럼 액체 · 막대-공 · 공간 채움 세 가지로 볼 수 있어요',
            '분자 떨림: 조합 결과의 분자 모형에서 떨림 버튼을 누르면 0 K·300 K·1000 K에서 원자가 떨리는 걸 볼 수 있어요. 교과서 그림은 멈춰 있지만 실제는 안 그래요',
            '핵 속으로: 어느 원소든 원자 → 원자핵 → 양성자·중성자 → 쿼크까지 들어가 볼 수 있어요. 양성자 질량의 99%가 에너지라는 것도 나와요. 쿼크를 잡아당기면 어떻게 되는지도 해 보세요',
            '원소 기호와 화학식의 글꼴을 Kanit으로 바꿨어요. 이제 N이 N으로 보여요 (전에는 Na가 Пa처럼 보였어요). 칸이 넓으면 글자도 커져요',
@@ -12025,6 +12026,14 @@ function rxFillSizeSet(v){
   }catch(e){}
 }
 const RX_MOL_TAB = { ko:['막대-공', '공간 채움', '액체', '유리'], en:['Ball & stick', 'Space-filling', 'Liquid', 'Glass'] };
+/* 액체로 나오는 물질의 분자 하나 (액체 / 막대-공 / 공간 채움 세 가지로 볼 수 있게).
+   소금물처럼 섞인 액체는 가장 많은 성분인 물 분자를, 염산·플루오린화수소산은 녹아 있는 분자를 보여 준다. */
+const RX_LIQ_SMILES = {
+  '물':'O', '과산화수소':'OO', '메탄올':'CO', '에탄올':'CCO', '아세트산':'CC(=O)O', '폼산':'OC=O',
+  '이황화탄소':'S=C=S', '황산':'OS(=O)(=O)O', '질산':'O[N+](=O)[O-]', '인산트라이메틸':'COP(=O)(OC)OC',
+  '염산':'Cl', '플루오린화수소산':'F', '바닷물':'O', '눈물':'O', '라면 국물':'O',
+  '브로민 덩어리':'BrBr',   // 브로민은 Br₂ 분자로 된 액체
+};
 function rxMolViews(model, name){
   if(!model) return null;
   if(name === '유리' && model.atoms && (model.bonds || []).length){
@@ -12032,7 +12041,7 @@ function rxMolViews(model, name){
     return fill ? { glass: rxGlassCup(), ball: model, fill } : null;
   }
   // 출렁이는 액체(물 등): 액체 + 분자 하나를 두 모형으로
-  const sm = (typeof RX_SMILES !== 'undefined' && RX_SMILES[name]) || ({ '물':'O', '과산화수소':'OO' })[name];
+  const sm = (typeof RX_SMILES !== 'undefined' && RX_SMILES[name]) || RX_LIQ_SMILES[name];
   if(model.kin && model.liquid && sm){
     const one = rxSmilesModel(sm, rxRand(name)), fill = one && rxSpaceFill(one);
     return fill ? { liq: model, ball: one, fill } : null;
