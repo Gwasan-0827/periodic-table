@@ -2218,6 +2218,10 @@
   .clt{font-size:13px;color:var(--text);flex:1;min-width:0}
   /* 대규모 업데이트는 제목을 푸른색으로 */
   .cl.big .clt{color:#6fb6ff;font-weight:700}
+  .cl.mid .clt{color:#9ccaf7}
+  .clkey{font-size:11.5px;color:var(--dim);margin:-2px 0 8px;display:flex;gap:12px;flex-wrap:wrap}
+  .clkey b{color:#6fb6ff;font-weight:700}
+  .clkey i{font-style:normal;color:#9ccaf7}
   .cld{font-size:10.5px;color:#5f6a7a;flex-shrink:0}
   .clx{
     font-size:10px;color:var(--dim);flex-shrink:0;
@@ -6076,7 +6080,7 @@ function verLabel(v){
 }
 const CHANGELOG = [
   {
-    v: '3.4', date: '2026-10-09', big: true,   // 두 번째 대규모 업데이트
+    v: '3.4', date: '2026-10-09', big: true,   // 대규모 업데이트
     title: { ko: '~ 오비탈과 쿼크 ~', en: '~ Orbitals and quarks ~' },
     items: {
       ko: ['전자 구름을 새로 만들었어요. 실제 파동함수 모양 그대로라 2s 안쪽의 작은 공, 도넛을 두른 d 오비탈, f 오비탈 7가지까지 나와요. 알갱이 대신 부드러운 안개로 보여 주고, 끌어서 돌릴 수 있어요',
@@ -6106,7 +6110,7 @@ const CHANGELOG = [
     },
   },
   {
-    v: '3.3', date: '2026-10-07',
+    v: '3.3', date: '2026-10-07', big: 'mid',   // 중간 규모 업데이트 (옅은 푸른색)
     title: { ko: '캣닢과 헤모글로빈', en: 'Catnip and hemoglobin' },
     items: {
       ko: ['새 물질 60개 — 도감이 딱 420종이 됐어요',
@@ -6140,7 +6144,7 @@ const CHANGELOG = [
     },
   },
   {
-    v: '3.2', date: '2026-09-30',
+    v: '3.2', date: '2026-09-30', big: 'mid',   // 중간 규모 업데이트 (옅은 푸른색)
     title: { ko: '이상한 물질들, 더 이상한 물질들', en: 'Strange substances, stranger substances' },
     items: {
       ko: ['새 물질 24개 — 도감이 딱 360종이 됐어요',
@@ -6178,7 +6182,7 @@ const CHANGELOG = [
     },
   },
   {
-    v: '3.1', date: '2026-09-29',
+    v: '3.1', date: '2026-09-29', big: 'mid',   // 중간 규모 업데이트 (옅은 푸른색)
     title: { ko: '리엘이 등장!', en: 'Riel is here!' },
     items: {
       ko: ['마스코트 아스리엘(리엘이) 등장',
@@ -6208,7 +6212,7 @@ const CHANGELOG = [
     },
   },
   {
-    v: '3.0', date: '2026-09-24',
+    v: '3.0', date: '2026-09-24', big: true,   // 대규모 업데이트
     title: { ko: '문이 열립니다', en: 'The doors open' },
     items: {
       ko: ['원소 검색 옆에 실험실 입장 버튼 — 실험실은 지금 공사 중이에요',
@@ -6258,7 +6262,7 @@ const CHANGELOG = [
     },
   },
   {
-    v: '2.7', date: '2026-09-15', big: true,   // 첫 번째 대규모 업데이트
+    v: '2.7', date: '2026-09-15', big: true,   // 대규모 업데이트
     title: { ko: '결과 창 새 단장', en: 'A new result window' },
     items: {
       ko: ['넣은 원소에서 화학식까지 선이 이어지고, 왼쪽에 분자 구조가 그려집니다',
@@ -6579,8 +6583,9 @@ function checkNewVersion(){
 function changelogHTML(){
   const L = LANG === 'en' ? 'en' : 'ko';
   return `<div class="ssec">${t('setLog')}</div>
+    <div class="clkey">${L === 'en' ? '<span><b>Blue</b> means a major update!</span><span><i>Pale blue</i> is the next size down.</span>' : '<span><b>푸른색</b>은 대규모예요!</span><span><i>옅은 푸른색</i>은 그다음으로 커요.</span>'}</div>
     <div class="clog">${CHANGELOG.map(c => `
-      <div class="cl${logOpen === c.v ? ' open' : ''}${c.big ? ' big' : ''}" data-v="${c.v}">
+      <div class="cl${logOpen === c.v ? ' open' : ''}${c.big === 'mid' ? ' mid' : c.big ? ' big' : ''}" data-v="${c.v}">
         <button type="button" class="clhead">
           <span class="clv">${verLabel(c.v)}</span>
           <span class="clt">${c.title[L]}</span>
