@@ -4092,6 +4092,9 @@ const SINGLE = {
   H:  [[2,2,"H₂","수소 기체","제일 가벼운 기체"],
        [3,3,"³H","삼중수소","트리튬. 스스로 빛나서 야광 표지판이나 시곗바늘에 씀. 반감기 12.3년"],
        [4,99,"H","수소 덩어리","이 정도면 별이 될지도"]],
+  N:  [[2,2,"N₂","질소 기체","공기의 78% / 삼중 결합이라 엄청 단단함"]],
+  F:  [[2,2,"F₂","플루오린 기체","뭐든 닥치는 대로 반응함"]],
+  Cl: [[2,2,"Cl₂","염소 기체","수영장 냄새의 먼 친척 / 마시면 안 됨"]],
   He: [[3,3,"³He","헬륨-3","중성자가 하나 모자란 가벼운 헬륨. 달에 많음"]],
   Au: [[2,99,"Au","금괴","팔면 인생 핌"]],
   Fe: [[2,99,"Fe","고철","kg당 얼마"]],
@@ -5505,6 +5508,9 @@ const REC_EN = {
 "니코틴":["Nicotine","The addictive compound in tobacco"],
 "방해석 / 아라고나이트":["Calcite / aragonite","Same formula, different crystal structure"],
 "수소 기체":["Hydrogen gas","The lightest gas"],
+"질소 기체":["Nitrogen gas","78% of the air / held by a very tough triple bond"],
+"플루오린 기체":["Fluorine gas","Reacts with nearly anything"],
+"염소 기체":["Chlorine gas","A distant cousin of the pool smell / do not breathe it"],
 "산소 기체":["Oxygen gas","The one you breathe"],
 "폭발":["Explosion","This is what happens when sodium meets water"],
 "더 큰 폭발":["Bigger explosion","Potassium is even more enthusiastic"],
@@ -6090,14 +6096,15 @@ const CHANGELOG = [
            '전자 구름 오른쪽 위의 전자 배치(예: 3d⁷ 4s²)를 눌러 보세요. 그 껍질의 구름만 진하게 보여요',
            '"크게 보기"를 누르면 오비탈을 하나씩 골라 보거나, 전자가 1s부터 차례로 채워지는 걸 재생할 수 있어요. 크로뮴·구리처럼 규칙을 어기는 원소는 끝에 알려 주고, "진짜 이렇게 생겼나요?"에 대한 답도 들어 있어요',
            '히트맵에 "실제 크기"가 생겼어요. 칸마다 원자 반지름 비율 그대로 원을 그려서, 세슘이 헬륨보다 얼마나 큰지 한눈에 보여요',
+           '질소 2개는 이제 "질소 기체"(N₂)로 나와요. 수소·질소·산소·플루오린·염소 기체는 분자 하나를 볼 수 있어요. 수소는 H–H, 산소는 O=O, 질소는 N≡N으로 결합 수가 달라요',
            '액체로 나오는 물질 14가지(메탄올, 에탄올, 식초의 아세트산, 황산, 브로민 등)도 물처럼 액체 · 막대-공 · 공간 채움 세 가지로 볼 수 있어요',
-           '분자 떨림: 조합 결과의 분자 모형에서 떨림 버튼을 누르면 0 K·300 K·1000 K에서 원자가 떨리는 걸 볼 수 있어요. 교과서 그림은 멈춰 있지만 실제는 안 그래요',
+           '분자 떨림: 조합 결과의 분자 모형에서 떨림 버튼을 누르면 0 K·300 K·1000 K에서 원자가 떨리는 걸 볼 수 있어요. 물·이산화탄소 같은 분자는 떨리는 방식을 하나씩 골라 볼 수 있고, 이산화탄소가 왜 온실 기체인지도 나와요',
            '전자 구름의 "크게 보기"를 누르면 돋보기로 들여다보듯 확대돼요. "핵 속으로"는 단계마다 빨려 들어가요',
            '핵 속으로: 어느 원소든 원자 → 원자핵 → 양성자·중성자 → 쿼크까지 들어가 볼 수 있어요. 양성자 질량의 99%가 에너지라는 것도 나와요. 쿼크를 잡아당기면 어떻게 되는지도 해 보세요',
            '원소 기호와 화학식의 글꼴을 Kanit으로 바꿨어요. 이제 N이 N으로 보여요 (전에는 Na가 Пa처럼 보였어요). 칸이 넓으면 글자도 커져요',
            '피드백 보내기가 생겼어요. 설정에 있고, 원소 정보와 결과 창 "자세히 알아보기" 아래의 "틀린 내용 제보"를 누르면 그 이름이 미리 적힌 채로 열려요. 틀린 데가 보이면 꼭 알려 주세요',
            '결과 창의 "자세히 알아보기"에 "실제로는 어떻게 만들어요?"가 생겼어요. 비스무트 결정은 녹였다 식히고, 소금은 바닷물을 말리고, 다이아몬드는… 광물과 유명한 물질 45가지부터 넣었어요',
-           '방사성 원소에 "붕괴 지켜보기" 버튼이 생겼어요. 누르면 기호가 지직거리다가 다른 원소로 변하고, 안정해질 때까지 사슬처럼 이어져요. 기다리는 시간은 실제 반감기 그대로예요. 오가네손은 눈 깜짝할 새, 프랑슘은 진짜로 22분. 2시간이 넘는 건 빨리 감아 드려요. 사슬은 실제 붕괴 계열 그대로예요. 우라늄-238은 14번 만에 납-206이 되고, 지나온 길이 한 줄로 남아요',
+           '방사성 원소에 "붕괴 지켜보기" 버튼이 생겼어요. 누르면 기호가 지직거리다가 다른 원소로 변하고, 안정해질 때까지 사슬처럼 이어져요. 기다리는 시간은 실제 반감기 그대로예요. 오가네손은 눈 깜짝할 새, 프랑슘은 진짜로 22분. 2시간이 넘는 건 빨리 감아 드려요. 사슬은 실제 붕괴 계열 그대로예요. 우라늄-238은 14번 만에 납-206이 되고, 지나온 길이 한 줄로 남고, 주기율표 위에도 선으로 그려져요 (주황 알파 · 하늘 베타)',
            '헬륨만 3개 넣으면 헬륨-3이 나와요. 실제 크기 그대로라 아무것도 안 보이는 게 정상이에요. 돋보기를 계속 눌러 보세요. 원자, 원자핵, 그리고 쿼크까지 내려가요',
            '히트맵에 "태어난 곳"도 생겼어요. 빅뱅, 작은 별의 죽음, 큰 별의 폭발, 백색왜성 폭발, 중성자별 충돌… 그 원소가 우주 어디에서 만들어졌는지 보여 줘요',
            '히트맵에 "자연·인공"이 생겼어요. 자연 원소, 자연에 극미량만 있는 원소, 사람이 만든 인공 원소를 색으로 나눠 보여 줘요. 원소 정보에도 한 줄 추가됐어요'],
@@ -8443,7 +8450,7 @@ const RX_SMILES = {
   '메테인': 'C', '에테인': 'CC', '프로판': 'CCC', '부탄': 'CCCC',
   '에틸렌': 'C=C', '아세틸렌': 'C#C', '폼알데하이드': 'C=O', '메틸아민': 'CN',
   '암모니아': 'N', '황화수소': 'S', '침': 'O', '하이드라진': 'NN',
-  '수소 기체': '[H][H]', '산소 기체': 'O=O', '오존': 'O=[O+][O-]',
+  '수소 기체': '[H][H]', '산소 기체': 'O=O', '질소 기체': 'N#N', '플루오린 기체': 'FF', '염소 기체': 'ClCl', '오존': 'O=[O+][O-]',
   '이산화탄소': 'O=C=O', '화성 대기': 'O=C=O', '일산화탄소': '[C-]#[O+]',
   '이산화황': 'O=S=O', '삼산화황': 'O=S(=O)=O',
   '일산화질소': '[N]=O', '이산화질소': '[O]N=O', '아산화질소': '[N-]=[N+]=O',
@@ -12029,6 +12036,8 @@ function rxFillSizeSet(v){
 const RX_MOL_TAB = { ko:['막대-공', '공간 채움', '액체', '유리'], en:['Ball & stick', 'Space-filling', 'Liquid', 'Glass'] };
 /* 액체로 나오는 물질의 분자 하나 (액체 / 막대-공 / 공간 채움 세 가지로 볼 수 있게).
    소금물처럼 섞인 액체는 가장 많은 성분인 물 분자를, 염산·플루오린화수소산은 녹아 있는 분자를 보여 준다. */
+/* 원자 둘이 한 분자인 기체. 결합 수가 다르다: 수소 H–H(단일), 산소 O=O(이중), 질소 N≡N(삼중) */
+const RX_GAS_SMILES = { H:'[H][H]', N:'N#N', O:'O=O', F:'FF', Cl:'ClCl' };
 const RX_LIQ_SMILES = {
   '물':'O', '과산화수소':'OO', '메탄올':'CO', '에탄올':'CCO', '아세트산':'CC(=O)O', '폼산':'OC=O',
   '이황화탄소':'S=C=S', '황산':'OS(=O)(=O)O', '질산':'O[N+](=O)[O-]', '인산트라이메틸':'COP(=O)(OC)OC',
@@ -12043,6 +12052,12 @@ function rxMolViews(model, name){
   }
   // 출렁이는 액체(물 등): 액체 + 분자 하나를 두 모형으로
   const sm = (typeof RX_SMILES !== 'undefined' && RX_SMILES[name]) || RX_LIQ_SMILES[name];
+  // 떠다니는 기체 가운데 원자 둘이 짝지어 다니는 것(수소·질소·산소·플루오린·염소): 기체 + 분자 하나
+  const gsm = model.kin && model.gas && model.atoms[0] && RX_GAS_SMILES[model.atoms[0].s];
+  if(gsm){
+    const one = rxSmilesModel(gsm, rxRand(name)), fill = one && rxSpaceFill(one);
+    return fill ? { liq: model, ball: one, fill } : null;
+  }
   if(model.kin && model.liquid && sm){
     const one = rxSmilesModel(sm, rxRand(name)), fill = one && rxSpaceFill(one);
     return fill ? { liq: model, ball: one, fill } : null;
@@ -12248,7 +12263,7 @@ function rxRender(kind, formula, order, c){
       tb[2].dataset.v = 'fill'; tb[2].textContent = L[1]; tb[2].hidden = false;
       RX_VIEW = 'glass';
     } else if(RX.views.liq){   // 액체: 액체 / 막대-공 / 공간 채움, 처음엔 늘 액체로
-      tb[0].dataset.v = 'liq'; tb[0].textContent = L[2];
+      tb[0].dataset.v = 'liq'; tb[0].textContent = RX.views.liq.gas ? (LANG === 'en' ? 'Gas' : '기체') : L[2];
       tb[1].dataset.v = 'ball'; tb[1].textContent = L[0];
       tb[2].dataset.v = 'fill'; tb[2].textContent = L[1]; tb[2].hidden = false;
       RX_VIEW = 'liq';
@@ -20393,6 +20408,11 @@ if(typeof ACH !== 'undefined'){
   #mVib{margin:8px auto 0;max-width:420px;font-size:11.5px;line-height:1.55;color:#dfe5ee;text-align:left;
     background:rgba(255,255,255,.04);border:1px solid #3a4050;border-radius:8px;padding:6px 10px;word-break:keep-all}
   #mVib[hidden]{display:none}
+  .vib-modes{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .vib-modes button{font:inherit;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;color:#dfe5ee;background:rgba(255,255,255,.05);border:1px solid #3a4050}
+  .vib-modes button.on{background:#dfe5ee;color:#0b0d11;border-color:#dfe5ee;font-weight:650}
+  .vib-mnote{margin-top:5px;color:#c9d3e3}
+  .vib-mnote b{color:#ffd43b;font-family:inherit;font-size:inherit}
   #card.vib-on #mTmi{display:none}
   /* 폰: 내용이 길어지면 줄들이 눌려 겹치지 않고, 창 안에서 스크롤되게 한다 (버튼이 도감 줄을 덮었음) */
   @media (max-width:700px){ #card{grid-template-rows:none;grid-auto-rows:max-content} #card .rx-side{min-height:max-content} }
@@ -20413,12 +20433,12 @@ const RX_VIB = { lv: 0,
   T: {
     ko: { btn:'떨림', off:'떨림 끄기',
       n: ['', '<b>0 K</b> <span>(−273℃)</span><br>절대 영도에서도 안 멈춰요. 영점 진동이에요.',
-              '<b>300 K</b> <span>(27℃, 실온)</span><br>지금 우리 주변 분자가 이래요. 수소가 제일 크게 떨려요.',
+              '<b>300 K</b> <span>(27℃, 실온)</span><br>지금 우리 주변 분자가 이래요. 가벼운 원자일수록 크게 떨려요.',
               '<b>1000 K</b> <span>(727℃)</span><br>뜨거울수록 세게 떨려요. 더 올리면 결합이 끊어져요.'],
       tail:'<br><span>떨림 폭은 실제 비율이에요(어림값). 속도만 늦췄어요. 실제로는 1초에 10조~100조 번 떨려요.</span>' },
     en: { btn:'Vibrate', off:'Stop vibration',
       n: ['', '<b>0 K</b> <span>(−273 °C)</span><br>It never stops, even at absolute zero. This is zero-point motion.',
-              '<b>300 K</b> <span>(27 °C, room temperature)</span><br>Molecules around us right now. Hydrogen shakes the most.',
+              '<b>300 K</b> <span>(27 °C, room temperature)</span><br>Molecules around us right now. The lighter the atom, the more it shakes.',
               '<b>1000 K</b> <span>(727 °C)</span><br>Hotter means harder shaking. Go further and bonds break.'],
       tail:'<br><span>The shake is at true scale (an estimate). Only the speed is slowed: really it shakes 10 to 100 trillion times a second.</span>' },
   },
@@ -20437,6 +20457,95 @@ function rxVibOk(m){
   return !!(m && m.atoms && m.atoms.length >= 2 && ((m.bonds && m.bonds.length) || m.fill) && !m.faces && !m.kin && !m.he3 && !m.static && !m.liquid
             && (typeof RX_REDUCED === 'undefined' || !RX_REDUCED));
 }
+/* ── 진동 방식(정규 모드) ──
+   실제 분자는 아무렇게나 떨지 않고 정해진 몇 가지 방식이 겹쳐서 떤다. 그 방식을 하나씩 떼어 보여 준다.
+   원자 둘(늘었다 줄기), 가운데 원자 하나에 둘이 붙은 꼴(물·이산화탄소: 세 가지), 셋 이상 붙은 꼴(숨쉬기·우산)만 다룬다.
+   무게중심이 안 움직이도록 가운데 원자가 반대로 조금 움직인다. 가벼운 수소가 많이 움직이는 건 그래서 저절로 나온다. */
+const RX_VIB_T2 = {
+  ko: { all:'전부 섞어서', str:'늘었다 줄기', sym:'대칭으로 늘기', asym:'엇갈려 늘기', bend:'구부러지기', breathe:'숨쉬기', umb:'우산 뒤집기',
+        strD:'두 원자 사이가 늘었다 줄었다 해요. 원자 둘짜리 분자가 떠는 방법은 이것 하나뿐이에요.',
+        symD:'양쪽이 동시에 늘었다 줄어요.', asymD:'한쪽이 늘 때 다른 쪽은 줄어요.', bendD:'결합 길이는 그대로 두고 각도만 바뀌어요. 늘기보다 느려요.',
+        breatheD:'붙어 있는 원자들이 한꺼번에 멀어졌다 가까워져요.', umbD:'바람에 우산이 뒤집히듯 움직여요.' },
+  en: { all:'All mixed', str:'Stretch', sym:'Symmetric stretch', asym:'Asymmetric stretch', bend:'Bend', breathe:'Breathing', umb:'Umbrella',
+        strD:'The two atoms move apart and together. A two-atom molecule can only vibrate this one way.',
+        symD:'Both sides stretch and shrink together.', asymD:'One side stretches while the other shrinks.', bendD:'Bond lengths stay put and only the angle changes. Slower than stretching.',
+        breatheD:'All the outer atoms move out and in at once.', umbD:'It flips like an umbrella in the wind.' },
+};
+/* 잘 알려진 분자의 설명. 숫자는 적외선 흡수 위치(파수, cm⁻¹) */
+const RX_VIB_INFO = {
+  '이산화탄소': {
+    sym:  { wn: 1388, ko:'양쪽 산소가 같이 늘었다 줄어요 (1388 cm⁻¹). 좌우가 늘 똑같아서 전기가 한쪽으로 쏠리지 않아요. 그래서 이 떨림은 적외선을 <b>못 잡아요</b>.', en:'Both oxygens move out and in together (1388 cm⁻¹). The molecule stays balanced, so this motion <b>cannot absorb</b> infrared.' },
+    bend: { wn: 667,  ko:'<b>온실 효과의 주인공</b>이에요 (667 cm⁻¹). 구부러지면 전기가 한쪽으로 쏠려서, 땅이 내보내는 적외선(파장 15μm)을 딱 붙잡아요.', en:'<b>This is the greenhouse one</b> (667 cm⁻¹). Bending unbalances the charge, so it catches the infrared the ground gives off (15 μm).' },
+    asym: { wn: 2349, ko:'탄소가 두 산소 사이를 왔다 갔다 해요 (2349 cm⁻¹). 이것도 적외선을 흡수해요(파장 4.3μm).', en:'The carbon shuttles between the two oxygens (2349 cm⁻¹). This also absorbs infrared (4.3 μm).' },
+  },
+  '물': {
+    sym:  { wn: 3657, ko:'두 수소가 같이 늘었다 줄어요 (3657 cm⁻¹).', en:'Both hydrogens stretch together (3657 cm⁻¹).' },
+    bend: { wn: 1595, ko:'가위처럼 벌어졌다 오므라져요 (1595 cm⁻¹). 물은 세 가지 떨림이 전부 적외선을 흡수해서, 수증기는 이산화탄소보다 더 센 온실 기체예요.', en:'It opens and closes like scissors (1595 cm⁻¹). All three of water\'s vibrations absorb infrared, which makes water vapour an even stronger greenhouse gas than CO₂.' },
+    asym: { wn: 3756, ko:'한쪽 수소가 늘 때 다른 쪽은 줄어요 (3756 cm⁻¹).', en:'One hydrogen stretches while the other shrinks (3756 cm⁻¹).' },
+  },
+};
+/* 분자의 뼈대: 실제 원자(전자쌍 제외)와 누가 가운데인지. 막대-공 모형의 결합 정보로 알아낸다 */
+function rxVibTopo(){
+  const src = (RX && RX.views && RX.views.ball) || RX_M;
+  if(!src || !src.atoms || !src.bonds) return null;
+  const real = []; src.atoms.forEach((a, i) => { if(a.s && !a.ghost) real.push(i); });
+  if(real.length < 2 || real.length > 7) return null;
+  const pos = new Map(real.map((i, k) => [i, k]));
+  const deg = real.map(() => 0), nb = real.map(() => []);
+  src.bonds.forEach(([a, b, o]) => { if(o > 0 && pos.has(a) && pos.has(b)){ const x = pos.get(a), y = pos.get(b); deg[x]++; deg[y]++; nb[x].push(y); nb[y].push(x); } });
+  const sy = real.map(i => src.atoms[i].s);
+  if(real.length === 2) return deg[0] === 1 ? { n: 2, c: -1, lig: [0, 1], sy } : null;
+  const c = deg.findIndex(d => d === real.length - 1);
+  if(c < 0 || deg.some((d, i) => i !== c && d !== 1)) return null;
+  return { n: real.length, c, lig: real.map((_, k) => k).filter(k => k !== c), sy };
+}
+function rxVibModes(tp){ return tp.n === 2 ? ['str'] : tp.n === 3 ? ['sym', 'bend', 'asym'] : tp.n === 4 ? ['breathe', 'umb'] : ['breathe']; }
+function rxVibModeNow(m){
+  if(!RX_VIB.mode) return null;
+  const tp = rxVibTopo(); if(!tp || !rxVibModes(tp).includes(RX_VIB.mode)) return null;
+  const info = (RX_VIB_INFO[RX && RX.raw] || {})[RX_VIB.mode];
+  const wn = info ? info.wn : ({ bend: 1200, umb: 1000 })[RX_VIB.mode] || 2600;
+  return { k: RX_VIB.mode, tp, w: 2.2 + wn / 420 };
+}
+/* 지금 모형의 원자 자리에서 그 방식의 움직임 방향을 계산한다 (가장 많이 움직이는 원자가 1) */
+function rxVibDisp(m, md){
+  const idx = []; m.atoms.forEach((a, i) => { if(a.s && !a.ghost) idx.push(i); });
+  const tp = md.tp; if(idx.length !== tp.n) return null;
+  const P = idx.map(i => [m.atoms[i].x, m.atoms[i].y, m.atoms[i].z]), M = tp.sy.map(rxVibMass);
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], len = a => Math.hypot(a[0], a[1], a[2]);
+  const unit = a => { const l = len(a) || 1; return mul(a, 1 / l); };
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const D = tp.sy.map(() => [0, 0, 0]);
+  if(tp.n === 2){
+    const u = unit(sub(P[1], P[0]));
+    D[1] = mul(u, 1 / M[1]); D[0] = mul(u, -1 / M[0]);
+  } else {
+    const c = tp.c, U = tp.lig.map(k => unit(sub(P[k], P[c])));
+    if(tp.n === 3){
+      const [u1, u2] = U; let t1, t2;
+      if(md.k === 'sym'){ t1 = u1; t2 = u2; }
+      else if(md.k === 'asym'){ t1 = u1; t2 = mul(u2, -1); }
+      else {
+        const lin = len(cross(u1, u2)) < 0.08;
+        if(lin){ const p = unit(cross(u1, Math.abs(u1[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0])); t1 = p; t2 = p; }   // 일직선 분자: 양 끝이 같은 쪽으로
+        else { t1 = unit(sub(u2, mul(u1, dot(u1, u2)))); t2 = unit(sub(u1, mul(u2, dot(u1, u2)))); }
+      }
+      D[tp.lig[0]] = t1; D[tp.lig[1]] = t2;
+    } else {
+      let ax = unit(U.reduce((a, u) => [a[0] + u[0], a[1] + u[1], a[2] + u[2]], [0, 0, 0]));
+      if(len(U.reduce((a, u) => [a[0] + u[0], a[1] + u[1], a[2] + u[2]], [0, 0, 0])) < 0.25) ax = unit(cross(U[0], U[1]));   // 납작한 분자는 면에 수직으로
+      tp.lig.forEach((k, j) => { D[k] = md.k === 'umb' ? unit(sub(ax, mul(U[j], dot(ax, U[j])))) : U[j]; });
+    }
+    // 무게중심이 제자리에 있도록 가운데 원자가 반대로
+    let sx = [0, 0, 0]; tp.lig.forEach(k => { sx = [sx[0] + D[k][0] * M[k], sx[1] + D[k][1] * M[k], sx[2] + D[k][2] * M[k]]; });
+    D[c] = mul(sx, -1 / M[c]);
+  }
+  const mx = Math.max(...D.map(len)) || 1;
+  const out = new Array(m.atoms.length);
+  idx.forEach((i, k) => { out[i] = mul(D[k], 1 / mx); });
+  return out;
+}
 function rxVibNote(){
   const st = document.getElementById('mStage'); if(!st) return;
   let n = document.getElementById('mVib');
@@ -20446,7 +20555,21 @@ function rxVibNote(){
   else if(!n.parentElement) st.after(n);
   const on = RX_VIB.lv > 0 && rxVibOk(RX_M);
   n.hidden = !on;
-  if(on){ const T = rxVibT(); n.innerHTML = T.n[RX_VIB.lv] + `<span class="vib-tail">${T.tail}</span>`; }
+  if(on){
+    const T = rxVibT();
+    let h = T.n[RX_VIB.lv] + `<span class="vib-tail">${T.tail}</span>`;
+    // 진동 방식 고르기 (물·이산화탄소처럼 모양이 단순한 분자만)
+    if(RX_VIB.raw !== (RX && RX.raw)){ RX_VIB.raw = RX && RX.raw; RX_VIB.mode = null; }
+    const topo = rxVibTopo();
+    if(topo){
+      const M = rxVibModes(topo), L = LANG === 'en' ? 'en' : 'ko', W = RX_VIB_T2[L];
+      h += `<div class="vib-modes"><button type="button" data-m=""${RX_VIB.mode == null ? ' class="on"' : ''}>${W.all}</button>` +
+        M.map(k => `<button type="button" data-m="${k}"${RX_VIB.mode === k ? ' class="on"' : ''}>${W[k]}</button>`).join('') + '</div>';
+      if(RX_VIB.mode){ const info = (RX_VIB_INFO[RX.raw] || {})[RX_VIB.mode]; h += `<div class="vib-mnote">${info ? info[L] : W[RX_VIB.mode + 'D']}</div>`; }
+    } else RX_VIB.mode = null;
+    n.innerHTML = h;
+    n.querySelectorAll('.vib-modes button').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); RX_VIB.mode = b.dataset.m || null; rxVibNote(); try{ rxStart(); }catch(e){} }));
+  }
   // 떨림 설명이 뜨는 동안에는 TMI 줄을 잠시 접는다 (폰에서 아래 도감 줄이 밀려 가려졌음)
   const card = document.getElementById('card'); if(card) card.classList.toggle('vib-on', on);
 }
@@ -20457,6 +20580,13 @@ function rxVibNote(){
     if(!RX_VIB.lv || m !== RX_M || !rxVibOk(m)) return _draw.apply(this, arguments);
     const A = m.atoms, t = performance.now() / 1000, base = RX_VIB.LV[RX_VIB.lv][1] * 28;   // 28단위 = 1Å. 과장 없이 실제 비율
     const keep = new Array(A.length);
+    const md = rxVibModeNow(m);
+    if(md){
+      // 정해진 진동 방식 하나만: 모든 원자가 같은 박자로 움직인다
+      for(let i = 0; i < A.length; i++) keep[i] = [A[i].x, A[i].y, A[i].z];
+      const D = rxVibDisp(m, md), ph = Math.sin(t * md.w) * base * 1.6;
+      if(D) D.forEach((v, i) => { if(v){ A[i].x += v[0] * ph; A[i].y += v[1] * ph; A[i].z += v[2] * ph; } });
+    } else
     for(let i = 0; i < A.length; i++){
       const a = A[i]; keep[i] = [a.x, a.y, a.z];
       const ms = rxVibMass(a.s), amp = base / Math.pow(ms, 0.25), w = 7 + 16 / Math.pow(ms, 0.3), p = i * 2.399;
@@ -20548,6 +20678,96 @@ var RX_MAG_BUSY = false;
     an.onfinish = done; an.oncancel = done;
     setTimeout(() => { if(fx.parentNode) done(); }, T + 400);
   };
+}
+</script>
+<style>
+  /* ══════════ 붕괴 사슬 지도: 주기율표 위에 지나온 길을 선으로 ══════════ */
+  #grid{position:relative}
+  #decayMap{position:absolute;left:0;top:0;pointer-events:none;z-index:4;overflow:visible}
+  #decayMap path{fill:none;stroke-linecap:round;stroke-width:2.2;opacity:.92}
+  #decayMap path.a{stroke:#ffa94d}
+  #decayMap path.b{stroke:#4dd4ff}
+  #decayMap path.e{stroke:#c58cff}
+  #decayMap path.new{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:decayDraw .45s ease-out forwards}
+  @keyframes decayDraw{to{stroke-dashoffset:0}}
+  #decayMap circle{fill:#0b0d11;stroke:#fff;stroke-width:1.5}
+  #decayMap circle.start{fill:#fff}
+  #decayMap circle.end{fill:#5dff7a;stroke:#5dff7a}
+  .cell.decay-visited{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+  .decay-key{display:flex;gap:10px;flex-wrap:wrap;font-size:10.5px;color:var(--dim);margin-top:5px}
+  .decay-key i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:4px}
+  @media (prefers-reduced-motion:reduce){ #decayMap path.new{animation:none;stroke-dashoffset:0} }
+</style>
+<script>
+/* ═══════════════════════════════════════════════════
+   붕괴 사슬 지도
+   붕괴를 지켜보는 동안 지나온 길을 주기율표 위에 선으로 그린다.
+   알파 붕괴는 원자 번호가 2 줄고(주황), 베타 붕괴는 1 늘고(하늘), 전자 포획은 1 준다(보라).
+   같은 칸 사이를 여러 번 오가는 구간이 있어서 선마다 휘는 정도를 달리해 겹치지 않게 한다.
+   ═══════════════════════════════════════════════════ */
+var RX_DMAP = { drawn: 0, key: '' };
+function rxDecayMap(){
+  const grid = document.getElementById('grid'); if(!grid) return;
+  let svg = document.getElementById('decayMap');
+  const show = (RX_DEC.on || RX_DEC.end) && RX_DEC.path && RX_DEC.path.length > 1;
+  document.querySelectorAll('.cell.decay-visited').forEach(c => c.classList.remove('decay-visited'));
+  if(!show){ if(svg) svg.remove(); RX_DMAP.drawn = 0; RX_DMAP.key = ''; return; }
+  if(!svg){
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.id = 'decayMap';
+    grid.appendChild(svg); RX_DMAP.drawn = 0;
+  }
+  svg.setAttribute('width', grid.scrollWidth); svg.setAttribute('height', grid.scrollHeight);
+  const key = RX_DEC.path[0] + ':' + grid.scrollWidth;
+  if(key !== RX_DMAP.key){ RX_DMAP.key = key; RX_DMAP.drawn = 0; }
+  const pos = k => { const el = rxNucEl(k), c = el && rxDecayCell(el.n); return c ? { x: c.offsetLeft + c.offsetWidth / 2, y: c.offsetTop + c.offsetHeight / 2, c, n: el.n } : null; };
+  const P = RX_DEC.path;
+  let h = '', seg = 0;
+  const seen = {};
+  for(let i = 0; i < P.length - 1; i++){
+    const A = pos(P[i]), B = pos(P[i + 1]); if(!A || !B) continue;
+    A.c.classList.add('decay-visited'); B.c.classList.add('decay-visited');
+    if(A.n === B.n) continue;                       // 같은 원소 안에서 바뀐 경우
+    const mode = (RX_NDB[P[i]] || [])[1] || 'a';
+    // 같은 두 칸 사이를 다시 지날 때마다 더 크게 휜다
+    const pk = Math.min(A.n, B.n) + '-' + Math.max(A.n, B.n), rep = (seen[pk] = (seen[pk] || 0) + 1);
+    const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 1;
+    const bend = (0.16 + 0.14 * (rep - 1)) * d * (mode === 'a' ? -1 : 1);
+    const mx = (A.x + B.x) / 2 - dy / d * bend, my = (A.y + B.y) / 2 + dx / d * bend;
+    // 화살촉: 끝점에서 살짝 못 미친 곳에
+    const ex = B.x - (B.x - mx) / Math.hypot(B.x - mx, B.y - my) * 5, ey = B.y - (B.y - my) / Math.hypot(B.x - mx, B.y - my) * 5;
+    const ang = Math.atan2(B.y - my, B.x - mx), ah = 6;
+    const arrow = `M${(ex - Math.cos(ang - 0.5) * ah).toFixed(1)} ${(ey - Math.sin(ang - 0.5) * ah).toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}L${(ex - Math.cos(ang + 0.5) * ah).toFixed(1)} ${(ey - Math.sin(ang + 0.5) * ah).toFixed(1)}`;
+    const isNew = seg >= RX_DMAP.drawn, len = Math.ceil(d * 1.25 + 20);
+    h += `<path class="${mode === 'b' ? 'b' : mode === 'a' ? 'a' : 'e'}${isNew ? ' new' : ''}" style="--len:${len}" d="M${A.x.toFixed(1)} ${A.y.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}"/>` +
+         `<path class="${mode === 'b' ? 'b' : mode === 'a' ? 'a' : 'e'}${isNew ? ' new' : ''}" style="--len:30" d="${arrow}"/>`;
+    seg++;
+  }
+  RX_DMAP.drawn = seg;
+  const S = pos(P[0]), E = pos(P[P.length - 1]);
+  if(S) h += `<circle class="start" cx="${S.x}" cy="${S.y}" r="3.2"/>`;
+  if(E && RX_DEC.end && !RX_NDB[P[P.length - 1]]) h += `<circle class="end" cx="${E.x}" cy="${E.y}" r="3.6"/>`;
+  svg.innerHTML = h;
+}
+{
+  const _ui = rxDecayUI;
+  rxDecayUI = function(){
+    const r = _ui.apply(this, arguments);
+    try{
+      rxDecayMap();
+      // 선 색 설명을 지나온 길 아래에 붙인다
+      const pth = document.querySelector('#info .decay-path');
+      if(pth && !pth.parentElement.querySelector('.decay-key')){
+        const k = document.createElement('div'); k.className = 'decay-key';
+        k.innerHTML = `<span><i style="background:#ffa94d"></i>${rxDecT('a')}</span><span><i style="background:#4dd4ff"></i>${rxDecT('b')}</span><span><i style="background:#c58cff"></i>${rxDecT('e')}</span>`;
+        pth.after(k);
+      }
+    }catch(err){}
+    return r;
+  };
+  const _stop = rxDecayStop;
+  rxDecayStop = function(){ const r = _stop.apply(this, arguments); try{ if(!RX_DEC.end){ RX_DEC.path = []; rxDecayMap(); } }catch(err){} return r; };
+  let rt = 0;
+  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { try{ RX_DMAP.key = ''; rxDecayMap(); RX_DMAP.drawn = 1e9; }catch(err){} }, 150); });
 }
 </script>
 </body>
