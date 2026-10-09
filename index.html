@@ -1854,6 +1854,9 @@
   .decay-bar{width:100%;max-width:260px;height:4px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
   .decay-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2bd96b,#b6ffbf)}
   .decay-end{font-size:12px;color:#b9f5c3;line-height:1.55;word-break:keep-all}
+  .decay-path{font-size:11px;line-height:1.7;color:var(--dim);margin-top:6px;word-break:keep-all}
+  .decay-path span{display:block;font-size:10px;letter-spacing:.04em}
+  .decay-path b{color:var(--text);font-family:var(--sym);font-weight:500}
   .decay-note{font-size:10.5px;color:var(--dim);opacity:.8}
   .decay-live{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:#b9f5c3;font-variant-numeric:tabular-nums}
   .decay-skip{padding:3px 9px;font-size:11px}
@@ -6092,7 +6095,7 @@ const CHANGELOG = [
            '원소 기호와 화학식의 글꼴을 Kanit으로 바꿨어요. 이제 N이 N으로 보여요 (전에는 Na가 Пa처럼 보였어요). 칸이 넓으면 글자도 커져요',
            '피드백 보내기가 생겼어요. 설정에 있고, 원소 정보와 결과 창 "자세히 알아보기" 아래의 "틀린 내용 제보"를 누르면 그 이름이 미리 적힌 채로 열려요. 틀린 데가 보이면 꼭 알려 주세요',
            '결과 창의 "자세히 알아보기"에 "실제로는 어떻게 만들어요?"가 생겼어요. 비스무트 결정은 녹였다 식히고, 소금은 바닷물을 말리고, 다이아몬드는… 광물과 유명한 물질 45가지부터 넣었어요',
-           '방사성 원소에 "붕괴 지켜보기" 버튼이 생겼어요. 누르면 기호가 지직거리다가 다른 원소로 변하고, 안정해질 때까지 사슬처럼 이어져요. 기다리는 시간은 실제 반감기 그대로예요. 오가네손은 눈 깜짝할 새, 프랑슘은 진짜로 22분. 2시간이 넘는 건 빨리 감아 드려요',
+           '방사성 원소에 "붕괴 지켜보기" 버튼이 생겼어요. 누르면 기호가 지직거리다가 다른 원소로 변하고, 안정해질 때까지 사슬처럼 이어져요. 기다리는 시간은 실제 반감기 그대로예요. 오가네손은 눈 깜짝할 새, 프랑슘은 진짜로 22분. 2시간이 넘는 건 빨리 감아 드려요. 사슬은 실제 붕괴 계열 그대로예요. 우라늄-238은 14번 만에 납-206이 되고, 지나온 길이 한 줄로 남아요',
            '헬륨만 3개 넣으면 헬륨-3이 나와요. 실제 크기 그대로라 아무것도 안 보이는 게 정상이에요. 돋보기를 계속 눌러 보세요. 원자, 원자핵, 그리고 쿼크까지 내려가요',
            '히트맵에 "태어난 곳"도 생겼어요. 빅뱅, 작은 별의 죽음, 큰 별의 폭발, 백색왜성 폭발, 중성자별 충돌… 그 원소가 우주 어디에서 만들어졌는지 보여 줘요',
            '히트맵에 "자연·인공"이 생겼어요. 자연 원소, 자연에 극미량만 있는 원소, 사람이 만든 인공 원소를 색으로 나눠 보여 줘요. 원소 정보에도 한 줄 추가됐어요'],
@@ -19087,60 +19090,93 @@ function rielDexBuddyPlace(){
    원소마다 가장 오래 버티는(또는 가장 잘 알려진) 동위원소 하나를 대표로 삼았고, 반감기는 대략의 값이다.
    [질량수, 반감기(초), 한국어, 영어, 방식, 딸 원소]   방식: a=알파, b=베타, e=전자 포획, sf=자발 핵분열
    ═══════════════════════════════════════════════════ */
-const RX_DECAY = {
-  Tc:[98, 1.33e14, '약 420만 년', 'about 4.2 million years', 'b', 'Ru'],
-  Pm:[145, 5.6e8, '약 17.7년', 'about 17.7 years', 'e', 'Nd'],
-  Po:[210, 1.19e7, '약 138일', 'about 138 days', 'a', 'Pb'],
-  At:[210, 2.9e4, '약 8시간', 'about 8 hours', 'e', 'Po'],
-  Rn:[222, 3.3e5, '약 3.8일', 'about 3.8 days', 'a', 'Po'],
-  Fr:[223, 1320, '약 22분', 'about 22 minutes', 'b', 'Ra'],
-  Ra:[226, 5.05e10, '약 1,600년', 'about 1,600 years', 'a', 'Rn'],
-  Ac:[227, 6.9e8, '약 21.8년', 'about 21.8 years', 'b', 'Th'],
-  Th:[232, 4.4e17, '약 140억 년', 'about 14 billion years', 'a', 'Ra'],
-  Pa:[231, 1.03e12, '약 3만 3천 년', 'about 33,000 years', 'a', 'Ac'],
-  U: [238, 1.41e17, '약 45억 년', 'about 4.5 billion years', 'a', 'Th'],
-  Np:[237, 6.8e13, '약 214만 년', 'about 2.1 million years', 'a', 'Pa'],
-  Pu:[239, 7.6e11, '약 2만 4천 년', 'about 24,000 years', 'a', 'U'],
-  Am:[241, 1.36e10, '약 432년', 'about 432 years', 'a', 'Np'],
-  Cm:[247, 4.9e14, '약 1,560만 년', 'about 15.6 million years', 'a', 'Pu'],
-  Bk:[247, 4.4e10, '약 1,380년', 'about 1,380 years', 'a', 'Am'],
-  Cf:[251, 2.8e10, '약 900년', 'about 900 years', 'a', 'Cm'],
-  Es:[252, 4.08e7, '약 1.3년', 'about 1.3 years', 'a', 'Bk'],
-  Fm:[257, 8.7e6, '약 100일', 'about 100 days', 'a', 'Cf'],
-  Md:[258, 4.45e6, '약 52일', 'about 52 days', 'a', 'Es'],
-  No:[259, 3480, '약 58분', 'about 58 minutes', 'a', 'Fm'],
-  Lr:[266, 4e4, '약 11시간', 'about 11 hours', 'sf', null],
-  Rf:[267, 2880, '약 48분', 'about 48 minutes', 'sf', null],
-  Db:[268, 5.76e4, '약 16시간', 'about 16 hours', 'a', 'Lr'],
-  Sg:[269, 780, '약 13분', 'about 13 minutes', 'a', 'Rf'],
-  Bh:[270, 144, '약 2분 24초', 'about 2.4 minutes', 'a', 'Db'],
-  Hs:[269, 13, '약 13초', 'about 13 seconds', 'a', 'Sg'],
-  Mt:[278, 4.5, '약 5초', 'about 5 seconds', 'a', 'Bh'],
-  Ds:[281, 14, '약 14초', 'about 14 seconds', 'sf', null],
-  Rg:[282, 100, '약 1분 40초', 'about 100 seconds', 'a', 'Mt'],
-  Cn:[285, 28, '약 28초', 'about 28 seconds', 'a', 'Ds'],
-  Nh:[286, 9.5, '약 9.5초', 'about 9.5 seconds', 'a', 'Rg'],
-  Fl:[289, 1.9, '약 1.9초', 'about 1.9 seconds', 'a', 'Cn'],
-  Mc:[290, 0.65, '약 0.65초', 'about 0.65 seconds', 'a', 'Nh'],
-  Lv:[293, 0.057, '약 0.06초', 'about 0.06 seconds', 'a', 'Fl'],
-  Ts:[294, 0.051, '약 0.05초', 'about 0.05 seconds', 'a', 'Mc'],
-  Og:[294, 0.0007, '약 0.0007초', 'about 0.0007 seconds', 'a', 'Lv'],
+/* 원소별 시작 핵종 (가장 오래 사는 대표 동위원소) */
+const RX_DECAY = {Tc:'Tc-98',Pm:'Pm-145',Po:'Po-210',At:'At-210',Rn:'Rn-222',Fr:'Fr-223',Ra:'Ra-226',Ac:'Ac-227',Th:'Th-232',Pa:'Pa-231',U:'U-238',Np:'Np-237',Pu:'Pu-239',Am:'Am-241',Cm:'Cm-247',Bk:'Bk-247',Cf:'Cf-251',Es:'Es-252',Fm:'Fm-257',Md:'Md-258',No:'No-259',Lr:'Lr-266',Rf:'Rf-267',Db:'Db-268',Sg:'Sg-269',Bh:'Bh-270',Hs:'Hs-269',Mt:'Mt-278',Ds:'Ds-281',Rg:'Rg-282',Cn:'Cn-285',Nh:'Nh-286',Fl:'Fl-289',Mc:'Mc-290',Lv:'Lv-293',Ts:'Ts-294',Og:'Og-294'};
+/* 실제 붕괴 사슬에 나오는 핵종 102개. '기호-질량수': [반감기(초), 방식, 딸핵종]
+   방식: a 알파 · b 베타 · e 전자 포획/β⁺ · it 이성질핵 전이 · sf 자발 핵분열 · unk 아직 불확실
+   표에 없는 핵종은 안정(또는 반감기 10²⁰초 이상이라 사실상 안정).
+   갈림길에서는 확률이 가장 높은 길 하나만 따라간다.
+   자료: ICRP-107 (radioactivedecay 패키지), NUBASE2020 (mendeleev 패키지). 초중원소 일부는 위키백과의 최신 측정값.
+   알파 붕괴는 질량수가 4 줄고, 베타·전자 포획은 질량수가 그대로다. 그래서 사슬의 질량수가 끝까지 이어진다. */
+const RX_NDB = {
+  'Tc-98':[1.325e14,'b',"Ru-98"],'Pm-145':[5.586e08,'e',"Nd-145"],'Po-210':[1.196e07,'a',"Pb-206"],'At-210':[2.916e04,'e',"Po-210"],
+  'Rn-222':[3.304e05,'a',"Po-218"],'Po-218':[186,'a',"Pb-214"],'Pb-214':[1608,'b',"Bi-214"],'Bi-214':[1194,'b',"Po-214"],
+  'Po-214':[0.0001643,'a',"Pb-210"],'Pb-210':[7.006e08,'b',"Bi-210"],'Bi-210':[4.331e05,'b',"Po-210"],'Fr-223':[1320,'b',"Ra-223"],
+  'Ra-223':[9.876e05,'a',"Rn-219"],'Rn-219':[3.96,'a',"Po-215"],'Po-215':[0.001781,'a',"Pb-211"],'Pb-211':[2166,'b',"Bi-211"],
+  'Bi-211':[128.4,'a',"Tl-207"],'Tl-207':[286.2,'b',"Pb-207"],'Ra-226':[5.049e10,'a',"Rn-222"],'Ac-227':[6.871e08,'b',"Th-227"],
+  'Th-227':[1.614e06,'a',"Ra-223"],'Th-232':[4.434e17,'a',"Ra-228"],'Ra-228':[1.815e08,'b',"Ac-228"],'Ac-228':[2.214e04,'b',"Th-228"],
+  'Th-228':[6.032e07,'a',"Ra-224"],'Ra-224':[3.162e05,'a',"Rn-220"],'Rn-220':[55.6,'a',"Po-216"],'Po-216':[0.145,'a',"Pb-212"],
+  'Pb-212':[3.83e04,'b',"Bi-212"],'Bi-212':[3633,'b',"Po-212"],'Po-212':[2.99e-07,'a',"Pb-208"],'Pa-231':[1.034e12,'a',"Ac-227"],
+  'U-238':[1.41e17,'a',"Th-234"],'Th-234':[2.082e06,'b',"Pa-234m"],'Pa-234m':[70.2,'b',"U-234"],'U-234':[7.747e12,'a',"Th-230"],
+  'Th-230':[2.379e12,'a',"Ra-226"],'Np-237':[6.766e13,'a',"Pa-233"],'Pa-233':[2.33e06,'b',"U-233"],'U-233':[5.024e12,'a',"Th-229"],
+  'Th-229':[2.316e11,'a',"Ra-225"],'Ra-225':[1.287e06,'b',"Ac-225"],'Ac-225':[8.64e05,'a',"Fr-221"],'Fr-221':[294,'a',"At-217"],
+  'At-217':[0.0323,'a',"Bi-213"],'Bi-213':[2735,'b',"Po-213"],'Po-213':[4.2e-06,'a',"Pb-209"],'Pb-209':[1.171e04,'b',"Bi-209"],
+  'Pu-239':[7.608e11,'a',"U-235m"],'U-235m':[1560,'it',"U-235"],'U-235':[2.222e16,'a',"Th-231"],'Th-231':[9.187e04,'b',"Pa-231"],
+  'Am-241':[1.364e10,'a',"Np-237"],'Cm-247':[4.923e14,'a',"Pu-243"],'Pu-243':[1.784e04,'b',"Am-243"],'Am-243':[2.326e11,'a',"Np-239"],
+  'Np-239':[2.036e05,'b',"Pu-239"],'Bk-247':[4.355e10,'a',"Am-243"],'Cf-251':[2.84e10,'a',"Cm-247"],'Es-252':[4.075e07,'a',"Bk-248"],
+  'Bk-248':[2.84e08,'unk',null],'Fm-257':[8.683e06,'a',"Cf-253"],'Cf-253':[1.539e06,'b',"Es-253"],'Es-253':[1.769e06,'a',"Bk-249"],
+  'Bk-249':[2.851e07,'b',"Cf-249"],'Cf-249':[1.108e10,'a',"Cm-245"],'Cm-245':[2.682e11,'a',"Pu-241"],'Pu-241':[4.528e08,'b',"Am-241"],
+  'Md-258':[4.457e06,'a',"Es-254"],'Es-254':[2.382e07,'a',"Bk-250"],'Bk-250':[1.156e04,'b',"Cf-250"],'Cf-250':[4.128e08,'a',"Cm-246"],
+  'Cm-246':[1.502e11,'a',"Pu-242"],'Pu-242':[1.183e13,'a',"U-238"],'No-259':[3480,'a',"Fm-255"],'Fm-255':[7.225e04,'a',"Cf-251"],
+  'Lr-266':[3.96e04,'sf',null],'Rf-267':[2880,'sf',null],'Db-268':[5.76e4,'a',"Lr-264"],'Lr-264':[1.728e4,'sf',null],'Sg-269':[780,'a',"Rf-265"],'Rf-265':[96,'sf',null],
+  'Bh-270':[144,'a',"Db-266"],'Db-266':[660,'sf',null],'Hs-269':[13,'a',"Sg-265"],
+  'Sg-265':[9.2,'a',"Rf-261"],'Rf-261':[2.1,'sf',null],'Mt-278':[4.5,'a',"Bh-274"],'Bh-274':[57,'a',"Db-270"],'Db-270':[3600,'sf',null],
+  'Ds-281':[14,'sf',null],'Rg-282':[100,'a',"Mt-278"],'Cn-285':[28,'a',"Ds-281"],'Nh-286':[9.5,'a',"Rg-282"],'Fl-289':[1.9,'a',"Cn-285"],
+  'Mc-290':[0.65,'a',"Nh-286"],'Lv-293':[0.057,'a',"Fl-289"],'Ts-294':[0.051,'a',"Mc-290"],'Og-294':[0.0007,'a',"Lv-290"],'Lv-290':[0.009,'a',"Fl-286"],
+  'Fl-286':[0.13,'a',"Cn-282"],'Cn-282':[0.0011,'sf',null],
 };
 const RX_DECAY_T = {
-  ko: { watch:'☢ 붕괴 지켜보기', stop:'■ 멈추기', hl:'반감기', a:'알파 붕괴', b:'베타 붕괴', e:'전자 포획', sf:'자발 핵분열',
+  ko: { watch:'☢ 붕괴 지켜보기', stop:'■ 멈추기', hl:'반감기', a:'알파 붕괴', b:'베타 붕괴', e:'전자 포획', it:'들뜬 핵이 가라앉음', sf:'자발 핵분열', unk:'붕괴 방식 불확실',
         ff:'너무 오래 걸려서 빨리 감을게요 ⏩', stable:'안정한 {el}에 도착했어요. 붕괴 {n}번 만이에요.',
         split:'핵이 두 조각으로 쪼개졌어요. 사슬은 여기서 끝나요.{n}', splitN:' (붕괴 {n}번 뒤)',
-        note:'대표 동위원소 하나 기준 · 값은 대략', toastSf:'쪼개짐!', again:'↻ 처음부터 다시',
+        unkEnd:'{el}부터는 어떻게 붕괴하는지 아직 확실히 밝혀지지 않았어요. 사슬은 여기까지예요.{n}',
+        note:'실제 붕괴 사슬 · 갈림길에서는 가장 흔한 길 · 값은 대략', toastSf:'쪼개짐!', again:'↻ 처음부터 다시', path:'지나온 길',
         real:'실제 반감기만큼 기다리는 중', left:'남은 시간', skip:'⏩ 빨리 감기', fast:'빨리 감는 중 ⏩' },
-  en: { watch:'☢ Watch it decay', stop:'■ Stop', hl:'Half-life', a:'Alpha decay', b:'Beta decay', e:'Electron capture', sf:'Spontaneous fission',
+  en: { watch:'☢ Watch it decay', stop:'■ Stop', hl:'Half-life', a:'Alpha decay', b:'Beta decay', e:'Electron capture', it:'Excited nucleus settles', sf:'Spontaneous fission', unk:'Decay mode uncertain',
         ff:'That would take a while, fast-forwarding ⏩', stable:'Arrived at stable {el} after {n} decay(s).',
         split:'The nucleus split in two. The chain ends here.{n}', splitN:' (after {n} decay(s))',
-        note:'One representative isotope each · values are approximate', toastSf:'Split!', again:'↻ Start over',
+        unkEnd:'How {el} decays is still not established. The chain stops here.{n}',
+        note:'Real decay chain · most likely branch at each fork · values are approximate', toastSf:'Split!', again:'↻ Start over', path:'Path so far',
         real:'Waiting one real half-life', left:'Time left', skip:'⏩ Fast-forward', fast:'Fast-forwarding ⏩' },
 };
-var RX_DEC = { on:false, auto:false, steps:0, timer:0, tick:0, start:null, end:null };
+var RX_DEC = { on:false, auto:false, steps:0, timer:0, tick:0, start:null, end:null, cur:null, path:[] };
 const rxDecT = k => RX_DECAY_T[LANG === 'en' ? 'en' : 'ko'][k];
 const rxDecSup = n => String(n).split('').map(d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]).join('');
+/* 'Pa-234m' → { s:'Pa', a:234, m:true } */
+function rxNuc(key){ const m = /^([A-Z][a-z]?)-(\d+)(m?)$/.exec(key); return { s: m[1], a: +m[2], m: !!m[3] }; }
+function rxNucLabel(key){ const k = rxNuc(key); return rxDecSup(k.a) + (k.m ? 'ᵐ' : '') + k.s; }
+function rxNucEl(key){ const k = rxNuc(key); return EL.find(x => x.s === k.s); }
+/* 이름까지: 납-206 (²⁰⁶Pb) */
+function rxNucName(key){ const k = rxNuc(key), el = rxNucEl(key); return `${elName(el)}-${k.a}${k.m ? 'm' : ''} (${rxNucLabel(key)})`; }
+/* 반감기(초) → 읽기 쉬운 말 */
+function rxDecayFmt(sec, en){
+  const r = x => { const v = +x.toPrecision(x >= 100 ? 3 : 2); return v >= 1000 ? Math.round(v).toLocaleString('en-US') : String(v); };
+  const Y = 31556952;
+  if(en){
+    if(sec < 1e-4) return `about ${r(sec * 1e6)} microseconds`;
+    if(sec < 1) return `about ${r(sec * 1e3)} milliseconds`;
+    if(sec < 60) return `about ${r(sec)} seconds`;
+    if(sec < 3600) return `about ${r(sec / 60)} minutes`;
+    if(sec < 86400) return `about ${r(sec / 3600)} hours`;
+    if(sec < Y) return `about ${r(sec / 86400)} days`;
+    const y = sec / Y;
+    if(y < 1e4) return `about ${r(y)} years`;
+    if(y < 1e6) return `about ${r(y / 1e3)} thousand years`;
+    if(y < 1e9) return `about ${r(y / 1e6)} million years`;
+    return `about ${r(y / 1e9)} billion years`;
+  }
+  if(sec < 1e-4) return `약 ${r(sec * 1e6)}마이크로초`;
+  if(sec < 0.1) return `약 ${r(sec * 1e3)}밀리초`;
+  if(sec < 1) return `약 ${r(sec)}초`;
+  if(sec < 60) return `약 ${r(sec)}초`;
+  if(sec < 3600) return `약 ${r(sec / 60)}분`;
+  if(sec < 86400) return `약 ${r(sec / 3600)}시간`;
+  if(sec < Y) return `약 ${r(sec / 86400)}일`;
+  const y = sec / Y;
+  if(y < 1e4) return `약 ${r(y)}년`;
+  if(y < 1e8) return `약 ${r(y / 1e4)}만 년`;
+  return `약 ${r(y / 1e8)}억 년`;
+}
 
 /* 반감기(초) → 화면에서 기다리는 시간(초).
    2시간 이하면 실제 반감기 그대로 기다린다 (너무 짧으면 눈에 보이도록 최소 0.12초).
@@ -19168,12 +19204,17 @@ function rxDecayStop(){
   RX_DEC.on = false;
   rxDecayClearFx();
 }
+/* 지금 이 원소 칸에서 보여 줄 핵종: 사슬을 따라가는 중이면 그 핵종, 아니면 그 원소의 시작 핵종 */
+function rxDecayCur(e){
+  if(RX_DEC.on && RX_DEC.cur && rxNuc(RX_DEC.cur).s === e.s) return RX_DEC.cur;
+  return RX_DECAY[e.s] || null;
+}
 function rxDecayUI(){
   const e = byNum[selected];
   const info = document.getElementById('info');
   if(!e || !info) return;
   const old = info.querySelector('.decay-box'); if(old) old.remove();
-  const d = RX_DECAY[e.s];
+  const key = rxDecayCur(e), d = key && RX_NDB[key];
   const end = RX_DEC.end && RX_DEC.end.n === e.n ? RX_DEC.end : null;
   if(!d && !end) return;
   const anchor = info.querySelector('.cat');
@@ -19182,17 +19223,21 @@ function rxDecayUI(){
   const box = document.createElement('div');
   box.className = 'decay-box';
   let h = '';
-  if(d){
-    const dau = d[5] ? EL.find(x => x.s === d[5]) : null;
+  if(d && !end){
+    const dau = d[2] ? rxNucEl(d[2]) : null;
     h += `<button type="button" class="decay-btn${RX_DEC.on ? ' on' : ''}" id="decayBtn">${RX_DEC.on ? rxDecT('stop') : rxDecT('watch')}</button>`;
-    h += `<div class="decay-info"><b>${rxDecSup(d[0])}${e.s}</b> · ${rxDecT('hl')} ${L ? d[3] : d[2]} · ${rxDecT(d[4])}${dau ? ` → <b>${dau.s}</b> ${elName(dau)}` : ''}</div>`;
+    h += `<div class="decay-info"><b>${rxNucLabel(key)}</b> · ${rxDecT('hl')} ${rxDecayFmt(d[0], L)} · ${rxDecT(d[1])}${dau ? ` → <b>${rxNucLabel(d[2])}</b> ${elName(dau)}` : ''}</div>`;
     if(RX_DEC.on) h += `<div class="decay-bar"><i id="decayBar"></i></div><div class="decay-live"><span id="decayLive"></span><button type="button" class="decay-btn decay-skip" id="decaySkip" hidden>${rxDecT('skip')}</button></div>`;
-    h += `<div class="decay-note">${rxDecT('note')}</div>`;
   }
   if(end){
     h += `<div class="decay-end">${end.text}</div>`;
     if(end.start) h += `<button type="button" class="decay-btn" id="decayAgain">${rxDecT('again')}</button>`;
   }
+  // 지나온 길: ²³⁸U → ²³⁴Th → …
+  if((RX_DEC.on || end) && RX_DEC.path.length > 1){
+    h += `<div class="decay-path"><span>${rxDecT('path')}</span> ${RX_DEC.path.map((k, i) => i === RX_DEC.path.length - 1 ? `<b>${rxNucLabel(k)}</b>` : rxNucLabel(k)).join(' → ')}</div>`;
+  }
+  if(d && !end) h += `<div class="decay-note">${rxDecT('note')}</div>`;
   box.innerHTML = h;
   anchor.insertAdjacentElement('afterend', box);
   const b = box.querySelector('#decayBtn');
@@ -19205,21 +19250,25 @@ function rxDecayUI(){
   if(ag) ag.addEventListener('click', () => { const st = RX_DEC.end.start; RX_DEC.end = null; select(st); rxDecayStart(); });
 }
 function rxDecayStart(){
+  const e = byNum[selected], key = e && RX_DECAY[e.s];
+  if(!key) return;
   RX_DEC.on = true; RX_DEC.steps = 0; RX_DEC.start = selected; RX_DEC.end = null;
+  RX_DEC.cur = key; RX_DEC.path = [key];
   rxDecayUI();
   rxDecayStep();
 }
 function rxDecayStep(){
-  const e = byNum[selected], d = e && RX_DECAY[e.s];
-  if(!RX_DEC.on || !d) return;
+  const e = byNum[selected], key = RX_DEC.cur, d = key && RX_NDB[key];
+  if(!RX_DEC.on || !e || !d || rxNuc(key).s !== e.s) return;
   rxDecayClearFx();
-  const wait = rxDecayWait(d[1]) * 1000;
+  const L = LANG === 'en';
+  const wait = rxDecayWait(d[0]) * 1000;
   const bs = document.querySelector('#info .bigsym'); if(bs) bs.classList.add('decaying');
   const cell = rxDecayCell(e.n); if(cell) cell.classList.add('decaying');
   const bar = document.getElementById('decayBar');
   if(bar){ bar.style.transition = 'none'; bar.style.width = '0'; void bar.offsetWidth; bar.style.transition = `width ${wait}ms linear`; bar.style.width = '100%'; }
-  const real = rxDecayReal(d[1]);
-  if(!real) rxToast('', `${rxDecT('hl')} ${LANG === 'en' ? d[3] : d[2]}`, rxDecT('ff'));
+  const real = rxDecayReal(d[0]);
+  if(!real) rxToast('', `${rxNucLabel(key)} · ${rxDecT('hl')} ${rxDecayFmt(d[0], L)}`, rxDecT('ff'));
   // 남은 시간 표시: 5초 넘게 기다려야 하면 시계와 빨리 감기 버튼을 보여 준다
   const endAt = performance.now() + wait;
   const live = document.getElementById('decayLive'), skip = document.getElementById('decaySkip');
@@ -19243,27 +19292,39 @@ function rxDecayStep(){
     if(!RX_DEC.on || selected !== e.n) return;
     rxDecayClearFx();
     if(cell){ cell.classList.remove('decay-pop'); void cell.offsetWidth; cell.classList.add('decay-pop'); }
-    if(d[4] === 'sf'){
-      try{ SFX.boom(); }catch(err){}
-      rxToast('', rxDecT('toastSf'), `${rxDecSup(d[0])}${e.s} · ${rxDecT('sf')}`);
+    const stepsTxt = RX_DEC.steps ? rxDecT('splitN').replace('{n}', RX_DEC.steps) : '';
+    if(d[1] === 'sf' || d[1] === 'unk'){
+      if(d[1] === 'sf'){
+        try{ SFX.boom(); }catch(err){}
+        rxToast('', rxDecT('toastSf'), `${rxNucLabel(key)} · ${rxDecT('sf')}`);
+      }
       RX_DEC.on = false;
       RX_DEC.end = { n: e.n, start: RX_DEC.start !== e.n ? RX_DEC.start : null,
-        text: rxDecT('split').replace('{n}', RX_DEC.steps ? rxDecT('splitN').replace('{n}', RX_DEC.steps) : '') };
+        text: d[1] === 'sf' ? rxDecT('split').replace('{n}', stepsTxt) : rxDecT('unkEnd').replace('{el}', rxNucName(key)).replace('{n}', stepsTxt) };
       try{ rxEvt('decayEnd'); }catch(err){}
       rxDecayUI();
       return;
     }
-    const dau = EL.find(x => x.s === d[5]);
+    const next = d[2], dau = rxNucEl(next);
     RX_DEC.steps++;
+    RX_DEC.cur = next; RX_DEC.path.push(next);
     try{ SFX.pick(); }catch(err){}
-    rxToast('', `${e.s} → ${dau.s}`, rxDecT(d[4]));
-    if(!RX_DECAY[dau.s]){
+    rxToast('', `${rxNucLabel(key)} → ${rxNucLabel(next)}`, rxDecT(d[1]));
+    if(!RX_NDB[next]){
       RX_DEC.on = false;
-      RX_DEC.end = { n: dau.n, start: RX_DEC.start, text: rxDecT('stable').replace('{el}', `${elName(dau)}(${dau.s})`).replace('{n}', RX_DEC.steps) };
+      RX_DEC.end = { n: dau.n, start: RX_DEC.start, text: rxDecT('stable').replace('{el}', rxNucName(next)).replace('{n}', RX_DEC.steps) };
       try{ rxEvt('decayEnd'); }catch(err){}
     }
-    RX_DEC.auto = true;
-    try{ select(dau.n); } finally { RX_DEC.auto = false; }
+    else if(RX_NDB[next][1] === 'unk'){
+      // 붕괴 방식이 아직 밝혀지지 않은 핵종: 기다리는 척하지 않고 바로 알려 준다
+      RX_DEC.on = false;
+      RX_DEC.end = { n: dau.n, start: RX_DEC.start, text: rxDecT('unkEnd').replace('{el}', rxNucName(next)).replace('{n}', rxDecT('splitN').replace('{n}', RX_DEC.steps)) };
+      try{ rxEvt('decayEnd'); }catch(err){}
+    }
+    if(dau.n !== e.n){
+      RX_DEC.auto = true;
+      try{ select(dau.n); } finally { RX_DEC.auto = false; }
+    } else rxDecayUI();   // 같은 원소 안에서 바뀌는 경우 (들뜬 핵 → 바닥 상태)
     const dc = rxDecayCell(dau.n); if(dc){ dc.classList.remove('decay-pop'); void dc.offsetWidth; dc.classList.add('decay-pop'); }
     if(RX_DEC.on) rxDecayStep();
   };
@@ -19788,6 +19849,8 @@ document.addEventListener('click', e => {
   .atom-nuc{position:absolute;right:8px;top:8px;z-index:2;font:inherit;font-size:11px;padding:4px 9px;border-radius:7px;cursor:pointer;
     color:var(--text);background:rgba(16,20,27,.78);border:1px solid var(--line2)}
   .atom-nuc:hover{background:rgba(255,255,255,.1)}
+  /* 전자 구름일 때 나오는 전자 배치 칩은 '핵 속으로' 버튼 아래로 내린다 (둘 다 오른쪽 위라 겹쳤음) */
+  #atomBox .atom-subs{top:38px}
   #nucBig{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,7,10,.82);padding:18px}
   #nucBig.on{display:flex}
   .nuc-steps{display:flex;gap:5px;flex-wrap:wrap}
