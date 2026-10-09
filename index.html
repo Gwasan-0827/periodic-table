@@ -4093,7 +4093,7 @@ const SINGLE = {
        [3,3,"³H","삼중수소","트리튬. 스스로 빛나서 야광 표지판이나 시곗바늘에 씀. 반감기 12.3년"],
        [4,99,"H","수소 덩어리","이 정도면 별이 될지도"]],
   N:  [[2,2,"N₂","질소 기체","공기의 78% / 삼중 결합이라 엄청 단단함"]],
-  F:  [[2,2,"F₂","플루오린 기체","뭐든 닥치는 대로 반응함"]],
+  F:  [[2,2,"F₂","플루오린 기체","뭐든 닥치는 대로 반응함 / 근데 정작 만나면 얌전해짐 (뭐지)"]],
   Cl: [[2,2,"Cl₂","염소 기체","수영장 냄새의 먼 친척 / 마시면 안 됨"]],
   He: [[3,3,"³He","헬륨-3","중성자가 하나 모자란 가벼운 헬륨. 달에 많음"]],
   Au: [[2,99,"Au","금괴","팔면 인생 핌"]],
@@ -5509,7 +5509,7 @@ const REC_EN = {
 "방해석 / 아라고나이트":["Calcite / aragonite","Same formula, different crystal structure"],
 "수소 기체":["Hydrogen gas","The lightest gas"],
 "질소 기체":["Nitrogen gas","78% of the air / held by a very tough triple bond"],
-"플루오린 기체":["Fluorine gas","Reacts with nearly anything"],
+"플루오린 기체":["Fluorine gas","Reacts with nearly anything / then settles right down once it has (huh)"],
 "염소 기체":["Chlorine gas","A distant cousin of the pool smell / do not breathe it"],
 "산소 기체":["Oxygen gas","The one you breathe"],
 "폭발":["Explosion","This is what happens when sodium meets water"],
@@ -14226,6 +14226,14 @@ const RX_TMI = {
   '사플루오린화제논':'반응을 안 한다던 비활성 기체도 화합물을 만들 수 있다는 걸 보여준 물질이에요.',
   '산성 혼합':'플루오린화수소산은 유리를 녹여서 플라스틱 병에 담아 보관해요.',
   '산소 기체':'액체 산소는 옅은 파란색이고, 자석에 달라붙어요.',
+  '질소 기체':'과자 봉지를 빵빵하게 채운 기체가 질소예요. 반응을 거의 안 해서 과자가 눅눅해지거나 상하지 않아요.',
+  '염소 기체':'아주 조금만 물에 녹여도 세균이 죽어서 수돗물 소독에 써요. 수영장 냄새는 염소 자체가 아니라, 염소가 땀과 만나 생긴 물질의 냄새예요.',
+  '질소 덩어리':'식혀서 액체로 만들면 영하 196도예요. 뭐든 순식간에 얼려서 냉동 보관이나 아이스크림 만들 때 써요.',
+  '플루오린 덩어리':'플루오린 기체는 옅은 노란색이에요. 유리도 갉아 먹어서 보관할 그릇부터가 골치예요.',
+  '염소 덩어리':'염소 기체는 연두색이에요. 이름도 그리스어로 연두색이라는 뜻에서 왔어요.',
+  '헬륨 덩어리':'헬륨을 마시면 목소리가 높아져요. 소리가 헬륨 속에서 공기보다 세 배쯤 빨리 퍼지기 때문이에요.',
+  '아르곤 덩어리':'공기의 약 1%가 아르곤이에요. 이름은 그리스어로 게으름뱅이라는 뜻인데, 아무것과도 반응을 안 해서 붙었어요. 또한 이 주기율표를 만든 사람(과산)이 좋아하는 원소죠.',
+  '플루오린 기체':'지구상에서 가장 반응성이 강한 (쉽게 말해 친화력이 광기에 가까운) 물질 중 하나예요.',
   '산화구리':'불꽃에 넣으면 초록빛을 내요.',
   '산화마그네슘':'녹는점이 약 2800℃라 용광로 안쪽 벽돌로 써요.',
   '산화베릴륨':'도자기인데도 열을 금속만큼 잘 전달해요.',
@@ -17534,7 +17542,7 @@ const RX_EL_TMI = {
   P:'그리스어로 "빛을 나르는 것"이라는 뜻이에요. 어둠 속에서 빛나서요.',
   S:'한자 황(黃)은 "노란색"이라는 뜻이에요. 생긴 그대로 붙은 이름이죠.',
   Cl:'그리스어 "황록색(chloros)"에서 왔어요. 기체 색이 황록색이거든요.',
-  Ar:'그리스어로 "게으른 것"이라는 뜻이에요. 아무하고도 반응을 안 해서요.',
+  Ar:'그리스어로 "게으른 것"이라는 뜻이에요. 아무하고도 반응을 안 해서요. 또한 이 주기율표를 만든 사람(과산)이 좋아하는 원소 중 하나죠(아르곤이 1위예요).',
   K:'기호 K는 라틴어 kalium, 아랍어 "식물 재"에서 왔어요. 영어 potassium은 "냄비 재(pot ash)"에서 왔고요.',
   Ca:'라틴어 "석회(calx)"에서 왔어요.',
   Sc:'스칸디나비아에서 이름을 땄어요.',
@@ -20768,6 +20776,27 @@ function rxDecayMap(){
   rxDecayStop = function(){ const r = _stop.apply(this, arguments); try{ if(!RX_DEC.end){ RX_DEC.path = []; rxDecayMap(); } }catch(err){} return r; };
   let rt = 0;
   addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { try{ RX_DMAP.key = ''; rxDecayMap(); RX_DMAP.drawn = 1e9; }catch(err){} }, 150); });
+}
+</script>
+<style>
+  #mSub .aside{font-size:.72em;opacity:.6;margin-left:.35em;white-space:nowrap}
+</style>
+<script>
+/* 설명 끝의 혼잣말 "(뭐지)"는 작고 흐리게 */
+{
+  const el = document.getElementById('mSub');
+  if(el && window.MutationObserver){
+    const fix = () => {
+      if(el.querySelector('.aside')) return;
+      const m = /^(.*\S)\s*(\((?:뭐지|huh)\))$/.exec(el.textContent);
+      if(!m) return;
+      el.textContent = m[1];
+      const sp = document.createElement('span'); sp.className = 'aside'; sp.textContent = m[2];
+      el.appendChild(sp);
+    };
+    new MutationObserver(fix).observe(el, { childList: true, characterData: true, subtree: true });
+    fix();
+  }
 }
 </script>
 </body>
