@@ -14992,24 +14992,6 @@ function rxTool(act, btn){
     rxToolsSync();
     const k = RX_TOPAZ[RX_TOPAZ_I][0];
     rxSay(`${rt(k)} — ${rt(k + 'Note')}`, 3200);
-    // 웹 전용 이스터에그: 색을 세 바퀴 돌리면 t+pazolite
-    rxTool._tp = (rxTool._tp || 0) + 1;
-    if(!APP_MODE && rxTool._tp === RX_TOPAZ.length * 3){
-      setTimeout(() => {
-        rxToast('♪', 't+pazolite?');
-        // 빠른 하드코어풍 짧은 비트
-        try{
-          if(sndOn){
-            const bpm = 200, st = 60 / bpm / 4;
-            for(let i = 0; i < 16; i++){
-              if(i % 4 === 0) rxTone(60, 0.12, 'sine', 0.32, i * st, 38);           // 킥
-              if(i % 8 === 4) rxNoise && setTimeout(() => rxNoise(0.08, 0.14, 'highpass', 1800), i * st * 1000);
-              rxTone([880, 1175, 1319, 1760][(i * 3) % 4], st * 0.9, 'square', 0.03, i * st);
-            }
-          }
-        }catch(e){}
-      }, 250);
-    }
     return;
   }
   if(act === 'zoom' && RX_M && RX_M.he3){
