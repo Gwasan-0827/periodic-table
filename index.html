@@ -2222,6 +2222,7 @@
   /* 대규모 업데이트는 제목을 푸른색으로 */
   .cl.big .clt{color:#6fb6ff;font-weight:700}
   .cl.mid .clt{color:#9ccaf7}
+  .clera{text-align:center;font-size:11px;color:var(--dim);letter-spacing:.03em;margin:12px 0 6px}
   .clkey{font-size:11.5px;color:var(--dim);margin:-2px 0 8px;display:flex;gap:12px;flex-wrap:wrap}
   .clkey b{color:#6fb6ff;font-weight:700}
   .clkey i{font-style:normal;color:#9ccaf7}
@@ -6596,7 +6597,7 @@ function changelogHTML(){
   const L = LANG === 'en' ? 'en' : 'ko';
   return `<div class="ssec">${t('setLog')}</div>
     <div class="clkey">${L === 'en' ? '<span><b>Blue</b> means a major update!</span><span><i>Pale blue</i> is the next size down.</span>' : '<span><b>푸른색</b>은 대규모예요!</span><span><i>옅은 푸른색</i>은 그다음으로 커요.</span>'}</div>
-    <div class="clog">${CHANGELOG.map(c => `
+    <div class="clog">${CHANGELOG.map(c => `${c.v === '2.1' ? `<div class="clera">${L === 'en' ? '— The update storm · 12 versions in two days (7–8 Sep) —' : '— 폭풍 업뎃 시절 · 이틀 동안 12번 (9월 7~8일) —'}</div>` : ''}
       <div class="cl${logOpen === c.v ? ' open' : ''}${c.big === 'mid' ? ' mid' : c.big ? ' big' : ''}" data-v="${c.v}">
         <button type="button" class="clhead">
           <span class="clv">${verLabel(c.v)}</span>
