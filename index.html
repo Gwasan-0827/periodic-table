@@ -19377,6 +19377,7 @@ const RX_ORB_T = {
         occ:'전자 {e}개 / 최대 {c}개', node:'전자가 절대 없는 곳(마디): 공 껍질 모양 {r}개, 평면·원뿔 모양 {a}개', room:'이 방에는 전자 {e}개', roomEmpty:'이 방은 비어 있어요 (모양만 보여 줘요)',
         filling:'{k} / {z}번째 전자', foot:'껍질 사이 간격은 보기 좋게 벌려 놓았어요. 실제로는 안쪽 껍질이 훨씬 작아요.',
         phaseNote:'분홍색은 파동의 부호가 반대인 쪽이에요. 화학 결합이 생길 때 이 부호가 맞아야 해요.',
+        phaseMix:'지금은 오비탈 여러 개가 겹쳐 있어서 색이 뒤섞여 보여요. 위상은 오비탈마다 따로 있어요. 방 하나를 골라서 보면 또렷해요.',
         exc:'<b>규칙을 어기는 원소예요.</b> 순서대로만 채우면 {rule}인데, 실제로는 {real}예요. ',
         excHalf:'d 오비탈이 딱 반만 찼을 때 더 안정해서 그래요.', excFull:'d 오비탈이 꽉 찼을 때 더 안정해서 그래요.',
         excEtc:'에너지가 거의 같은 오비탈끼리는 이렇게 자리가 바뀌기도 해요.', ok:'이 원소는 규칙대로 채워져요.',
@@ -19402,6 +19403,7 @@ const RX_ORB_T = {
         occ:'{e} electron(s) / {c} max', node:'Places an electron can never be (nodes): {r} spherical, {a} planar or conical', room:'{e} electron(s) in this room', roomEmpty:'This room is empty (shape shown only)',
         filling:'Electron {k} of {z}', foot:'The spacing between shells is stretched to be readable. Real inner shells are far smaller.',
         phaseNote:'Pink marks where the wave has the opposite sign. Those signs must match for a chemical bond to form.',
+        phaseMix:'Several orbitals are overlaid right now, so the colours are mixed. Each orbital has its own phase. Pick a single room to see it clearly.',
         exc:'<b>This element breaks the rule.</b> Filling strictly in order gives {rule}, but the real one is {real}. ',
         excHalf:'A half-filled d shell is extra stable.', excFull:'A completely filled d shell is extra stable.',
         excEtc:'Orbitals with nearly the same energy sometimes trade places like this.', ok:'This element fills in the regular order.',
@@ -19524,7 +19526,11 @@ function rxOrbUI(){
     desc = `<b>${sub.n}${sub.l}</b> · ${rxOrbT(sub.l)}<em>${rxOrbT('occ').replace('{e}', sub.e).replace('{c}', cap)} · ${rxOrbT('node').replace('{r}', sub.n - L - 1).replace('{a}', L)}</em>`;
     if(O.m != null){ const oc = rxOrbOcc(sub.l, sub.e, O.m); desc += `<em>${RX_ANG[sub.l][O.m][0]}: ${oc ? rxOrbT('room').replace('{e}', oc) : rxOrbT('roomEmpty')}</em>`; }
   }
-  if(O.phase) desc += `<em style="color:#ff9db3">${rxOrbT('phaseNote')}</em>`;
+  if(O.phase){
+    desc += `<em style="color:#ff9db3">${rxOrbT('phaseNote')}</em>`;
+    // 위상은 오비탈 하나하나의 것. 여러 개를 겹쳐 볼 때는 섞여 보인다고 알려 준다
+    if(!sub || (RX_ANG[sub.l].length > 1 && O.m == null)) desc += `<em style="color:#ffd43b">${rxOrbT('phaseMix')}</em>`;
+  }
   $('orbDesc').innerHTML = desc;
   $('orbPlay').textContent = O.playing ? rxOrbT('stopPlay') : (O.done ? rxOrbT('replay') : rxOrbT('play'));
   const ph = $('orbPhase'); ph.textContent = rxOrbT('phase'); ph.setAttribute('aria-pressed', O.phase);
