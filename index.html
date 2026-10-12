@@ -1149,6 +1149,7 @@
     font-size:44px;font-weight:800;color:var(--rx-acc);font-variant-numeric:tabular-nums;
     text-shadow:0 0 0 #000,2px 2px 0 #000;
   }
+  .g-n.over{color:#fff;text-shadow:0 0 10px rgba(10,20,40,.55),2px 2px 0 #14223a}
   .g-foot{
     background:var(--rx-acc);color:#0b0d11;font-weight:800;font-size:13px;text-align:center;
     padding:6px 4px;margin:5px;font-variant-numeric:tabular-nums;
@@ -8501,10 +8502,10 @@ function mixExtra(r, wasNew){
   if(!el) return;
 
   if(r && r[0]){
-    let total = 0, got = 0;
-    try{ const l = allEntries(); total = l.length; got = l.filter(x => found.has(x.name)).length; }catch(e){}
-    // found.add 는 이 함수 다음에 실행되므로 새 발견이면 아직 반영 전
-    const shown = got + (wasNew ? 1 : 0);
+    let total = 0, got = 0, inDex = true;
+    try{ const l = allEntries(); total = l.length; got = l.filter(x => found.has(x.name)).length; inDex = l.some(x => x.name === r[1]); }catch(e){}
+    // found.add 는 이 함수 다음에 실행되므로 새 발견이면 아직 반영 전 (숨은 결과처럼 도감 목록에 없는 건 세지 않는다)
+    const shown = got + (wasNew && inDex ? 1 : 0);
     rxDex(shown, total, wasNew);
     return;
   }
@@ -12741,14 +12742,16 @@ function rxDex(shown, total, wasNew){
   const fill = document.getElementById('mGFill');
   const num = document.getElementById('mGN');
   document.getElementById('mGH').textContent = wasNew ? t('rxAdded') : t('rxDexH');
-  document.getElementById('mGFoot').textContent = `/ ${total}`;
+  const foot = document.getElementById('mGFoot');
+  foot.textContent = `${from} / ${total}`;
   fill.style.setProperty('--p', pct + '%');
   fill.style.setProperty('--p0', (total ? from / total * 100 : 0) + '%');
   num.textContent = from;
+  num.classList.toggle('over', pct >= 50);   // 게이지가 숫자 뒤까지 차오르면 같은 색이라 묻힌다
   clearTimeout(RX_GAUGE_T);
   if(wasNew){
-    RX_GAUGE_T = setTimeout(() => { num.textContent = shown; num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick'); }, 650);
-  } else num.textContent = shown;
+    RX_GAUGE_T = setTimeout(() => { num.textContent = shown; foot.textContent = `${shown} / ${total}`; num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick'); }, 650);
+  } else { num.textContent = shown; foot.textContent = `${shown} / ${total}`; }
 }
 
 /* ── 넣은 원소 → 화학식 선 ── */
