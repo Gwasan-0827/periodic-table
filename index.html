@@ -22940,6 +22940,14 @@ function rxDrink(){
     const cx = (t.x + h.x) / 2, cy = (t.y + h.y) / 2, cz = ((t.z || 0) + (h.z || 0)) / 2;
     A.forEach(a => { const v = [a.x - cx, a.y - cy, (a.z || 0) - cz];
       a.x = dot(v, ex); a.y = -dot(v, up); a.z = dot(v, ez); });
+    // 메틸기(CH₃)를 C–C 축으로 60° 돌려서 H 하나는 위(꼬리), 둘은 아래(뒷다리)로. 메틸기는 실온에서 거의 자유롭게 돌아서 이 순간도 실제로 있는 모양
+    const tx = t.x;   // 이미 새 좌표로 바뀐 뒤라 그대로 읽는다
+    A.forEach(a => {
+      if(a.s !== 'H') return;
+      if(Math.hypot(a.x - tx, a.y, a.z) > Math.hypot(a.x + tx, a.y, a.z)) return;   // 엉덩이 쪽 탄소에 붙은 H만
+      const c = Math.cos(Math.PI / 3), s = Math.sin(Math.PI / 3), y = a.y, z = a.z;
+      a.y = y * c - z * s; a.z = y * s + z * c;
+    });
     m.yaw0 = -0.5; m.tilt = -0.3; m.dog = true;
   }
   const _sm = rxSmilesModel;
