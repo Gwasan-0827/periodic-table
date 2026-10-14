@@ -3848,7 +3848,7 @@ const EXACT = {
   "Ca1+H4+O6+S1":["CaSO₄·2H₂O","석고","모스 경도 2. 조각상·깁스"],
   "S3+Sb2":["Sb₂S₃","휘안석","칼날 같은 은빛 결정"],
   "C27+H46+O1":["C₂₇H₄₆O","콜레스테롤","세포막을 튼튼하게 하는 기름진 분자. 몸에 꼭 필요함"],
-  "C34+Fe1+H32+N4+O4":["C₃₄H₃₂FeN₄O₄","헴","피가 빨간 이유. 가운데 철이 산소를 붙잡음"],
+  "C34+Fe1+H32+N4+O4":["C₃₄H₃₂FeN₄O₄","헴 B","피가 빨간 이유. 가운데 철이 산소를 붙잡음"],
   "C55+H72+Mg1+N4+O5":["C₅₅H₇₂MgN₄O₅","엽록소","식물이 초록인 이유. 가운데 마그네슘이 햇빛을 받음"],
   "Al2+Fe3+O12+Si3":["Fe₃Al₂(SiO₄)₃","가넷","1월의 탄생석. 이름은 붉은 석류 씨앗에서 따왔음"],
   "Bi1+O4+Sb1":["BiSbO₄","크야수이트","지구에서 딱 한 조각만 발견된 세상에서 제일 희귀한 광물"],
@@ -5301,7 +5301,7 @@ const REC_EN = {
 "석고":["Gypsum","Hardness 2 — statues and casts"],
 "휘안석":["Stibnite","Blade-like silver crystals"],
 "콜레스테롤":["Cholesterol","A fatty molecule that stiffens cell membranes — your body needs it"],
-"헴":["Heme","Why blood is red — the iron in the middle grabs oxygen"],
+"헴 B":["Heme B","Why blood is red — the iron in the middle grabs oxygen"],
 "엽록소":["Chlorophyll","Why plants are green — the magnesium in the middle catches sunlight"],
 "가넷":["Garnet","January birthstone — named after red pomegranate seeds"],
 "크야수이트":["Kyawthuite","The rarest mineral on Earth — only one crystal has ever been found"],
@@ -5995,7 +5995,7 @@ function renderModeBar(){
         `<button class="mchip${HEATP===p.k?' on':''}" data-p="${p.k}">${propLabel(p)}</button>`).join('')}</div>
       <div class="mlegend olegend">${BIRTH_KEYS.map(k =>
         `<span class="ol" title="${birthLbl(k, 2)}"><i style="background:${BIRTH_COL[k]}"></i>${birthLbl(k, 1)} <b>${cnt[k] || 0}</b></span>`).join('')}
-        <span class="lu">${LANG === 'en' ? 'Each element shows only its biggest source' : '원소마다 가장 큰 몫 하나만 표시'}</span></div>`;
+        <span class="lu">${LANG === 'en' ? 'Split by share · Solar System · data: J. Johnson' : '비율대로 나눠 칠함 · 태양계 기준 · 자료: 제니퍼 존슨'}</span></div>`;
     modeOpt.querySelectorAll('.mchip').forEach(b =>
       b.addEventListener('click', () => { HEATP = b.dataset.p; renderModeBar(); paint(); }));
 
@@ -6104,14 +6104,26 @@ const CHANGELOG = [
     title: { ko: '광물 박물관', en: 'Mineral museum' },
     items: {
       ko: ['업적을 누르면 카드로 크게 보여요. 아직 못 딴 업적은 얼마나 남았는지 막대로 나오고, 화살표로 넘겨 볼 수 있어요. 딱딱하던 업적 이름과 설명도 다듬었어요',
+           '"태어난 곳" 보기가 정확해졌어요. 원소마다 가장 큰 몫 하나만 칠하던 걸, 빅뱅·별·초신성·중성자별 충돌에서 온 비율대로 나눠 칠해요. 원소를 누르면 몇 %씩인지도 나와요. 지금 들고 있는 폰 회로 속 금도 94%가 중성자별 충돌 출신이에요',
+           '원자 모형에 "🔥 불꽃" 버튼이 생겼어요. 원소를 불꽃에 넣으면 불꽃색이 바뀌고, 아래 분광기로 그 빛의 선 스펙트럼이 보여요. 기체는 방전관으로 빛나요. 소금 한 꼬집과 코발트 유리도 있어요',
+           '원자 모형에 "μ⁻ 뮤온" 버튼이 생겼어요. 전자 하나를 207배 무거운 뮤온으로 바꾸면, 궤도를 한 칸씩 떨어지며 X선을 내고 핵 바로 옆까지 파고들어요. 2.2마이크로초 뒤엔 붕괴하거나 핵에 삼켜져요',
+           '분자 모형에 "막대" 보기가 생겼어요. 원자 공 없이 결합만 굵은 막대로 그려서, 큰 분자도 뼈대가 한눈에 보여요. 막대는 반씩 양쪽 원자 색이에요',
            '물 결과 창에 "🥄 뜨거운 숟가락"이 생겼어요. 숟가락을 달궈서 물방울을 떨어뜨려 보세요. 더 뜨거우면 더 빨리 사라질까요?',
+           '냄새·독 9종이 도감에 들어왔어요: 가스 냄새의 정체(에탄싸이올), 방귀 냄새(메테인싸이올), 발 냄새(아이소발레르산), 스컹크(3-메틸-1-뷰테인싸이올), 똥 냄새인데 꽃 향기(인돌), 코르크 냄새(트라이클로로아니솔), 모기 기피제 DEET, 복어 독 테트로도톡신, 행복 분자 아난다마이드',
+           '특수 발견에 카테네인(C₄₈H₉₆)과 로탁세인(C₃₆H₇₄)이 생겼어요. 고리 두 개가 결합 없이 사슬처럼 꿰인 것, 아령에 반지를 끼운 것이에요. 돌려 보면 진짜로 꿰여 있어요',
            '헥사메틸멜라민이 도감에 들어왔어요 (C₉H₁₈N₆). 생긴 건 피젯 스피너인데 진짜 항암제예요. 손가락으로 돌려 보세요',
            '물 결과 창에 "⚠ 위험 정보"가 생겼어요. 꼭 끝까지 읽어 보세요',
            '폰을 좌우로 흔들면 액체가 출렁여요. 기울이기만 하던 예전과 달리, 흔든 만큼 반대쪽으로 쏠렸다가 돌아와요. 세게 흔들면 방울도 몇 개씩 튀어요',
            '물(증류수)을 마실 수 있어요. 마실 때마다 물 분자가 하나씩 줄어들어요. 액체로 볼 때 물 분자 수도 18개에서 34개로 늘렸어요. 수은·브로민 웅덩이도 더 넉넉해졌어요',
            '방해석 결과 창에 "겹쳐 보기"가 생겼어요. 방해석을 글씨 위에 올리면 글씨가 두 개로 보이고, 돌리면 한쪽 글씨만 빙글 돌아요. 편광판을 대고 돌리면 한쪽씩 사라져요'],
       en: ['Tap an achievement to see it as a big card, with a progress bar for ones you have not got yet and arrows to flip through them. Many achievement names and descriptions got a livelier rewrite',
+           'The "Cosmic origin" view got precise: instead of only the biggest source, each cell is split by how much came from the Big Bang, stars, supernovae and neutron star mergers. Tap an element for the exact percentages. Even the gold in your phone\'s circuits is 94% neutron-star collision',
+           'Atoms have a new "🔥 Flame" button: put an element in a flame to see its colour, with its line spectrum through a spectroscope below. Gases glow in a discharge tube instead. Salt and cobalt glass included',
+           'Atoms have a new "μ⁻ Muon" button: swap an electron for a muon 207 times heavier and watch it cascade down, flashing X-rays, until it hugs the nucleus. After 2.2 microseconds it decays or gets swallowed',
+           'Molecules have a new "Sticks" view: no atom balls, just thick bonds, so even big molecules show their skeleton at a glance. Each stick is half one atom\'s colour and half the other\'s',
            'Water has a new "🥄 Hot spoon": heat a spoon and drop water on it. Hotter means it vanishes faster, right?',
+           'Nine smells and poisons join the index: the real "gas smell" (ethanethiol), fart smell (methanethiol), foot odour (isovaleric acid), skunk (3-methyl-1-butanethiol), poop that smells like flowers (indole), cork taint (trichloroanisole), the mosquito repellent DEET, pufferfish poison tetrodotoxin and the bliss molecule anandamide',
+           'New special finds: catenane (C₄₈H₉₆), two rings linked like a chain, and rotaxane (C₃₆H₇₄), a ring threaded on a dumbbell. No bonds hold them together. Spin them and see',
            'Hexamethylmelamine joins the index (C₉H₁₈N₆). It looks like a fidget spinner and really is a cancer drug. Give it a spin',
            'Water now has a "⚠ Safety info" button. Read it all the way to the end',
            'Shake your phone and liquids slosh: they lurch the other way and swing back, on top of the old tilt. Shake hard and a few drops splash out',
@@ -6312,7 +6324,7 @@ const CHANGELOG = [
            '다이아몬드 만드는 법이 바뀌었어요 — 탄소만 담으면 흑연, 결과 창에서 꾸욱 압축하면 다이아몬드',
            '액체는 천천히 끌면 한 방울, 휙 끌면 방울째 떨어져 나옴',
            '숨은 것들이 몇 개 생겼어요 (뭔지는 비밀)',
-           '새 조합 111종 — 벤젠·페니실린·이부프로펜 같은 유기물, 자일리톨·커큐민·베타카로틴 같은 음식 속 분자, 파란 LED(질화갈륨)·초전도체·전기차 배터리 같은 첨단 소재, 방연석·진사·투어멀린·남동석 같은 광물, 콜레스테롤·헴·엽록소·사이클로덱스트린 같은 원자 100개 넘는 큰 분자 · 특수 발견에 삼중수소 (도감 335종)',
+           '새 조합 111종 — 벤젠·페니실린·이부프로펜 같은 유기물, 자일리톨·커큐민·베타카로틴 같은 음식 속 분자, 파란 LED(질화갈륨)·초전도체·전기차 배터리 같은 첨단 소재, 방연석·진사·투어멀린·남동석 같은 광물, 콜레스테롤·헴 B·엽록소·사이클로덱스트린 같은 원자 100개 넘는 큰 분자 · 특수 발견에 삼중수소 (도감 335종)',
            '한 번에 담을 수 있는 원소가 55개에서 150개로 — 엽록소처럼 큰 분자도 만들 수 있어요',
            '고친 것 — 방해석 이름, 아인산 조합 조건, 핵산 화학식, 토파즈 설명',
            '웹에서도 처음엔 순화 말투로 시작해요 (설정에서 바꿀 수 있음)'],
@@ -8584,7 +8596,7 @@ const RX_SMILES = {
   'ATP': 'Nc1ncnc2c1ncn2C1OC(COP(=O)(O)OP(=O)(O)OP(=O)(O)O)C(O)C1O',
   // 큰 생체 분자 (좌표는 미리 계산해 둔다)
   '콜레스테롤': 'CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3(CCC(C4)O)C)C',
-  '헴': 'CC1=C(CCC(=O)O)C2=[N]3C1=CC4=C(C(C)=C5C=C6C(C)=C(C=C)C7=[N]6[Fe]3([N]45)[N]8C(=C7)C(C)=C(C=C)C8=C2)CCC(=O)O',
+  '헴 B': 'CC1=C(CCC(=O)O)C2=[N]3C1=CC4=C(C(C)=C5C=C6C(C)=C(C=C)C7=[N]6[Fe]3([N]45)[N]8C(=C7)C(C)=C(C=C)C8=C2)CCC(=O)O',
   '엽록소': 'CCC1=C(C2=NC1=CC3=C(C4=C([N-]3)C(=C5C(C(C(=N5)C=C6C(=C(C(=C2)[N-]6)C=C)C)C)CCC(=O)OCC=C(C)CCCC(C)CCCC(C)CCCC(C)C)C(C4=O)C(=O)OC)C)C.[Mg+2]',
   // 3.0 새 조합
   '벤젠': 'c1ccccc1',
@@ -13613,7 +13625,7 @@ function specialHTML(){
     <div class="sprow">${list.map(x => {
       const on = found.has(x.name);
       const r = on ? locRec([x.formula, x.name, x.sub]) : null;
-      const hint = x.lo === x.hi ? `${x.sym}×${x.lo}` : `${x.sym}×${x.lo}~${x.hi}`;
+      const hint = x.hint || (x.lo === x.hi ? `${x.sym}×${x.lo}` : `${x.sym}×${x.lo}~${x.hi}`);
       return `<div class="sp${on ? ' on' : ''}">
         <div class="spf">${on ? fmtFormula(r[0]) : '???'}</div>
         <div class="spn">${on ? r[1] : '? ? ?'}</div>
@@ -14752,7 +14764,7 @@ const RX_TMI = {
   '황화철':'운석에서도 발견돼요.',
   '황화카드뮴':'모네 같은 인상파 화가들이 쓴 밝은 노란 물감 "카드뮴 옐로"예요.',
   '콜레스테롤':'나쁘기만 한 게 아니라 세포막과 몇몇 호르몬, 비타민 D를 만드는 재료예요.',
-  '헴':'가운데 철이 산소를 붙잡아요. 핏속 헤모글로빈 하나에 헴이 네 개 들어 있어요.',
+  '헴 B':'가운데 철이 산소를 붙잡아요. 핏속 헤모글로빈 하나에 헴 B가 네 개 들어 있어요. 헴에도 종류가 여럿인데(A, B, C…), 피에 있는 건 B예요.',
   '엽록소':'헴과 생김새가 거의 같은데, 가운데 원자가 철 대신 마그네슘이에요.',
   '벤젠':"케쿨레가 뱀이 제 꼬리를 무는 꿈을 꾸고 고리 구조를 떠올렸다는 이야기가 유명해요.",
   '톨루엔':"TNT는 톨루엔에 나이트로기 세 개를 붙인 거예요.",
@@ -18288,10 +18300,10 @@ function rxInsulin(){
    원자 약 9,272개. 인슐린의 약 12배 */
 Object.assign(RXT.ko, {
   hbTitle:'헤모글로빈 (Hemoglobin)',
-  hbSub:'핏속에서 산소를 나르는 단백질. 사슬 4개(알파 2개, 베타 2개)에 헴이 하나씩 붙어 있음',
+  hbSub:'핏속에서 산소를 나르는 단백질. 사슬 4개(알파 2개, 베타 2개)에 헴 B가 하나씩 붙어 있음',
   hbNeed:'150칸으로는 어림없어요. 원자가 약 9,272개 필요해요 (지금의 약 62배)',
   hbName:'C₂₉₅₂H₄₆₆₄N₈₁₂O₈₃₂S₈Fe₄ · 인슐린보다 12배쯤 커요',
-  hbFact:'적혈구 하나에 헤모글로빈이 약 2억 7천만 개 들어 있어요. 산소를 붙잡으면 선홍색, 놓으면 검붉은색이 돼서 동맥피와 정맥피 색이 달라요. 도감의 헴이 바로 이 안에 들어 있는 부품이에요',
+  hbFact:'적혈구 하나에 헤모글로빈이 약 2억 7천만 개 들어 있어요. 산소를 붙잡으면 선홍색, 놓으면 검붉은색이 돼서 동맥피와 정맥피 색이 달라요. 도감의 헴 B가 바로 이 안에 들어 있는 부품이에요',
   hbA:'알파 사슬 (141개) × 2', hbB:'베타 사슬 (146개) × 2',
 });
 Object.assign(RXT.en, {
@@ -20434,7 +20446,7 @@ const RX_NUC_T = {
       ['세 개가 전부가 아니에요','양성자 안에서는 쿼크와 반쿼크 쌍, 글루온이 끊임없이 생겼다 사라져요. "바다 쿼크도 보기"를 켜 보세요. 셋은 그중에 남는 몫이에요.'],
       ['핵도 구슬 뭉치가 아니에요','양성자와 중성자는 제자리에 붙어 있지 않고 핵 안에서 계속 움직여요. 구슬 그림은 개수를 세기 좋게 그린 거예요.'],
     ],
-    ach:['끈질긴 실험','쿼크를 떼어내려다 실패했다'],
+    ach:['끈\'질긴 실험','쿼크를 떼어내려다 실패했다'],
   },
   en: {
     open:'Nucleus ›', title:'Into the nucleus', steps:['Atom','Nucleus','Proton · neutron','Quarks'],
@@ -21893,7 +21905,7 @@ addEventListener('keydown', e => { if(e.key === 'Escape' && RX_LME.on){ e.stopIm
 const RX_HAZ = {};
 { const src = {"e3":"사이안화 칼륨,파라콰트,다이옥신,염화수은,니코틴,다이크로뮴산칼륨","e2":"헥사메틸멜라민,메탄올,에틸렌글리콜,사염화탄소,염화탄소 계열,아닐린,아크릴아마이드,염화바륨,아이오딘화납,일산화납,황화카드뮴,웅황,비소화갈륨,브로민산칼륨,플루오린화나트륨,살리실산메틸,팔산화삼우라늄,DAMN,네오디뮴 자석,염화코발트,페놀프탈레인","e1":"옥살산,아트라진,나프탈렌,멜라민,데나토늄 벤조에이트,캠퍼,붕산,붕사,과망가니즈산칼륨,황산구리,염화구리,이산화망가니즈,브로민화칼륨,질산스트론튬,방연석,땜납,진사,휘안석,아세톤,아이소프로필 알코올,옥테인,과탄산소다","t3":"플루오린화수소산,산성 혼합","t2":"차아염소산나트륨,황산,질산,염산,왕수,아이오딘화수소,수산화나트륨,수산화칼륨,수산화세슘,수산화리튬,과산화나트륨,과산화칼륨,산화칼륨,오산화인,일염화황,이염화황,질산은,페놀,황화나트륨,삼산화황,인산,폼산,염화알루미늄,과아이오딘산,아인산,사플루오린화제논,제논 화합물,푸트레신","t1":"생석회,소석회,시멘트,과산화수소,염화철(III),탄산칼륨","b3":"사이안화수소,일산화탄소,황화수소,염화베릴륨,하이드라진,이산화질소,사산화이질소,이산화염소,일산화질소,오존,삼염화붕소","b2":"벤젠,클로로폼,금 아말감,은 아말감,사이아노젠,클로라민,이산화황,일산화이염소,암모니아,폼알데하이드,이황화탄소,이소사이안산,산화베릴륨,뷰타다이엔,다이아세틸","b1":"톨루엔,헥세인,스타이렌,다이클로로메테인,아산화질소,다이에틸 에테르,아세트알데하이드,메틸아민,트라이메틸아민","x3":"아자이도아자이드 아자이드,나이트로글리세린,존나 큰 폭발,루비듐 폭발","x2":"트라이나이트로톨루엔,질산암모늄,폭발,더 큰 폭발,프리즈메인","x1":"아세틸렌,수소 기체,탄화칼슘,초석,프로판,부탄,메테인"}; for(const k in src) src[k].split(',').forEach(n => { RX_HAZ[n] = k; }); }
 const RX_TAGSET = {};
-{ const src = {"color":"과망가니즈산칼륨,다이크로뮴산칼륨,라이코펜,베타카로틴,루테인,로손,리보플라빈,메틸렌 블루,산화크로뮴(III),산화구리(I),아스타잔틴,아줄린,안토시아닌,알리자린,엽록소,엽록소 b,인디고,카민산,칸타잔틴,캡산틴,커큐민,코발트 블루,크로세틴,티리언 퍼플,프러시안 블루,플루오레세인,페놀프탈레인,헴,황산구리,아이오딘화납,황화카드뮴,염화코발트,이염화황,이산화질소,질화타이타늄,아드레노크롬,웅황,진사,남동석,녹청,라피스라줄리,터키석,로도크로사이트,루비,사파이어,에메랄드,자수정,아쿠아마린,천청석,오팔,녹,염화구리,질산스트론튬,염화바륨,루미놀,루시페린","smell":"스카톨,카다베린,푸트레신,싸이오아세톤,메틸아민,트라이메틸아민,뷰티르산,황화수소,암모니아,제오스민,바닐린,리모넨,멘톨,유제놀,시나말데하이드,벤즈알데하이드,아이소아밀 아세테이트,뷰티르산 에틸,다이아세틸,2-아세틸-1-피롤린,알리신,캠퍼,살리실산메틸,네페탈락톤,아니솔,나프탈렌,아세톤,톨루엔,폼알데하이드,프로판싸이알 S-옥사이드,황화나트륨,이산화황,아세트산에틸,방귀,사이안화수소,벤젠","food":"설탕,포도당,과당,젖당,소금,구연산,말산,타르타르산,젖산,아세트산,글루탐산,글루탐산나트륨,사카린,아스파탐,수크랄로스,에리트리톨,자일리톨,사이코스,카페인,테오브로민,캡사이신,피페린,퀴닌,베이킹소다,콜라,아이스크림,라면 국물,에탄올,탄산,올레산,염화마그네슘,황산칼슘,염화암모늄,벤조산,아스코르브산,니아신,리보플라빈,레티놀,비타민 D,비타민 E,비타민 K","body":"도파민,세로토닌,멜라토닌,아드레날린,코르티솔,옥시토신,바소프레신,히스타민,아데노신,ATP,NAD⁺,헴,콜레스테롤,요산,요소,젖산,크레아틴,타우린,트립토판,알라닌,글라이신,글루탐산,레시틴,디옥시리보뉴클레오타이드,핵산,뼈,인산칼슘,침,땀,눈물,오줌,사람 몸,방귀,페닐에틸아민,스쿠알렌,일산화질소,아세트알데하이드","med":"헥사메틸멜라민,아스피린,아세트아미노펜,이부프로펜,페니실린,에리트로마이신,아토목세틴,페닐에프린,클로르헥시딘,아시아티코사이드,살리실산,산화마그네슘,수산화마그네슘,수산화알루미늄,황산바륨,아이오딘화칼륨,황산철(II),나이트로글리세린,아산화질소,다이에틸 에테르,클로로폼,브로민화칼륨,메틸렌 블루,아이소프로필 알코올,과산화수소"}; for(const k in src) RX_TAGSET[k] = new Set(src[k].split(',')); }
+{ const src = {"color":"과망가니즈산칼륨,다이크로뮴산칼륨,라이코펜,베타카로틴,루테인,로손,리보플라빈,메틸렌 블루,산화크로뮴(III),산화구리(I),아스타잔틴,아줄린,안토시아닌,알리자린,엽록소,엽록소 b,인디고,카민산,칸타잔틴,캡산틴,커큐민,코발트 블루,크로세틴,티리언 퍼플,프러시안 블루,플루오레세인,페놀프탈레인,헴 B,황산구리,아이오딘화납,황화카드뮴,염화코발트,이염화황,이산화질소,질화타이타늄,아드레노크롬,웅황,진사,남동석,녹청,라피스라줄리,터키석,로도크로사이트,루비,사파이어,에메랄드,자수정,아쿠아마린,천청석,오팔,녹,염화구리,질산스트론튬,염화바륨,루미놀,루시페린","smell":"스카톨,카다베린,푸트레신,싸이오아세톤,메틸아민,트라이메틸아민,뷰티르산,황화수소,암모니아,제오스민,바닐린,리모넨,멘톨,유제놀,시나말데하이드,벤즈알데하이드,아이소아밀 아세테이트,뷰티르산 에틸,다이아세틸,2-아세틸-1-피롤린,알리신,캠퍼,살리실산메틸,네페탈락톤,아니솔,나프탈렌,아세톤,톨루엔,폼알데하이드,프로판싸이알 S-옥사이드,황화나트륨,이산화황,아세트산에틸,방귀,사이안화수소,벤젠","food":"설탕,포도당,과당,젖당,소금,구연산,말산,타르타르산,젖산,아세트산,글루탐산,글루탐산나트륨,사카린,아스파탐,수크랄로스,에리트리톨,자일리톨,사이코스,카페인,테오브로민,캡사이신,피페린,퀴닌,베이킹소다,콜라,아이스크림,라면 국물,에탄올,탄산,올레산,염화마그네슘,황산칼슘,염화암모늄,벤조산,아스코르브산,니아신,리보플라빈,레티놀,비타민 D,비타민 E,비타민 K","body":"도파민,세로토닌,멜라토닌,아드레날린,코르티솔,옥시토신,바소프레신,히스타민,아데노신,ATP,NAD⁺,헴 B,콜레스테롤,요산,요소,젖산,크레아틴,타우린,트립토판,알라닌,글라이신,글루탐산,레시틴,디옥시리보뉴클레오타이드,핵산,뼈,인산칼슘,침,땀,눈물,오줌,사람 몸,방귀,페닐에틸아민,스쿠알렌,일산화질소,아세트알데하이드","med":"헥사메틸멜라민,아스피린,아세트아미노펜,이부프로펜,페니실린,에리트로마이신,아토목세틴,페닐에프린,클로르헥시딘,아시아티코사이드,살리실산,산화마그네슘,수산화마그네슘,수산화알루미늄,황산바륨,아이오딘화칼륨,황산철(II),나이트로글리세린,아산화질소,다이에틸 에테르,클로로폼,브로민화칼륨,메틸렌 블루,아이소프로필 알코올,과산화수소"}; for(const k in src) RX_TAGSET[k] = new Set(src[k].split(',')); }
 const RX_HAZ_T = {
   ko: { e: '먹으면 안 되는 놈', t: '만지면 안 되는 놈', b: '들이마시면 안 되는 놈', x: '터지는 놈', lv: ['', '조심', '위험', '아주 위험'],
         note: '위험한 순서대로 줄 세웠어요. ⚠ 하나는 조심, 둘은 위험, 셋은 아주 적은 양으로도 위험하다는 뜻이에요. 진하고 순수한 물질 기준이라, 콜라 속 인산처럼 묽으면 괜찮은 것도 있어요. 꼬리표가 없다고 안전한 건 아니에요.',
@@ -23629,6 +23641,10 @@ const RX_ACH_IC = { first:'🧪', d10:'🔍', d50:'🤓', d100:'📚', gem:'💎
   x_freeze:'🧊', x_card:'📸', x_replay:'⏪', x_note:'📓', x_door:'🧨', x_skip:'⏭️', x_quark:'🔨' };
 /* 과산이 그림판으로 직접 그린 업적 그림 (있는 것만, 나머지는 이모지) */
 const RX_ACH_IMG = {
+  x_quark: 'data:image/webp;base64,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',
+  hemoglobin: 'data:image/webp;base64,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',
+  titin: 'data:image/webp;base64,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',
+  rielNoU: 'data:image/webp;base64,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',
   decaychain: 'data:image/webp;base64,UklGRpIIAABXRUJQVlA4IIYIAADQLQCdASrAAMAAPlEmkEYjoiGhI5MJUHAKCWlu4XKItDR+NK+hrbG8916FN5E9ADpRsiI8gdjP976JXzJ7Xfi10D4kfW3+m/sXnn/m/AvgBetv8t/RvH12BQAPyH+Z/7f7dPSX/sPQ/65eaZ/suMioAfx/+u/9X2Xv5v/v/5f8tPaV+bf37/xf4n4CP5Z/V/+J/ff8X2+f3A9jn9gP/oMrdJKFRfjQqL8aFRfQ/bHIjLKfNDRE5IheFNzJHNkjc1EZbDjukxs66mw7wqvv5h5fDzGjBjLt0kkVYZgMDodJ42ECjHlTsjLSgAXfarQNgWXXdavKvMcWjZD+xvRaFDBL6HSoAPFwbEztZ9vSg2WLJJLxytcD6kQ0te/VxJav8hP21bBl7orOB57YUgH79QQOLwF929j5YZjZwXsettaNvWh10oFpG4PoFBsldZevfQ+4vP4WCxyv3PsjK28Jup2SWtjWlT/IQUFLE4FRfjQqPwlCovxoTwAA/v+cSgHHJnACGbCFN/KP9s4IaSn7JcvPt0WvtMVvjyh7gUOtTkhKJ9bmNh7JK9zA+E2PY0HP506tNS09Te6pXxWo7JABEnuHOuFXo17PNk9NtTKIYBdYlHDAytCS01M4UKugW4LKbbkwhHsfCb/sw8qXs8lm/tU7UqoAv5Gq7HdBRY+M+WLzlezkJCY/mWSsnUfXprGAOJoULDT1LA9mZkyYGrFqLULB/d2U5O7q/GfWYqoYlXRCwruoyH21O7m1o8A4xvTBXAVpxh+/qHWqW0GDhZ/tjaWTS/o4XUMef2/EXL5thQ97IyB+1yrT8+tCxdV+ugM6Dq5FqhbrQ+l4jzoOgloaoau4ZS3XzBVOyfxTvjCr83Pd81S4JBwCZ28Q/ZYTcjJwVSfndQO7Ych/cbZ7GHo+VHFHF1Jy7eV613wS2jyYaDzNAtHDcpPL7loYLviBV38f0q345NF++4XgIop4JzT08i+XDNrcya44T0KT/e4svJaYMtB01EXCnH5tJm6N594dyJCcyVmxbFldCPp5O9kTGserD8IxojGILKfL77e/jSQA1KCYNDRByOwK71yn2B2e79jKv368H76w8uhwQT+ZnSrGyAo5u/4FfXP6P/61jflAM3WiB03ZnrYqgB0mMk/rpjAuMWMtAglpvJFtmbxJ+uLT2YWJKFhDebnqrURn5N/aDZLFmGzBQBBDVBYtOJ/kVwowZdcMFI05c4j04AdIZ6xFZGj/w6JW3/Ep/dL2IdHsZcjiMaZbFDnr//WkLruaHrgjfwXT4gqyl8uRrKQbg4ag5mDZwCgL3qFlm9p1Eyxx7dpt20VtHk09gvn1Abv+vzWfalctSjnNuT+I0Ff/rfIOvxtZxl9ZcoQWkkWW9gzwpSeGP+Xefu9HlUGvYrSTmYDK05vgZ6w0UeQun+pSHLYrHlupN+kuxlIoEYOwN/5ELE0KkYsZ/4s3bkxTd22fdTX3hlahE77RD731Ao+LaRs/J03Day0ubRbF9q/M7dTTXLcrt4aPe80VCT60ARf9MWCKGpDfInAGGBoE5KxpnZjGaBaCXGhW6mkuSdE3sa8Zn0nKc9v8noIif1aZmoMVnaFiY08WX6Z6FCqGyRV/ub+9fsXlrX2slw0cD4AZ6yYPkAUXEaj0yPWOnw78c9LANVvIcHApe7TKuevvf2F2GWf4L7CPUPYfnvQMwKs0IUv/C/uqOSZOoWTNT4jBxxzG6JQKdpGqOU85uTMrs7asI55dgLNGNtJGnoGWPuNbn5TLqcJB3VfgMPvM9q9Xv0bFRGrpuD+inQ2P7t6HvzoZ9myQFKZbLd8XxYN6C5uBrKy630OfGT6s5hXSfl54vSVfuf94LfkY5r9Ueei5joxrn2eFbUcpBP+slTyN5XqZDfdHkjN5qTxpaYrGx8ok5zAGMsKf7j9ke6rcrI5IOYK2BiYOehkR8ZAwmN645RvyUM4N8KOwA82WORDYC+/575lH2oY3wpley3ckDxywrVPg9eXrO/Z1ECcpdo3ybGJUiI3O/tvgy+rB/8je9iaq7W8BP15JJFyxvCwblkMrxRDRxzDgomnbr7ROYKfcp7Pkb1irLHoDhL3jUVSOFcXuwMtyUQ+jYcCTuGTs7PsEWiuPGvJotVHM7qtpU34v+G8YQI441EVRTv3gd/zZrqytu6knNh3qBawyAusZUK0gLtcmI9eMp51lFcn37qZ2zig61NWD+p0iTsveljCRG/pm3Pryr4a+v3UP39GshIvha8pN03vJzs96IuXWV+US5KVDLSWnfziV/lb3mOsNOdQ1gy4JikN64kwy5qqIM34Ci1vy8u2glzL6yG1S8hPSfL9JYkPDN9ht7e8kF3cr7pBZcjaQzjxC+Vbt35LQHsXvd1rQw7v8ETTUgv1PHqZoDM+KTgXBwW3GUPpAiDVcLd5s8gWE/A1RGL10W2NqO1PUysr3fjxVnwdu1Oi2uSD0nEwR8lP+RQ0S/LPIf/+Wy/rQqVaPwIA6FPBVBFDDdEX0gohjfLuWO9M6LPzshpekouqfhfjLzs2j4upXwWTMjGGMvo095eicu12wb004xXztB0+PaC86hcmoNkSW1DeWgV1uiVyU3TWUR4b40EZ4m80v+HsXvbaO1uQcmqFcERYqtE4mmhyfFRsRDLF6xg51bJ92G5YReFr9rLawxCwipTBW/YA5Kvfw7nhvIQB83wqX+0FLo7VujLa6p1qrbvc4xlSYPg5y5xMrmELUn65md/B2psu9N9j3k9aNIQ9ks/Q/5iKflD90ct7d7a4HRwcotqEDXym+TVCEQ35kgVDw9MXFy1EhtbR9EqI58DZJmTWR287TgkF7P01u+skIm47FxGfpNl+xBYDhkvVPEUNJ6i8czhV7NNqOz6fbZP/11PZkZE6lvbuWwhuAAAAA',
   master: 'data:image/webp;base64,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',
   defen: 'data:image/webp;base64,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',
@@ -23696,30 +23712,36 @@ const RX_SPL = { d: [], raf: 0, last: 0 };
     const r = _pf.apply(this, arguments);
     const mag = Math.hypot(sx, sy);
     if(m && m.liquid && m === RX_M && !RX_REDUCED && mag > 0.55) rxSplash(m, sx, sy, mag);
+    if(m && m.liquid) m.atoms.forEach(a => { if(a.spl != null){ a.spl -= dt; if(a.spl <= 0){ if(!a.held) a.drop = false; delete a.spl; } } });
     return r;
   };
 }
 function rxSplash(m, sx, sy, mag){
-  const A = m.atoms.filter(a => !a.held && !a.debris);
-  if(!A.length) return;
+  const A = m.atoms.filter(a => !a.held && !a.debris && !a.tile);
+  if(A.length < 4) return;
   const g = RX_TILT.on ? [RX_TILT.x, RX_TILT.y] : [0, 1];
   const gl = Math.hypot(g[0], g[1]) || 1, gx = g[0] / gl, gy = g[1] / gl;
-  // 중력 반대쪽(위)에 있는 알갱이 = 표면
+  // 중력 반대쪽(위)에 있는 알갱이 = 표면. 거기서 몇 알을 진짜로 튕겨 낸다 (떨어지면 다시 액체로 합류)
   const top = A.slice().sort((a, b) => (a.x * gx + a.y * gy) - (b.x * gx + b.y * gy)).slice(0, Math.max(3, Math.ceil(A.length * 0.3)));
-  const n = Math.max(1, Math.min(6, Math.round((mag - 0.4) * 4)));
-  // 폰이 움직인 반대 방향으로 쏠리니, 물방울도 그쪽으로 튄다
-  const k = Math.min(4, mag), dx = sx / mag, dy = sy / mag;
+  // 액체마다 다르게: 수은은 표면장력이 물의 6~7배라 적게·뭉쳐서 튀고, 진한 황산처럼 끈적한 건 거의 안 튄다
+  const thick = m.phys && m.phys.maxV && m.phys.maxV <= 14;
+  const nMax = m.sym === 'Hg' ? 2 : thick ? 1 : 4, kv = m.sym === 'Hg' ? 0.85 : thick ? 0.55 : 1;
+  if(thick && mag < 1.1) return;
+  const n = Math.max(1, Math.min(nMax, Math.round((mag - 0.4) * 2.5), top.length));
+  const k = Math.min(4, mag) * kv, dx = sx / mag, dy = sy / mag;
+  const mv = (m.phys && m.phys.maxV) || 18;
   for(let i = 0; i < n; i++){
-    const a = top[Math.floor(Math.random() * top.length)];
-    const sp = 2.2 + k * 1.3 + Math.random() * 2;
-    const ang = (Math.random() - 0.5) * 0.9;
-    let vx = (dx * Math.cos(ang) - dy * Math.sin(ang)) * sp - gx * (2.5 + Math.random() * 2.5);
-    let vy = (dx * Math.sin(ang) + dy * Math.cos(ang)) * sp - gy * (2.5 + Math.random() * 2.5);
-    RX_SPL.d.push({ x: 200 + a.x - gx * (a.r || 15), y: 150 + a.y - gy * (a.r || 15), vx, vy, gx, gy,
-      r: 3.2 + Math.random() * 3.2, col: a.col || m.col || '#a5d8ff', t: 0, L: 0.7 + Math.random() * 0.5, el: null });
+    const a = top.splice(Math.floor(Math.random() * top.length), 1)[0];
+    if(!a) break;
+    const sp = 2 + k * 1.2 + Math.random() * 2;
+    const ang = (Math.random() - 0.5) * 0.8;
+    const up = (8 + k * 1.5 + Math.random() * 4) * kv;
+    a.vx += (dx * Math.cos(ang) - dy * Math.sin(ang)) * sp - gx * up;
+    a.vy += (dx * Math.sin(ang) + dy * Math.cos(ang)) * sp - gy * up;
+    const v = Math.hypot(a.vx, a.vy); if(v > mv * 0.95){ a.vx *= mv * 0.95 / v; a.vy *= mv * 0.95 / v; }
+    // 웅덩이와의 끌림·점성을 잠깐 끊어야 진짜로 튀어 나간다 (떨어지면 다시 합류)
+    if(!a.drop){ a.drop = true; a.spl = 650 + Math.random() * 350; }
   }
-  if(RX_SPL.d.length > 60) RX_SPL.d.splice(0, RX_SPL.d.length - 60).forEach(p => p.el && p.el.remove());
-  if(!RX_SPL.raf){ RX_SPL.last = 0; RX_SPL.raf = requestAnimationFrame(rxSplashTick); }
 }
 function rxSplashTick(ts){
   const svg = document.getElementById('mMol');
@@ -23752,5 +23774,1213 @@ function rxSplashTick(ts){
   RX_SPL.raf = alive.length ? requestAnimationFrame(rxSplashTick) : 0;
 }
 </script>
+<script>
+/* ── 3.6 추가: 냄새·독 9종 (웃긴데 알고 보니 ㄹㅇ) ── */
+(function(){
+  Object.assign(RX_SMILES_PRE, {"CCS":{"a":[["C",-21.9,14.3,2.0,16],["C",3.2,-19.5,-3.3,16],["S",48.5,-11.8,18.4,16],["H",-49.2,9.3,-11.1,9.9],["H",-10.0,39.4,-10.9,9.9],["H",-26.9,20.1,31.7,9.9],["H",-9.6,-44.3,9.2,9.9],["H",7.4,-25.0,-33.2,9.9],["H",58.6,17.5,-2.8,9.9]],"b":[[0,1,1],[1,2,1],[0,3,1],[0,4,1],[0,5,1],[1,6,1],[1,7,1],[2,8,1]]},"CS":{"a":[["C",-13.8,0.5,0.2,16],["S",32.1,21.3,-3.6,16],["H",-16.8,-13.2,27.4,9.9],["H",-35.3,22.2,-2.5,9.9],["H",-17.7,-20.2,-22.0,9.9],["H",51.5,-10.6,0.5,9.9]],"b":[[0,1,1],[0,2,1],[0,3,1],[0,4,1],[1,5,1]]},"CC(C)CC(=O)O":{"a":[["C",-10.2,-1.5,44.5,16],["C",-24.3,-4.6,4.2,16],["C",-33.1,34.2,-11.7,16],["C",2.7,-26.7,-20.9,16],["C",40.8,-9.1,-25.0,16],["O",49.4,15.9,-46.6,16],["O",66.2,-23.5,-1.1,16],["H",-4.0,-29.3,56.0,9.9],["H",15.2,15.5,46.4,9.9],["H",-31.5,11.4,62.4,9.9],["H",-50.7,-20.3,4.9,9.9],["H",-43.1,32.2,-40.6,9.9],["H",-8.5,52.5,-11.3,9.9],["H",-55.0,47.8,4.9,9.9],["H",6.1,-55.2,-10.2,9.9],["H",-9.0,-29.8,-49.1,9.9],["H",89.1,-9.5,-6.6,9.9]],"b":[[0,1,1],[1,2,1],[1,3,1],[3,4,1],[4,5,2],[4,6,1],[0,7,1],[0,8,1],[0,9,1],[1,10,1],[2,11,1],[2,12,1],[2,13,1],[3,14,1],[3,15,1],[6,16,1]]},"CC(C)CCS":{"a":[["C",-34.6,-45.1,10.6,16],["C",-17.4,-10.7,-8.1,16],["C",-44.4,22.4,-5.1,16],["C",21.1,-2.2,9.4,16],["C",42.1,29.4,-10.5,16],["S",88.6,35.3,9.3,16],["H",-61.5,-52.2,-2.3,9.9],["H",-39.4,-40.4,40.5,9.9],["H",-16.2,-69.5,7.7,9.9],["H",-13.4,-17.2,-37.9,9.9],["H",-72.0,14.9,-16.1,9.9],["H",-47.9,31.3,24.0,9.9],["H",-34.4,46.5,-21.3,9.9],["H",17.5,4.8,39.1,9.9],["H",38.1,-27.8,8.4,9.9],["H",44.9,23.3,-40.4,9.9],["H",27.3,56.0,-7.5,9.9],["H",101.5,1.2,0.2,9.9]],"b":[[0,1,1],[1,2,1],[1,3,1],[3,4,1],[4,5,1],[0,6,1],[0,7,1],[0,8,1],[1,9,1],[2,10,1],[2,11,1],[2,12,1],[3,13,1],[3,14,1],[4,15,1],[4,16,1],[5,17,1]]},"c1ccc2[nH]ccc2c1":{"a":[["C",-60.3,-14.4,-0.8,16],["C",-56.6,23.9,5.4,16],["C",-21.4,40.8,7.3,16],["C",10.0,17.8,2.7,16],["N",47.6,26.5,3.1,16],["C",68.6,-5.1,-2.6,16],["C",44.3,-34.7,-6.9,16],["C",7.2,-20.7,-3.6,16],["C",-28.6,-37.1,-5.3,16],["H",-88.0,-27.0,-2.1,9.9],["H",-81.6,41.0,8.9,9.9],["H",-18.6,70.7,12.1,9.9],["H",57.9,52.5,7.1,9.9],["H",98.8,-3.7,-3.2,9.9],["H",52.3,-63.5,-11.8,9.9],["H",-31.7,-66.9,-10.1,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,0,1],[7,3,1],[0,9,1],[1,10,1],[2,11,1],[4,12,1],[5,13,1],[6,14,1],[8,15,1]]},"COc1c(Cl)cc(Cl)cc1Cl":{"a":[["C",-73.2,0.3,-0.0,16],["O",-45.9,-3.1,29.1,16],["C",-10.3,-1.6,14.6,16],["C",8.6,32.7,12.1,16],["Cl",-12.2,74.2,25.9,16],["C",45.2,34.1,-1.6,16],["C",63.0,1.1,-12.3,16],["Cl",108.1,2.8,-29.2,16],["C",44.9,-33.3,-9.2,16],["C",8.3,-34.6,4.5,16],["Cl",-12.8,-77.9,8.9,16],["H",-71.0,-22.7,-20.1,9.9],["H",-70.8,27.2,-14.6,9.9],["H",-100.9,-1.0,13.0,9.9],["H",59.7,60.8,-3.8,9.9],["H",59.2,-58.9,-17.2,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[3,5,1],[5,6,1],[6,7,1],[6,8,1],[8,9,1],[9,10,1],[9,2,1],[0,11,1],[0,12,1],[0,13,1],[5,14,1],[8,15,1]]},"CCN(CC)C(=O)c1cccc(C)c1":{"a":[["C",-35.3,-64.5,9.1,16],["C",-39.7,-28.7,-13.4,16],["N",-43.7,4.5,10.5,16],["C",-80.7,11.7,26.7,16],["C",-106.0,33.4,0.1,16],["C",-16.8,32.7,13.9,16],["O",-22.8,63.1,29.0,16],["C",21.0,26.3,-1.5,16],["C",33.1,48.2,-31.5,16],["C",69.0,42.8,-45.9,16],["C",92.6,15.8,-30.2,16],["C",80.6,-6.0,0.2,16],["C",106.6,-33.8,17.9,16],["C",44.7,-0.2,14.9,16],["H",-11.1,-63.1,27.8,9.9],["H",-60.0,-70.0,26.4,9.9],["H",-31.5,-88.4,-9.6,9.9],["H",-64.5,-30.6,-31.3,9.9],["H",-15.8,-25.6,-32.2,9.9],["H",-77.3,27.7,52.6,9.9],["H",-93.7,-15.0,34.2,9.9],["H",-133.2,38.6,13.3,9.9],["H",-93.6,60.5,-7.3,9.9],["H",-110.8,17.9,-25.9,9.9],["H",14.8,69.5,-43.4,9.9],["H",78.7,59.8,-69.3,9.9],["H",120.6,12.2,-41.6,9.9],["H",90.9,-57.2,30.0,9.9],["H",122.9,-20.2,40.1,9.9],["H",125.9,-45.5,-2.8,9.9],["H",35.3,-15.9,39.2,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[2,5,1],[5,6,2],[5,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,1],[11,12,1],[11,13,1],[13,7,1],[0,14,1],[0,15,1],[0,16,1],[1,17,1],[1,18,1],[3,19,1],[3,20,1],[4,21,1],[4,22,1],[4,23,1],[8,24,1],[9,25,1],[10,26,1],[12,27,1],[12,28,1],[12,29,1],[13,30,1]]},"C(C1(C2C3C(N=C(NC34C(C1OC(C4O)(O2)O)O)N)O)O)O":{"a":[["C",-98.9,3.8,-7.0,16],["C",-57.3,-0.5,-18.8,16],["C",-35.3,-24.5,9.8,16],["C",4.8,-32.0,-4.6,16],["C",26.8,-59.6,19.7,16],["N",66.4,-61.5,9.6,16],["C",80.9,-33.5,-7.4,16],["N",63.8,-1.8,-19.1,16],["C",25.5,5.5,-6.6,16],["C",4.7,31.2,-35.0,16],["C",-35.9,37.1,-20.8,16],["O",-34.2,54.1,15.6,16],["C",-16.1,30.7,42.4,16],["C",25.7,24.8,32.2,16],["O",45.9,59.8,32.3,16],["O",-34.3,-5.0,45.0,16],["O",-18.8,48.6,77.6,16],["O",23.4,66.9,-37.4,16],["N",117.5,-33.3,-16.6,16],["O",9.4,-95.2,16.3,16],["O",-56.3,-18.2,-54.9,16],["O",-105.8,23.9,26.4,16],["H",-114.5,17.9,-29.3,9.9],["H",-111.7,-24.0,-4.2,9.9],["H",-49.8,-51.2,14.2,9.9],["H",3.0,-44.5,-32.7,9.9],["H",24.9,-52.3,49.4,9.9],["H",80.4,21.4,-17.8,9.9],["H",5.2,18.9,-63.2,9.9],["H",-50.2,56.8,-39.5,9.9],["H",39.3,7.5,53.5,9.9],["H",38.5,73.3,9.5,9.9],["H",5.0,61.4,81.1,9.9],["H",10.4,81.6,-56.4,9.9],["H",129.1,-58.9,-12.4,9.9],["H",122.2,-24.3,-43.1,9.9],["H",30.7,-112.2,17.1,9.9],["H",-76.5,-8.1,-70.4,9.9],["H",-88.0,15.7,45.5,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,2],[6,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,1],[11,12,1],[12,13,1],[13,14,1],[12,15,1],[12,16,1],[9,17,1],[6,18,1],[4,19,1],[1,20,1],[0,21,1],[10,1,1],[15,2,1],[8,3,1],[13,8,1],[0,22,1],[0,23,1],[2,24,1],[3,25,1],[4,26,1],[7,27,1],[9,28,1],[10,29,1],[13,30,1],[14,31,1],[16,32,1],[17,33,1],[18,34,1],[18,35,1],[19,36,1],[20,37,1],[21,38,1]]},"CCCCC/C=C\\C/C=C\\C/C=C\\C/C=C\\CCCC(=O)NCCO":{"a":[["C",309.0,58.5,32.7,16],["C",282.8,27.7,19.2,16],["C",253.6,18.0,48.9,16],["C",228.5,-15.1,38.0,16],["C",203.3,-6.8,4.3,16],["C",177.5,-39.1,-3.5,16],["C",140.3,-40.5,2.0,16],["C",115.6,-10.7,18.4,16],["C",90.4,5.8,-11.0,16],["C",52.9,3.4,-13.4,16],["C",26.4,-16.3,12.5,16],["C",8.2,-49.0,-6.7,16],["C",-27.8,-52.5,-16.9,16],["C",-58.7,-24.3,-12.8,16],["C",-86.6,-36.7,16.1,16],["C",-122.2,-47.5,10.3,16],["C",-141.8,-51.1,-26.8,16],["C",-165.5,-16.9,-36.9,16],["C",-197.8,-10.0,-9.6,16],["C",-222.6,22.2,-22.0,16],["O",-217.7,40.1,-50.9,16],["N",-251.7,29.0,2.5,16],["C",-277.1,60.2,-2.7,16],["C",-303.0,55.9,-36.4,16],["O",-331.6,83.7,-35.1,16],["H",324.1,49.8,57.9,9.9],["H",329.6,65.1,11.0,9.9],["H",293.4,84.1,39.2,9.9],["H",299.3,2.8,12.2,9.9],["H",269.1,37.1,-6.6,9.9],["H",267.9,10.8,75.1,9.9],["H",236.2,42.6,54.9,9.9],["H",211.0,-22.1,62.3,9.9],["H",245.9,-39.7,32.3,9.9],["H",220.3,-2.3,-20.8,9.9],["H",187.8,19.2,9.0,9.9],["H",190.9,-63.8,-15.5,9.9],["H",125.8,-66.2,-5.9,9.9],["H",99.7,-23.3,41.4,9.9],["H",131.8,11.9,31.1,9.9],["H",104.9,21.5,-32.7,9.9],["H",39.6,17.4,-37.1,9.9],["H",40.5,-26.8,37.6,9.9],["H",5.8,4.0,22.6,9.9],["H",26.8,-72.5,-12.4,9.9],["H",-36.2,-78.7,-30.4,9.9],["H",-48.0,3.3,-4.7,9.9],["H",-71.8,-20.1,-40.2,9.9],["H",-76.4,-36.2,44.8,9.9],["H",-138.7,-55.3,34.7,9.9],["H",-121.6,-56.2,-49.2,9.9],["H",-159.6,-76.2,-25.9,9.9],["H",-147.7,8.1,-38.3,9.9],["H",-176.9,-21.1,-65.1,9.9],["H",-215.2,-35.2,-7.4,9.9],["H",-187.0,-3.3,18.3,9.9],["H",-251.9,15.6,27.4,9.9],["H",-260.7,86.0,-5.3,9.9],["H",-293.7,62.8,23.0,9.9],["H",-316.5,28.3,-36.3,9.9],["H",-287.6,58.9,-62.7,9.9],["H",-345.4,81.8,-58.5,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,2],[6,7,1],[7,8,1],[8,9,2],[9,10,1],[10,11,1],[11,12,2],[12,13,1],[13,14,1],[14,15,2],[15,16,1],[16,17,1],[17,18,1],[18,19,1],[19,20,2],[19,21,1],[21,22,1],[22,23,1],[23,24,1],[0,25,1],[0,26,1],[0,27,1],[1,28,1],[1,29,1],[2,30,1],[2,31,1],[3,32,1],[3,33,1],[4,34,1],[4,35,1],[5,36,1],[6,37,1],[7,38,1],[7,39,1],[8,40,1],[9,41,1],[10,42,1],[10,43,1],[11,44,1],[12,45,1],[13,46,1],[13,47,1],[14,48,1],[15,49,1],[16,50,1],[16,51,1],[17,52,1],[17,53,1],[18,54,1],[18,55,1],[21,56,1],[22,57,1],[22,58,1],[23,59,1],[23,60,1],[24,61,1]]}});
+  EXACT["C2+H6+S1"] = ["C₂H₆S", "에탄싸이올", "\"가스 냄새\"의 정체. 가스는 원래 냄새가 없음"];
+  REC_EN["에탄싸이올"] = ["Ethanethiol", "The real \"gas smell\". The gas itself has no smell"];
+  RX_SMILES["에탄싸이올"] = "CCS";
+  RX_TMI["에탄싸이올"] = "도시가스와 LPG는 원래 냄새가 없어서, 새면 바로 알아채라고 이런 황 화합물을 일부러 섞어요. 우리가 아는 \"가스 냄새\"는 사실 경보용으로 넣은 냄새예요.";
+  RX_HAZ["에탄싸이올"] = "b1";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("에탄싸이올");
+  EXACT["C1+H4+S1"] = ["CH₄S", "메테인싸이올", "방귀 냄새 담당"];
+  REC_EN["메테인싸이올"] = ["Methanethiol", "In charge of fart smell"];
+  RX_SMILES["메테인싸이올"] = "CS";
+  RX_TMI["메테인싸이올"] = "방귀와 입 냄새에서 나는 썩은 양배추 냄새가 이거예요. 아스파라거스를 먹은 뒤 오줌 냄새가 달라지는 원인 물질 중 하나이기도 해요.";
+  RX_HAZ["메테인싸이올"] = "b2";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("메테인싸이올");
+  if(RX_TAGSET["body"]) RX_TAGSET["body"].add("메테인싸이올");
+  EXACT["C5+H10+O2"] = ["C₅H₁₀O₂", "아이소발레르산", "발 냄새 주범. 치즈에도 있음"];
+  REC_EN["아이소발레르산"] = ["Isovaleric acid", "The main culprit of foot odour. Also in cheese"];
+  RX_SMILES["아이소발레르산"] = "CC(C)CC(=O)O";
+  RX_TMI["아이소발레르산"] = "발 피부에 사는 세균이 땀 속 성분을 분해하면서 만들어요. 그래서 발 냄새의 주범으로 꼽혀요. 같은 물질이 일부 치즈 냄새에도 들어 있어요.";
+  RX_HAZ["아이소발레르산"] = "t1";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("아이소발레르산");
+  if(RX_TAGSET["body"]) RX_TAGSET["body"].add("아이소발레르산");
+  EXACT["C5+H12+S1"] = ["C₅H₁₂S", "3-메틸-1-뷰테인싸이올", "스컹크의 필살기"];
+  REC_EN["3-메틸-1-뷰테인싸이올"] = ["3-Methyl-1-butanethiol", "A skunk's finishing move"];
+  RX_SMILES["3-메틸-1-뷰테인싸이올"] = "CC(C)CCS";
+  RX_TMI["3-메틸-1-뷰테인싸이올"] = "스컹크가 뿌리는 냄새의 주성분 중 하나예요. 황이 붙은 싸이올 계열이라 아주 조금만 있어도 코를 찔러요.";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("3-메틸-1-뷰테인싸이올");
+  EXACT["C8+H7+N1"] = ["C₈H₇N", "인돌", "똥 냄새인데 묽히면 꽃 향기"];
+  REC_EN["인돌"] = ["Indole", "Smells like poop, but dilute it and it smells like flowers"];
+  RX_SMILES["인돌"] = "c1ccc2[nH]ccc2c1";
+  RX_TMI["인돌"] = "진하면 똥 냄새가 나는데, 아주 묽으면 꽃 향기가 나요. 그래서 재스민 같은 꽃 향기에도 들어 있고 향수에도 써요.";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("인돌");
+  if(RX_TAGSET["body"]) RX_TAGSET["body"].add("인돌");
+  EXACT["C7+Cl3+H5+O1"] = ["C₇H₅Cl₃O", "2,4,6-트라이클로로아니솔", "와인 망치는 코르크 냄새"];
+  REC_EN["2,4,6-트라이클로로아니솔"] = ["2,4,6-Trichloroanisole", "The cork taint that ruins wine"];
+  RX_SMILES["2,4,6-트라이클로로아니솔"] = "COc1c(Cl)cc(Cl)cc1Cl";
+  RX_TMI["2,4,6-트라이클로로아니솔"] = "코르크 마개에서 이게 생기면 와인에서 젖은 판지 냄새가 나요. 1리터에 10억분의 몇 그램만 있어도 사람 코가 알아챌 만큼 예민하게 느껴져요.";
+  if(RX_TAGSET["smell"]) RX_TAGSET["smell"].add("2,4,6-트라이클로로아니솔");
+  EXACT["C12+H17+N1+O1"] = ["C₁₂H₁₇NO", "DEET", "모기 기피제. 왜 통하는지는 아직 연구 중"];
+  REC_EN["DEET"] = ["DEET", "Mosquito repellent. Why it works is still being studied"];
+  RX_SMILES["DEET"] = "CCN(CC)C(=O)c1cccc(C)c1";
+  RX_TMI["DEET"] = "1940년대에 미군이 만들어 1957년부터 일반에 팔린 모기 기피제예요. 그런데 모기가 정확히 왜 이걸 싫어하는지는 아직도 연구 중이에요.";
+  RX_HAZ["DEET"] = "e1";
+  EXACT["C11+H17+N3+O8"] = ["C₁₁H₁₇N₃O₈", "테트로도톡신", "복어 독. 근데 만든 건 세균"];
+  REC_EN["테트로도톡신"] = ["Tetrodotoxin", "Pufferfish poison. Actually made by bacteria"];
+  RX_SMILES["테트로도톡신"] = "C(C1(C2C3C(N=C(NC34C(C1OC(C4O)(O2)O)O)N)O)O)O";
+  RX_TMI["테트로도톡신"] = "복어 독인데, 정작 복어가 만드는 게 아니라 먹이와 몸속의 세균이 만들어요. 그래서 독 없는 먹이로 키운 양식 복어는 독이 거의 없어요. 아주 적은 양으로도 신경을 멈추게 해요.";
+  RX_HAZ["테트로도톡신"] = "e3";
+  EXACT["C22+H37+N1+O2"] = ["C₂₂H₃₇NO₂", "아난다마이드", "몸이 만드는 \"행복\" 분자"];
+  REC_EN["아난다마이드"] = ["Anandamide", "The \"bliss\" molecule your body makes"];
+  RX_SMILES["아난다마이드"] = "CCCCC/C=C\\C/C=C\\C/C=C\\C/C=C\\CCCC(=O)NCCO";
+  RX_TMI["아난다마이드"] = "몸이 스스로 만드는 신호 물질이에요. 이름은 산스크리트어로 \"기쁨\"을 뜻하는 아난다에서 왔어요. 초콜릿에도 아주 조금 들어 있어요.";
+  if(RX_TAGSET["body"]) RX_TAGSET["body"].add("아난다마이드");
+})();
+</script>
+<script>
+/* ── 카테네인: 탄소 24개짜리 고리 두 개가 사슬처럼 꿰인 모형 (결합 없이 기계적으로 엮임) ── */
+(function(){
+  RX_SMILES_PRE["C1CCCCCCCCCCCCCCCCCCCCCCC1.C1CCCCCCCCCCCCCCCCCCCCCCC1"] = {"a":[["C",82.4,0.0,-7.0,16],["C",76.7,42.6,7.0,16],["C",60.3,82.4,-7.0,16],["C",34.1,116.5,7.0,16],["C",0.0,142.6,-7.0,16],["C",-39.7,159.1,7.0,16],["C",-82.4,164.7,-7.0,16],["C",-125.0,159.1,7.0,16],["C",-164.7,142.6,-7.0,16],["C",-198.8,116.5,7.0,16],["C",-225.0,82.4,-7.0,16],["C",-241.4,42.6,7.0,16],["C",-247.1,0.0,-7.0,16],["C",-241.4,-42.6,7.0,16],["C",-225.0,-82.4,-7.0,16],["C",-198.8,-116.5,7.0,16],["C",-164.7,-142.6,-7.0,16],["C",-125.0,-159.1,7.0,16],["C",-82.4,-164.7,-7.0,16],["C",-39.7,-159.1,7.0,16],["C",0.0,-142.6,-7.0,16],["C",34.1,-116.5,7.0,16],["C",60.3,-82.4,-7.0,16],["C",76.7,-42.6,7.0,16],["H",100.0,0.0,17.9,9.9],["H",100.0,0.0,-31.9,9.9],["H",93.8,47.2,31.9,9.9],["H",93.8,47.2,-17.9,9.9],["H",75.5,91.2,17.9,9.9],["H",75.5,91.2,-31.9,9.9],["H",46.6,128.9,31.9,9.9],["H",46.6,128.9,-17.9,9.9],["H",8.8,157.9,17.9,9.9],["H",8.8,157.9,-31.9,9.9],["H",-35.2,176.1,31.9,9.9],["H",-35.2,176.1,-17.9,9.9],["H",-82.4,182.3,17.9,9.9],["H",-82.4,182.3,-31.9,9.9],["H",-129.5,176.1,31.9,9.9],["H",-129.5,176.1,-17.9,9.9],["H",-173.5,157.9,17.9,9.9],["H",-173.5,157.9,-31.9,9.9],["H",-211.3,128.9,31.9,9.9],["H",-211.3,128.9,-17.9,9.9],["H",-240.2,91.2,17.9,9.9],["H",-240.2,91.2,-31.9,9.9],["H",-258.5,47.2,31.9,9.9],["H",-258.5,47.2,-17.9,9.9],["H",-264.7,0.0,17.9,9.9],["H",-264.7,0.0,-31.9,9.9],["H",-258.5,-47.2,31.9,9.9],["H",-258.5,-47.2,-17.9,9.9],["H",-240.2,-91.2,17.9,9.9],["H",-240.2,-91.2,-31.9,9.9],["H",-211.3,-128.9,31.9,9.9],["H",-211.3,-128.9,-17.9,9.9],["H",-173.5,-157.9,17.9,9.9],["H",-173.5,-157.9,-31.9,9.9],["H",-129.5,-176.1,31.9,9.9],["H",-129.5,-176.1,-17.9,9.9],["H",-82.4,-182.3,17.9,9.9],["H",-82.4,-182.3,-31.9,9.9],["H",-35.2,-176.1,31.9,9.9],["H",-35.2,-176.1,-17.9,9.9],["H",8.8,-157.9,17.9,9.9],["H",8.8,-157.9,-31.9,9.9],["H",46.6,-128.9,31.9,9.9],["H",46.6,-128.9,-17.9,9.9],["H",75.5,-91.2,17.9,9.9],["H",75.5,-91.2,-31.9,9.9],["H",93.8,-47.2,31.9,9.9],["H",93.8,-47.2,-17.9,9.9],["C",245.7,7.0,21.5,16],["C",234.5,-7.0,63.0,16],["C",213.0,7.0,100.3,16],["C",182.6,-7.0,130.7,16],["C",145.4,7.0,152.2,16],["C",103.9,-7.0,163.3,16],["C",60.9,7.0,163.3,16],["C",19.3,-7.0,152.2,16],["C",-17.9,7.0,130.7,16],["C",-48.3,-7.0,100.3,16],["C",-69.8,7.0,63.0,16],["C",-80.9,-7.0,21.5,16],["C",-80.9,7.0,-21.5,16],["C",-69.8,-7.0,-63.0,16],["C",-48.3,7.0,-100.3,16],["C",-17.9,-7.0,-130.7,16],["C",19.3,7.0,-152.2,16],["C",60.9,-7.0,-163.3,16],["C",103.9,7.0,-163.3,16],["C",145.4,-7.0,-152.2,16],["C",182.6,7.0,-130.7,16],["C",213.0,-7.0,-100.3,16],["C",234.5,7.0,-63.0,16],["C",245.7,-7.0,-21.5,16],["H",263.1,-17.9,23.8,9.9],["H",263.1,31.9,23.8,9.9],["H",250.8,-31.9,69.8,9.9],["H",250.8,17.9,69.8,9.9],["H",227.0,-17.9,111.0,9.9],["H",227.0,31.9,111.0,9.9],["H",193.3,-31.9,144.6,9.9],["H",193.3,17.9,144.6,9.9],["H",152.1,-17.9,168.4,9.9],["H",152.1,31.9,168.4,9.9],["H",106.2,-31.9,180.8,9.9],["H",106.2,17.9,180.8,9.9],["H",58.6,-17.9,180.8,9.9],["H",58.6,31.9,180.8,9.9],["H",12.6,-31.9,168.4,9.9],["H",12.6,17.9,168.4,9.9],["H",-28.6,-17.9,144.6,9.9],["H",-28.6,31.9,144.6,9.9],["H",-62.3,-31.9,111.0,9.9],["H",-62.3,17.9,111.0,9.9],["H",-86.1,-17.9,69.8,9.9],["H",-86.1,31.9,69.8,9.9],["H",-98.4,-31.9,23.8,9.9],["H",-98.4,17.9,23.8,9.9],["H",-98.4,-17.9,-23.8,9.9],["H",-98.4,31.9,-23.8,9.9],["H",-86.1,-31.9,-69.8,9.9],["H",-86.1,17.9,-69.8,9.9],["H",-62.3,-17.9,-111.0,9.9],["H",-62.3,31.9,-111.0,9.9],["H",-28.6,-31.9,-144.6,9.9],["H",-28.6,17.9,-144.6,9.9],["H",12.6,-17.9,-168.4,9.9],["H",12.6,31.9,-168.4,9.9],["H",58.6,-31.9,-180.8,9.9],["H",58.6,17.9,-180.8,9.9],["H",106.2,-17.9,-180.8,9.9],["H",106.2,31.9,-180.8,9.9],["H",152.1,-31.9,-168.4,9.9],["H",152.1,17.9,-168.4,9.9],["H",193.3,-17.9,-144.6,9.9],["H",193.3,31.9,-144.6,9.9],["H",227.0,-31.9,-111.0,9.9],["H",227.0,17.9,-111.0,9.9],["H",250.8,-17.9,-69.8,9.9],["H",250.8,31.9,-69.8,9.9],["H",263.1,-31.9,-23.8,9.9],["H",263.1,17.9,-23.8,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,1],[11,12,1],[12,13,1],[13,14,1],[14,15,1],[15,16,1],[16,17,1],[17,18,1],[18,19,1],[19,20,1],[20,21,1],[21,22,1],[22,23,1],[23,0,1],[0,24,1],[0,25,1],[1,26,1],[1,27,1],[2,28,1],[2,29,1],[3,30,1],[3,31,1],[4,32,1],[4,33,1],[5,34,1],[5,35,1],[6,36,1],[6,37,1],[7,38,1],[7,39,1],[8,40,1],[8,41,1],[9,42,1],[9,43,1],[10,44,1],[10,45,1],[11,46,1],[11,47,1],[12,48,1],[12,49,1],[13,50,1],[13,51,1],[14,52,1],[14,53,1],[15,54,1],[15,55,1],[16,56,1],[16,57,1],[17,58,1],[17,59,1],[18,60,1],[18,61,1],[19,62,1],[19,63,1],[20,64,1],[20,65,1],[21,66,1],[21,67,1],[22,68,1],[22,69,1],[23,70,1],[23,71,1],[72,73,1],[73,74,1],[74,75,1],[75,76,1],[76,77,1],[77,78,1],[78,79,1],[79,80,1],[80,81,1],[81,82,1],[82,83,1],[83,84,1],[84,85,1],[85,86,1],[86,87,1],[87,88,1],[88,89,1],[89,90,1],[90,91,1],[91,92,1],[92,93,1],[93,94,1],[94,95,1],[95,72,1],[72,96,1],[72,97,1],[73,98,1],[73,99,1],[74,100,1],[74,101,1],[75,102,1],[75,103,1],[76,104,1],[76,105,1],[77,106,1],[77,107,1],[78,108,1],[78,109,1],[79,110,1],[79,111,1],[80,112,1],[80,113,1],[81,114,1],[81,115,1],[82,116,1],[82,117,1],[83,118,1],[83,119,1],[84,120,1],[84,121,1],[85,122,1],[85,123,1],[86,124,1],[86,125,1],[87,126,1],[87,127,1],[88,128,1],[88,129,1],[89,130,1],[89,131,1],[90,132,1],[90,133,1],[91,134,1],[91,135,1],[92,136,1],[92,137,1],[93,138,1],[93,139,1],[94,140,1],[94,141,1],[95,142,1],[95,143,1]]};
+  EXACT["C48+H96"] = ["C₄₈H₉₆","카테네인","고리 두 개가 사슬처럼 꿰여 있음. 결합 없이도 안 빠짐"];
+  REC_EN["카테네인"] = ["Catenane","Two rings linked like a chain. Not bonded, yet they never come apart"];
+  RX_SMILES["카테네인"] = "C1CCCCCCCCCCCCCCCCCCCCCCC1.C1CCCCCCCCCCCCCCCCCCCCCCC1";
+  RX_TMI["카테네인"] = "두 고리 사이엔 화학 결합이 하나도 없는데, 고리를 끊지 않고는 절대 못 빼요. 이름도 라틴어로 사슬(catena)이에요. 이렇게 기계적으로 엮인 분자를 만든 연구가 2016년 노벨 화학상을 받았어요. 이 모형은 탄소 24개짜리 고리 두 개로 단순화한 거예요.";
+  try{ RX_WEIRD.add("카테네인"); }catch(e){}
+  // 도감 말고 '특수 발견'에 둔다
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== '카테네인'); };
+  const _sl = specialList;
+  specialList = function(){
+    const L = _sl.apply(this, arguments);
+    if(!L.some(x => x.name === '카테네인')) L.push({ sym: 'C', lo: 48, hi: 48, formula: 'C₄₈H₉₆', name: '카테네인', sub: EXACT['C48+H96'][2], hint: 'C×48 + H×96' });
+    return L;
+  };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    if(name === '카테네인') return { name, formula: 'C₄₈H₉₆', sub: EXACT['C48+H96'][2], key: 'C48+H96', exact: true, mix: [['C', 48], ['H', 96]] };
+    return _en.apply(this, arguments);
+  };
+  // 처음 각도: 두 고리가 다 비스듬히 보여야 꿰인 게 보인다
+  const SM = RX_SMILES["카테네인"], _sm = rxSmilesModel;
+  rxSmilesModel = function(sm){
+    const m = _sm.apply(this, arguments);
+    if(sm === SM && m){
+      // 큰 고리라 원근이 과하게 걸린다: 좌표를 줄여서 원근을 약하게 (화면 크기는 배율로 다시 맞춘다)
+      m.atoms.forEach(a => { a.x *= 0.5; a.y *= 0.5; a.z *= 0.5; a.r *= 0.62; });
+      m.yaw0 = 0.75; m.tilt = -0.5; m.maxScale = 1.9;
+    }
+    return m;
+  };
+  const _sf = rxSpaceFill;
+  rxSpaceFill = function(m){ const f = _sf.apply(this, arguments); if(f && m && m.yaw0 === 0.75 && m.tilt === -0.5){ f.yaw0 = m.yaw0; f.tilt = m.tilt; } return f; };
+})();
+</script>
+<script>
+/* ═══ 18-크라운-6: 대칭 왕관 모양 + 칼륨 이온 넣기 ═══
+   좌표는 칼륨을 붙잡았을 때의 왕관 모양(산소 6개가 반지름 약 2.8Å 원 위에서 위아래로 번갈아).
+   혼자 있을 땐 실제로는 더 흐물흐물하게 찌그러져 있다. */
+(function(){
+  const SM = 'C1COCCOCCOCCOCCOCCO1';
+  Object.assign(RX_SMILES_PRE, {"C1COCCOCCOCCOCCOCCO1":{"a":[["C",100.8,-3.3,6.4,16],["C",92.0,-42.1,-9.4,16],["O",56.7,-54.0,4.8,16],["C",44.9,-89.2,-9.8,16],["C",4.8,-96.7,3.3,16],["O",-19.9,-73.3,-17.6,16],["C",-58.7,-79.2,-10.0,16],["C",-72.4,-61.7,26.8,16],["O",-69.2,-21.8,28.5,16],["C",-96.2,-2.0,6.7,16],["C",-91.0,40.0,13.6,16],["O",-58.3,52.2,-5.8,16],["C",-48.1,89.8,3.0,16],["C",-11.5,99.1,-17.0,16],["O",18.1,78.7,0.4,16],["C",53.7,86.1,-16.1,16],["C",82.7,60.5,2.2,16],["O",76.6,23.3,-10.9,16],["H",96.3,-2.9,36.7,9.9],["H",129.9,4.0,0.1,9.9],["H",90.9,-41.1,-40.0,9.9],["H",113.5,-62.1,-0.5,9.9],["H",46.1,-88.6,-40.4,9.9],["H",63.6,-111.0,0.9,9.9],["H",-2.3,-126.1,-2.0,9.9],["H",2.1,-90.6,33.2,9.9],["H",-74.0,-66.9,-33.6,9.9],["H",-64.7,-109.3,-10.2,9.9],["H",-55.8,-72.5,50.1,9.9],["H",-101.6,-69.6,32.0,9.9],["H",-92.3,-8.3,-23.0,9.9],["H",-124.3,-10.4,15.6,9.9],["H",-87.9,45.4,43.6,9.9],["H",-115.1,55.4,2.7,9.9],["H",-44.5,92.6,33.4,9.9],["H",-70.4,108.6,-6.5,9.9],["H",-13.2,91.2,-46.6,9.9],["H",-5.7,129.1,-14.6,9.9],["H",52.3,80.7,-46.3,9.9],["H",61.1,115.4,-11.1,9.9],["H",110.9,69.4,-5.7,9.9],["H",79.7,61.2,32.8,9.9]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,1],[11,12,1],[12,13,1],[13,14,1],[14,15,1],[15,16,1],[16,17,1],[17,0,1],[0,18,1],[0,19,1],[1,20,1],[1,21,1],[3,22,1],[3,23,1],[4,24,1],[4,25,1],[6,26,1],[6,27,1],[7,28,1],[7,29,1],[9,30,1],[9,31,1],[10,32,1],[10,33,1],[12,34,1],[12,35,1],[13,36,1],[13,37,1],[15,38,1],[15,39,1],[16,40,1],[16,41,1]]}});
+  const _sm = rxSmilesModel;
+  rxSmilesModel = function(sm){
+    const m = _sm.apply(this, arguments);
+    if(sm === SM && m){ m.yaw0 = 0.2; m.tilt = -0.75; m.crown = true; }
+    return m;
+  };
+  const _sf = rxSpaceFill;
+  rxSpaceFill = function(m){ const f = _sf.apply(this, arguments); if(f && m && m.crown){ f.yaw0 = m.yaw0; f.tilt = m.tilt; f.crown = true; } return f; };
+})();
+const RX_CROWN_T = {
+  ko: { add: 'K⁺ 넣기', rm: 'K⁺ 빼기', inT: '칼륨을 붙잡았어요', inD: '산소 6개가 칼륨 이온을 빙 둘러 붙잡아요. 고리 구멍이 칼륨 이온 크기에 딱 맞아서, 산소와 칼륨 사이가 약 0.28nm로 꼭 들어맞아요.',
+        outT: '칼륨이 빠졌어요', outD: '지금은 붙잡았을 때의 왕관 모양 그대로예요. 실제로 혼자 있는 크라운은 이보다 흐물흐물하게 찌그러져 있어요.' },
+  en: { add: 'Add K⁺', rm: 'Remove K⁺', inT: 'Potassium captured', inD: 'The six oxygens wrap around the potassium ion. The hole is just the right size, so each oxygen sits about 0.28 nm from the potassium.',
+        outT: 'Potassium released', outD: 'This is still the crown shape it takes when holding potassium. On its own the real molecule is floppier and more squashed.' },
+};
+const rxCrownT = () => RX_CROWN_T[LANG === 'en' ? 'en' : 'ko'];
+function rxCrownToggle(){
+  if(!RX || !RX.views || !RX.views.ball) return;
+  const ball = RX.views.ball, has = ball.atoms.some(a => a.kion);
+  const yaw = RX_YAW, pitch = RX_PITCH;
+  if(has) ball.atoms = ball.atoms.filter(a => !a.kion);
+  else ball.atoms.push({ s: 'K', x: 0, y: 0, z: 0, r: 19, kion: true });
+  try{ RX.views.fill = rxSpaceFill(ball); }catch(e){}
+  try{ if(RX.views.stick){ const st = rxStickModel(ball); if(st) RX.views.stick = st; } }catch(e){}
+  const m = RX.views[RX_VIEW] || ball;
+  rxMount(m); RX_YAW = yaw; RX_PITCH = pitch; rxStart();
+  if(!has){
+    // 위에서 쏙 떨어져 들어와 자리를 잡는다
+    const k = m.atoms.find(a => a.s === 'K'), t0 = performance.now();
+    if(k && !RX_REDUCED){
+      k.y = -260;
+      const step = now => {
+        const u = Math.min(1, (now - t0) / 650), e = 1 - Math.pow(1 - u, 3) * Math.cos(u * 7) ;
+        k.y = -260 * (1 - Math.min(1.08, e));
+        if(u < 1) requestAnimationFrame(step); else k.y = 0;
+        if(!RX_RAF) rxDraw(RX_YAW, RX_PITCH);
+      };
+      requestAnimationFrame(step);
+    }
+  }
+  const T = rxCrownT();
+  try{ rxToast(has ? '↑' : '👑', has ? T.outT : T.inT, has ? T.outD : T.inD); }catch(e){}
+  const btn = document.querySelector('.rtool[data-act="kcrown"]');
+  if(btn){ const lb = has ? T.add : T.rm; btn.title = lb; btn.setAttribute('aria-label', lb); btn.setAttribute('aria-pressed', has ? 'false' : 'true'); const em = btn.querySelector('em'); if(em) em.textContent = lb.replace('K⁺ ', '').replace(' K⁺', ''); }
+}
+{
+  const _html = rxToolsHTML;
+  rxToolsHTML = function(){
+    let h = _html.apply(this, arguments);
+    if(h && RX && RX.raw === '18-크라운-6' && RX.views && RX.views.ball){
+      const T = rxCrownT(), on = RX.views.ball.atoms.some(a => a.kion), lb = on ? T.rm : T.add;
+      h += `<button type="button" class="rtool" data-act="kcrown" title="${lb}" aria-label="${lb}"${on ? ' aria-pressed="true"' : ''}><span aria-hidden="true">K⁺</span><em>${lb.replace('K⁺ ', '').replace(' K⁺', '')}</em></button>`;
+    }
+    return h;
+  };
+  const _tool = rxTool;
+  rxTool = function(act){
+    if(act === 'kcrown'){ rxCrownToggle(); return; }
+    return _tool.apply(this, arguments);
+  };
+}
+</script>
+<script>
+/* ── 로탁세인: 아령 모양 축에 고리가 꿰인 모형 (특수 발견) ── */
+(function(){
+  const SM = "CC(C)(C)CCCCCCCCCCC(C)(C)C.C1CCCCCCCCCCCCCCCCC1";
+  RX_SMILES_PRE[SM] = {"a":[["C",195.0,-11.8,41.2,16],["C",195.4,-4.6,-1.3,16],["C",226.9,23.6,-9.9,16],["C",203.7,-41.3,-22.1,16],["C",157.9,12.6,-14.6,16],["C",123.4,-12.7,-10.8,16],["C",88.5,9.2,1.4,16],["C",52.3,-10.0,-11.0,16],["C",18.9,0.8,13.6,16],["C",-17.8,2.0,-8.5,16],["C",-52.0,-3.4,16.7,16],["C",-86.8,16.3,1.2,16],["C",-123.1,-3.0,13.4,16],["C",-156.8,23.5,10.7,16],["C",-194.2,5.5,-1.6,16],["C",-225.1,35.6,0.5,16],["C",-205.0,-27.0,24.6,16],["C",-192.1,-8.9,-42.2,16],["H",174.6,-33.3,49.0,9.9],["H",222.4,-21.5,50.9,9.9],["H",188.1,13.7,56.7,9.9],["H",228.7,29.4,-40.0,9.9],["H",222.3,50.2,4.6,9.9],["H",254.2,12.8,-0.9,9.9],["H",203.6,-37.0,-52.5,9.9],["H",183.1,-63.1,-15.6,9.9],["H",231.3,-52.3,-14.4,9.9],["H",160.3,21.2,-44.1,9.9],["H",153.3,38.6,1.2,9.9],["H",127.8,-35.5,9.1,9.9],["H",118.4,-26.0,-38.1,9.9],["H",88.8,37.6,-10.4,9.9],["H",89.3,12.2,32.0,9.9],["H",55.5,-40.6,-10.2,9.9],["H",47.1,-2.6,-40.4,9.9],["H",23.3,28.3,26.5,9.9],["H",16.9,-19.5,36.6,9.9],["H",-18.1,-19.8,-30.1,9.9],["H",-19.3,29.0,-23.1,9.9],["H",-46.6,7.5,44.9,9.9],["H",-57.1,-33.6,19.8,9.9],["H",-86.0,16.9,-29.5,9.9],["H",-86.3,45.5,10.6,9.9],["H",-126.8,-28.1,-3.8,9.9],["H",-120.7,-12.5,42.4,9.9],["H",-160.4,37.2,38.0,9.9],["H",-150.4,46.2,-9.1,9.9],["H",-218.8,59.3,-18.0,9.9],["H",-252.3,24.2,-8.0,9.9],["H",-228.1,46.4,29.0,9.9],["H",-232.5,-38.4,17.3,9.9],["H",-206.2,-17.6,53.8,9.9],["H",-184.9,-50.1,22.9,9.9],["H",-219.4,-19.2,-51.6,9.9],["H",-183.5,13.5,-61.3,9.9],["H",-172.1,-31.9,-45.2,9.9],["C",-7.0,123.5,0.0,16],["C",7.0,116.1,42.2,16],["C",-7.0,94.6,79.4,16],["C",7.0,61.8,107.0,16],["C",-7.0,21.5,121.7,16],["C",7.0,-21.5,121.7,16],["C",-7.0,-61.8,107.0,16],["C",7.0,-94.6,79.4,16],["C",-7.0,-116.1,42.2,16],["C",7.0,-123.5,0.0,16],["C",-7.0,-116.1,-42.2,16],["C",7.0,-94.6,-79.4,16],["C",-7.0,-61.8,-107.0,16],["C",7.0,-21.5,-121.7,16],["C",-7.0,21.5,-121.7,16],["C",7.0,61.8,-107.0,16],["C",-7.0,94.6,-79.4,16],["C",7.0,116.1,-42.2,16],["H",17.9,141.1,0.0,9.9],["H",-31.9,141.1,0.0,9.9],["H",31.9,132.6,48.3,9.9],["H",-17.9,132.6,48.3,9.9],["H",17.9,108.1,90.7,9.9],["H",-31.9,108.1,90.7,9.9],["H",31.9,70.6,122.2,9.9],["H",-17.9,70.6,122.2,9.9],["H",17.9,24.5,139.0,9.9],["H",-31.9,24.5,139.0,9.9],["H",31.9,-24.5,139.0,9.9],["H",-17.9,-24.5,139.0,9.9],["H",17.9,-70.6,122.2,9.9],["H",-31.9,-70.6,122.2,9.9],["H",31.9,-108.1,90.7,9.9],["H",-17.9,-108.1,90.7,9.9],["H",17.9,-132.6,48.3,9.9],["H",-31.9,-132.6,48.3,9.9],["H",31.9,-141.1,0.0,9.9],["H",-17.9,-141.1,0.0,9.9],["H",17.9,-132.6,-48.3,9.9],["H",-31.9,-132.6,-48.3,9.9],["H",31.9,-108.1,-90.7,9.9],["H",-17.9,-108.1,-90.7,9.9],["H",17.9,-70.6,-122.2,9.9],["H",-31.9,-70.6,-122.2,9.9],["H",31.9,-24.5,-139.0,9.9],["H",-17.9,-24.5,-139.0,9.9],["H",17.9,24.5,-139.0,9.9],["H",-31.9,24.5,-139.0,9.9],["H",31.9,70.6,-122.2,9.9],["H",-17.9,70.6,-122.2,9.9],["H",17.9,108.1,-90.7,9.9],["H",-31.9,108.1,-90.7,9.9],["H",31.9,132.6,-48.3,9.9],["H",-17.9,132.6,-48.3,9.9]],"b":[[0,1,1],[1,2,1],[1,3,1],[1,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,1],[11,12,1],[12,13,1],[13,14,1],[14,15,1],[14,16,1],[14,17,1],[0,18,1],[0,19,1],[0,20,1],[2,21,1],[2,22,1],[2,23,1],[3,24,1],[3,25,1],[3,26,1],[4,27,1],[4,28,1],[5,29,1],[5,30,1],[6,31,1],[6,32,1],[7,33,1],[7,34,1],[8,35,1],[8,36,1],[9,37,1],[9,38,1],[10,39,1],[10,40,1],[11,41,1],[11,42,1],[12,43,1],[12,44,1],[13,45,1],[13,46,1],[15,47,1],[15,48,1],[15,49,1],[16,50,1],[16,51,1],[16,52,1],[17,53,1],[17,54,1],[17,55,1],[56,57,1],[57,58,1],[58,59,1],[59,60,1],[60,61,1],[61,62,1],[62,63,1],[63,64,1],[64,65,1],[65,66,1],[66,67,1],[67,68,1],[68,69,1],[69,70,1],[70,71,1],[71,72,1],[72,73,1],[73,56,1],[56,74,1],[56,75,1],[57,76,1],[57,77,1],[58,78,1],[58,79,1],[59,80,1],[59,81,1],[60,82,1],[60,83,1],[61,84,1],[61,85,1],[62,86,1],[62,87,1],[63,88,1],[63,89,1],[64,90,1],[64,91,1],[65,92,1],[65,93,1],[66,94,1],[66,95,1],[67,96,1],[67,97,1],[68,98,1],[68,99,1],[69,100,1],[69,101,1],[70,102,1],[70,103,1],[71,104,1],[71,105,1],[72,106,1],[72,107,1],[73,108,1],[73,109,1]]};
+  EXACT["C36+H74"] = ["C₃₆H₇₄","로탁세인","아령에 끼운 반지. 양 끝이 막혀서 못 빠짐"];
+  REC_EN["로탁세인"] = ["Rotaxane","A ring threaded on a dumbbell. The ends are capped, so it can't slip off"];
+  RX_SMILES["로탁세인"] = SM;
+  RX_TMI["로탁세인"] = "막대 모양 분자에 고리가 끼워져 있고, 양 끝을 큰 마개로 막아서 고리가 못 빠져요. 고리는 결합 없이 축을 따라 미끄러지거나 빙글 돌 수 있어서, 분자 기계(분자 셔틀)를 만드는 데 써요. 카테네인과 함께 2016년 노벨 화학상의 주인공이에요. 이 모형은 탄소 18개 고리와 짧은 마개로 단순화한 거라, 실제로는 훨씬 큰 마개를 달아야 고리가 안 빠져요.";
+  try{ RX_WEIRD.add("로탁세인"); }catch(e){}
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== '로탁세인'); };
+  const _sl = specialList;
+  specialList = function(){
+    const L = _sl.apply(this, arguments);
+    if(!L.some(x => x.name === '로탁세인')) L.push({ sym: 'C', lo: 36, hi: 36, formula: 'C₃₆H₇₄', name: '로탁세인', sub: EXACT['C36+H74'][2], hint: 'C×36 + H×74' });
+    return L;
+  };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    if(name === '로탁세인') return { name, formula: 'C₃₆H₇₄', sub: EXACT['C36+H74'][2], key: 'C36+H74', exact: true, mix: [['C', 36], ['H', 74]] };
+    return _en.apply(this, arguments);
+  };
+  const _sm = rxSmilesModel;
+  rxSmilesModel = function(sm){
+    const m = _sm.apply(this, arguments);
+    if(sm === SM && m){ m.atoms.forEach(a => { a.x *= 0.62; a.y *= 0.62; a.z *= 0.62; a.r *= 0.75; }); m.yaw0 = 0.7; m.tilt = 0.25; m.maxScale = 1.9; m.rotax = true; }
+    return m;
+  };
+  const _sf = rxSpaceFill;
+  rxSpaceFill = function(m){ const f = _sf.apply(this, arguments); if(f && m && m.rotax){ f.yaw0 = m.yaw0; f.tilt = m.tilt; } return f; };
+})();
+</script>
+<style>
+  #mMol.stick-on .mol-atoms, svg.stick-on .mol-atoms{display:none}
+  .stick-g line{stroke-linecap:round;fill:none}
+</style>
+<script>
+/* ═══ 막대 모형 (튜브 / licorice) ═══
+   원자 공 없이 결합만 굵은 막대로 그리고, 막대를 반씩 양쪽 원자 색으로 칠한다.
+   큰 분자도 뼈대가 가려지지 않아서 화학자들이 단백질 같은 걸 볼 때 많이 쓴다. */
+const RX_STICK_MAX = 900;           // 결합이 너무 많으면 막대 탭을 안 띄운다 (폰 성능)
+const RX_STICK_R = 5.2;             // 막대 반지름 (모형 단위, 28 ≈ 1Å)
+const rxStickCol = (() => {
+  const cv = document.createElement('canvas').getContext('2d'), memo = {};
+  return c => {
+    if(memo[c]) return memo[c];
+    cv.fillStyle = '#000'; cv.fillStyle = c; const h = cv.fillStyle;
+    let r = 128, g = 128, b = 128;
+    if(/^#[0-9a-f]{6}$/i.test(h)){ r = parseInt(h.slice(1, 3), 16); g = parseInt(h.slice(3, 5), 16); b = parseInt(h.slice(5, 7), 16); }
+    const dk = k => `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`;
+    const lt = k => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
+    return memo[c] = { base: h, edge: dk(0.45), hi: lt(0.55) };
+  };
+})();
+function rxStickModel(ball){
+  if(!ball || !ball.atoms || !(ball.bonds || []).length || ball.bonds.length > RX_STICK_MAX) return null;
+  const atoms = ball.atoms.map(a => ({ s: a.s, col: a.col, x: a.x, y: a.y, z: a.z || 0, r: RX_STICK_R * 1.6 }));
+  const m = { atoms, bonds: [], sbonds: ball.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b]), stick: true, noLabel: true,
+              real3d: ball.real3d, maxScale: ball.maxScale, yaw0: ball.yaw0, tilt: ball.tilt };
+  if(ball.dog) m.dog = true;
+  return m;
+}
+{
+  const _mv = rxMolViews;
+  rxMolViews = function(model, name){
+    const v = _mv.apply(this, arguments);
+    if(v && v.ball){ try{ const s = rxStickModel(v.ball); if(s) v.stick = s; }catch(e){} }
+    return v;
+  };
+  const _mount = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _mount.apply(this, arguments);
+    const svg = svgEl || document.getElementById('mMol');
+    if(!svg) return r;
+    svg.classList.toggle('stick-on', !!(model && model.stick));
+    if(model && model.stick){
+      const NS = 'http://www.w3.org/2000/svg';
+      const G = document.createElementNS(NS, 'g'); G.setAttribute('class', 'stick-g');
+      const deg = model.atoms.map(() => 0);
+      model.sbonds.forEach(([i, j]) => { deg[i]++; deg[j]++; });
+      const segs = [];
+      const mk = (i, j, half) => {
+        const g = document.createElementNS(NS, 'g'), C = rxStickCol(model.atoms[i].col || rxCpk(model.atoms[i].s));
+        const l0 = document.createElementNS(NS, 'line'), l1 = document.createElementNS(NS, 'line'), l2 = document.createElementNS(NS, 'line');
+        l0.setAttribute('stroke', C.edge); l1.setAttribute('stroke', C.base); l2.setAttribute('stroke', C.hi); l2.setAttribute('stroke-opacity', '.75');
+        g.append(l0, l1, l2); G.appendChild(g);
+        segs.push({ i, j, g, l0, l1, l2, z: 0 });
+      };
+      model.sbonds.forEach(([i, j]) => { mk(i, j); mk(j, i); });
+      // 결합이 없는 원자는 작은 공으로
+      model.atoms.forEach((a, i) => { if(!deg[i]) mk(i, i); });
+      svg.appendChild(G);
+      model.stickG = G; model.segs = segs; model.sorder = '';
+      rxDraw(RX_YAW, RX_PITCH, svgEl ? model : undefined);
+    }
+    return r;
+  };
+  const _draw = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _draw.apply(this, arguments);
+    const m = mm || RX_M;
+    if(!m || !m.stick || !m.segs) return r;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
+    const P = m.atoms.map(a => {
+      const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY;
+      const y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+      return { X: m.cx + x1 * m.sc * f, Y: m.cy + y1 * m.sc * f, z: z2, f };
+    });
+    m.segs.forEach(s => {
+      const a = P[s.i], b = P[s.j];
+      const mx = (a.X + b.X) / 2, my = (a.Y + b.Y) / 2;
+      const f = s.i === s.j ? a.f : (a.f * 3 + b.f) / 4;
+      const w = RX_STICK_R * 2 * m.sc * f;
+      // 화면에서 막대 방향의 수직: 빛(왼쪽 위) 쪽으로 하이라이트를 민다
+      let nx = -(my - a.Y), ny = mx - a.X; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
+      if(nx + ny > 0){ nx = -nx; ny = -ny; }
+      const hx = nx * w * 0.2, hy = ny * w * 0.2;
+      const x2 = s.i === s.j ? a.X + 0.01 : mx, y2 = s.i === s.j ? a.Y : my;
+      const set = (l, ox, oy, ww) => { l.setAttribute('x1', (a.X + ox).toFixed(1)); l.setAttribute('y1', (a.Y + oy).toFixed(1));
+        l.setAttribute('x2', (x2 + ox).toFixed(1)); l.setAttribute('y2', (y2 + oy).toFixed(1)); l.setAttribute('stroke-width', ww.toFixed(2)); };
+      const ww = s.i === s.j ? w * 1.8 : w;
+      set(s.l0, 0, 0, ww + 1.6); set(s.l1, 0, 0, ww); set(s.l2, hx, hy, ww * 0.32);
+      s.z = s.i === s.j ? a.z : (a.z * 3 + b.z) / 4;
+    });
+    // 뒤에 있는 막대부터 그린다
+    const sorted = m.segs.slice().sort((p, q) => p.z - q.z);
+    const key = sorted.map(s => s.i + '_' + s.j).join(',');
+    if(key !== m.sorder){ m.sorder = key; sorted.forEach(s => m.stickG.appendChild(s.g)); }
+    return r;
+  };
+  const _sv = rxSetView;
+  rxSetView = function(v){
+    const r = _sv.apply(this, arguments);
+    if(v === 'stick') rxLS.set('pt_molstyle', 'stick');
+    return r;
+  };
+  // 탭: 분자 탭 줄 끝에 '막대'를 붙인다
+  const _render = rxRender;
+  rxRender = function(){
+    const r = _render.apply(this, arguments);
+    try{
+      const tabs = document.getElementById('mTabs');
+      let b = document.getElementById('mTabStick');
+      if(!b){
+        b = document.createElement('button'); b.type = 'button'; b.id = 'mTabStick'; b.setAttribute('role', 'tab'); b.dataset.v = 'stick';
+        b.addEventListener('click', e => { e.stopPropagation(); rxSetView('stick'); });
+        tabs.appendChild(b);
+      }
+      b.textContent = LANG === 'en' ? 'Sticks' : '막대';
+      const ok = !!(RX && RX.molTabs && RX.views && RX.views.stick);
+      b.hidden = !ok;
+      if(ok && rxLS.get('pt_molstyle', 'ball') === 'stick' && RX_VIEW === 'ball' && !RX.views.liq && !RX.views.glass){
+        RX_VIEW = 'ball'; rxSetView('stick');
+      }
+      rxTabsSync();
+    }catch(e){}
+    return r;
+  };
+}
+</script>
+<script>
+try{ if(typeof found !== 'undefined' && found.has('헴')){ found.delete('헴'); found.add('헴 B'); saveFound(); } }catch(e){}
+</script>
+<style>
+  /* ═══ 뮤온 원자: 전자 하나를 뮤온으로 바꿔 보기 ═══ */
+  .atom-mu{position:absolute;right:8px;top:38px;z-index:2;font:inherit;font-size:11px;padding:4px 9px;border-radius:7px;cursor:pointer;
+    color:#ffc078;background:rgba(16,20,27,.78);border:1px solid rgba(255,169,77,.45)}
+  .atom-mu:hover{background:rgba(255,169,77,.12)}
+  #atomBox .atom-subs{top:68px}
+  #muBig{position:fixed;inset:0;z-index:72;display:none;align-items:center;justify-content:center;background:rgba(5,7,10,.86);padding:18px}
+  #muBig.on{display:flex}
+  #muBox{width:min(760px,96vw);max-height:92vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:16px 18px 18px;animation:nucCard .42s cubic-bezier(.2,.9,.25,1)}
+  #muHead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  #muHead h2{font-size:17px;font-weight:700}
+  #muHead span{font-size:12px;color:var(--dim)}
+  #muHead .x{margin-left:auto;cursor:pointer;font-size:18px;color:var(--dim);line-height:1}
+  #muStage{position:relative;width:100%;aspect-ratio:4/3;max-height:52vh;margin:0 auto;border-radius:8px;overflow:hidden;background:radial-gradient(circle at 50% 50%,#121a28,#06080c 78%)}
+  #muCv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #muCtl{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  #muCtl button{font:inherit;font-size:13px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--text);cursor:pointer}
+  #muCtl button:hover{background:rgba(255,255,255,.07)}
+  #muCtl button.go{border-color:#ffa94d;color:#ffd8a8}
+  #muCtl button:disabled{opacity:.35;cursor:default}
+  #muStats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  #muStats div{flex:1;min-width:120px;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;background:rgba(255,255,255,.03)}
+  #muStats u{display:block;text-decoration:none;font-size:10.5px;color:var(--dim)}
+  #muStats b{font-family:var(--sym);font-weight:500;font-size:16px}
+  #muTxt{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+  #muTxt li{font-size:13px;line-height:1.55;color:var(--dim);padding-left:14px;position:relative;word-break:keep-all}
+  #muTxt li::before{content:'·';position:absolute;left:3px;color:var(--text)}
+  #muTxt li b{color:var(--text)}
+  @media (max-width:700px){ #muBig{padding:8px} #muBox{padding:12px} #muTxt li{font-size:12.5px} #muStats b{font-size:14px} }
+</style>
+<div id="muBig" aria-hidden="true"><div id="muBox" role="dialog" aria-modal="true" aria-labelledby="muTitle">
+  <div id="muHead"><h2 id="muTitle"></h2><span id="muSub"></span><span class="x" id="muClose" role="button" aria-label="닫기">×</span></div>
+  <div id="muStage"><canvas id="muCv" width="800" height="600"></canvas></div>
+  <div id="muCtl"><button id="muGo" class="go"></button><button id="muAgain"></button></div>
+  <div id="muStats"></div>
+  <ul id="muTxt"></ul>
+</div></div>
+<script>
+/* ═══════════════════════════════════════════════════
+   뮤온 원자
+   뮤온은 전자와 성질이 같은데 약 206.77배 무겁다. 원자에 붙잡히면 전자 궤도를 하나씩 건너뛰며
+   X선을 내고 맨 안쪽까지 떨어지는데, 무거워서 궤도가 전자보다 약 200배 안쪽에 생긴다.
+   수명은 2.197μs. 가벼운 원자에선 주로 붕괴(전자 + 중성미자 2개),
+   무거운 원자에선 핵이 뮤온을 삼키는 일이 더 잦다(양성자 + 뮤온 → 중성자 + 중성미자, 원자 번호 −1).
+   실제 원자 안 수명(ns)은 Suzuki 외(1987) 값을 기준으로 사이를 이어 붙였다. 수소는 자유 뮤온 값을 쓴다.
+   ═══════════════════════════════════════════════════ */
+const RX_MU = { on: false, raf: 0, last: 0, e: null, ph: 'idle', t: 0, ang: 0, flashes: [], parts: [], res: null, done: {} };
+const RX_MU_LIFE = [[1, 2197], [6, 2026], [8, 1795], [13, 864], [20, 336], [26, 206], [29, 164], [82, 75], [118, 70]];
+function rxMuLife(Z){
+  const L = RX_MU_LIFE;
+  if(Z <= 1) return L[0][1];
+  for(let i = 1; i < L.length; i++) if(Z <= L[i][0]){
+    const [z0, t0] = L[i - 1], [z1, t1] = L[i], u = (Z - z0) / (z1 - z0);
+    return Math.exp(Math.log(t0) + (Math.log(t1) - Math.log(t0)) * u);
+  }
+  return 70;
+}
+function rxMuPhys(e){
+  const Z = e.n, A = Math.max(1, Math.round(e.m));
+  const red = 206.768 / (1 + 206.768 / (1836.15 * A));           // 핵이 무한히 무겁지 않아서 생기는 보정
+  const a0 = 52917.7;                                              // 보어 반지름 (fm)
+  const rMu = a0 / (Z * red), rE = a0 / Z;                         // 맨 안쪽 궤도 (가리는 전자 효과는 무시한 근사)
+  const rNuc = Z === 1 ? 0.84 : 1.2 * Math.cbrt(A);
+  const tau = rxMuLife(Z);                                         // ns
+  return { Z, A, red, rMu, rE, rNuc, tau, pCap: Math.max(0, 1 - tau / 2197) };
+}
+const rxFmt = (v, d = 0) => v.toLocaleString(LANG === 'en' ? 'en-US' : 'ko-KR', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+function rxMuLen(fm){
+  if(fm >= 1000) return rxFmt(fm / 1000, fm >= 10000 ? 0 : 1) + ' pm';
+  return rxFmt(fm, fm < 10 ? 2 : fm < 100 ? 1 : 0) + ' fm';
+}
+const RX_MU_T = {
+  ko: { btn: 'μ⁻ 뮤온', title: '뮤온 원자', sub: e => `${e.s} 원자의 전자 하나를 뮤온으로`, go: 'μ⁻ 뮤온 넣기', again: '↺ 다시',
+        st: ['뮤온 무게', '맨 안쪽 궤도', '원자핵 반지름', '이 원자 속 뮤온 수명'],
+        heavy: '전자의 206.8배',
+        mE: '전자', mMu: '뮤온',
+        cap: (a, b) => `핵이 뮤온을 삼켰어요! 양성자 하나가 중성자로 바뀌어서 ${a} → ${b}`,
+        dec: '뮤온이 붕괴했어요. 전자 하나와 중성미자 두 개로 쪼개져 날아가요',
+        kick: '전자를 밀어내고 그 자리를 차지했어요',
+        xray: 'X선', slow: f => `${f} 느리게`, life: '수명',
+        inside: '궤도가 핵보다 작아서 뮤온이 시간 대부분을 핵 속에서 보내요',
+        zoom: r => `전자 궤도보다 약 ${r}배 안쪽`,
+        txt: e => {
+          const P = rxMuPhys(e);
+          const L = [
+            `<b>뮤온은 무거운 전자예요.</b> 전하와 성질은 전자와 똑같은데 무게가 약 207배예요. 1936년 앤더슨과 네더마이어가 우주에서 쏟아지는 우주선(宇宙線)을 연구하다 발견했어요`,
+            `무거울수록 핵에 바짝 붙어 돌아요. 그래서 뮤온 궤도는 같은 자리의 전자 궤도보다 <b>약 ${Math.round(P.red)}배 안쪽</b>이에요. 뮤온이 붙잡힐 때는 궤도를 한 칸씩 떨어지며 X선을 내는데, 이걸 재면 핵의 크기와 모양을 알 수 있어요`,
+            P.Z === 1
+              ? `수소의 하나뿐인 전자를 뮤온으로 바꾸면 원자가 통째로 <b>약 ${Math.round(P.red)}분의 1</b>로 쪼그라들어요. 2010년 이 뮤온 수소로 양성자 크기를 쟀더니 0.842fm가 나와서, 원래 알던 0.877fm보다 4%나 작았어요. "양성자 반지름 퍼즐"이라 불렸는데, 그 뒤 전자로 다시 잰 값들도 0.84 근처로 나와서 지금은 거의 풀렸다고 봐요`
+              : `전자가 여러 개인 원자는 바깥 전자들이 그대로라 원자 크기는 거의 안 변해요. 뮤온만 맨 안쪽, 1s 전자보다도 훨씬 안쪽에 숨어 들어가요`,
+            `뮤온의 수명은 <b>2.2마이크로초</b>예요. 가벼운 원자에선 대부분 전자와 중성미자로 붕괴하고, 무거운 원자에선 핵이 뮤온을 삼키는 일이 더 많아요. 그러면 양성자 하나가 중성자로 바뀌어서 원소가 한 칸 앞 원소로 바뀌어요. ${P.Z > 1 ? `이 원자에선 약 ${Math.round(P.pCap * 100)}%가 삼켜져요` : ''}`,
+            `지금 이 순간에도 우주에서 온 뮤온이 땅 1제곱미터에 1분마다 약 1만 개씩 떨어지고 있어요. 손톱만 한 넓이(1cm²)라면 1분에 1개쯤 몸을 뚫고 지나가요`,
+          ];
+          if(P.rMu < P.rNuc) L.splice(2, 0, `이 원자는 핵이 커서 뮤온 궤도(${rxMuLen(P.rMu)})가 핵(${rxMuLen(P.rNuc)})보다 작아요. 뮤온이 시간 대부분을 <b>핵 속</b>에서 보내요`);
+          return L;
+        },
+        note: '궤도 반지름은 가장 안쪽 궤도를 단순한 식(보어 반지름 ÷ 원자 번호 ÷ 질량비)으로 어림한 값이에요. 다른 전자가 가리는 효과나 핵의 크기는 빼고 계산했어요' },
+  en: { btn: 'μ⁻ Muon', title: 'Muonic atom', sub: e => `Swap one of ${e.s}'s electrons for a muon`, go: 'μ⁻ Add a muon', again: '↺ Again',
+        st: ['Muon mass', 'Innermost orbit', 'Nucleus radius', 'Muon lifetime in this atom'],
+        heavy: '206.8 × electron',
+        mE: 'electron', mMu: 'muon',
+        cap: (a, b) => `The nucleus swallowed the muon! A proton turned into a neutron: ${a} → ${b}`,
+        dec: 'The muon decayed into an electron and two neutrinos',
+        kick: 'It kicked the electron out and took its place',
+        xray: 'X-ray', slow: f => `slowed ${f}×`, life: 'Lifetime',
+        inside: 'The orbit is smaller than the nucleus, so the muon spends most of its time inside it',
+        zoom: r => `about ${r}× deeper than the electron orbit`,
+        txt: e => {
+          const P = rxMuPhys(e);
+          const L = [
+            `<b>A muon is a heavy electron.</b> Same charge and behaviour, but about 207 times the mass. Anderson and Neddermeyer found it in 1936 while studying cosmic rays`,
+            `Heavier means it hugs the nucleus: a muon orbit sits <b>about ${Math.round(P.red)}× deeper</b> than the matching electron orbit. As it is captured it drops orbit by orbit, giving off X-rays that reveal the nucleus's size and shape`,
+            P.Z === 1
+              ? `Swap hydrogen's only electron for a muon and the whole atom shrinks to <b>about 1/${Math.round(P.red)}</b>. In 2010 muonic hydrogen measured the proton at 0.842 fm, 4% smaller than the accepted 0.877 fm: the "proton radius puzzle". Newer electron measurements also land near 0.84, so it now looks solved`
+              : `With many electrons, the outer ones stay put, so the atom barely changes size. The muon just hides far inside, deeper than even the 1s electrons`,
+            `A muon lives <b>2.2 microseconds</b>. In light atoms it mostly decays into an electron and neutrinos; in heavy atoms the nucleus usually swallows it, turning a proton into a neutron and the element into the one before it. ${P.Z > 1 ? `Here about ${Math.round(P.pCap * 100)}% get swallowed` : ''}`,
+            `Right now cosmic-ray muons rain down at about 10,000 per square metre per minute. Through a fingernail-sized 1 cm² patch, that's roughly one a minute passing through you`,
+          ];
+          if(P.rMu < P.rNuc) L.splice(2, 0, `Here the nucleus is so big that the muon orbit (${rxMuLen(P.rMu)}) is smaller than the nucleus (${rxMuLen(P.rNuc)}). The muon spends most of its time <b>inside the nucleus</b>`);
+          return L;
+        },
+        note: 'Orbit sizes use the simple estimate Bohr radius ÷ atomic number ÷ mass ratio, ignoring screening by other electrons and the nucleus size' },
+};
+const rxMuT = () => RX_MU_T[LANG === 'en' ? 'en' : 'ko'];
+function rxMuOpen(e){
+  e = e || (typeof atomEl !== 'undefined' && atomEl) || byNum[selected];
+  if(!e) return;
+  const T = rxMuT();
+  Object.assign(RX_MU, { on: true, e, ph: 'idle', t: 0, last: 0, flashes: [], parts: [], res: null, kicked: false });
+  document.getElementById('muTitle').textContent = T.title;
+  document.getElementById('muSub').textContent = T.sub(e);
+  document.getElementById('muGo').textContent = T.go;
+  document.getElementById('muAgain').textContent = T.again;
+  document.getElementById('muGo').disabled = false;
+  const P = rxMuPhys(e);
+  document.getElementById('muStats').innerHTML = [
+    [T.st[0], T.heavy],
+    [T.st[1], `${T.mE} ${rxMuLen(P.rE)} → ${T.mMu} ${rxMuLen(P.rMu)}`],
+    [T.st[2], rxMuLen(P.rNuc)],
+    [T.st[3], P.tau >= 1000 ? `${rxFmt(P.tau / 1000, 2)} μs` : `${rxFmt(P.tau)} ns`],
+  ].map(([u, b]) => `<div><u>${u}</u><b>${b}</b></div>`).join('');
+  document.getElementById('muTxt').innerHTML = T.txt(e).map(t => `<li>${t}</li>`).join('') + `<li style="opacity:.75">${T.note}</li>`;
+  const el = document.getElementById('muBig'); el.classList.add('on'); el.setAttribute('aria-hidden', 'false');
+  cancelAnimationFrame(RX_MU.raf); RX_MU.raf = requestAnimationFrame(rxMuLoop);
+}
+function rxMuClose(){ RX_MU.on = false; cancelAnimationFrame(RX_MU.raf); const el = document.getElementById('muBig'); el.classList.remove('on'); el.setAttribute('aria-hidden', 'true'); }
+function rxMuGo(){
+  if(RX_MU.ph !== 'idle') return;
+  RX_MU.ph = 'fall'; RX_MU.t = 0; RX_MU.step = -1;
+  document.getElementById('muGo').disabled = true;
+  try{ if(typeof sndOn !== 'undefined' && sndOn) rxTone(330, 0.12, 'triangle', 0.05); }catch(e){}
+}
+function rxMuRings(e){
+  const sh = e.sh, n = sh.length;
+  return sh.map((c, i) => ({ c, r: n === 1 ? 200 : 70 + (230 - 70) * i / (n - 1) }));
+}
+function rxMuLoop(now){
+  if(!RX_MU.on) return;
+  const dt = RX_MU.last ? Math.min(0.05, Math.max(0, (now - RX_MU.last) / 1000)) : 0.016;
+  RX_MU.last = now; RX_MU.t += dt;
+  const M = RX_MU, e = M.e, P = rxMuPhys(e), T = rxMuT();
+  const rings = rxMuRings(e);
+  const cv = document.getElementById('muCv'), c = cv.getContext('2d');
+  const S = Math.max(1, Math.min(2.1, 800 / (cv.clientWidth || 800) * 0.62));   // 폰에선 글씨를 키운다
+  c.clearRect(0, 0, 800, 600);
+  const cx = 400, cy = 300, FL = 0.42;
+  M.ang += dt;
+  // 장면 배율: 0 = 원자 전체, 1 = 뮤온 궤도 확대
+  let zoom = 0;
+  if(M.ph === 'zoom') zoom = Math.min(1, M.t / 2.2);
+  else if(M.ph === 'sit' || M.ph === 'end') zoom = 1;
+  const zE = zoom * zoom * (3 - 2 * zoom);
+  const K = Math.exp(Math.log(Math.max(2, P.red)) * zE);   // 화면 확대 배율
+  // 전자 구름: 껍질마다 뿌연 띠 + 반짝이는 점 (확대되면 화면 밖으로 빠져나간다)
+  const H = e.n === 1;
+  if(!M.pts || M.ptsFor !== e.n){
+    M.ptsFor = e.n; M.pts = [];
+    rings.forEach((g, i) => { const n = Math.min(260, 40 + g.c * 9);
+      for(let k = 0; k < n; k++) M.pts.push({ i, a: Math.random() * 6.2832, q: Math.random() * 2 - 1, f: 1 + (Math.random() + Math.random() + Math.random() - 1.5) * 0.28, tw: Math.random() * 6.28 }); });
+    M.mpts = [];
+    for(let k = 0; k < 220; k++){ const u = -Math.log(Math.random() * Math.random() * Math.random() + 1e-9) / 3; M.mpts.push({ a: Math.random() * 6.2832, q: Math.random() * 2 - 1, f: u, tw: Math.random() * 6.28 }); }
+  }
+  const fadeH = H && M.kicked ? Math.max(0, 1 - (M.kickT || 0) / 0.6) : 1;
+  if(H && M.kicked) M.kickT = (M.kickT || 0) + dt;
+  rings.forEach((g, i) => {
+    const R = g.r * K;
+    if(R > 1600) return;
+    const al = (1 - zE * 0.5) * fadeH;
+    const gg = c.createRadialGradient(cx, cy, R * 0.55, cx, cy, R * 1.3);
+    gg.addColorStop(0, 'rgba(120,180,255,0)'); gg.addColorStop(0.42, `rgba(120,180,255,${0.10 * al})`); gg.addColorStop(1, 'rgba(120,180,255,0)');
+    c.fillStyle = gg; c.beginPath(); c.arc(cx, cy, R * 1.3, 0, 6.2832); c.fill();
+  });
+  M.pts.forEach(p => {
+    const R = rings[p.i].r * K * p.f;
+    if(R > 1100) return;
+    // 구 껍질 위의 점을 위에서 비스듬히 본 모습 (천천히 돈다)
+    const a = p.a + M.ang * 0.15 * (p.i % 2 ? -1 : 1), z = p.q, rx = Math.sqrt(1 - z * z);
+    const x = cx + Math.cos(a) * rx * R, y = cy + (Math.sin(a) * rx * 0.55 + z * 0.84) * R;
+    const al = (0.35 + 0.35 * Math.sin(M.ang * 3 + p.tw)) * fadeH * (1 - zE * 0.4);
+    c.fillStyle = `rgba(165,216,255,${al})`; c.fillRect(x - 1, y - 1, 2, 2);
+  });
+  // 원자핵
+  const muR = 120;                                           // 확대 끝에서 뮤온 궤도 반지름 (px)
+  const nucEnd = Math.max(6, Math.min(260, muR * P.rNuc / P.rMu));
+  const LK = Math.log(Math.max(2, P.red));
+  const nucR = 8 * Math.exp(Math.log(nucEnd / 8) * Math.log(K) / LK);   // 화면 배율과 같은 비율로 커진다
+  const capFlash = M.ph === 'end' && M.res === 'cap' ? Math.max(0, 1 - M.t / 0.8) : 0;
+  let gr = c.createRadialGradient(cx, cy, 0, cx, cy, nucR * 2.2);
+  gr.addColorStop(0, `rgba(255,${200 - capFlash * 80},${150 - capFlash * 100},${0.55 + capFlash * 0.4})`); gr.addColorStop(1, 'rgba(255,150,100,0)');
+  c.fillStyle = gr; c.beginPath(); c.arc(cx, cy, nucR * 2.2, 0, 6.2832); c.fill();
+  c.fillStyle = nucEnd > muR && zE > 0.5 ? 'rgba(255,135,135,.55)' : '#ff8787';
+  c.beginPath(); c.arc(cx, cy, nucR, 0, 6.2832); c.fill();
+  if(nucR > 20){ c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1.5; c.stroke(); }
+  c.fillStyle = '#fff'; c.font = `800 ${Math.max(11, Math.min(26, nucR * 0.5))}px var(--sym), system-ui`; c.textAlign = 'center'; c.textBaseline = 'middle';
+  const sym = M.res === 'cap' && M.ph === 'end' && M.t > 0.4 && byNum[e.n - 1] ? byNum[e.n - 1].s : e.s;
+  if(nucR > 14) c.fillText(sym, cx, cy);
+  // 뮤온
+  const muDraw = (x, y, a) => {
+    c.globalAlpha = a;
+    const g2 = c.createRadialGradient(x, y, 0, x, y, 18); g2.addColorStop(0, 'rgba(255,169,77,.7)'); g2.addColorStop(1, 'rgba(255,169,77,0)');
+    c.fillStyle = g2; c.beginPath(); c.arc(x, y, 18, 0, 6.2832); c.fill();
+    c.fillStyle = '#ffa94d'; c.beginPath(); c.arc(x, y, 7, 0, 6.2832); c.fill();
+    c.fillStyle = '#1a1206'; c.font = `800 ${10 * S}px system-ui`; c.fillText('μ', x, y + 0.5);
+    c.globalAlpha = 1;
+  };
+  const flash = (x, y) => { M.flashes.push({ x, y, t: 0 }); try{ if(typeof sndOn !== 'undefined' && sndOn) rxTone(900 + Math.random() * 500, 0.06, 'sine', 0.03); }catch(err){} };
+  if(M.ph === 'fall'){
+    // 바깥에서 들어와 궤도를 한 칸씩 건너뛰며 떨어진다 (칸마다 X선)
+    const stops = rings.map(g => g.r).reverse().concat([22]);
+    const per = 0.42, i = Math.min(stops.length - 1, Math.floor(M.t / per));
+    const u = Math.min(1, (M.t - i * per) / per), ue = 1 - Math.pow(1 - u, 3);
+    const r0 = i === 0 ? 340 : stops[i - 1], r1 = stops[i], r = r0 + (r1 - r0) * ue;
+    const a = M.ang * 2.4;
+    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * FL;
+    muDraw(x, y, 1);
+    if(i !== M.step && i > 0){ M.step = i; flash(cx + Math.cos(a) * stops[i - 1], cy + Math.sin(a) * stops[i - 1] * FL);
+      if(H && !M.kicked){ M.kicked = true; M.parts.push({ k: 'e', x, y, vx: 260, vy: -140, t: 0 }); } }
+    if(M.t >= stops.length * per){ flash(x, y); M.ph = 'zoom'; M.t = 0; }
+  } else if(M.ph === 'zoom' || M.ph === 'sit'){
+    const r = 22 * Math.exp(Math.log(muR / 22) * Math.log(K) / LK);
+    const a = M.ang * (2.4 + zE * 1.2);
+    // 처음엔 점으로 돌다가, 자리를 잡으면 1s 구름으로 퍼진다 (뮤온도 전자처럼 확률 구름)
+    const cl = M.ph === 'sit' ? 1 : Math.min(1, M.t / 0.9);
+    if(cl < 1) muDraw(cx + Math.cos(a) * r, cy + Math.sin(a) * r * FL, 1 - cl);
+    const mg = c.createRadialGradient(cx, cy, 0, cx, cy, r * 1.6);
+    mg.addColorStop(0, `rgba(255,169,77,${0.42 * cl})`); mg.addColorStop(0.55, `rgba(255,169,77,${0.16 * cl})`); mg.addColorStop(1, 'rgba(255,169,77,0)');
+    c.fillStyle = mg; c.beginPath(); c.arc(cx, cy, r * 1.6, 0, 6.2832); c.fill();
+    M.mpts.forEach(p => {
+      const R = r * p.f * 0.75, z = p.q, rx = Math.sqrt(1 - z * z), aa = p.a + M.ang * 0.4;
+      const x = cx + Math.cos(aa) * rx * R, y = cy + (Math.sin(aa) * rx * 0.55 + z * 0.84) * R;
+      c.fillStyle = `rgba(255,200,130,${(0.45 + 0.4 * Math.sin(M.ang * 4 + p.tw)) * cl})`; c.fillRect(x - 1.2, y - 1.2, 2.4, 2.4);
+    });
+    if(cl > 0.6){ c.fillStyle = `rgba(255,216,168,${cl})`; c.font = `800 ${12 * S}px system-ui`; c.textAlign = 'center'; c.fillText('μ⁻', cx + r * 1.15, cy - r * 0.95); }
+    if(M.ph === 'zoom' && M.t >= 2.2){
+      M.ph = 'sit'; M.t = 0;
+      // 이 원자 속 평균 수명을 따르는 무작위 시간. 보기 좋게 2초 남짓으로 늘려서 보여 준다
+      M.slow = 2400 / P.tau;                                        // ns → 초 배율
+      M.life = Math.min(6, Math.max(0.7, -Math.log(1 - Math.random() * 0.93) * P.tau * M.slow / 1000));
+      M.res = Math.random() < P.pCap ? 'cap' : 'dec';
+    }
+    if(M.ph === 'sit'){
+      const u = Math.min(1, M.t / M.life);
+      c.fillStyle = 'rgba(255,255,255,.08)'; c.fillRect(200, 560, 400, 6);
+      c.fillStyle = '#ffa94d'; c.fillRect(200, 560, 400 * (1 - u), 6);
+      c.fillStyle = 'rgba(230,236,245,.75)'; c.font = `600 ${13 * S}px system-ui`; c.textAlign = 'center';
+      const ns = M.t / M.slow * 1e3;
+      c.fillText(`${T.life} ${ns >= 1000 ? (ns / 1000).toFixed(2) + ' μs' : Math.round(ns) + ' ns'} · ${T.slow(rxFmt(Math.round(M.slow * 1e6 / 1e3) * 1e3))}`, 400, 560 - 16 * S);
+      if(M.t >= M.life){
+        M.ph = 'end'; M.t = 0;
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * FL;
+        if(M.res === 'dec'){
+          M.parts.push({ k: 'e', x, y, vx: (Math.random() - .5) * 600, vy: -260 - Math.random() * 200, t: 0 });
+          for(let j = 0; j < 2; j++) M.parts.push({ k: 'nu', x, y, vx: (Math.random() - .5) * 900, vy: (Math.random() - .5) * 700, t: 0 });
+        } else {
+          M.parts.push({ k: 'nu', x: cx, y: cy, vx: 700, vy: -420, t: 0 });
+          try{ rxEvt('muCapture'); }catch(err){}
+        }
+        try{ rxEvt('muon'); }catch(err){}
+      }
+    }
+  }
+  // 확대 배율 안내
+  if(zE > 0.05){
+    c.globalAlpha = Math.min(1, zE * 1.4);
+    c.fillStyle = '#ffd8a8'; c.font = `700 ${15 * S}px system-ui`; c.textAlign = 'left'; c.textBaseline = 'top';
+    c.fillText(`×${rxFmt(Math.round(K))}`, 16, 14);
+    c.fillStyle = 'rgba(230,236,245,.7)'; c.font = `500 ${12.5 * S}px system-ui`;
+    c.fillText(T.zoom(Math.round(P.red)), 16, 16 + 20 * S);
+    if(nucEnd > muR && zE > 0.9) rxMuWrap(c, T.inside, 16, 16 + 40 * S, 760, 17 * S, true);
+    c.globalAlpha = 1; c.textBaseline = 'middle';
+  }
+  // X선 섬광
+  M.flashes = M.flashes.filter(f => (f.t += dt) < 0.5);
+  M.flashes.forEach(f => {
+    const k = 1 - f.t / 0.5;
+    c.strokeStyle = `rgba(255,236,153,${k})`; c.lineWidth = 2;
+    for(let j = 0; j < 8; j++){ const a = j / 8 * 6.2832, l0 = 6 + f.t * 30, l1 = 14 + f.t * 90; c.beginPath(); c.moveTo(f.x + Math.cos(a) * l0, f.y + Math.sin(a) * l0); c.lineTo(f.x + Math.cos(a) * l1, f.y + Math.sin(a) * l1); c.stroke(); }
+    c.fillStyle = `rgba(255,236,153,${k})`; c.font = `700 ${12 * S}px system-ui`; c.textAlign = 'center'; c.fillText(T.xray, f.x, f.y - 22 - f.t * 30);
+  });
+  // 튕겨 나간 전자 · 중성미자
+  M.parts = M.parts.filter(p => (p.t += dt) < 1.6);
+  M.parts.forEach(p => {
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    const k = 1 - p.t / 1.6;
+    if(p.k === 'e'){ c.fillStyle = `rgba(165,216,255,${k})`; c.beginPath(); c.arc(p.x, p.y, 4, 0, 6.2832); c.fill(); c.font = `700 ${11 * S}px system-ui`; c.fillText('e⁻', p.x + 10, p.y - 8); }
+    else { c.strokeStyle = `rgba(200,200,255,${k * 0.6})`; c.setLineDash([3, 5]); c.lineWidth = 1.5; c.beginPath(); c.moveTo(p.x - p.vx * 0.06, p.y - p.vy * 0.06); c.lineTo(p.x, p.y); c.stroke(); c.setLineDash([]);
+      c.fillStyle = `rgba(200,200,255,${k})`; c.font = `700 ${11 * S}px system-ui`; c.fillText('ν', p.x + 8, p.y); }
+  });
+  if(M.ph === 'end'){
+    c.fillStyle = M.res === 'cap' ? '#ffc9c9' : '#d0ebff'; c.font = `700 ${15 * S}px system-ui`; c.textAlign = 'center';
+    const nx = byNum[e.n - 1];
+    const msg = M.res === 'cap' && nx ? T.cap(`${e.s}`, `${nx.s}`) : T.dec;
+    rxMuWrap(c, msg, 400, 540, 720, 20 * S);
+  } else if(M.ph === 'fall' && H && M.kicked){
+    c.fillStyle = '#d0ebff'; c.font = `600 ${14 * S}px system-ui`; c.textAlign = 'center'; c.fillText(T.kick, 400, 560);
+  }
+  RX_MU.raf = requestAnimationFrame(rxMuLoop);
+}
+function rxMuWrap(c, s, x, y, w, lh, down){
+  const words = s.split(' '), lines = []; let line = '';
+  words.forEach(wd => { const t = line ? line + ' ' + wd : wd; if(c.measureText(t).width > w && line){ lines.push(line); line = wd; } else line = t; });
+  lines.push(line);
+  lines.forEach((l, i) => c.fillText(l, x, y + (down ? i : i - (lines.length - 1)) * lh));
+}
+document.getElementById('muClose').addEventListener('click', rxMuClose);
+document.getElementById('muBig').addEventListener('click', ev => { if(ev.target.id === 'muBig') rxMuClose(); });
+addEventListener('keydown', ev => { if(ev.key === 'Escape' && RX_MU.on){ ev.stopImmediatePropagation(); rxMuClose(); } }, true);
+document.getElementById('muGo').addEventListener('click', rxMuGo);
+document.getElementById('muAgain').addEventListener('click', () => rxMuOpen(RX_MU.e));
+/* 원자 모형 칸 오른쪽 위, '핵 속으로' 아래에 버튼 */
+{
+  const _ui = rxAtomUI;
+  rxAtomUI = function(){
+    const r = _ui.apply(this, arguments);
+    const box = document.getElementById('atomBox');
+    if(box){
+      let b = document.getElementById('atomMu');
+      if(!b){
+        b = document.createElement('button'); b.type = 'button'; b.id = 'atomMu'; b.className = 'atom-mu';
+        b.addEventListener('click', () => rxMuOpen());
+        box.appendChild(b);
+      }
+      b.textContent = rxMuT().btn;
+    }
+    return r;
+  };
+  rxAtomUI();
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'muCapture', secret: true, need: () => rxEvtHas('muCapture'),
+    ko: ['현대 연금술', '뮤온을 먹여서 원소를 한 칸 앞 원소로 바꿨다'], en: ['Modern alchemy', 'Fed a muon to a nucleus and turned it into the element before it'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+</script>
+<style>
+  /* ═══ 불꽃 반응 / 선 스펙트럼 ═══ */
+  .atom-fl{position:absolute;right:8px;top:68px;z-index:2;font:inherit;font-size:11px;padding:4px 9px;border-radius:7px;cursor:pointer;
+    color:#ff8787;background:rgba(16,20,27,.78);border:1px solid rgba(255,107,107,.45)}
+  .atom-fl:hover{background:rgba(255,107,107,.12)}
+  #atomBox .atom-subs{top:98px}
+  #flBig{position:fixed;inset:0;z-index:72;display:none;align-items:center;justify-content:center;background:rgba(5,7,10,.86);padding:18px}
+  #flBig.on{display:flex}
+  #flBox{width:min(760px,96vw);max-height:92vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:16px 18px 18px;animation:nucCard .42s cubic-bezier(.2,.9,.25,1)}
+  #flHead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  #flHead h2{font-size:17px;font-weight:700}
+  #flHead span{font-size:12px;color:var(--dim)}
+  #flHead .x{margin-left:auto;cursor:pointer;font-size:18px;color:var(--dim);line-height:1}
+  #flStage{position:relative;width:100%;aspect-ratio:4/3;max-height:56vh;margin:0 auto;border-radius:8px;overflow:hidden;background:#07090d}
+  #flCv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #flCtl{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  #flCtl button{font:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--text);cursor:pointer}
+  #flCtl button:hover{background:rgba(255,255,255,.07)}
+  #flCtl button.go{border-color:#ff8787;color:#ffc9c9}
+  #flCtl button.on{background:rgba(255,255,255,.12);border-color:var(--text)}
+  #flCtl button[hidden]{display:none}
+  #flCol{margin-top:12px;font-size:13px;color:var(--dim)}
+  #flCol b{color:var(--text)}
+  #flCol i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;box-shadow:0 0 8px currentColor}
+  #flTxt{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+  #flTxt li{font-size:13px;line-height:1.55;color:var(--dim);padding-left:14px;position:relative;word-break:keep-all}
+  #flTxt li::before{content:'·';position:absolute;left:3px;color:var(--text)}
+  #flTxt li b{color:var(--text)}
+  @media (max-width:700px){ #flBig{padding:8px} #flBox{padding:12px} #flTxt li{font-size:12.5px} #flCtl button{font-size:12px;padding:7px 11px} }
+</style>
+<div id="flBig" aria-hidden="true"><div id="flBox" role="dialog" aria-modal="true" aria-labelledby="flTitle">
+  <div id="flHead"><h2 id="flTitle"></h2><span id="flSub"></span><span class="x" id="flClose" role="button" aria-label="닫기">×</span></div>
+  <div id="flStage"><canvas id="flCv" width="800" height="600"></canvas></div>
+  <div id="flCtl"><button id="flGo" class="go"></button><button id="flNa"></button><button id="flCo"></button></div>
+  <div id="flCol"></div>
+  <ul id="flTxt"></ul>
+</div></div>
+<script>
+/* ═══════════════════════════════════════════════════
+   불꽃 반응 / 선 스펙트럼
+   불꽃에 넣으면(기체는 방전관에 전기를 걸면) 전자가 들떴다가 내려오며 정해진 파장의 빛만 낸다.
+   위: 불꽃(또는 방전관), 아래: 분광기로 본 선 스펙트럼 (380~900nm, 780nm 넘으면 적외선이라 눈에 안 보임).
+   L: [파장 nm, 상대 세기] — NIST 원자 스펙트럼의 센 선 몇 개만 골랐다 (세기는 보기 좋게 어림).
+   B: [시작 nm, 끝 nm, 세기] — Ca·Sr·Ba·Cu·B 불꽃색은 원자가 아니라 CaOH 같은 분자가 내는 띠.
+   g: 표 색만 알고 선은 생략한 원소 — 색 근처에 흐린 띠를 대충 그린다.
+   ═══════════════════════════════════════════════════ */
+const RX_FL_D = {
+  H:  { m: 't', c: '#ff5fa8', ko: '분홍빛 보라', en: 'pinkish purple', L: [[656.28, 1], [486.13, .55], [434.05, .3], [410.17, .18]] },
+  He: { m: 't', c: '#ffc2a6', ko: '살구빛 분홍', en: 'peachy pink', L: [[587.56, 1], [667.82, .45], [706.52, .4], [501.57, .4], [492.19, .2], [471.31, .22], [447.15, .5], [388.86, .55]] },
+  Ne: { m: 't', c: '#ff5a1f', ko: '주황빛 빨강', en: 'orange-red', L: [[640.22, 1], [585.25, .8], [703.24, .65], [614.31, .6], [650.65, .55], [633.44, .5], [692.95, .5], [659.9, .4], [609.62, .4], [594.48, .4], [588.19, .4], [724.52, .35], [540.06, .3]] },
+  Ar: { m: 't', c: '#b47cff', ko: '연보라', en: 'lavender', L: [[811.53, 1], [763.51, .85], [750.39, .8], [794.82, .6], [696.54, .55], [706.72, .5], [738.4, .45], [727.29, .35], [420.07, .3], [415.86, .3], [427.22, .25], [430.01, .2], [434.81, .25], [480.6, .2]] },
+  Kr: { m: 't', c: '#e4dcff', ko: '하얀 보라', en: 'whitish violet', L: [[587.09, 1], [557.03, .9], [760.15, .7], [768.52, .55], [605.78, .4], [431.96, .3], [427.4, .3], [445.39, .25], [450.24, .25]] },
+  Xe: { m: 't', c: '#8ea2ff', ko: '푸른 보라', en: 'blue-violet', L: [[467.12, 1], [462.43, .8], [473.42, .5], [480.7, .4], [482.97, .4], [492.32, .4], [529.22, .3], [823.16, .9], [828.01, .7], [881.94, .6]] },
+  Hg: { m: 't', c: '#a9c9ff', ko: '푸르스름한 흰빛', en: 'bluish white', L: [[435.83, 1], [546.07, .9], [404.66, .6], [576.96, .5], [579.07, .5], [491.6, .1]] },
+  Li: { c: '#ec2449', ko: '진홍색', en: 'carmine red', L: [[670.79, 1], [610.36, .3], [460.29, .1]] },
+  Na: { c: '#ffc21a', ko: '샛노란색', en: 'bright yellow', L: [[588.99, 1], [589.59, .85]] },
+  K:  { c: '#c58cf0', ko: '연보라', en: 'lilac', L: [[766.49, 1], [769.9, .9], [404.41, .45], [404.72, .4]] },
+  Rb: { c: '#d8467e', ko: '붉은 보라', en: 'violet-red', L: [[780.03, 1], [794.76, .9], [420.18, .22], [421.56, .15]] },
+  Cs: { c: '#7f8dff', ko: '청보라', en: 'blue-violet', L: [[852.11, 1], [894.35, .9], [455.53, .4], [459.32, .25]] },
+  Ca: { c: '#ff6a2a', ko: '벽돌빛 주황', en: 'brick orange-red', L: [[422.67, .35]], B: [[616, 630, 1], [548, 560, .55], [598, 608, .4]] },
+  Sr: { c: '#ff1f3c', ko: '진한 빨강', en: 'crimson', L: [[460.73, .35]], B: [[659, 684, 1], [640, 650, .7], [604, 612, .5]] },
+  Ba: { c: '#a6ef5a', ko: '연두색', en: 'apple green', L: [[553.55, .8]], B: [[512, 525, 1], [485, 490, .4], [530, 536, .35]] },
+  Cu: { c: '#3fe0b0', ko: '청록색', en: 'blue-green', L: [[510.55, .6], [515.32, .6], [521.82, .7]], B: [[428, 437, .55], [443, 447, .4], [479, 498, .6], [526, 538, .4]] },
+  B:  { c: '#5cff6a', ko: '밝은 초록', en: 'bright green', B: [[516, 521, 1], [545, 550, .8], [490, 495, .55], [469, 473, .3], [578, 582, .35], [601, 605, .2]] },
+  In: { c: '#5a5cff', ko: '남색', en: 'indigo', L: [[451.13, 1], [410.18, .9]] },
+  Tl: { c: '#4dff4d', ko: '초록', en: 'green', L: [[535.05, 1]] },
+  Mg: { m: 'w', c: '#ffffff', ko: '눈부신 흰빛 (태울 때)', en: 'blinding white (when burning)' },
+  As: { g: 470, c: '#5a8cff', ko: '파랑', en: 'blue' }, Bi: { g: 475, c: '#4fb0ff', ko: '하늘빛 파랑', en: 'azure' },
+  Cd: { g: 625, c: '#d0452a', ko: '벽돌빛 빨강', en: 'brick red' }, Ce: { g: 580, c: '#ffd84a', ko: '노랑', en: 'yellow' },
+  Fe: { g: 600, c: '#ff9a3a', ko: '주황빛 갈색', en: 'orange-brown' }, Ge: { g: 470, c: '#9ec8ff', ko: '연한 파랑', en: 'pale blue' },
+  Mn: { g: 555, c: '#c8e85a', ko: '누런 초록', en: 'yellowish green' }, Mo: { g: 555, c: '#c8e85a', ko: '누런 초록', en: 'yellowish green' },
+  V:  { g: 555, c: '#c8e85a', ko: '누런 초록', en: 'yellowish green' }, P: { g: 505, c: '#9ae8d0', ko: '연한 청록', en: 'pale blue-green' },
+  Pb: { g: 470, c: '#c8dcff', ko: '푸른 흰빛', en: 'bluish white' }, Sn: { g: 470, c: '#c8dcff', ko: '푸른 흰빛', en: 'bluish white' },
+  S:  { g: 460, c: '#4a6aff', ko: '파랑', en: 'blue' }, Ta: { g: 460, c: '#4a6aff', ko: '파랑', en: 'blue' },
+  Sb: { g: 530, c: '#b8f08a', ko: '연한 초록', en: 'pale green' }, Te: { g: 530, c: '#b8f08a', ko: '연한 초록', en: 'pale green' },
+  Sc: { g: 605, c: '#ff9a2a', ko: '주황', en: 'orange' }, Se: { g: 475, c: '#4fb0ff', ko: '하늘빛 파랑', en: 'azure' },
+  W:  { g: 520, c: '#5ad85a', ko: '초록', en: 'green' }, Y: { g: 640, c: '#ff2a4a', ko: '진홍색', en: 'crimson' },
+  Ra: { g: 650, c: '#e0103c', ko: '진홍색', en: 'crimson' }, Zn: { g: 500, c: '#8ae8d0', ko: '흐린 청록', en: 'faint blue-green' },
+  Zr: { g: 640, c: '#b8504a', ko: '흐린 빨강', en: 'dull red' }, Nb: { g: 500, c: '#5ac8b0', ko: '초록~파랑', en: 'green to blue' },
+  Be: { g: 0, c: '#e8eef8', ko: '흰빛', en: 'white' }, Hf: { g: 0, c: '#e8eef8', ko: '흰빛', en: 'white' }, Al: { g: 0, c: '#e8eef8', ko: '은빛 흰색', en: 'silvery white' },
+  Co: { g: 0, c: '#e8eef8', ko: '은빛 흰색', en: 'silvery white' }, Cr: { g: 0, c: '#e8eef8', ko: '은빛 흰색', en: 'silvery white' },
+  Ni: { g: 0, c: '#e8eef8', ko: '거의 무색~은빛', en: 'colourless to silvery' }, Ti: { g: 0, c: '#e8eef8', ko: '은빛 흰색', en: 'silvery white' },
+};
+/* 원소별 한마디 (있는 것만) */
+const RX_FL_TMI = {
+  ko: {
+    H: '이 빨간 656nm 선(H-알파) 때문에 우주 사진 속 성운이 분홍빛 빨강으로 보여요. 수소가 우주에서 제일 흔하니까요',
+    He: '헬륨은 지구보다 <b>태양에서 먼저</b> 발견됐어요. 1868년 일식 때 햇빛 스펙트럼에서 아무 원소에도 안 맞는 노란 선(587.6nm)이 보여서, 태양(그리스어 helios)의 이름을 붙였어요. 지구에서 찾은 건 1895년이에요',
+    Ne: '네온사인의 <b>주황빛 빨강</b>만 진짜 네온이에요. 파랑·초록 같은 다른 색은 다른 기체나 유리에 바른 형광 물질 색이에요',
+    Ar: '센 선이 거의 다 750~810nm, 눈에 안 보이는 적외선 쪽이에요. 눈에 보이는 건 남은 약한 보라 선들이라 연보라로 보여요',
+    Kr: '크립톤의 주황 선(605.78nm)은 <b>1960년부터 1983년까지 1미터의 기준</b>이었어요. 1미터 = 이 빛 파장의 1,650,763.73배',
+    Xe: '자동차 HID 헤드라이트와 카메라 플래시 속 기체예요. 그래서 그 빛이 살짝 푸르스름해요',
+    Hg: '형광등 속 수은은 사실 눈에 안 보이는 <b>자외선</b>을 제일 많이 내요. 유리 안쪽에 바른 형광 물질이 그걸 흰빛으로 바꿔 줘요',
+    Li: '휴대폰 배터리 그 리튬이에요. 불에 넣으면 의외로 <b>새빨간</b> 불꽃이 나와요',
+    Na: '노란 선이 사실 <b>두 줄</b>이에요(589.0, 589.6nm). 너무 붙어 있어서 하나로 보여요. 옛날 주황 가로등도 이 빛이고, 실험실 불꽃이 괜히 노랗다면 대개 손에 묻은 소금(나트륨) 때문이에요',
+    K: '센 빨강 선(766, 770nm)이 눈이 겨우 보는 끝자락이라, 보라 선이랑 섞여 <b>연보라</b>로 보여요. 나트륨이 조금만 섞여도 노랑에 묻혀서 <b>코발트 유리</b>로 노랑을 막고 봐요',
+    Rb: '1861년 분광기로 처음 찾았어요. 이름은 라틴어 rubidus, "<b>짙은 빨강</b>". 스펙트럼에 새로 보인 빨간 선 때문이에요',
+    Cs: '1860년 분젠과 키르히호프가 광천수에서 처음 보이는 <b>파란 선 두 줄</b>을 보고 찾았어요. 이름은 라틴어 caesius, "하늘색". 그리고 지금 <b>1초의 기준</b>도 세슘 원자예요',
+    Ca: '이 불꽃색은 사실 칼슘 원자가 아니라 <b>CaOH 같은 분자</b>가 내는 빛이에요. 그래서 선이 아니라 뭉개진 띠로 보여요',
+    Sr: '불꽃놀이와 도로 위 비상 신호탄의 <b>빨강</b>이 스트론튬이에요. 이 색도 원자가 아니라 SrOH 같은 분자가 내는 띠예요',
+    Ba: '불꽃놀이의 <b>초록</b>이 바륨이에요',
+    Cu: '불꽃놀이의 <b>파랑</b>은 구리(+염소)로 내요. 불꽃놀이 색 중에 파랑이 제일 만들기 어려워요. 너무 뜨거우면 색을 내는 분자가 깨져 버리거든요',
+    B: '붕산을 알코올에 녹여 불을 붙이면 <b>초록 불꽃</b>이 피어올라요. 이것도 BO₂ 분자가 내는 띠예요',
+    In: '1863년 아연 광석의 스펙트럼에서 처음 보이는 <b>남색(indigo)</b> 선을 보고 찾아서, 이름도 인디고에서 왔어요. 발견자 라이히는 색맹이라서 색은 조수 리히터가 대신 봐 줬어요',
+    Tl: '1861년 크룩스가 스펙트럼에서 새 <b>초록 선</b>을 보고 찾았어요. 이름은 그리스어 thallos, "새싹". 예쁜 색과 달리 독성이 아주 강해요',
+    Mg: '불꽃 반응 자체는 거의 색이 없어요. 대신 마그네슘 금속을 태우면 <b>눈부신 흰빛</b>이 나서 옛날 카메라 플래시로 썼어요. 맨눈으로 오래 보면 안 돼요',
+  },
+  en: {
+    H: 'This red 656 nm line (H-alpha) is why nebulae in space photos glow pinkish red. Hydrogen is the most common thing in the universe',
+    He: 'Helium was found <b>on the Sun before Earth</b>. During an 1868 eclipse a yellow line (587.6 nm) matched no known element, so it was named after the Sun (Greek helios). It was found on Earth in 1895',
+    Ne: 'Only the <b>orange-red</b> of neon signs is real neon. Blues and greens come from other gases or phosphor-coated glass',
+    Ar: 'Most strong lines sit at 750–810 nm, in the invisible infrared. The weak violet lines left over make it look lavender',
+    Kr: 'Krypton\'s orange line (605.78 nm) <b>defined the metre from 1960 to 1983</b>: 1 m = 1,650,763.73 wavelengths of it',
+    Xe: 'The gas in HID car headlights and camera flashes, hence their slightly bluish light',
+    Hg: 'Mercury in a fluorescent tube mostly gives off invisible <b>ultraviolet</b>. The coating inside the glass turns it into white light',
+    Li: 'Yes, the phone-battery lithium. In a flame it turns surprisingly <b>bright red</b>',
+    Na: 'The yellow line is really <b>two lines</b> (589.0 and 589.6 nm), too close to tell apart here. Old orange streetlights glow with it, and a flame that looks oddly yellow is usually salt (sodium) from someone\'s fingers',
+    K: 'Its strong red lines (766, 770 nm) sit at the very edge of vision, so with the violet lines it looks <b>lilac</b>. A trace of sodium drowns it in yellow, so chemists look through <b>cobalt glass</b>',
+    Rb: 'Found by spectroscope in 1861. Named from Latin rubidus, "<b>deep red</b>", after its new red lines',
+    Cs: 'Bunsen and Kirchhoff found it in 1860 from <b>two new blue lines</b> in mineral water. Latin caesius means "sky blue". The <b>second</b> itself is defined by caesium atoms',
+    Ca: 'This colour is not from calcium atoms but from <b>molecules like CaOH</b>, so it shows up as smeared bands, not lines',
+    Sr: 'The <b>red</b> in fireworks and road flares is strontium, also from molecules like SrOH',
+    Ba: 'The <b>green</b> in fireworks is barium',
+    Cu: 'Firework <b>blue</b> comes from copper (with chlorine). It is the hardest firework colour: too hot and the light-making molecule falls apart',
+    B: 'Boric acid in burning alcohol gives a <b>green flame</b>. Those are BO₂ molecule bands too',
+    In: 'Found in 1863 from a new <b>indigo</b> line in zinc ore, and named after it. Co-discoverer Reich was colour-blind, so his assistant Richter had to see the colour for him',
+    Tl: 'Crookes found it in 1861 from a new <b>green line</b>. Greek thallos means "green shoot". Pretty colour, very toxic',
+    Mg: 'The flame test itself is nearly colourless, but burning magnesium metal gives a <b>blinding white</b> light once used for camera flashes. Do not stare at it',
+  },
+};
+const RX_FL_T = {
+  ko: { btn: '🔥 불꽃', title: '불꽃 반응', titleT: '방전관', sub: e => `${e.s}의 빛 스펙트럼`,
+        go: '🔥 불꽃에 넣기', goT: '⚡ 전원 켜기', off: '↺ 빼기', offT: '↺ 끄기', na: '🧂 소금 한 꼬집', co: '🔵 코발트 유리',
+        col: (c, k) => `<i style="color:${c};background:${c}"></i>불꽃색: <b>${k}</b>`, colT: (c, k) => `<i style="color:${c};background:${c}"></i>빛 색: <b>${k}</b>`,
+        none: '거의 무색', bunsen: '분젠 버너', tube: '방전관', spec: '분광기로 본 빛', ir: '적외선 (눈에 안 보임)', uv: '자외선',
+        approx: '대략적인 색만 (자세한 선은 생략)', mol: '분자 띠', empty: '눈에 보이는 선이 거의 없어요', gone: '불에 넣어 볼 만큼 만들어진 적이 없어요',
+        base: [
+          '원자 속 전자는 정해진 <b>계단</b>에만 있을 수 있어요. 불로 데우면 윗계단으로 뛰어올랐다가 내려오면서, 계단 높이만큼의 빛을 딱 그 색으로만 내요',
+          '계단 간격이 원소마다 달라서 스펙트럼의 선 무늬는 원소의 <b>지문</b>이에요. 1859년 분젠과 키르히호프가 이걸로 원소를 구별하는 법을 만들었고, 덕분에 별에 가 보지 않고도 별빛만 보고 별이 뭘로 되어 있는지 알 수 있게 됐어요',
+        ],
+        baseT: '기체는 불꽃에 넣기 어려워서 유리관에 채우고 전기를 걸어요. 원리는 같아요: 들뜬 전자가 내려오며 정해진 색의 빛을 내요',
+        noneTxt: '이 원소는 불꽃색이 거의 안 보여요. 불꽃 온도로는 전자가 잘 안 들뜨거나, 나오는 빛이 대부분 자외선이라 눈에 안 보여요',
+        goneTxt: '이 원소는 한 번에 원자 몇 개씩만 만들어져서, 불꽃에 넣어 볼 양이 아예 없어요. 그러니 무슨 색일지는 아무도 몰라요',
+        naTxt: '소금을 한 꼬집 넣었더니 노랑이 다 덮어 버렸어요. 나트륨은 아주 조금만 있어도 노랗게 빛나서, 다른 원소 불꽃색을 가려요',
+        coTxt: '코발트 유리는 노란빛을 막고 파랑·보라·진빨강만 통과시켜요. 나트륨 노랑을 걷어내고 진짜 색을 볼 때 써요',
+        fire: '불꽃놀이 색도 이 원리예요: 빨강은 스트론튬, 초록은 바륨, 파랑은 구리, 노랑은 나트륨',
+        note: '선의 파장은 NIST 원자 스펙트럼 자료의 센 선 몇 개만 골랐고, 선의 밝기는 보기 좋게 어림했어요' },
+  en: { btn: '🔥 Flame', title: 'Flame test', titleT: 'Discharge tube', sub: e => `${e.s} light spectrum`,
+        go: '🔥 Into the flame', goT: '⚡ Power on', off: '↺ Take out', offT: '↺ Power off', na: '🧂 Pinch of salt', co: '🔵 Cobalt glass',
+        col: (c, k) => `<i style="color:${c};background:${c}"></i>Flame colour: <b>${k}</b>`, colT: (c, k) => `<i style="color:${c};background:${c}"></i>Glow: <b>${k}</b>`,
+        none: 'almost colourless', bunsen: 'Bunsen burner', tube: 'Discharge tube', spec: 'Through a spectroscope', ir: 'Infrared (invisible)', uv: 'UV',
+        approx: 'Rough colour only (lines left out)', mol: 'molecular bands', empty: 'Almost no visible lines', gone: 'Never made in amounts you could burn',
+        base: [
+          'Electrons in an atom can only sit on certain <b>steps</b>. Heat kicks them up a step; when they fall back they give off light of exactly that step\'s colour',
+          'Every element has different step sizes, so its line pattern is a <b>fingerprint</b>. Bunsen and Kirchhoff turned this into a way to identify elements in 1859, which is how we know what stars are made of without going there',
+        ],
+        baseT: 'Gases are hard to put in a flame, so they are sealed in a glass tube with electricity run through. Same idea: excited electrons fall back and glow in set colours',
+        noneTxt: 'This element barely colours a flame. Either a flame is not hot enough to excite it, or its light is mostly ultraviolet, which we cannot see',
+        goneTxt: 'This element is only ever made a few atoms at a time, so there has never been enough to put in a flame. Nobody knows its colour',
+        naTxt: 'A pinch of salt and yellow drowns everything. Even a trace of sodium glows so brightly that it hides other flame colours',
+        coTxt: 'Cobalt glass blocks yellow and lets blue, violet and deep red through. Chemists use it to strip out sodium yellow and see the real colour',
+        fire: 'Fireworks work the same way: red is strontium, green barium, blue copper, yellow sodium',
+        note: 'Wavelengths are a few strong lines from NIST atomic spectra data; brightness is a rough guide' },
+};
+const rxFlT = () => RX_FL_T[LANG === 'en' ? 'en' : 'ko'];
+const RX_FL = { on: false, raf: 0, last: 0, e: null, d: null, lit: 0, tgt: 0, na: false, co: false, naK: 0, t: 0, sp: [], mode: 'f' };
+
+/* 파장(nm) → RGB. 눈 감도 가장자리에서 어두워지게 */
+function rxWl(wl){
+  let r = 0, g = 0, b = 0;
+  if(wl < 440){ r = -(wl - 440) / 60; b = 1; }
+  else if(wl < 490){ g = (wl - 440) / 50; b = 1; }
+  else if(wl < 510){ g = 1; b = -(wl - 510) / 20; }
+  else if(wl < 580){ r = (wl - 510) / 70; g = 1; }
+  else if(wl < 645){ r = 1; g = -(wl - 645) / 65; }
+  else r = 1;
+  let f = 1;
+  if(wl < 420) f = .3 + .7 * (wl - 380) / 40;
+  else if(wl > 700) f = .3 + .7 * (780 - wl) / 80;
+  f = Math.max(.12, Math.min(1, f));
+  return [r * f, g * f, b * f].map(v => Math.round(255 * Math.pow(Math.max(0, v), .8)));
+}
+const rxFlHex = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+/* 코발트 유리 투과: 파랑·보라와 진빨강만 */
+const rxFlCo = wl => wl < 500 ? 1 : wl < 540 ? (540 - wl) / 40 * .7 : wl < 640 ? .04 : wl < 700 ? .04 + (wl - 640) / 60 * .7 : .8;
+
+function rxFlData(e){
+  if(e.n >= 100) return { gone: true };
+  return RX_FL_D[e.s] || null;
+}
+function rxFlOpen(e){
+  e = e || (typeof atomEl !== 'undefined' && atomEl) || byNum[selected];
+  if(!e) return;
+  const T = rxFlT(), d = rxFlData(e), tube = !!(d && d.m === 't');
+  Object.assign(RX_FL, { on: true, e, d, lit: 0, tgt: 0, na: false, co: false, naK: 0, t: 0, sp: [], last: 0, mode: tube ? 't' : 'f', wire: 0 });
+  document.getElementById('flTitle').textContent = tube ? T.titleT : T.title;
+  document.getElementById('flSub').textContent = T.sub(e);
+  document.getElementById('flNa').textContent = T.na;
+  document.getElementById('flCo').textContent = T.co;
+  document.getElementById('flNa').hidden = tube || !!(d && d.gone);
+  document.getElementById('flCo').hidden = tube || !!(d && d.gone);
+  document.getElementById('flGo').disabled = !!(d && d.gone);
+  rxFlSync();
+  const el = document.getElementById('flBig'); el.classList.add('on'); el.setAttribute('aria-hidden', 'false');
+  cancelAnimationFrame(RX_FL.raf); RX_FL.raf = requestAnimationFrame(rxFlLoop);
+}
+function rxFlClose(){ RX_FL.on = false; cancelAnimationFrame(RX_FL.raf); const el = document.getElementById('flBig'); el.classList.remove('on'); el.setAttribute('aria-hidden', 'true'); }
+function rxFlSync(){
+  const T = rxFlT(), F = RX_FL, d = F.d, e = F.e, tube = F.mode === 't';
+  const go = document.getElementById('flGo');
+  go.textContent = F.tgt ? (tube ? T.offT : T.off) : (tube ? T.goT : T.go);
+  go.classList.toggle('go', !F.tgt);
+  document.getElementById('flNa').classList.toggle('on', F.na);
+  document.getElementById('flCo').classList.toggle('on', F.co);
+  const col = d && !d.gone ? d.c : '#6b8bd6';
+  document.getElementById('flCol').innerHTML = d && d.gone ? `<b>${T.gone}</b>` : (tube ? T.colT : T.col)(col, d && !d.gone ? (LANG === 'en' ? d.en : d.ko) : T.none);
+  const L = [];
+  const tmi = RX_FL_TMI[LANG === 'en' ? 'en' : 'ko'][e.s];
+  if(d && d.gone) L.push(T.goneTxt);
+  else {
+    if(tmi) L.push(tmi);
+    if(!d) L.push(T.noneTxt);
+    if(F.na) L.push(T.naTxt);
+    if(F.co) L.push(T.coTxt);
+    if(tube) L.push(T.baseT);
+    L.push(...T.base);
+    if(['Sr', 'Ba', 'Cu', 'Na', 'Li', 'Ca'].includes(e.s)) L.push(T.fire);
+    L.push(`<span style="opacity:.75">${T.note}</span>`);
+  }
+  document.getElementById('flTxt').innerHTML = L.map(t => `<li>${t}</li>`).join('');
+}
+function rxFlGo(){
+  const F = RX_FL;
+  if(F.d && F.d.gone) return;
+  F.tgt = F.tgt ? 0 : 1;
+  if(!F.tgt){ F.na = false; F.co = false; }
+  try{ if(typeof sndOn !== 'undefined' && sndOn) rxTone(F.tgt ? (F.mode === 't' ? 520 : 260) : 200, .1, F.mode === 't' ? 'square' : 'triangle', .04); }catch(err){}
+  if(F.tgt && F.d){
+    const s = new Set(rxLS.get('pt_flame', [])); s.add(F.e.s); rxLS.set('pt_flame', [...s]);
+    if(['Sr', 'Ba', 'Cu', 'Na'].every(x => s.has(x))) try{ rxEvt('fireworks'); }catch(err){}
+  }
+  rxFlSync();
+}
+function rxFlNa(){ const F = RX_FL; if(F.mode === 't') return; F.na = !F.na; if(F.na && !F.tgt) F.tgt = 1; rxFlSync(); }
+function rxFlCoT(){ const F = RX_FL; if(F.mode === 't') return; F.co = !F.co; rxFlSync(); }
+
+/* 지금 보이는 선들: [nm, 세기, 띠 끝 nm 또는 0] */
+function rxFlLines(){
+  const F = RX_FL, d = F.d, out = [];
+  if(d && !d.gone){
+    (d.L || []).forEach(([w, i]) => out.push([w, i, 0]));
+    (d.B || []).forEach(([a, b, i]) => out.push([a, i, b]));
+    if(d.g !== undefined){
+      if(d.g) out.push([d.g - 18, .5, d.g + 18]);
+      else out.push([420, .25, 700]);
+    }
+    if(d.m === 'w') out.push([400, .9, 760]);
+  }
+  if(F.na && F.mode !== 't'){
+    const k = F.naK;
+    out.forEach(l => l[1] *= 1 - .55 * k);
+    out.push([588.99, k, 0], [589.59, .85 * k, 0]);
+  }
+  if(F.co) out.forEach(l => { const m = l[2] ? (l[0] + l[2]) / 2 : l[0]; l[1] *= rxFlCo(m); });
+  return out;
+}
+/* 화면에 보이는 불꽃 색 (선들을 눈으로 섞은 색 대신, 표에 적힌 색을 쓴다) */
+function rxFlColor(){
+  const F = RX_FL, d = F.d;
+  let c = d && !d.gone ? rxFlHex(d.c) : [90, 130, 230];
+  if(F.na){ const y = [255, 194, 26], k = F.naK * .85; c = c.map((v, i) => v * (1 - k) + y[i] * k); }
+  if(F.co){
+    c = [c[0] * .55, c[1] * .12, Math.min(255, c[2] * 1.05 + 30)];
+    if(F.e && F.e.s === 'K') c = [175, 70, 235];
+  }
+  return c.map(v => Math.round(Math.max(0, Math.min(255, v))));
+}
+
+function rxFlLoop(now){
+  const F = RX_FL;
+  if(!F.on) return;
+  const dt = Math.min(.05, Math.max(0, F.last ? (now - F.last) / 1000 : 0)); F.last = now; F.t += dt;
+  F.lit += (F.tgt - F.lit) * Math.min(1, dt * 4);
+  F.wire += ((F.tgt ? 1 : 0) - F.wire) * Math.min(1, dt * 6);
+  F.naK += ((F.na ? 1 : 0) - F.naK) * Math.min(1, dt * 5);
+  const cv = document.getElementById('flCv'), c = cv.getContext('2d');
+  const W = cv.width, H = cv.height, T = rxFlT();
+  const S = Math.max(1, Math.min(2.1, 800 / (cv.clientWidth || 800) * 0.62));
+  c.clearRect(0, 0, W, H);
+  const g0 = c.createRadialGradient(W / 2, 200, 10, W / 2, 200, 420); g0.addColorStop(0, '#111827'); g0.addColorStop(1, '#05070a');
+  c.fillStyle = g0; c.fillRect(0, 0, W, H);
+  const col = rxFlColor(), lit = F.lit, red = typeof RX_REDUCED !== 'undefined' && RX_REDUCED;
+  const fl = red ? 0 : 1;
+  if(F.mode === 't') rxFlTube(c, W, col, lit, fl);
+  else rxFlFlame(c, W, col, lit, fl, dt);
+  /* ── 분광기 ── */
+  const y0 = 420, y1 = 560, x0 = 40, x1 = W - 40, nm0 = 380, nm1 = 900;
+  const X = nm => x0 + (nm - nm0) / (nm1 - nm0) * (x1 - x0);
+  c.fillStyle = 'rgba(255,255,255,.55)'; c.font = `600 ${Math.round(12 * S)}px system-ui,sans-serif`; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+  c.fillText(T.spec, x0, y0 - 26 * (S > 1 ? 1.15 : 1) - 4);
+  /* 무지개 기준 띠 */
+  for(let nm = nm0; nm < 780; nm += 2){ const [r, g, b] = rxWl(nm); c.fillStyle = `rgba(${r},${g},${b},.55)`; c.fillRect(X(nm), y0 - 14, X(nm + 2) - X(nm) + .5, 6); }
+  c.fillStyle = '#020305'; c.fillRect(x0, y0, x1 - x0, y1 - y0);
+  c.fillStyle = 'rgba(255,255,255,.04)'; c.fillRect(X(780), y0, x1 - X(780), y1 - y0);
+  c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 1; c.strokeRect(x0 + .5, y0 + .5, x1 - x0 - 1, y1 - y0 - 1);
+  const lines = rxFlLines(), lab = [];
+  c.save(); c.beginPath(); c.rect(x0, y0, x1 - x0, y1 - y0); c.clip();
+  c.globalCompositeOperation = 'lighter';
+  lines.forEach(([w, i, w2]) => {
+    const a = i * lit; if(a < .01) return;
+    if(w2){
+      const xa = X(w), xb = X(w2), mid = (w + w2) / 2;
+      const [r, g, b] = mid > 780 ? [120, 120, 130] : rxWl(mid);
+      const gr = c.createLinearGradient(xa - 8, 0, xb + 8, 0);
+      gr.addColorStop(0, `rgba(${r},${g},${b},0)`); gr.addColorStop(.3, `rgba(${r},${g},${b},${.55 * a})`);
+      gr.addColorStop(.7, `rgba(${r},${g},${b},${.55 * a})`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = gr; c.fillRect(xa - 8, y0, xb - xa + 16, y1 - y0);
+      return;
+    }
+    const x = X(w);
+    if(w > 780){
+      c.strokeStyle = `rgba(150,150,165,${.5 * a})`; c.setLineDash([4, 4]); c.lineWidth = 2;
+      c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1); c.stroke(); c.setLineDash([]);
+    } else {
+      const [r, g, b] = rxWl(w);
+      const gl = c.createLinearGradient(x - 9, 0, x + 9, 0);
+      gl.addColorStop(0, `rgba(${r},${g},${b},0)`); gl.addColorStop(.5, `rgba(${r},${g},${b},${.5 * a})`); gl.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = gl; c.fillRect(x - 9, y0, 18, y1 - y0);
+      c.fillStyle = `rgba(${r},${g},${b},${Math.min(1, a * 1.3)})`; c.fillRect(x - 1.5, y0, 3, y1 - y0);
+      c.fillStyle = `rgba(255,255,255,${.35 * a})`; c.fillRect(x - .5, y0, 1, y1 - y0);
+    }
+    if(i * lit > .4) lab.push([x, w]);
+  });
+  c.restore();
+  /* 눈금 */
+  c.fillStyle = 'rgba(255,255,255,.45)'; c.font = `${Math.round(10.5 * S)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'top';
+  for(let nm = 400; nm <= 900; nm += 100){ const x = X(nm); c.fillRect(x, y1, 1, 5); c.fillText(nm + (nm === 900 ? ' nm' : ''), x, y1 + 8); }
+  c.fillStyle = 'rgba(255,255,255,.4)'; c.font = `${Math.round(10 * S)}px system-ui,sans-serif`; c.textBaseline = 'top';
+  c.fillText(T.ir, (X(780) + x1) / 2, y0 + 6);
+  /* 센 선 숫자 (겹치면 생략) */
+  c.font = `600 ${Math.round(10 * S)}px system-ui,sans-serif`; c.textBaseline = 'bottom'; c.fillStyle = 'rgba(255,255,255,.85)';
+  let lastX = -999; lab.sort((a, b) => a[0] - b[0]).forEach(([x, w]) => { if(x - lastX < 34 * S) return; c.lineWidth = 4; c.strokeStyle = 'rgba(0,0,0,.85)'; c.strokeText(w.toFixed(1), x, y1 - 4); c.fillText(w.toFixed(1), x, y1 - 4); lastX = x; });
+  /* 아무 선도 없을 때 */
+  const msg = F.d && F.d.gone ? T.gone : !F.d ? (lit > .5 ? T.empty : '') : F.d.g !== undefined && lit > .5 ? T.approx : '';
+  if(msg){ c.fillStyle = 'rgba(255,255,255,.5)'; c.font = `${Math.round(12 * S)}px system-ui,sans-serif`; c.textBaseline = 'middle'; c.fillText(msg, (x0 + X(780)) / 2, (y0 + y1) / 2 - (F.d && F.d.g !== undefined ? 34 : 0)); }
+  F.raf = requestAnimationFrame(rxFlLoop);
+}
+function rxFlFlame(c, W, col, lit, fl, dt){
+  const F = RX_FL, cx = W / 2, base = 330, t = F.t;
+  /* 버너 */
+  c.fillStyle = '#3a4250'; c.fillRect(cx - 22, base, 44, 60);
+  c.fillStyle = '#596273'; c.fillRect(cx - 26, base - 4, 52, 8);
+  c.fillStyle = '#2a3038'; c.fillRect(cx - 60, 384, 120, 10);
+  /* 바깥 불꽃: 기본은 연파랑, 넣으면 원소 색 */
+  const [r, g, b] = col;
+  const mix = (a, k) => Math.round(a * k);
+  c.save(); c.globalCompositeOperation = 'lighter';
+  for(let k = 0; k < 7; k++){
+    const ph = t * (5 + k) + k * 1.7, wob = fl * Math.sin(ph) * 6, hh = 210 + fl * Math.sin(t * 7.3 + k) * 14 + lit * 30;
+    const wdt = 40 - k * 3.5;
+    const gr = c.createLinearGradient(0, base, 0, base - hh);
+    const cr = mix(r, lit) + mix(70, 1 - lit), cg = mix(g, lit) + mix(110, 1 - lit), cb = mix(b, lit) + mix(255, 1 - lit);
+    const al = (.07 + .075 * lit) * (k ? 1 : 1.3);
+    gr.addColorStop(0, `rgba(${cr},${cg},${cb},${al * 1.4})`); gr.addColorStop(.55, `rgba(${cr},${cg},${cb},${al})`); gr.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+    c.fillStyle = gr;
+    c.beginPath();
+    c.moveTo(cx - wdt, base);
+    c.bezierCurveTo(cx - wdt * 1.15, base - hh * .45, cx - 8 + wob, base - hh * .8, cx + wob * 1.6, base - hh);
+    c.bezierCurveTo(cx + 8 + wob, base - hh * .8, cx + wdt * 1.15, base - hh * .45, cx + wdt, base);
+    c.closePath(); c.fill();
+  }
+  /* 안쪽 파란 원뿔 */
+  const ih = 70 + fl * Math.sin(t * 9) * 3;
+  const gi = c.createLinearGradient(0, base, 0, base - ih);
+  gi.addColorStop(0, 'rgba(120,170,255,.75)'); gi.addColorStop(1, 'rgba(80,120,255,.05)');
+  c.fillStyle = gi; c.beginPath(); c.moveTo(cx - 17, base); c.quadraticCurveTo(cx - 12, base - ih * .7, cx, base - ih); c.quadraticCurveTo(cx + 12, base - ih * .7, cx + 17, base); c.closePath(); c.fill();
+  /* 불티 */
+  if(lit > .2 && fl){
+    if(Math.random() < dt * 40 * lit) F.sp.push({ x: cx + (Math.random() - .5) * 40, y: base - 150 - Math.random() * 30, vy: -60 - Math.random() * 60, vx: (Math.random() - .5) * 30, l: 1 });
+  }
+  F.sp = F.sp.filter(p => (p.l -= dt * 1.4) > 0);
+  F.sp.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; c.fillStyle = `rgba(${r},${g},${b},${p.l * .8})`; c.beginPath(); c.arc(p.x, p.y, 2, 0, 7); c.fill(); });
+  /* 겉 빛무리 */
+  const gh = c.createRadialGradient(cx, base - 130, 10, cx, base - 130, 230);
+  gh.addColorStop(0, `rgba(${r},${g},${b},${.18 * lit})`); gh.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  c.fillStyle = gh; c.fillRect(0, 0, W, 400);
+  c.restore();
+  /* 백금 철사 고리: 오른쪽에서 불꽃 속으로 */
+  const wk = F.wire, lx = cx + 170 - wk * 150, ly = base - 110 + (1 - wk) * 20;
+  c.strokeStyle = '#9aa3ad'; c.lineWidth = 3; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(W - 40, ly + 60); c.lineTo(lx + 10, ly); c.stroke();
+  c.strokeStyle = wk > .6 ? `rgb(${Math.min(255, 180 + r * .3)},${Math.min(255, 120 + g * .3)},${Math.min(255, 90 + b * .2)})` : '#c0c7cf';
+  c.beginPath(); c.arc(lx, ly, 9, 0, 7); c.stroke();
+  c.fillStyle = '#6b4b2a'; c.fillRect(W - 60, ly + 52, 70, 14);
+  if(F.co){
+    c.fillStyle = 'rgba(40,60,200,.28)'; c.fillRect(cx - 150, 60, 300, 300);
+    c.strokeStyle = 'rgba(120,150,255,.6)'; c.lineWidth = 2; c.strokeRect(cx - 150, 60, 300, 300);
+  }
+}
+function rxFlTube(c, W, col, lit, fl){
+  const F = RX_FL, y = 200, x0 = 130, x1 = W - 130, t = F.t;
+  const [r, g, b] = col;
+  /* 전극과 전선 */
+  c.fillStyle = '#4a525e'; c.fillRect(x0 - 50, y - 16, 40, 32); c.fillRect(x1 + 10, y - 16, 40, 32);
+  c.strokeStyle = '#7a8492'; c.lineWidth = 3;
+  c.beginPath(); c.moveTo(x0 - 30, y + 16); c.lineTo(x0 - 30, 330); c.lineTo(W / 2 - 40, 330); c.moveTo(x1 + 30, y + 16); c.lineTo(x1 + 30, 330); c.lineTo(W / 2 + 40, 330); c.stroke();
+  c.fillStyle = '#2a3038'; c.fillRect(W / 2 - 40, 312, 80, 36);
+  c.fillStyle = lit > .5 ? '#ffd43b' : '#566'; c.font = '700 22px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('⚡', W / 2, 330);
+  /* 빛 */
+  const flick = 1 + fl * (Math.sin(t * 60) * .03 + Math.sin(t * 13) * .04);
+  const a = lit * flick;
+  c.save(); c.globalCompositeOperation = 'lighter';
+  const gh = c.createRadialGradient(W / 2, y, 20, W / 2, y, 360);
+  gh.addColorStop(0, `rgba(${r},${g},${b},${.22 * a})`); gh.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  c.fillStyle = gh; c.fillRect(0, 0, W, 400);
+  const gc = c.createLinearGradient(0, y - 14, 0, y + 14);
+  gc.addColorStop(0, `rgba(${r},${g},${b},0)`); gc.addColorStop(.5, `rgba(${Math.min(255, r + 80)},${Math.min(255, g + 80)},${Math.min(255, b + 80)},${.95 * a})`); gc.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  c.fillStyle = gc; c.fillRect(x0, y - 14, x1 - x0, 28);
+  c.restore();
+  /* 유리관 */
+  c.strokeStyle = 'rgba(200,220,255,.35)'; c.lineWidth = 2;
+  c.beginPath(); c.roundRect ? c.roundRect(x0 - 12, y - 20, x1 - x0 + 24, 40, 20) : c.rect(x0 - 12, y - 20, x1 - x0 + 24, 40); c.stroke();
+  c.fillStyle = 'rgba(255,255,255,.08)'; c.fillRect(x0, y - 15, x1 - x0, 4);
+  c.fillStyle = 'rgba(255,255,255,.75)'; c.font = '600 15px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  c.fillText(F.e.s, W / 2, y - 34);
+}
+document.getElementById('flClose').addEventListener('click', rxFlClose);
+document.getElementById('flBig').addEventListener('click', ev => { if(ev.target.id === 'flBig') rxFlClose(); });
+addEventListener('keydown', ev => { if(ev.key === 'Escape' && RX_FL.on){ ev.stopImmediatePropagation(); rxFlClose(); } }, true);
+document.getElementById('flGo').addEventListener('click', rxFlGo);
+document.getElementById('flNa').addEventListener('click', rxFlNa);
+document.getElementById('flCo').addEventListener('click', rxFlCoT);
+/* 원자 모형 칸 오른쪽 위, 'μ⁻ 뮤온' 아래에 버튼 */
+{
+  const _ui = rxAtomUI;
+  rxAtomUI = function(){
+    const r = _ui.apply(this, arguments);
+    const box = document.getElementById('atomBox');
+    if(box){
+      let b = document.getElementById('atomFl');
+      if(!b){
+        b = document.createElement('button'); b.type = 'button'; b.id = 'atomFl'; b.className = 'atom-fl';
+        b.addEventListener('click', () => rxFlOpen());
+        box.appendChild(b);
+      }
+      b.textContent = rxFlT().btn;
+    }
+    return r;
+  };
+  rxAtomUI();
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'fireworks', secret: true, need: () => rxEvtHas('fireworks'),
+    ko: ['불꽃놀이 장인', '빨강·초록·파랑·노랑 불꽃을 다 피워 봤다'], en: ['Pyrotechnician', 'Lit red, green, blue and yellow flames'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+try{ RX_ACH_IC.fireworks = '🎆'; }catch(e){}
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   '태어난 곳' 히트맵: 가장 큰 몫 하나 → 실제 비율대로 나눠 칠하기
+   태양계에 있는 각 원소가 어디서 왔는지 비율(%). Jennifer Johnson(오하이오 주립대)의 표를
+   CMG Lee가 위키미디어 SVG로 옮긴 값 그대로. 103번까지만 있고, 그 뒤는 실험실.
+   자연에 흔적만 있는 방사성 원소(Tc·Pm·Po~Pu, Th·U 제외)는 원래대로 '방사성 붕괴'로 둔다.
+   ═══════════════════════════════════════════════════ */
+const RX_BIRTHMIX = {"1":{"bb":100.0},"2":{"bb":91.0,"big":5.0,"low":4.0},"3":{"bb":23.0,"ray":13.0,"low":64.0},"4":{"ray":100.0},"5":{"ray":100.0},"6":{"big":25.0,"low":75.0},"7":{"big":25.0,"low":75.0},"8":{"big":100.0},"9":{"big":100.0},"10":{"big":100.0},"11":{"big":100.0},"12":{"big":99.0,"wd":1.0},"13":{"big":99.6,"wd":0.4},"14":{"big":71.0,"wd":29.0},"15":{"big":97.0,"wd":3.0},"16":{"big":58.0,"wd":42.0},"17":{"big":84.0,"wd":16.0},"18":{"big":56.0,"wd":44.0},"19":{"big":82.0,"wd":18.0},"20":{"big":51.0,"wd":49.0},"21":{"big":82.0,"wd":18.0},"22":{"big":35.0,"wd":65.0},"23":{"big":25.0,"wd":75.0},"24":{"big":23.0,"wd":77.0},"25":{"big":16.0,"wd":84.0},"26":{"big":36.0,"wd":64.0},"27":{"big":33.0,"wd":67.0},"28":{"big":30.0,"wd":70.0},"29":{"big":42.0,"wd":58.0},"30":{"big":46.0,"wd":54.0},"31":{"big":100.0},"32":{"big":100.0},"33":{"big":100.0},"34":{"big":100.0},"35":{"big":100.0},"36":{"big":100.0},"37":{"big":100.0},"38":{"big":13.0,"low":87.0},"39":{"big":8.0,"low":92.0},"40":{"big":16.0,"low":84.0},"41":{"low":87.0,"ns":13.0},"42":{"low":63.0,"ns":37.0},"43":{"lab":100.0},"44":{"low":32.0,"ns":68.0},"45":{"low":13.0,"ns":87.0},"46":{"low":45.0,"ns":55.0},"47":{"low":19.0,"ns":81.0},"48":{"low":52.0,"ns":48.0},"49":{"low":36.0,"ns":64.0},"50":{"low":69.0,"ns":31.0},"51":{"low":25.0,"ns":75.0},"52":{"low":57.0,"ns":43.0},"53":{"low":5.0,"ns":95.0},"54":{"low":17.0,"ns":83.0},"55":{"low":15.0,"ns":85.0},"56":{"low":82.0,"ns":18.0},"57":{"low":62.0,"ns":38.0},"58":{"low":76.0,"ns":24.0},"59":{"low":48.0,"ns":52.0},"60":{"low":60.0,"ns":40.0},"61":{"lab":100.0},"62":{"low":29.0,"ns":71.0},"63":{"low":5.0,"ns":95.0},"64":{"low":15.0,"ns":85.0},"65":{"low":7.0,"ns":93.0},"66":{"low":14.0,"ns":86.0},"67":{"low":7.0,"ns":93.0},"68":{"low":16.0,"ns":84.0},"69":{"low":12.0,"ns":88.0},"70":{"low":32.0,"ns":68.0},"71":{"low":20.0,"ns":80.0},"72":{"low":55.0,"ns":45.0},"73":{"low":41.0,"ns":59.0},"74":{"low":57.0,"ns":43.0},"75":{"low":8.0,"ns":92.0},"76":{"low":10.0,"ns":90.0},"77":{"low":1.0,"ns":99.0},"78":{"low":5.0,"ns":95.0},"79":{"low":6.0,"ns":94.0},"80":{"low":62.0,"ns":38.0},"81":{"low":77.0,"ns":23.0},"82":{"low":47.0,"ns":53.0},"83":{"low":0.5,"ns":99.5},"84":{"ns":100.0},"85":{"ns":100.0},"86":{"ns":100.0},"87":{"ns":100.0},"88":{"ns":100.0},"89":{"ns":100.0},"90":{"ns":100.0},"91":{"ns":100.0},"92":{"ns":100.0},"93":{"ns":100.0},"94":{"ns":100.0},"95":{"lab":100.0},"96":{"lab":100.0},"97":{"lab":100.0},"98":{"lab":100.0},"99":{"lab":100.0},"100":{"lab":100.0},"101":{"lab":100.0},"102":{"lab":100.0},"103":{"lab":100.0}};
+function birthMix(e){
+  const o = originOf(e);
+  if(o === 'syn') return [['lab', 100]];
+  if(o === 'trace') return [['decay', 100]];
+  const m = RX_BIRTHMIX[e.n];
+  if(!m) return [[BIRTH_MAP[e.s] || 'big', 100]];
+  return BIRTH_KEYS.filter(k => m[k]).map(k => [k, m[k]]);
+}
+birthOf = function(e){ return birthMix(e).reduce((a, b) => b[1] > a[1] ? b : a)[0]; };
+const rxPct = v => v < 1 ? v.toFixed(1) : String(Math.round(v));
+function rxBirthBg(e){
+  const mx = birthMix(e);
+  if(mx.length === 1) return BIRTH_COL[mx[0][0]];
+  let acc = 0;
+  return 'linear-gradient(90deg,' + mx.map(([k, v]) => { const a = acc; acc += v; return `${BIRTH_COL[k]} ${a}% ${acc}%`; }).join(',') + ')';
+}
+{
+  const _paintB = paint;
+  paint = function(){
+    const r = _paintB.apply(this, arguments);
+    try{
+      if(VIEW === 'heat' && HEATP === 'birth') document.querySelectorAll('#grid .cell').forEach(c => {
+        const e = byNum[+c.dataset.n]; if(!e) return;
+        const mx = birthMix(e);
+        c.style.background = rxBirthBg(e);
+        c.title = mx.map(([k, v]) => `${birthLbl(k, 1)} ${rxPct(v)}%`).join(' · ');
+      });
+      else document.querySelectorAll('#grid .cell[title]').forEach(c => c.removeAttribute('title'));
+    }catch(err){}
+    return r;
+  };
+}
+/* 원소 정보의 '태어난 곳' 줄: 비율 막대 + 목록 */
+{
+  const _rows = propRowsHTML;
+  propRowsHTML = function(e){
+    let h = _rows.apply(this, arguments);
+    try{
+      const old = `${birthLbl(birthOf(e), 1)} <span style="color:var(--dim);font-size:.9em">· ${birthLbl(birthOf(e), 2)}</span>`;
+      const mx = birthMix(e);
+      if(mx.length > 1 && h.includes(old)){
+        const bar = `<span class="bmix">${mx.map(([k, v]) => `<i style="background:${BIRTH_COL[k]};flex:${v}"></i>`).join('')}</span>`;
+        const list = mx.slice().sort((a, b) => b[1] - a[1]).map(([k, v]) => `${birthLbl(k, 1)} <b>${rxPct(v)}%</b>`).join(' · ');
+        h = h.replace(old, `${bar}<span class="bmixl">${list}</span>`);
+      }
+    }catch(err){}
+    return h;
+  };
+}
+</script>
+<style>
+  .bmix{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:3px 0 4px;min-width:120px}
+  .bmix i{display:block;height:100%}
+  .bmixl{display:block;font-size:.9em;color:var(--dim)}
+  .bmixl b{color:var(--text);font-weight:600}
+</style>
+
 </body>
 </html>
