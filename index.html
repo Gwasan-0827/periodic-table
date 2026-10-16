@@ -25864,7 +25864,11 @@ function rxStolenReally(en, onPass){
       miss: () => L('틀렸어요. 힌트: 비스무트도 방사성이에요. 반감기가 우주 나이의 10억 배쯤이라 티가 안 날 뿐.', 'Wrong. Hint: bismuth is radioactive too (half-life about a billion times the age of the universe).') }),
     () => ({ q: L('25 °C에서 액체인 원소', 'elements that are liquid at 25 °C'),
       tiles: mix(['Hg','Br'], ['Ga','Cs','Rb','I','N','Na','Cl','K','P','S','O'], 2, 2),
-      miss: () => L('틀렸어요. 갈륨이랑 세슘은 30 °C 근처에서 녹아요. 아깝지만 아직 고체.', 'Wrong. Gallium and caesium melt around 30 °C. Close, but not yet.') }),
+      miss: (n, ts) => {
+        const bad = (ts || []).filter(t => t.dataset.ok === '0' && t.classList.contains('on')).map(t => t.textContent.trim());
+        if(bad.some(x => x === 'Ga' || x === 'Cs')) return L('틀렸어요. 갈륨이랑 세슘은 30 °C 근처에서 녹아요. 아깝지만 아직 고체.', 'Wrong. Gallium and caesium melt around 30 °C. Close, but not yet.');
+        return L('틀렸어요. 힌트: 실온에서 액체인 원소는 딱 두 개. 금속 하나, 비금속 하나.', 'Wrong. Hint: only two elements are liquid at room temperature. One metal, one non-metal.');
+      } }),
     () => ({ q: L('사람 이름에서 온 원소', 'elements named after people'),
       tiles: mix(en ? ['Einsteinium','Curium','Seaborgium','Oganesson','Mendelevium','Nobelium','Lawrencium','Bohrium','Meitnerium','Roentgenium','Copernicium','Fermium']
                     : ['아인슈타이늄','퀴륨','시보귬','오가네손','멘델레븀','노벨륨','로렌슘','보륨','마이트너륨','뢴트게늄','코페르니슘','페르뮴'],
@@ -25876,7 +25880,13 @@ function rxStolenReally(en, onPass){
       miss: () => L('틀렸어요. 기체라고 다 비활성은 아니에요. 질소, 산소, 염소는 반응 잘 해요.', "Wrong. Not every gas is noble. Nitrogen, oxygen and chlorine react just fine.") }),
     () => ({ q: L('알칼리 금속', 'alkali metals'),
       tiles: mix(['Li','Na','K','Rb','Cs','Fr'], ['H','Ca','Mg','Be','Al','Ag','Zn'], 2, 5),
-      miss: n => L('틀렸어요. 수소는 1족이지만 알칼리 금속은 아니에요.', "Wrong. Hydrogen sits in group 1 but it's not an alkali metal.") }),
+      miss: (n, ts) => {
+        const bad = (ts || []).filter(t => t.dataset.ok === '0' && t.classList.contains('on')).map(t => t.textContent.trim());
+        if(bad.includes('H')) return L('틀렸어요. 수소는 1족이지만 알칼리 금속은 아니에요.', "Wrong. Hydrogen sits in group 1 but it's not an alkali metal.");
+        if(bad.some(x => ['Ca','Mg','Be'].includes(x))) return L('틀렸어요. 칼슘·마그네슘·베릴륨은 2족, 알칼리 토금속이에요. 한 칸 옆집.', 'Wrong. Calcium, magnesium and beryllium are group 2, the alkaline earth metals. One door over.');
+        if(bad.length) return L('틀렸어요. 알칼리 금속은 주기율표 맨 왼쪽 줄(수소 빼고)이에요.', 'Wrong. Alkali metals are the far-left column (minus hydrogen).');
+        return L('알칼리 금속을 놓치셨어요. 다시 보세요.', 'You missed some alkali metals. Look again.');
+      } }),
     () => ({ q: L('산성인 것', 'acidic things'),
       tiles: mix([L('레몬즙','Lemon juice'), L('식초','Vinegar'), L('콜라','Cola'), L('위산','Stomach acid'), L('탄산수','Soda water')],
                  [L('비눗물','Soapy water'), L('베이킹소다 물','Baking soda water'), L('락스','Bleach'), L('암모니아수','Ammonia water'), L('설탕물','Sugar water'), L('소금물','Salt water'), L('순수한 물','Pure water')], 2, 5, true),
@@ -25930,7 +25940,8 @@ function rxStolenReally(en, onPass){
       <div style="background:#fff;padding:8px;text-align:right"><button type="button" class="rp-btn" id="capGo" style="background:#4a90e2;color:#fff">${r < ROUNDS.length - 1 ? (en ? 'NEXT' : '다음') : (en ? 'VERIFY' : '확인')}</button></div></div>
       <p class="cap-msg" id="capMsg"></p>`;
     box.querySelectorAll('.cap-t').forEach(t => t.addEventListener('click', () => t.classList.toggle('on')));
-    const LIM = 15, t0 = Date.now();
+    const LIM = 20, t0 = Date.now();
+    let wrong = 0;
     const bar = document.createElement('div');
     bar.style.cssText = 'height:4px;background:#4a90e2;transform-origin:left;transition:transform .2s linear';
     box.querySelector('.cap-grid').before(bar);
@@ -25953,7 +25964,12 @@ function rxStolenReally(en, onPass){
       const n = ts.filter(t => t.classList.contains('on')).length;
       const right = ts.every(t => t.dataset.ok === '2' || t.classList.contains('on') === (t.dataset.ok === '1'));
       if(!right){
+        wrong++;
         box.querySelector('#capMsg').textContent = R.miss(n, ts);
+        if(wrong >= 2){
+          ts.forEach(t => { if(t.dataset.ok === '1') t.style.boxShadow = 'inset 0 0 0 4px #ffc107, inset 0 0 18px rgba(255,193,7,.55)'; });
+          box.querySelector('#capMsg').textContent += L(' (아스리엘이 몰래 알려줬어요. 반짝이는 칸!)', ' (Asriel quietly told you. The glowing ones!)');
+        }
         const w = box.querySelector('.cap-wrap'); w.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 250 });
         return;
       }
