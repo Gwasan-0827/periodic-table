@@ -19121,8 +19121,15 @@ Object.assign(RXT.en, { setFill:'Space-filling size', setFillNote:'The size of a
     const cur = rxFillSize();
     anchor.insertAdjacentHTML('afterend',
       row(rt('setFill'), `<div class="sseg" data-rxseg="fillsz">${[['real', rt('fillReal')], ['book', rt('fillBook')]].map(([k, l]) =>
-        `<button class="sopt${cur === k ? ' on' : ''}" data-k="${k}">${l}</button>`).join('')}</div>`, rt('setFillNote')));
-    bodyEl.querySelectorAll('[data-rxseg="fillsz"] .sopt').forEach(b => b.addEventListener('click', () => { rxFillSizeSet(b.dataset.k); renderSettings(); }));
+        `<button class="sopt${cur === k ? ' on' : ''}" data-k="${k}">${l}</button>`).join('')}<button class="sopt" data-nou="1">${rt('fcNo')}</button></div>`, rt('setFillNote')));
+    bodyEl.querySelectorAll('[data-rxseg="fillsz"] .sopt[data-k]').forEach(b => b.addEventListener('click', () => { rxFillSizeSet(b.dataset.k); renderSettings(); }));
+    // 응 안해: 아스리엘 창을 띄워서 바로 삐지게
+    const nou = bodyEl.querySelector('[data-rxseg="fillsz"] [data-nou]');
+    if(nou) nou.addEventListener('click', () => {
+      if(document.getElementById('rxFillAsk')) return;
+      rxAskFillSize().then(() => { try{ checkAch(); renderSettings(); }catch(e){} });
+      setTimeout(() => { const n = document.querySelector('#rxFillAsk [data-no]'); if(n) n.click(); }, 350);
+    });
   };
 }
 
