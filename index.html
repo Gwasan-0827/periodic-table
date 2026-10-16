@@ -25667,7 +25667,7 @@ try{ RX_ACH_IC.boomFamous = '🧨'; }catch(e){}
 <script>
 /* ── 최종 숨은 업적: 나머지 업적 전부 달성 → "아니 왜 함?" ── */
 if(typeof ACH !== 'undefined'){
-  const others = () => ACH.filter(a => a.id !== 'allAch');
+  const others = () => ACH.filter(a => a.id !== 'allAch' && a.id !== 'stolenDex');   // 남의 도감 쌔비기는 빼줌
   ACH.push({ id: 'allAch', secret: true,
     need: () => { const g = loadAch(); return others().every(a => g.has(a.id)); },
     prog: () => { const g = loadAch(); const o = others(); return [o.filter(a => g.has(a.id)).length, o.length]; },
@@ -25743,13 +25743,24 @@ try{ RX_ACH_IC.allAch = '🤨'; }catch(e){}
       });
       t.after(tag);
     }
-    setTimeout(() => { try{ rxEvt('stolenDex'); checkAch(); }catch(e){} }, 1500);
+    setTimeout(() => { try{ addStolen(); rxEvt('stolenDex'); checkAch(); }catch(e){} }, 1500);
   }
-  if(typeof ACH !== 'undefined'){
-    const a = { id: 'stolenDex', secret: true, need: () => rxEvtHas('stolenDex'),
+  // 킹갓울트라머시기 시크릿 업적: 따기 전에는 목록에도 안 보이고 개수에도 안 셈
+  function addStolen(){
+    if(typeof ACH === 'undefined' || ACH.some(x => x.id === 'stolenDex')) return;
+    const a = { id: 'stolenDex', secret: true, ultra: true, need: () => rxEvtHas('stolenDex'),
       ko: ['남의 도감 쌔비기', '공유하지 말라고 했는데요'], en: ['Codex yoinker', 'We literally told you not to share it'] };
     const i = ACH.findIndex(x => x.id === 'allAch');
     if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+  }
+  try{ if(loadAch().has('stolenDex')) addStolen(); }catch(e){}
+  if(typeof rxAchOpen === 'function'){
+    const _ao = rxAchOpen;
+    rxAchOpen = function(id){
+      const r = _ao.apply(this, arguments);
+      if(id === 'stolenDex'){ const k = document.querySelector('#achCard .ac-kind'); if(k) k.textContent = LANG === 'en' ? '[[KING GOD ULTRA WHATEVER SECRET ACHIEVEMENT!!]]' : '[[킹갓울트라머시기 시크릿업적!!]]'; }
+      return r;
+    };
   }
   try{ RX_ACH_IC.stolenDex = '🫳'; }catch(e){}
 }
