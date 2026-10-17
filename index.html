@@ -13554,7 +13554,7 @@ const ACH = [
   /* 코나미 코드로만 열리는 숨은 업적. 조건을 미리 알려주면 재미가 없다 */
   { id:'egg', secret:true, need:() => false,
     ko:['릭륨 발견','존재한다고 믿으면 존재함'],
-    en:['Rickium discovered','It exists if you believe it does'] },
+    en:['Rickrium discovered','It exists if you believe it does'] },
 
   { id:'master', need:() => codexGot() >= allEntries().length,
     ko:['조합 마스터','도감을 전부 채웠다'],
@@ -14218,8 +14218,8 @@ function eggReveal(){
     <div class="eggtop">${t('eggFound')}</div>
     <div class="eggnum">119</div>
     <div class="eggsym">Rr</div>
-    <div class="eggname">${L ? 'Rickium' : '릭륨'}</div>
-    <div class="eggsub">Rickium</div>
+    <div class="eggname">${L ? 'Rickrium' : '릭륨'}</div>
+    ${L ? '' : '<div class="eggsub">Rickrium</div>'}
     <div class="eggsub" style="opacity:.75;font-size:.85em;margin-top:2px">${L ? 'Named after: Rickroll' : '이름 유래: 릭롤'}<br>${L ? 'Half-life: about 3½ min (one Rickroll video)' : '반감기: 약 3분 30초 (릭롤 영상 한 편 길이)'}</div>
     <button class="btn" id="eggOk">${t('eggOk')}</button>`;
   try{ SFX.gem(); }catch(e){}
