@@ -12676,7 +12676,7 @@ function rxRender(kind, formula, order, c){
   const atoms = picked.atoms;
   const tabs = document.getElementById('mTabs');
   const tb = tabs.querySelectorAll('button');
-  if(!RX.views && kind !== 'fail' && !RX.boom){
+  if(!RX.views && kind !== 'fail' && !String(formula || '').includes('💥')){   // 폭발물도 막대-공/공간 채움/막대 탭을 준다 (💥 흩어짐 결과만 제외)
     const mv = rxMolViews(model, rawName);
     if(mv){ RX.views = mv; RX.molTabs = true; }
   } else RX.molTabs = false;
@@ -26191,14 +26191,7 @@ function rxStolenReally(en, onPass){
     while(el){ x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; }
     const w = bL.offsetWidth || 52, gap = innerWidth > 700 ? 24 : 4;
     const cy = y + c.offsetHeight / 2;
-    // 옆에 자리가 없으면(폰) 카드 아래에 나란히
-    if(x - w - gap < 4 && y + c.offsetHeight + w + 16 < innerHeight){
-      const ty = y + c.offsetHeight + 12 + w / 2, mid = x + c.offsetWidth / 2;
-      [bL, bR].forEach(b => { b.style.top = ty + 'px'; });
-      bL.style.left = (mid - w - 14) + 'px';
-      bR.style.left = (mid + 14) + 'px';
-      return;
-    }
+    // 폰에서도 늘 카드 양옆 (카드 가장자리에 살짝 걸침)
     [bL, bR].forEach(b => { b.style.top = cy + 'px'; });
     const rx = x + c.offsetWidth, sideR = innerWidth - rx;
     bL.style.left = Math.max(4, Math.min(x - w - gap, x / 2 - w / 2)) + 'px';
