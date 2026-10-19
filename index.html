@@ -27245,53 +27245,7 @@ SFX.door = function(){
 };
 </script>
 
-<script>
-/* ═══ 원소 담기 소리 리워크: 원소마다 다른 소리 ═══
-   가벼운 원소일수록 높고 무거울수록 낮다 · 금속은 쇳소리 "땡", 기체는 유리 "팅" + 바람 "쉭",
-   준금속은 둔한 "똑", 방사성(84번~)은 가이거 계수기 "틱틱틱" · 여러 개 담으면 "또르륵" */
-let RX_PICK = null;
-{
-  const _add = addToMix;
-  addToMix = function(n, count){ RX_PICK = { n, c: Math.max(1, count || 1), t: performance.now() }; return _add.apply(this, arguments); };
-}
-const RX_PK_GAS = new Set([1, 2, 7, 8, 9, 10, 17, 18, 36, 54, 86, 118]);
-function rxPickEl(n, k){
-  const e = EL[n - 1]; if(!e) return false;
-  const f = 1700 * Math.pow(2, -1.6 * (n - 1) / 117);          // H 1700Hz → Og 560Hz
-  const metal = /alkali|alkaline|transition|post|lanthanide|actinide/.test(e.c);
-  const drops = Math.min(5, k);
-  for(let i = 0; i < drops; i++){
-    const d = i * .075, j = f * (0.97 + Math.random() * .06), v = i ? .7 : 1;
-    if(RX_PK_GAS.has(n)){
-      rxBell(j * 1.15, .28, .045 * v, d, [[1, 1, 1], [2.76, .35, .4]]);
-      rxNoiseEnv({ dur: .16, type: 'bandpass', f0: 4200, f1: 2400, q: 1.4, env: [[.15, .05 * v], [.6, .02]], delay: d });
-    } else if(metal){
-      rxBell(j * .9, .5, .05 * v, d, [[1, 1, 1], [2.32, .55, .6], [4.25, .3, .4], [6.8, .14, .25]]);
-      rxTone(150, .07, 'sine', .05 * v, d, 90);
-    } else {                                                   // 준금속·고체 비금속(C, P, S, Se, I…)
-      rxBell(j * .75, .16, .05 * v, d, [[1, 1, 1], [1.5, .3, .5]]);
-      rxNoiseEnv({ dur: .03, type: 'bandpass', f0: 1800, q: 2, env: [[.1, .08 * v]], delay: d });
-    }
-  }
-  if(n >= 84){                                                 // 방사성: 가이거 계수기
-    const clicks = 3 + Math.floor(Math.random() * 4);
-    let t = .05;
-    for(let i = 0; i < clicks; i++){
-      t += .02 + Math.random() * .09;
-      rxNoiseEnv({ dur: .006, type: 'highpass', f0: 2500, env: [[.1, .22]], delay: t });
-    }
-  }
-  return true;
-}
-{
-  const _pick = SFX.pick;
-  SFX.pick = function(){
-    const P = RX_PICK; RX_PICK = null;
-    if(P && performance.now() - P.t < 60){ try{ if(rxPickEl(P.n, P.c)) return; }catch(e){} }
-    return _pick.apply(this, arguments);
-  };
-}
-</script>
+
 
 <script>
 /* ═══ 조합 실패 소리 리워크: 앱 에러음처럼 낮게 "둥-둥" ═══ */
