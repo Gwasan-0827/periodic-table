@@ -4106,6 +4106,7 @@ const SINGLE = {
   Cl: [[2,2,"Cl₂","염소 기체","수영장 냄새의 먼 친척 / 마시면 안 됨"]],
   He: [[3,3,"³He","헬륨-3","중성자가 하나 모자란 가벼운 헬륨. 달에 많음"]],
   Au: [[150,150,"Au","(순수) 금 큐브","녹이 안 슬어요. 진짜로."],[2,99,"Au","금괴","팔면 인생 핌"]],
+  Ag: [[150,150,"Ag","(순수) 은 큐브","전기가 제일 잘 통하는 금속"],[2,99,"Ag","은괴","금괴 살 돈은 없을 때"]],
   Fe: [[2,99,"Fe","고철","kg당 얼마"]],
   U:  [[2,99,"U","임계질량","이러면 안 됨"]],
   Si: [[2,99,"Si","실리콘 웨이퍼","반도체 원판"]],
@@ -5612,7 +5613,7 @@ const REC_EN = {
 "흑연":["Graphite","Pencil lead. Slippery"],
 "다이아몬드":["Diamond","Extremely expensive carbon"],
 "금괴":["Gold bar","Sell it and you are set"],
-"(순수) 금 큐브":["(Pure) gold cube","It does not rust. Really."],
+"(순수) 금 큐브":["(Pure) gold cube","It does not rust. Really."],"(순수) 은 큐브":["(Pure) silver cube","The best electrical conductor of all metals"],"은괴":["Silver bar","For when a gold bar is out of budget"],
 "고철":["Scrap iron","Sold by the kilogram"], "알루미늄 호일":["Aluminium foil","The shiny silver sheet in every kitchen"],
 "임계질량":["Critical mass","This should not be happening"],
 "실리콘 웨이퍼":["Silicon wafer","The blank disc for chips"],
@@ -6122,7 +6123,7 @@ const CHANGELOG = [
     items: {
       ko: ['질산우라닐 결과 창에 노란 결정 보기가 생겼어요. 조명 버튼을 눌러 자외선(UV)을 켜면 결정이 초록으로 빛나요',
            '구리 더미가 (순수) 구리 큐브로 환골탈태했어요. "녹청 슬게 하기"를 누르면 수십 년 걸릴 일이 몇 초 만에 일어나요',
-           '타이타늄을 아주 많이 모아 보세요. 전기를 걸 수 있는 뭔가가 나와요. 금도요',
+           '타이타늄을 아주 많이 모아 보세요. 전기를 걸 수 있는 뭔가가 나와요. 금도요. 은도요',
            '학습 창에 미니게임 "⌨ 원소 타자"가 생겼어요. 떨어지는 원소 이름을 보고 기호를, 기호를 보고 이름을 치세요. 파란 선에 닿으면 원소가 튕겨 올랐다가 빙글빙글 떨어져요',
            'DNA·RNA 재료 7종이 도감에 들어왔어요: 염기 5종(아데닌, 구아닌, 사이토신, 타이민, 유라실)과 당 2종(리보스, 디옥시리보스). 산소 하나 차이로 RNA냐 DNA냐가 갈려요',
            '특수 발견에 새 질소가 들어왔어요. 2025년에야 처음 만들어진 녀석이에요. 질소를 몇 개 모아야 나올까요?',
@@ -6131,7 +6132,7 @@ const CHANGELOG = [
            '새 물질 5종이 도감에 들어왔어요: 양파·케이퍼의 노란 색소 쿼세틴, 모래도 불태우는 삼플루오린화 염소, 화학식을 읽으면 FOOF인 이플루오린화 이산소, 에어백을 부풀리는 아자이드화 나트륨, 폭탄먼지벌레의 무기 재료 하이드로퀴논. 도감이 445종이 됐어요'],
       en: ['Uranyl nitrate now has a yellow crystal view. Press the light button to switch on UV and watch the crystals glow green',
            'The pile of copper has been glowed up into a (pure) copper cube. Press "Let it patinate" and decades happen in seconds',
-           'Try collecting a lot of titanium. Something you can put a voltage on shows up. Gold too',
+           'Try collecting a lot of titanium. Something you can put a voltage on shows up. Gold too. Silver too',
            'New mini-game in the Learn window: "⌨ Element Typing". Type the symbol for the falling name, or the name for the falling symbol. Let one touch the blue line and it bounces up and spins away',
            'Seven building blocks of DNA and RNA join the index: five bases (adenine, guanine, cytosine, thymine, uracil) and two sugars (ribose, deoxyribose). One oxygen decides RNA or DNA',
            'A new kind of nitrogen joins the special finds. Nobody had made it until 2025. How many nitrogens does it take?',
@@ -12632,6 +12633,8 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     else if(nm === '(순수) 구리 큐브') model = rxTungstenCube('Cu');
     else if(nm === '(순수) 타이타늄 큐브') model = rxTungstenCube('Ti');
     else if(nm === '(순수) 금 큐브') model = rxTungstenCube('Au');
+    else if(nm === '(순수) 은 큐브') model = rxTungstenCube('Ag');
+    else if(nm === '네오디뮴 자석') model = rxTungstenCube('Nd');
     else if(nm === '지구') model = rxPicModel('earth');
     else if(nm === '태양') model = rxPicModel('sun');
     else if(!RX_REDUCED && nm === '탄소 나노튜브') model = rxNanotube();
@@ -26280,8 +26283,11 @@ const RX_CUBES = {
   Cu: { txt: [['29', 'Cu', 'Copper', '99.99%', '63.546']], tint: [214, 124, 78], mixK: 0.7, ink: '#3a1d10' },
   Ti: { txt: [['22', 'Ti', 'Titanium', '99.5%', '47.867']], tint: [158, 160, 166], mixK: 0.45, ink: '#2a2c30' },
   Au: { txt: [['79', 'Au', 'Gold', '99.99%', '196.97']], tint: [236, 186, 72], mixK: 0.74, ink: '#4a3006' },
+  Ag: { txt: [['47', 'Ag', 'Silver', '99.99%', '107.87']], tint: [212, 214, 218], mixK: 0.33, ink: '#2a2c30' },
+  // 네오디뮴 자석: 니켈 도금이라 밝은 은색. 모서리에 N극/S극, 등급 N52
+  Nd: { txt: [['N', 'Nd', 'Nd₂Fe₁₄B', 'N52', 'S']], tint: [196, 199, 205], mixK: 0.42, ink: '#24272c' },
 };
-['Cu', 'Ti', 'Au'].forEach(k => { const [n, sy, nm, pu, wt] = RX_CUBES[k].txt[0]; RX_CUBES[k].txt = RX_WC_TXT.map((t, i) => ({ ...t, t: [n, sy, nm, pu, wt][i] })); });
+['Cu', 'Ti', 'Au', 'Nd', 'Ag'].forEach(k => { const [n, sy, nm, pu, wt] = RX_CUBES[k].txt[0]; RX_CUBES[k].txt = RX_WC_TXT.map((t, i) => ({ ...t, t: [n, sy, nm, pu, wt][i] })); });
 function rxTungstenCube(key){
   const C = RX_CUBES[key || 'W'];
   const M = { c: C.tint, metal: 1 };
@@ -26353,6 +26359,18 @@ function rxTungstenCube(key){
           const t = m.patina;
           base = t < 0.4 ? rxMix(m.tint, [104, 58, 38], t / 0.4) : rxMix([104, 58, 38], [86, 148, 126], (t - 0.4) / 0.6);
           mk = 0.7 + 0.22 * t; matte = 1 - 0.75 * Math.min(1, t / 0.5);
+        }
+        // 은 황변(황화은): 은색 → 누런 금빛 → 갈색 → 푸르스름한 검정
+        if(m.cubeKey === 'Ag' && m.patina > 0){
+          const t = m.patina;
+          base = t < 0.3 ? rxMix(m.tint, [196, 168, 104], t / 0.3) : t < 0.65 ? rxMix([196, 168, 104], [104, 70, 54], (t - 0.3) / 0.35) : rxMix([104, 70, 54], [34, 34, 42], (t - 0.65) / 0.35);
+          mk = 0.33 + 0.55 * t; matte = 1 - 0.6 * Math.min(1, t / 0.7);
+        }
+        if(m.cubeKey === 'Ag' && m.wImg){
+          const t = m.patina || 0;
+          const ic = rxMix([42, 44, 48], [10, 10, 14], t);
+          const col = `rgb(${ic.map(Math.round).join(',')})`;
+          if(m._ink !== col){ m._ink = col; m.wImg.firstChild.setAttribute('stroke', col); m.wImg.querySelectorAll('.wc-ink').forEach(x => x.setAttribute('fill', col)); }
         }
         // 각인 색도 같이: 짙은 구리색 → 거무튀튀 → 짙은 청록
         if(m.cubeKey === 'Cu' && m.wImg){
@@ -27512,6 +27530,53 @@ try{
   };
   addEventListener('hashchange', chk);
   setTimeout(chk, 1200);
+}
+</script>
+
+<script>
+/* ═══ (순수) 은 큐브: "까맣게 변하게 하기" — 은은 산소가 아니라 공기 속 황화수소 때문에 검은 황화은(Ag₂S)이 된다 ═══ */
+Object.assign(RXT.ko, { agPat: '까맣게 변하게 하기', agWipe: '닦기',
+  agNote: '은: "산소는 괜찮은데 황은 못 참아." 공기 속에 아주 조금 있는 황화수소(달걀 썩은 냄새)랑 만나서 표면에 검은 황화은(Ag₂S)이 생겨요. 알루미늄 호일 깐 그릇에 뜨거운 물·베이킹소다·소금을 넣고 담가 두면 다시 은으로 돌아와요.' });
+Object.assign(RXT.en, { agPat: 'Let it tarnish', agWipe: 'Polish',
+  agNote: 'Silver: "Oxygen is fine. Sulfur, not so much." A trace of hydrogen sulfide in the air (the rotten-egg smell) turns the surface into black silver sulfide (Ag₂S). Soak it in hot water with baking soda and salt in a foil-lined bowl and it turns back into silver.' });
+try{ RX_TMI['(순수) 은 큐브'] = '모든 금속 중에 전기랑 열을 제일 잘 통해요. 그런데도 전선을 구리로 만드는 건 은이 훨씬 비싸서예요. 은수저가 거무튀튀해지는 건 녹이 아니라 황 때문이에요.'; }catch(e){}
+{
+  const _th = rxToolsHTML;
+  rxToolsHTML = function(){
+    let h = _th.apply(this, arguments);
+    const m = RX_M;
+    if(m && m.wCube && m.cubeKey === 'Ag') h += `<button type="button" class="rtool" data-act="agpat" title="${rt(m.patina >= 1 ? 'agWipe' : 'agPat')}"><span aria-hidden="true">${m.patina >= 1 ? '✨' : '⚫'}</span><em>${rt(m.patina >= 1 ? 'agWipe' : 'agPat')}</em></button>`;
+    return h;
+  };
+  const AG_ST = [
+    [0,    ['(순수) 은 큐브', '전기가 제일 잘 통하는 금속'], ['(Pure) silver cube', 'The best electrical conductor of all metals']],
+    [0.15, ['살짝 맛이 간 은', '아직 먹을 만합니다. (먹지 마세요)'], ['Slightly off silver', 'Still edible. (Do not eat it)']],
+    [0.45, ['때 묻은 은', '아니 누가 만졌냐'], ['Grubby silver', 'Okay, who touched it']],
+    [0.85, ['타버린 은', '이거 원래 은이었어요.'], ['Burnt silver', 'This used to be silver.']],
+  ];
+  let agLast = -1;
+  const agStage = t => {
+    let k = 0; AG_ST.forEach((c, i) => { if(t >= c[0]) k = i; });
+    if(k === agLast && t > 0) return; agLast = k;
+    const [nm, sub] = AG_ST[k][LANG === 'en' ? 2 : 1];
+    const n = document.getElementById('mName'), sb = document.getElementById('mSub');
+    if(n) n.textContent = nm; if(sb) sb.textContent = sub;
+  };
+  const redraw = () => { try{ rxDraw(RX_YAW, RX_PITCH); }catch(e){} };
+  const _tool = rxTool;
+  rxTool = function(act, btn){
+    const m = RX_M;
+    if(act === 'agpat' && m && m.cubeKey === 'Ag'){
+      if(m.patina >= 1){ m.patina = 0; agLast = -1; redraw(); agStage(0); rxToolsSync(); return; }
+      rxSay(rt('agNote'), 6500);
+      const t0 = performance.now(), D = 6000;
+      const step = now => { if(RX_M !== m) return; m.patina = Math.min(1, (now - t0) / D); redraw(); agStage(m.patina);
+        if(m.patina < 1) requestAnimationFrame(step); else rxToolsSync(); };
+      requestAnimationFrame(step);
+      return;
+    }
+    return _tool.apply(this, arguments);
+  };
 }
 </script>
 </body>
