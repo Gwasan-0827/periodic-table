@@ -140,7 +140,7 @@
   header h1{font-size:19px;font-weight:700;letter-spacing:-.02em}
   header .sub{font-size:12px;color:var(--dim);letter-spacing:.02em}
   .in-slogan2{font-size:11.5px;letter-spacing:.06em;color:#9fb0c8;opacity:.85;margin:-3px 0 10px;text-align:center}
-  .in-slogan{font-size:15.5px;font-weight:650;letter-spacing:.16em;color:#e6f1ff;opacity:.95;margin-bottom:9px;text-align:center;text-shadow:0 0 12px rgba(120,180,255,.45)}
+  .in-slogan{font-size:15.5px;font-weight:650;letter-spacing:.06em;word-break:keep-all;color:#e6f1ff;opacity:.95;margin-bottom:9px;text-align:center;text-shadow:0 0 12px rgba(120,180,255,.45)}
   header .legend{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
   .lg{
     font-size:11px;padding:3px 8px;border-radius:4px;cursor:pointer;
@@ -4069,7 +4069,7 @@ const EXACT = {
   "F4+Xe1":["XeF₄","사플루오린화제논","안 섞인다던 놈이 섞임"],
     "C1+Ca1+H1+N1+O3":["CaCO₃ + 단백질","진주","조개가 만든 아라고나이트"],
 "Al2+Cr1+O3":["Al₂O₃:Cr","루비","크로뮴 조금 섞였더니 빨개짐"],
-  "O8+U3":["U₃O₈","팔산화삼우라늄","옐로케이크라 불림. 이름은 귀여운데 우라늄임"],"N2+O8+U1":["UO₂(NO₃)₂","질산우라닐","노란 결정. 자외선 받으면 초록으로 빛남"],"C16+Gd1+H25+N4+O8":["C₁₆H₂₅GdN₄O₈","가돌리늄 조영제","MRI 찍을 때 혈관에 넣는 약. 독한 가돌리늄을 분자 우리에 가둠"],"C2+H2+Kr1":["HKrC≡CH","HKrCCH","크립톤이 들어간 최초의 유기 화합물. −233 °C만 넘어도 부서짐"],"N4+S4":["S₄N₄","테트라설퍼 테트라나이트라이드","주황 결정. 망치로 치면 터짐"],"Al2+O3+Ti1":["Al₂O₃:Ti","사파이어","타이타늄 조금 섞였더니 파래짐"],"Al2+Fe1+O3+Ti1":["Al₂O₃:Ti,Fe","사파이어","철까지 함께여야 제대로 파래짐"],
+  "O8+U3":["U₃O₈","팔산화삼우라늄","옐로케이크라 불림. 이름은 귀여운데 우라늄임"],"N2+O8+U1":["UO₂(NO₃)₂","질산우라닐","노란 결정. 자외선 받으면 초록으로 빛남"],"C16+Gd1+H25+N4+O8":["C₁₆H₂₅GdN₄O₈","가돌리늄 조영제","MRI 찍을 때 혈관에 넣는 약. 독한 가돌리늄을 분자 우리에 가둠"],"C15+H10+O7":["C₁₅H₁₀O₇","쿼세틴","양파·사과·케이퍼 속 노란 색소"],"Cl1+F3":["ClF₃","삼플루오린화 염소","모래도 유리도 불태움"],"F2+O2":["O₂F₂","이플루오린화 이산소","화학식 그대로 읽으면 FOOF"],"N3+Na1":["NaN₃","아자이드화 나트륨","에어백을 부풀리는 가루"],"C6+H6+O2":["C₆H₆O₂","하이드로퀴논","폭탄먼지벌레 엉덩이 대포의 재료"],"C2+H2+Kr1":["HKrC≡CH","HKrCCH","크립톤이 들어간 최초의 유기 화합물. −233 °C만 넘어도 부서짐"],"N4+S4":["S₄N₄","테트라설퍼 테트라나이트라이드","주황 결정. 망치로 치면 터짐"],"Al2+O3+Ti1":["Al₂O₃:Ti","사파이어","타이타늄 조금 섞였더니 파래짐"],"Al2+Fe1+O3+Ti1":["Al₂O₃:Ti,Fe","사파이어","철까지 함께여야 제대로 파래짐"],
   "Al2+Fe1+O3":["Al₂O₃:Fe","황옥강옥","노란 사파이어"],
   "Al2+Mg1+O4":["MgAl₂O₄","스피넬","루비인 줄 알았던 것"],
   "O4+Si1+Zr1":["ZrSiO₄","지르콘","가짜 다이아 소리 듣지만 진짜 보석임"],
@@ -4105,16 +4105,17 @@ const SINGLE = {
   F:  [[2,2,"F₂","플루오린 기체","뭐든 닥치는 대로 반응함 / 근데 정작 만나면 얌전해짐 (뭐지)"]],
   Cl: [[2,2,"Cl₂","염소 기체","수영장 냄새의 먼 친척 / 마시면 안 됨"]],
   He: [[3,3,"³He","헬륨-3","중성자가 하나 모자란 가벼운 헬륨. 달에 많음"]],
-  Au: [[2,99,"Au","금괴","팔면 인생 핌"]],
+  Au: [[150,150,"Au","(순수) 금 큐브","녹이 안 슬어요. 진짜로."],[2,99,"Au","금괴","팔면 인생 핌"]],
   Fe: [[2,99,"Fe","고철","kg당 얼마"]],
   U:  [[2,99,"U","임계질량","이러면 안 됨"]],
   Si: [[2,99,"Si","실리콘 웨이퍼","반도체 원판"]],
   Ne: [[2,99,"Ne","네온사인","가게 간판"]],
   Hg: [[2,99,"Hg","수은 웅덩이","만지지 마"]],
   Bi: [[2,99,"Bi","비스무트 결정","이쁜거"]],
-  Cu: [[2,99,"Cu","구리 더미","구리다"]],
+  Cu: [[2,99,"Cu","(순수) 구리 큐브","구리다"]],
   Al: [[2,99,"Al","알루미늄 호일","주방에 하나씩 있는 은색 종이"]],
   W:  [[150,150,"W","(순수) 텅스텐 큐브","작은데 쓸데없이 무거운 정육면체"]],
+  Ti: [[150,150,"Ti","(순수) 타이타늄 큐브","가볍고 튼튼한 정육면체. 전기 맛을 보면 색이 바뀜"]],
 };
 
 function singleResult(sym, cnt){
@@ -4880,7 +4881,7 @@ try{
 /* ── UI 문자열 ── */
 const UI = {
   ko:{
-    title:"페리오딕//테이블", docTitle:"페리오딕//테이블 — 주기율표", sub:"교과서보다 더 깊게.", sub2:"틀린 데가 보이면 알려 주세요.", subHint:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
+    title:"페리오딕//테이블", docTitle:"페리오딕//테이블 — 주기율표", sub:"과학적으로 정확한 헛소리를 지향합니다.", sub2:"교과서보다 더 깊게.", subHint:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
     search:"원소 검색…", tox:"☠ 독성", dex:"도감", quiz:"퀴즈", safe:"순화",
     tray:"조합", trayPh:"원소를 담아보세요 (최대 150개)", total:"총",
     rand:"랜덤", clear:"비우기", mixBtn:"조합하기", close:"닫기",
@@ -4952,7 +4953,7 @@ const UI = {
     setLog:"업데이트", setAbout:"정보", setStorageNote:"모든 기록은 이 기기에만 저장되며 어디로도 전송되지 않습니다.",
   },
   en:{
-    title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Deeper than the textbook.", sub2:"Spot a mistake? Tell us.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
+    title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Proudly committed to scientifically accurate nonsense.", sub2:"Deeper than the textbook.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
     search:"Search elements…", tox:"☠ Toxic", dex:"Codex", quiz:"Quiz", safe:"Clean",
     tray:"Mix", trayPh:"Add some elements (max 150)", total:"Total",
     rand:"Random", clear:"Clear", mixBtn:"Combine", close:"Close",
@@ -5389,6 +5390,11 @@ const REC_EN = {
 "수산화철":["Iron hydroxide","What rust actually is"],
 "염화암모늄":["Ammonium chloride","Nordic salty liquorice"],
 "수산화리튬":["Lithium hydroxide","Scrubs CO2 on spacecraft"],
+"쿼세틴":["Quercetin","The yellow pigment in onions, apples and capers"],
+"삼플루오린화 염소":["Chlorine trifluoride","Sets fire to sand and glass"],
+"이플루오린화 이산소":["Dioxygen difluoride","Read the formula out loud: FOOF"],
+"아자이드화 나트륨":["Sodium azide","The powder that inflates airbags"],
+"하이드로퀴논":["Hydroquinone","Ammo for the bombardier beetle's rear cannon"],
 "HKrCCH":["HKrCCH","The first organic compound with krypton in it. Falls apart above −233 °C"],
 "수산화마그네슘":["Magnesium hydroxide","Antacid"],
 "수산화칼륨":["Potassium hydroxide","Liquid soap"],
@@ -5606,13 +5612,15 @@ const REC_EN = {
 "흑연":["Graphite","Pencil lead. Slippery"],
 "다이아몬드":["Diamond","Extremely expensive carbon"],
 "금괴":["Gold bar","Sell it and you are set"],
+"(순수) 금 큐브":["(Pure) gold cube","It does not rust. Really."],
 "고철":["Scrap iron","Sold by the kilogram"], "알루미늄 호일":["Aluminium foil","The shiny silver sheet in every kitchen"],
 "임계질량":["Critical mass","This should not be happening"],
 "실리콘 웨이퍼":["Silicon wafer","The blank disc for chips"],
 "네온사인":["Neon sign","Shop fronts"],
 "수은 웅덩이":["Pool of mercury","Do not touch"],
 "비스무트 결정":["Bismuth crystal","Just pretty"],
-"구리 더미":["Pile of copper","Wires everywhere"],
+"(순수) 구리 큐브":["(Pure) copper cube","Wires everywhere"],
+"(순수) 타이타늄 큐브":["(Pure) titanium cube","A light, tough cube. Give it a jolt and it changes colour"],
 "수소 덩어리":["Mass of hydrogen","This much and it might become a star"],
 "산소 과다":["Excess oxygen","Add a spark and you have a problem"],
 };
@@ -6098,7 +6106,7 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '3.6';
+const APP_VER = '3.7';
 
 /* 버전 표기 (시대 구분): αV = 1.x / βV = 2.0 ~ 4.x / ΔV = 5.0 부터. 뒷자리는 아래 첨자 (3.2 → βV.3.₂) */
 function verLabel(v){
@@ -6109,8 +6117,32 @@ function verLabel(v){
 }
 const CHANGELOG = [
   {
-    v: '3.6', date: '2026-10-13',
-    title: { ko: '광물 박물관', en: 'Mineral museum' },
+    v: '3.7', date: '2026-10-19',
+    title: { ko: '형광등 켜 보세요', en: 'Turn on the black light' },
+    items: {
+      ko: ['질산우라닐 결과 창에 노란 결정 보기가 생겼어요. 조명 버튼을 눌러 자외선(UV)을 켜면 결정이 초록으로 빛나요',
+           '구리 더미가 (순수) 구리 큐브로 환골탈태했어요. "녹청 슬게 하기"를 누르면 수십 년 걸릴 일이 몇 초 만에 일어나요',
+           '타이타늄을 아주 많이 모아 보세요. 전기를 걸 수 있는 뭔가가 나와요. 금도요',
+           '학습 창에 미니게임 "⌨ 원소 타자"가 생겼어요. 떨어지는 원소 이름을 보고 기호를, 기호를 보고 이름을 치세요. 파란 선에 닿으면 원소가 튕겨 올랐다가 빙글빙글 떨어져요',
+           'DNA·RNA 재료 7종이 도감에 들어왔어요: 염기 5종(아데닌, 구아닌, 사이토신, 타이민, 유라실)과 당 2종(리보스, 디옥시리보스). 산소 하나 차이로 RNA냐 DNA냐가 갈려요',
+           '특수 발견에 새 질소가 들어왔어요. 2025년에야 처음 만들어진 녀석이에요. 질소를 몇 개 모아야 나올까요?',
+           'DNA 친구들 3종도 같이 왔어요: 유전자를 끄는 5-메틸사이토신, DNA를 주황색으로 빛나게 하는 에티디움 브로마이드, 대장균 감전 실험에서 발견된 백금 항암제 시스플라틴',
+           '그리고 5종 더: DNA 글자 T의 완성형 디옥시티미딘, 바다 해면에서 온 항암제 사이타라빈, 쓸개즙에서 이름을 딴 콜린, 꿈에서 찾은 신경전달물질 아세틸콜린, 근육 아미노산 류신',
+           '새 물질 5종이 도감에 들어왔어요: 양파·케이퍼의 노란 색소 쿼세틴, 모래도 불태우는 삼플루오린화 염소, 화학식을 읽으면 FOOF인 이플루오린화 이산소, 에어백을 부풀리는 아자이드화 나트륨, 폭탄먼지벌레의 무기 재료 하이드로퀴논. 도감이 445종이 됐어요'],
+      en: ['Uranyl nitrate now has a yellow crystal view. Press the light button to switch on UV and watch the crystals glow green',
+           'The pile of copper has been glowed up into a (pure) copper cube. Press "Let it patinate" and decades happen in seconds',
+           'Try collecting a lot of titanium. Something you can put a voltage on shows up. Gold too',
+           'New mini-game in the Learn window: "⌨ Element Typing". Type the symbol for the falling name, or the name for the falling symbol. Let one touch the blue line and it bounces up and spins away',
+           'Seven building blocks of DNA and RNA join the index: five bases (adenine, guanine, cytosine, thymine, uracil) and two sugars (ribose, deoxyribose). One oxygen decides RNA or DNA',
+           'A new kind of nitrogen joins the special finds. Nobody had made it until 2025. How many nitrogens does it take?',
+           'Plus three friends of DNA: 5-methylcytosine (switches genes off), ethidium bromide (makes DNA glow orange) and cisplatin (a platinum cancer drug found by electrocuting E. coli)',
+           'And five more: deoxythymidine (the finished T of DNA), cytarabine (a cancer drug from a sea sponge), choline (named after bile), acetylcholine (a neurotransmitter found in a dream) and leucine (the muscle amino acid)',
+           'Five new substances join the index: quercetin (the yellow pigment in onions and capers), chlorine trifluoride (sets sand on fire), dioxygen difluoride (read the formula: FOOF), sodium azide (inflates airbags) and hydroquinone (the bombardier beetle\'s ammo). The index now has 445'],
+    },
+  },
+  {
+    v: '3.6', date: '2026-10-19', big: true,   // 대규모 업데이트
+    title: { ko: '뭉탱이', en: 'The Big Lump' },
     items: {
       ko: ['업적을 누르면 카드로 크게 보여요. 아직 못 딴 업적은 얼마나 남았는지 막대로 나오고, 화살표로 넘겨 볼 수 있어요. 딱딱하던 업적 이름과 설명도 다듬었어요',
            '물(H₂O)을 만들면 가끔 다른 이름으로 나와요. 그리고 물을 얼려 보세요',
@@ -6120,7 +6152,7 @@ const CHANGELOG = [
            '"태어난 곳" 보기가 정확해졌어요. 원소마다 가장 큰 몫 하나만 칠하던 걸, 빅뱅·별·초신성·중성자별 충돌에서 온 비율대로 나눠 칠해요. 원소를 누르면 몇 %씩인지도 나와요. 지금 들고 있는 폰 회로 속 금도 94%가 중성자별 충돌 출신이에요',
            '원자 모형에 "🔥 불꽃" 버튼이 생겼어요. 원소를 불꽃에 넣으면 불꽃색이 바뀌고, 아래 분광기로 그 빛의 선 스펙트럼이 보여요. 기체는 방전관으로 빛나요. 소금 한 꼬집과 코발트 유리도 있어요',
            '원자 모형에 "μ⁻ 뮤온" 버튼이 생겼어요. 전자 하나를 207배 무거운 뮤온으로 바꾸면, 궤도를 한 칸씩 떨어지며 X선을 내고 핵 바로 옆까지 파고들어요. 2.2마이크로초 뒤엔 붕괴하거나 핵에 삼켜져요',
-           '분자 모형에 "막대" 보기가 생겼어요. 원자 공 없이 결합만 굵은 막대로 그려서, 큰 분자도 뼈대가 한눈에 보여요. 막대는 반씩 양쪽 원자 색이에요',
+           '분자 모형에 "막대" 보기가 생겼어요. 원자 공 없이 결합만 굵은 막대로 그려서, 큰 분자도 뼈대가 한눈에 보여요. 이중결합은 두 줄, 삼중결합은 세 줄이고, 막대는 둥근 원기둥처럼 빛을 받으며 양쪽 원자 색이 가운데서 부드럽게 섞여요',
            '물 결과 창에 "🥄 뜨거운 숟가락"이 생겼어요. 숟가락을 달궈서 물방울을 떨어뜨려 보세요. 더 뜨거우면 더 빨리 사라질까요?',
            '냄새·독 9종이 도감에 들어왔어요: 가스 냄새의 정체(에탄싸이올), 방귀 냄새(메테인싸이올), 발 냄새(아이소발레르산), 스컹크(3-메틸-1-뷰테인싸이올), 똥 냄새인데 꽃 향기(인돌), 코르크 냄새(트라이클로로아니솔), 모기 기피제 DEET, 복어 독 테트로도톡신, 행복 분자 아난다마이드',
            '특수 발견에 카테네인(C₄₈H₉₆)과 로탁세인(C₃₆H₇₄)이 생겼어요. 고리 두 개가 결합 없이 사슬처럼 꿰인 것, 아령에 반지를 끼운 것이에요. 돌려 보면 진짜로 꿰여 있어요',
@@ -6128,7 +6160,18 @@ const CHANGELOG = [
            '물 결과 창에 "⚠ 위험 정보"가 생겼어요. 꼭 끝까지 읽어 보세요',
            '폰을 좌우로 흔들면 액체가 출렁여요. 기울이기만 하던 예전과 달리, 흔든 만큼 반대쪽으로 쏠렸다가 돌아와요. 세게 흔들면 방울도 몇 개씩 튀어요',
            '물(증류수)을 마실 수 있어요. 마실 때마다 물 분자가 하나씩 줄어들어요. 액체로 볼 때 물 분자 수도 18개에서 34개로 늘렸어요. 수은·브로민 웅덩이도 더 넉넉해졌어요',
-           '방해석 결과 창에 "겹쳐 보기"가 생겼어요. 방해석을 글씨 위에 올리면 글씨가 두 개로 보이고, 돌리면 한쪽 글씨만 빙글 돌아요. 편광판을 대고 돌리면 한쪽씩 사라져요'],
+           '방해석 결과 창에 "겹쳐 보기"가 생겼어요. 방해석을 글씨 위에 올리면 글씨가 두 개로 보이고, 돌리면 한쪽 글씨만 빙글 돌아요. 편광판을 대고 돌리면 한쪽씩 사라져요',
+           '새 물질 4종이 도감에 들어왔어요: 노란 결정인데 자외선에선 초록으로 빛나는 질산우라닐, MRI 찍을 때 혈관에 넣는 가돌리늄 조영제, 망치로 치면 터지는 주황 결정 테트라설퍼 테트라나이트라이드, 크립톤이 들어간 최초의 유기 화합물 HKrCCH. 도감이 440종이 됐어요',
+           '"제논 화합물"을 HKrCCH로 바꿨어요. 화학식이 사플루오린화제논과 똑같아서 같은 물질이 두 번 나오는 것처럼 보였어요. 제논은 이제 플루오린 4개와 정확히 맞춰야 나와요',
+           '남동석이 진짜 결정 구조로 바뀌었어요. 중성자 회절로 잰 원자 위치 그대로이고, 비스듬한 단사정계 단위 세포 상자도 점선으로 그려져요',
+           '과탄산소다와 남동석 모형이 엉망으로 이어지던 걸 고쳤어요. 둘 다 분자가 아니라 이온 덩어리라서 조각조각 떨어진 모양이 맞아요',
+           '벤젠 같은 방향족 고리의 점선 결합이 이제 고리 안쪽에 그려져서 잘 보여요',
+           '도감에서 물질을 열면 결과 창 양옆에 화살표가 생겨요. 눌러서(PC는 ← → 키로도) 이전·다음 물질로 넘길 수 있고, 분류나 검색을 걸어 두면 그 안에서만 넘어가요',
+           '수소와 헬륨을 합치면 빛이 번쩍해요',
+           '형석 광물 모형이 원자 격자로 바뀌어 나오던 걸 고쳤어요',
+           '방금 만든 결과를 다시 보거나 카드로 저장하면, 설명이 그 전 물질 것으로 찍히던 걸 고쳤어요',
+           '기록 백업을 저장하거나 복사하기 전에 한 번 더 물어봐요. 백업 파일에는 내 도감과 업적이 전부 들어 있어요',
+           '업적 그림 몇 개가 새로 그려졌어요'],
       en: ['Tap an achievement to see it as a big card, with a progress bar for ones you have not got yet and arrows to flip through them. Many achievement names and descriptions got a livelier rewrite',
            'Make water (H₂O) and it sometimes shows up under another name. Also, try freezing it',
            'Four neighbours of table salt join the index: lithium, rubidium, caesium and francium chloride. Caesium chloride even has a different crystal shape',
@@ -6137,7 +6180,7 @@ const CHANGELOG = [
            'The "Cosmic origin" view got precise: instead of only the biggest source, each cell is split by how much came from the Big Bang, stars, supernovae and neutron star mergers. Tap an element for the exact percentages. Even the gold in your phone\'s circuits is 94% neutron-star collision',
            'Atoms have a new "🔥 Flame" button: put an element in a flame to see its colour, with its line spectrum through a spectroscope below. Gases glow in a discharge tube instead. Salt and cobalt glass included',
            'Atoms have a new "μ⁻ Muon" button: swap an electron for a muon 207 times heavier and watch it cascade down, flashing X-rays, until it hugs the nucleus. After 2.2 microseconds it decays or gets swallowed',
-           'Molecules have a new "Sticks" view: no atom balls, just thick bonds, so even big molecules show their skeleton at a glance. Each stick is half one atom\'s colour and half the other\'s',
+           'Molecules have a new "Sticks" view: no atom balls, just thick bonds, so even big molecules show their skeleton at a glance. Double bonds get two sticks and triple bonds three, the sticks are shaded like real cylinders, and each one fades from one atom\'s colour to the other\'s',
            'Water has a new "🥄 Hot spoon": heat a spoon and drop water on it. Hotter means it vanishes faster, right?',
            'Nine smells and poisons join the index: the real "gas smell" (ethanethiol), fart smell (methanethiol), foot odour (isovaleric acid), skunk (3-methyl-1-butanethiol), poop that smells like flowers (indole), cork taint (trichloroanisole), the mosquito repellent DEET, pufferfish poison tetrodotoxin and the bliss molecule anandamide',
            'New special finds: catenane (C₄₈H₉₆), two rings linked like a chain, and rotaxane (C₃₆H₇₄), a ring threaded on a dumbbell. No bonds hold them together. Spin them and see',
@@ -6145,7 +6188,18 @@ const CHANGELOG = [
            'Water now has a "⚠ Safety info" button. Read it all the way to the end',
            'Shake your phone and liquids slosh: they lurch the other way and swing back, on top of the old tilt. Shake hard and a few drops splash out',
            'You can drink the water (distilled), one molecule at a time. The liquid view now shows 34 water molecules instead of 18, and the mercury and bromine pools are fuller too',
-           'Calcite has a new "Double image" view: lay it on some writing and you see two copies, rotate it and one copy circles the other, and a polariser makes them fade in turn'],
+           'Calcite has a new "Double image" view: lay it on some writing and you see two copies, rotate it and one copy circles the other, and a polariser makes them fade in turn',
+           'Four new substances join the index: uranyl nitrate (yellow crystals that glow green under UV), a gadolinium MRI contrast agent, tetrasulfur tetranitride (orange crystals that explode if you hit them), and HKrCCH, the first organic compound with krypton. The index now has 440',
+           '"Xenon compound" has been replaced by HKrCCH. It had the same formula as xenon tetrafluoride, so it looked like the same thing twice. Xenon now needs exactly four fluorines',
+           'Azurite now shows its real crystal structure, with atom positions from neutron diffraction and its slanted monoclinic unit cell drawn as a dotted box',
+           'Fixed the tangled models of sodium percarbonate and azurite. Neither is a molecule; they are clusters of ions, so separate pieces is the right picture',
+           'The dashed bonds in aromatic rings like benzene are now drawn on the inside of the ring, where you can actually see them',
+           'Opening an entry from the index adds arrows beside the result. Use them (or ← → on a PC) to flip to the previous or next one; with a filter or search on, they stay inside it',
+           'Combining hydrogen and helium now comes with a flash',
+           'Fixed the fluorite mineral model showing up as an atom lattice',
+           'Fixed replays and saved cards sometimes showing the previous result\'s description',
+           'Backing up your records now asks once more before saving or copying. The backup holds your whole index and every achievement',
+           'A few achievements got new hand-drawn pictures'],
     },
   },
   {
@@ -8554,6 +8608,9 @@ function mixExtra(r, wasNew){
 
 /* 실제 분자 구조 (SMILES). 점(.)으로 나누면 여러 분자가 따로 뜬다 */
 const RX_SMILES = {
+  '쿼세틴': 'O=C1C(O)=C(Oc2cc(O)cc(O)c12)c1ccc(O)c(O)c1',
+  '이플루오린화 이산소': 'FOOF',
+  '하이드로퀴논': 'Oc1ccc(O)cc1',
   '과탄산소다': "[Na+].[Na+].[Na+].[Na+].[O-]C([O-])=O.[O-]C([O-])=O.OO.OO.OO",
   // 작은 분자
   '메테인': 'C', '에테인': 'CC', '프로판': 'CCC', '부탄': 'CCCC',
@@ -11424,8 +11481,8 @@ function rxMatFill(fc, nx1, ny1, nz2, dif, spec, yaw, back){
   if(fc.alt) c = M.fleck || M.vein;
   if(M.fluo){
     if(RX_LIGHT.name === 'uv'){
-      // 자외선을 받으면 스스로 푸르게 빛난다 (형광)
-      const glow = rxMix(c, [110, 150, 255], 0.65);
+      // 자외선을 받으면 스스로 빛난다 (형광): 형석은 파랑, 우라닐은 초록
+      const glow = rxMix(c, M.uvc || [110, 150, 255], 0.65);
       return rxShade(glow, back ? 0.75 : 1.05 + dif * 0.25, back ? 0 : spec * 0.3);
     }
     return rxShade(c, back ? 0.45 : 0.62 + dif * 0.6, back ? 0.05 : Math.min(1, spec * 1.1 + (fc.edge ? 0.12 : 0)));
@@ -12571,7 +12628,10 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     else if(!RX_REDUCED && nm === '삼중수소') model = rxTritium(rnd);
     else if(!RX_REDUCED && nm === '핵산') model = rxDnaHelix();
     else if(!RX_REDUCED && nm === '풀러렌') model = rxFullerene();
-    else if(nm === '(순수) 텅스텐 큐브') model = rxTungstenCube();
+    else if(nm === '(순수) 텅스텐 큐브') model = rxTungstenCube('W');
+    else if(nm === '(순수) 구리 큐브') model = rxTungstenCube('Cu');
+    else if(nm === '(순수) 타이타늄 큐브') model = rxTungstenCube('Ti');
+    else if(nm === '(순수) 금 큐브') model = rxTungstenCube('Au');
     else if(nm === '지구') model = rxPicModel('earth');
     else if(nm === '태양') model = rxPicModel('sun');
     else if(!RX_REDUCED && nm === '탄소 나노튜브') model = rxNanotube();
@@ -13604,7 +13664,7 @@ function achToast(a){
   // 화면이 좁으면 오래된 것부터 밀어낸다
   const cap = innerHeight < 700 ? 2 : 4;
   while(box.children.length > cap) box.firstChild.remove();
-  try{ (a.bad ? SFX.fail : SFX.gem)(); }catch(e){}
+  try{ (a.bad ? SFX.fail : (SFX.ach || SFX.gem))(); }catch(e){}
   requestAnimationFrame(() => el.classList.add('in'));
   setTimeout(() => {
     el.classList.remove('in');
@@ -14726,6 +14786,11 @@ const RX_TMI = {
   '나노키드':'2003년에 학생들한테 화학을 재밌게 알려 주려고 만든 분자예요. 머리 고리의 산소 두 개가 눈이고, 키는 약 2나노미터예요.',
   '아시아티코사이드':'상처 연고 마데카솔의 성분이에요. 화장품에서 시카라고 부르는 병풀의 핵심 성분이기도 해요. 원자가 무려 145개!',
   '젖산':'운동 후 근육통이 젖산 때문이라는 건 오해예요. 젖산은 금방 사라져요.',
+  '쿼세틴':'이름은 라틴어 "참나무 숲(quercetum)"에서 왔어요. 양파에 많다고 알려졌지만, 케이퍼에는 적양파보다 7배 넘게 들어 있어요 (100 g당 234 mg).',
+  '삼플루오린화 염소':'산소보다 센 산화제라 모래, 유리, 석면까지 불태워요. 1950년대에 약 1톤이 쏟아졌을 때 콘크리트 약 30 cm와 그 아래 자갈 약 90 cm를 태워 뚫었어요. 물을 부으면 오히려 폭발하듯 반응해요.',
+  '이플루오린화 이산소':'영하 160 °C에서도 스스로 조금씩 분해돼요. 거의 모든 물질과 격렬하게 반응해서, 얼음에 닿아도 불이 나거나 터졌어요.',
+  '아자이드화 나트륨':'충돌하면 약 0.03초 만에 분해되면서 질소 기체를 확 내뿜어 에어백을 부풀려요. 130 g이 약 67 L의 질소가 돼요. 대신 그 자체는 맹독이에요.',
+  '하이드로퀴논':'폭탄먼지벌레는 이걸 과산화수소와 따로 담아 두었다가 섞어서, 거의 100 °C로 끓는 스프레이를 1초에 약 500번씩 쏴요.',
   'HKrCCH':'2003년 핀란드 연구진이 꽁꽁 얼린 고체 크립톤 속에 아세틸렌을 가두고 빛을 쏴서 만들었어요. 40 K(−233 °C)만 넘어도 부서져서 그 안에서만 존재해요.',
   '존나 큰 폭발':'세슘은 물과 격렬하게 반응해서 기름 속이나 공기 없는 곳에 보관해요.',
   '지각':'지각에서 가장 많은 원소는 산소, 그다음이 규소예요.',
@@ -14934,6 +14999,7 @@ const RX_TMI = {
   '산소 과다':'산소가 너무 많으면 작은 불씨도 크게 번져요. 그래서 산소통 근처는 금연이에요.',
   '삼중수소':'방사선이 아주 약해서 종이 한 장도 못 뚫어요. 그래서 시곗바늘에 써도 괜찮아요.',
   '수소 덩어리':'수소가 아주 많이 모여 스스로 짓눌리면 별이 돼요.',
+  '(순수) 금 큐브':'금이 노란 건 무거운 금 원자 속 전자가 빛의 속도에 가깝게 돌면서 생기는 상대성이론 효과 때문이에요. 이 효과를 빼고 계산하면 금도 은처럼 하얗게 나와요.',
   '금괴':'지금까지 캐낸 금을 다 모아도 한 변이 약 22m인 정육면체 정도예요.',
   '고철':'철은 가장 많이 재활용되는 금속이에요.',
   '히스타민':'모기에 물리거나 꽃가루가 들어오면 몸이 히스타민을 뿜어서 가렵고 콧물이 나요. 알레르기약 이름이 "항히스타민제"인 게 바로 이걸 막아서예요. 피부를 긁으면 그 자국대로 빨갛게 부어오르는 피부묘기증도 주범이 히스타민이에요. 손톱으로 글씨를 쓰면 피부에 그대로 떠올라요.',
@@ -14943,7 +15009,8 @@ const RX_TMI = {
   '네온사인':'네온 자체는 주황빛 빨강만 내요. 다른 색 간판은 다른 기체나 형광 코팅을 써요.',
   '수은 웅덩이':'상온에서 액체인 금속은 수은뿐이에요. 갈륨과 세슘은 30℃ 가까이 되어야 녹아요.',
   '비스무트 결정':'무지갯빛은 색소가 아니라 표면의 얇은 산화막 때문에 생겨요.',
-  '구리 더미':'구리는 세균을 죽이는 성질이 있어서 문손잡이에 쓰기도 해요.',
+  '(순수) 타이타늄 큐브':'타이타늄에 전기를 걸면 표면에 아주 얇은 산화막이 자라요. 그 막에서 반사된 빛끼리 간섭해서 색이 생기는데, 막 두께는 걸어 준 전압으로 정해져요. 물감 없이 두께만으로 내는 색이에요.',
+  '(순수) 구리 큐브':'구리는 세균을 죽이는 성질이 있어서 문손잡이에 쓰기도 해요.',
 };
 
 /* ═══════════════════════════════════════════════════
@@ -15364,8 +15431,13 @@ function rxToolsSync(){
     mn.textContent = LANG === 'en' ? 'TMI: Did you know? Ice is a mineral too!' : 'TMI: 알고계셨나요? 얼음도 광물이랍니다!';
     mn.hidden = false;
   } else {
-    mn.textContent = LANG === 'en' ? '(Recreated as closely as possible)' : '(최대한 비슷하게 구현했어요!)';
-    mn.hidden = !(RX_M && RX_M.real3d);
+    if(RX_M && RX_M.stick){
+      mn.textContent = LANG === 'en' ? '(If this looks a bit off, that is normal. Still fixing it)' : '(이질감 드는 게 정상입니다 (고치는 중))';
+      mn.hidden = false;
+    } else {
+      mn.textContent = LANG === 'en' ? '(Recreated as closely as possible)' : '(최대한 비슷하게 구현했어요!)';
+      mn.hidden = !(RX_M && RX_M.real3d);
+    }
   }
   mn.classList.toggle('tmi', iced);
   document.getElementById('mStage').classList.toggle('light-uv', RX_LIGHT.name === 'uv' && !!(RX_M && RX_M.fluo));
@@ -20018,7 +20090,7 @@ const RX_ORB_T = {
         faqHTML:`<b>모양은 진짜예요.</b> 다만 저렇게 생긴 물체가 있는 건 아니에요.
           <h5>진짜인 것</h5>
           <ul><li>구름이 밝고 진한 곳일수록 전자가 발견될 확률이 높아요.</li>
-          <li>그 확률이 공, 아령, 네 잎 모양으로 퍼지는 건 계산으로 나오고 실험으로도 확인됐어요. 2013년에는 수소 원자의 전자 구름을 직접 찍은 사진이 나왔는데, 계산과 같은 무늬였어요.</li>
+          <li>그 확률이 공, 아령, 네 잎 모양으로 퍼지는 건 계산으로 나오고 실험으로도 확인됐어요. 2013년에는 수소 원자에서 튀어나온 전자를 확대 화면에 받아서 전자 구름의 마디 무늬를 찍었는데, 계산과 같은 무늬였어요. (카메라로 전자를 찰칵 찍은 건 아니에요.)</li>
           <li>2s 안쪽의 작은 공, 그 사이의 텅 빈 껍질도 진짜예요.</li></ul>
           <h5>그림이라서 다른 것</h5>
           <ul><li>전자가 안개 같은 물질인 건 아니에요. 전자 하나가 구름 전체에 퍼져 있다가, 측정하는 순간 한 곳에서 발견돼요. 오른쪽 아래에서 "점"으로 바꾸면 "수천 번 찍어 보면 이렇게 나온다"를 볼 수 있어요.</li>
@@ -20044,7 +20116,7 @@ const RX_ORB_T = {
         faqHTML:`<b>The shapes are real.</b> But there is no object that looks like this.
           <h5>What is real</h5>
           <ul><li>The brighter and denser the cloud, the more likely the electron is found there.</li>
-          <li>That chance spreading out as spheres, dumbbells and clovers comes out of the math and has been confirmed by experiment. In 2013 a hydrogen atom's electron cloud was imaged directly, and the pattern matched.</li>
+          <li>That chance spreading out as spheres, dumbbells and clovers comes out of the math and has been confirmed by experiment. In 2013 researchers knocked electrons out of hydrogen atoms and magnified them onto a detector, revealing the cloud's node pattern, and it matched. (Not a camera snapshot of an electron, though.)</li>
           <li>The small sphere inside 2s and the empty shell around it are real too.</li></ul>
           <h5>What is just the drawing</h5>
           <ul><li>An electron is not a fog-like substance. One electron is spread over the whole cloud until it is measured, and then it shows up in one place. Switch to "Dots" at the bottom right to see thousands of such measurements overlaid.</li>
@@ -20642,8 +20714,8 @@ function rxNucSnap(q){
   q.flash = 1;
   N.drag = null; N.pulls++;
   const s = rxNucT('snap');
-  try{ rxToast('⚡', s[0], s[1]); }catch(e){}
-  try{ if(typeof sndOn !== 'undefined' && sndOn && typeof rxTone === 'function'){ rxTone(520, 0.08, 'triangle', 0.12, 0, 180); rxTone(880, 0.16, 'sine', 0.08, 0.07); } }catch(e){}
+  { const g = SFX.gem; SFX.gem = () => {}; try{ rxToast('⚡', s[0], s[1]); }catch(e){} SFX.gem = g; }   // 알림 반짝 소리는 빼고
+  try{ SFX.quarkSnap(); }catch(e){}
   try{ rxEvt('quarkPull'); }catch(e){}
 }
 function rxNucGo(st, kind){
@@ -21955,9 +22027,9 @@ addEventListener('keydown', e => { if(e.key === 'Escape' && RX_LME.on){ e.stopIm
    경고가 목적이라 양이나 방법은 적지 않는다. 꼬리표가 없다고 안전하다는 뜻은 아니다.
    ═══════════════════════════════════════════════════ */
 const RX_HAZ = {};
-{ const src = {"e3":"사이안화 칼륨,파라콰트,다이옥신,염화수은,니코틴,다이크로뮴산칼륨","e2":"헥사메틸멜라민,메탄올,에틸렌글리콜,사염화탄소,염화탄소 계열,아닐린,아크릴아마이드,염화바륨,아이오딘화납,일산화납,황화카드뮴,웅황,비소화갈륨,브로민산칼륨,플루오린화나트륨,살리실산메틸,팔산화삼우라늄,질산우라닐,DAMN,네오디뮴 자석,염화코발트,페놀프탈레인","e1":"옥살산,아트라진,나프탈렌,멜라민,데나토늄 벤조에이트,캠퍼,붕산,붕사,과망가니즈산칼륨,황산구리,염화구리,이산화망가니즈,브로민화칼륨,질산스트론튬,방연석,땜납,진사,휘안석,아세톤,아이소프로필 알코올,옥테인,과탄산소다","t3":"플루오린화수소산,산성 혼합","t2":"차아염소산나트륨,황산,질산,염산,왕수,아이오딘화수소,수산화나트륨,수산화칼륨,수산화세슘,수산화리튬,과산화나트륨,과산화칼륨,산화칼륨,오산화인,일염화황,이염화황,질산은,페놀,황화나트륨,삼산화황,인산,폼산,염화알루미늄,과아이오딘산,아인산,사플루오린화제논,푸트레신","t1":"생석회,소석회,시멘트,과산화수소,염화철(III),탄산칼륨","b3":"사이안화수소,일산화탄소,황화수소,염화베릴륨,하이드라진,이산화질소,사산화이질소,이산화염소,일산화질소,오존,삼염화붕소","b2":"벤젠,클로로폼,금 아말감,은 아말감,사이아노젠,클로라민,이산화황,일산화이염소,암모니아,폼알데하이드,이황화탄소,이소사이안산,산화베릴륨,뷰타다이엔,다이아세틸","b1":"톨루엔,헥세인,스타이렌,다이클로로메테인,아산화질소,다이에틸 에테르,아세트알데하이드,메틸아민,트라이메틸아민","x3":"아자이도아자이드 아자이드,나이트로글리세린,존나 큰 폭발,루비듐 폭발","x2":"트라이나이트로톨루엔,질산암모늄,폭발,더 큰 폭발,프리즈메인,테트라설퍼 테트라나이트라이드","x1":"아세틸렌,수소 기체,탄화칼슘,초석,프로판,부탄,메테인"}; for(const k in src) src[k].split(',').forEach(n => { RX_HAZ[n] = k; }); }
+{ const src = {"e3":"아자이드화 나트륨,사이안화 칼륨,파라콰트,다이옥신,염화수은,니코틴,다이크로뮴산칼륨","e2":"헥사메틸멜라민,메탄올,에틸렌글리콜,사염화탄소,염화탄소 계열,아닐린,아크릴아마이드,염화바륨,아이오딘화납,일산화납,황화카드뮴,웅황,비소화갈륨,브로민산칼륨,플루오린화나트륨,살리실산메틸,팔산화삼우라늄,질산우라닐,DAMN,네오디뮴 자석,염화코발트,페놀프탈레인","e1":"옥살산,아트라진,나프탈렌,멜라민,데나토늄 벤조에이트,캠퍼,붕산,붕사,과망가니즈산칼륨,황산구리,염화구리,이산화망가니즈,브로민화칼륨,질산스트론튬,방연석,땜납,진사,휘안석,아세톤,아이소프로필 알코올,옥테인,과탄산소다","t3":"삼플루오린화 염소,플루오린화수소산,산성 혼합","t2":"차아염소산나트륨,황산,질산,염산,왕수,아이오딘화수소,수산화나트륨,수산화칼륨,수산화세슘,수산화리튬,과산화나트륨,과산화칼륨,산화칼륨,오산화인,일염화황,이염화황,질산은,페놀,황화나트륨,삼산화황,인산,폼산,염화알루미늄,과아이오딘산,아인산,사플루오린화제논,푸트레신","t1":"생석회,소석회,시멘트,과산화수소,염화철(III),탄산칼륨","b3":"사이안화수소,일산화탄소,황화수소,염화베릴륨,하이드라진,이산화질소,사산화이질소,이산화염소,일산화질소,오존,삼염화붕소","b2":"벤젠,클로로폼,금 아말감,은 아말감,사이아노젠,클로라민,이산화황,일산화이염소,암모니아,폼알데하이드,이황화탄소,이소사이안산,산화베릴륨,뷰타다이엔,다이아세틸","b1":"톨루엔,헥세인,스타이렌,다이클로로메테인,아산화질소,다이에틸 에테르,아세트알데하이드,메틸아민,트라이메틸아민","x3":"아자이도아자이드 아자이드,나이트로글리세린,존나 큰 폭발,루비듐 폭발","x2":"이플루오린화 이산소,트라이나이트로톨루엔,질산암모늄,폭발,더 큰 폭발,프리즈메인,테트라설퍼 테트라나이트라이드","x1":"아세틸렌,수소 기체,탄화칼슘,초석,프로판,부탄,메테인"}; for(const k in src) src[k].split(',').forEach(n => { RX_HAZ[n] = k; }); }
 const RX_TAGSET = {};
-{ const src = {"color":"과망가니즈산칼륨,다이크로뮴산칼륨,라이코펜,베타카로틴,루테인,로손,리보플라빈,메틸렌 블루,산화크로뮴(III),산화구리(I),아스타잔틴,아줄린,안토시아닌,알리자린,엽록소,엽록소 b,인디고,카민산,칸타잔틴,캡산틴,커큐민,코발트 블루,크로세틴,티리언 퍼플,프러시안 블루,플루오레세인,페놀프탈레인,헴 B,황산구리,아이오딘화납,황화카드뮴,염화코발트,이염화황,이산화질소,질화타이타늄,아드레노크롬,웅황,진사,남동석,녹청,라피스라줄리,터키석,로도크로사이트,루비,사파이어,에메랄드,자수정,아쿠아마린,천청석,오팔,녹,염화구리,질산스트론튬,염화바륨,루미놀,루시페린","smell":"스카톨,카다베린,푸트레신,싸이오아세톤,메틸아민,트라이메틸아민,뷰티르산,황화수소,암모니아,제오스민,바닐린,리모넨,멘톨,유제놀,시나말데하이드,벤즈알데하이드,아이소아밀 아세테이트,뷰티르산 에틸,다이아세틸,2-아세틸-1-피롤린,알리신,캠퍼,살리실산메틸,네페탈락톤,아니솔,나프탈렌,아세톤,톨루엔,폼알데하이드,프로판싸이알 S-옥사이드,황화나트륨,이산화황,아세트산에틸,방귀,사이안화수소,벤젠","food":"설탕,포도당,과당,젖당,소금,구연산,말산,타르타르산,젖산,아세트산,글루탐산,글루탐산나트륨,사카린,아스파탐,수크랄로스,에리트리톨,자일리톨,사이코스,카페인,테오브로민,캡사이신,피페린,퀴닌,베이킹소다,콜라,아이스크림,라면 국물,에탄올,탄산,올레산,염화마그네슘,황산칼슘,염화암모늄,벤조산,아스코르브산,니아신,리보플라빈,레티놀,비타민 D,비타민 E,비타민 K","body":"도파민,세로토닌,멜라토닌,아드레날린,코르티솔,옥시토신,바소프레신,히스타민,아데노신,ATP,NAD⁺,헴 B,콜레스테롤,요산,요소,젖산,크레아틴,타우린,트립토판,알라닌,글라이신,글루탐산,레시틴,디옥시리보뉴클레오타이드,핵산,뼈,인산칼슘,침,땀,눈물,오줌,사람 몸,방귀,페닐에틸아민,스쿠알렌,일산화질소,아세트알데하이드","med":"헥사메틸멜라민,아스피린,아세트아미노펜,이부프로펜,페니실린,에리트로마이신,아토목세틴,페닐에프린,클로르헥시딘,아시아티코사이드,살리실산,산화마그네슘,수산화마그네슘,수산화알루미늄,황산바륨,아이오딘화칼륨,황산철(II),나이트로글리세린,아산화질소,다이에틸 에테르,클로로폼,브로민화칼륨,메틸렌 블루,아이소프로필 알코올,과산화수소"}; for(const k in src) RX_TAGSET[k] = new Set(src[k].split(',')); }
+{ const src = {"color":"쿼세틴,과망가니즈산칼륨,다이크로뮴산칼륨,라이코펜,베타카로틴,루테인,로손,리보플라빈,메틸렌 블루,산화크로뮴(III),산화구리(I),아스타잔틴,아줄린,안토시아닌,알리자린,엽록소,엽록소 b,인디고,카민산,칸타잔틴,캡산틴,커큐민,코발트 블루,크로세틴,티리언 퍼플,프러시안 블루,플루오레세인,페놀프탈레인,헴 B,황산구리,아이오딘화납,황화카드뮴,염화코발트,이염화황,이산화질소,질화타이타늄,아드레노크롬,웅황,진사,남동석,녹청,라피스라줄리,터키석,로도크로사이트,루비,사파이어,에메랄드,자수정,아쿠아마린,천청석,오팔,녹,염화구리,질산스트론튬,염화바륨,루미놀,루시페린","smell":"스카톨,카다베린,푸트레신,싸이오아세톤,메틸아민,트라이메틸아민,뷰티르산,황화수소,암모니아,제오스민,바닐린,리모넨,멘톨,유제놀,시나말데하이드,벤즈알데하이드,아이소아밀 아세테이트,뷰티르산 에틸,다이아세틸,2-아세틸-1-피롤린,알리신,캠퍼,살리실산메틸,네페탈락톤,아니솔,나프탈렌,아세톤,톨루엔,폼알데하이드,프로판싸이알 S-옥사이드,황화나트륨,이산화황,아세트산에틸,방귀,사이안화수소,벤젠","food":"쿼세틴,설탕,포도당,과당,젖당,소금,구연산,말산,타르타르산,젖산,아세트산,글루탐산,글루탐산나트륨,사카린,아스파탐,수크랄로스,에리트리톨,자일리톨,사이코스,카페인,테오브로민,캡사이신,피페린,퀴닌,베이킹소다,콜라,아이스크림,라면 국물,에탄올,탄산,올레산,염화마그네슘,황산칼슘,염화암모늄,벤조산,아스코르브산,니아신,리보플라빈,레티놀,비타민 D,비타민 E,비타민 K","body":"도파민,세로토닌,멜라토닌,아드레날린,코르티솔,옥시토신,바소프레신,히스타민,아데노신,ATP,NAD⁺,헴 B,콜레스테롤,요산,요소,젖산,크레아틴,타우린,트립토판,알라닌,글라이신,글루탐산,레시틴,디옥시리보뉴클레오타이드,핵산,뼈,인산칼슘,침,땀,눈물,오줌,사람 몸,방귀,페닐에틸아민,스쿠알렌,일산화질소,아세트알데하이드","med":"헥사메틸멜라민,아스피린,아세트아미노펜,이부프로펜,페니실린,에리트로마이신,아토목세틴,페닐에프린,클로르헥시딘,아시아티코사이드,살리실산,산화마그네슘,수산화마그네슘,수산화알루미늄,황산바륨,아이오딘화칼륨,황산철(II),나이트로글리세린,아산화질소,다이에틸 에테르,클로로폼,브로민화칼륨,메틸렌 블루,아이소프로필 알코올,과산화수소"}; for(const k in src) RX_TAGSET[k] = new Set(src[k].split(',')); }
 const RX_HAZ_T = {
   ko: { e: '먹으면 안 되는 놈', t: '만지면 안 되는 놈', b: '들이마시면 안 되는 놈', x: '터지는 놈', lv: ['', '조심', '위험', '아주 위험'],
         note: '위험한 순서대로 줄 세웠어요. ⚠ 하나는 조심, 둘은 위험, 셋은 아주 적은 양으로도 위험하다는 뜻이에요. 진하고 순수한 물질 기준이라, 콜라 속 인산처럼 묽으면 괜찮은 것도 있어요. 꼬리표가 없다고 안전한 건 아니에요.',
@@ -24047,13 +24119,13 @@ const rxStickCol = (() => {
     if(/^#[0-9a-f]{6}$/i.test(h)){ r = parseInt(h.slice(1, 3), 16); g = parseInt(h.slice(3, 5), 16); b = parseInt(h.slice(5, 7), 16); }
     const dk = k => `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`;
     const lt = k => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
-    return memo[c] = { base: h, edge: dk(0.45), hi: lt(0.55) };
+    return memo[c] = { base: h, edge: dk(0.38), shade: dk(0.68), soft: lt(0.22), hi: lt(0.85) };
   };
 })();
 function rxStickModel(ball){
   if(!ball || !ball.atoms || !(ball.bonds || []).length || ball.bonds.length > RX_STICK_MAX) return null;
   const atoms = ball.atoms.map(a => ({ s: a.s, col: a.col, x: a.x, y: a.y, z: a.z || 0, r: RX_STICK_R * 1.6 }));
-  const m = { atoms, bonds: [], sbonds: ball.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b]), stick: true, noLabel: true,
+  const m = { atoms, bonds: [], sbonds: ball.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b, (b[2] != null ? b[2] : b.o) || 1]), stick: true, noLabel: true,
               real3d: ball.real3d, maxScale: ball.maxScale, yaw0: ball.yaw0, tilt: ball.tilt };
   if(ball.dog) m.dog = true;
   return m;
@@ -24074,17 +24146,72 @@ function rxStickModel(ball){
     if(model && model.stick){
       const NS = 'http://www.w3.org/2000/svg';
       const G = document.createElementNS(NS, 'g'); G.setAttribute('class', 'stick-g');
+      const defs = document.createElementNS(NS, 'defs'); G.appendChild(defs);
       const deg = model.atoms.map(() => 0);
       model.sbonds.forEach(([i, j]) => { deg[i]++; deg[j]++; });
       const segs = [];
-      const mk = (i, j, half) => {
+      const mk = (i, j, half, ord, lane, joint) => {
         const g = document.createElementNS(NS, 'g'), C = rxStickCol(model.atoms[i].col || rxCpk(model.atoms[i].s));
-        const l0 = document.createElementNS(NS, 'line'), l1 = document.createElementNS(NS, 'line'), l2 = document.createElementNS(NS, 'line');
-        l0.setAttribute('stroke', C.edge); l1.setAttribute('stroke', C.base); l2.setAttribute('stroke', C.hi); l2.setAttribute('stroke-opacity', '.75');
-        g.append(l0, l1, l2); G.appendChild(g);
-        segs.push({ i, j, g, l0, l1, l2, z: 0 });
+        // 원기둥처럼: 테두리 → 그늘진 몸통 → 본색 → 밝은 띠 → 반짝임
+        // 원기둥처럼: 막대를 가로지르는 그라데이션 하나 (빛 쪽 밝게 → 반대쪽 어둡게)
+        const L = () => document.createElementNS(NS, 'line');
+        const l0 = L(), l1 = L();
+        const gid = 'stg' + (rxStickModel.gid = (rxStickModel.gid || 0) + 1);
+        const lg = document.createElementNS(NS, 'linearGradient');
+        lg.id = gid; lg.setAttribute('gradientUnits', 'userSpaceOnUse');
+        lg.innerHTML = `<stop offset="0" stop-color="${C.shade}"/><stop offset=".22" stop-color="${C.soft}"/><stop offset=".3" stop-color="${C.hi}"/>` +
+          `<stop offset=".42" stop-color="${C.soft}"/><stop offset=".62" stop-color="${C.base}"/><stop offset="1" stop-color="${C.edge}"/>`;
+        defs.appendChild(lg);
+        l0.setAttribute('stroke', C.edge); l1.setAttribute('stroke', `url(#${gid})`);
+        if(joint){
+          // 마디: 공처럼 둥글게 (빛은 왼쪽 위)
+          const rg = document.createElementNS(NS, 'radialGradient');
+          rg.id = gid + 'j'; rg.setAttribute('cx', '.38'); rg.setAttribute('cy', '.34'); rg.setAttribute('r', '.7');
+          rg.innerHTML = `<stop offset="0" stop-color="${C.hi}"/><stop offset=".22" stop-color="${C.soft}"/><stop offset=".55" stop-color="${C.base}"/><stop offset="1" stop-color="${C.edge}"/>`;
+          defs.appendChild(rg);
+          const cc = document.createElementNS(NS, 'circle'); cc.setAttribute('fill', `url(#${rg.id})`);
+          g.append(cc); G.appendChild(g);
+          segs.push({ i, j, g, cc, z: 0, ord: ord || 1, lane: 0, joint: true });
+          return;
+        }
+        if(i !== j){
+          // 색 섞기: 막대 몸통은 '길이 방향' 그라데이션(자기 색 → 가운데서 상대 색과 반반),
+          // 입체감은 그 위에 얹는 반투명 명암(가로 방향)으로
+          const CB = rxStickCol(model.atoms[j].col || rxCpk(model.atoms[j].s));
+          const mixc = (p, q) => { const h = x => [1, 3, 5].map(k => parseInt(x.slice(k, k + 2), 16));
+            const A = h(p), B = h(q); return `rgb(${A.map((v, k) => Math.round((v + B[k]) / 2)).join(',')})`; };
+          const ag = document.createElementNS(NS, 'linearGradient');
+          ag.id = gid + 'a'; ag.setAttribute('gradientUnits', 'userSpaceOnUse');
+          const same = C.base === CB.base;
+          ag.innerHTML = `<stop offset="0" stop-color="${C.base}"/><stop offset=".62" stop-color="${C.base}"/><stop offset="1" stop-color="${same ? C.base : mixc(C.base, CB.base)}"/>`;
+          defs.appendChild(ag);
+          const sh = document.createElementNS(NS, 'linearGradient');
+          sh.id = gid; sh.setAttribute('gradientUnits', 'userSpaceOnUse');
+          sh.innerHTML = '<stop offset="0" stop-color="#000" stop-opacity=".25"/><stop offset=".2" stop-color="#fff" stop-opacity=".32"/>' +
+            '<stop offset=".3" stop-color="#fff" stop-opacity=".78"/><stop offset=".42" stop-color="#fff" stop-opacity=".28"/>' +
+            '<stop offset=".62" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/>';
+          defs.removeChild(lg); defs.appendChild(sh);
+          const l2 = L();
+          l1.setAttribute('stroke', `url(#${ag.id})`); l2.setAttribute('stroke', `url(#${gid})`);
+          l0.setAttribute('stroke-opacity', '.85');
+          g.append(l0, l1, l2); G.appendChild(g);
+          segs.push({ i, j, g, l0, l1, l2, lg: sh, ag, z: 0, ord: ord || 1, lane: lane || 0, joint: false });
+          return;
+        }
+        g.append(l0, l1); G.appendChild(g);
+        segs.push({ i, j, g, l0, l1, lg, z: 0, ord: ord || 1, lane: lane || 0, joint: !!joint });
       };
-      model.sbonds.forEach(([i, j]) => { mk(i, j); mk(j, i); });
+      // 겹결합: 막대를 2개(이중) · 3개(삼중)로 나란히. 방향족(1.5)은 굵은 막대 + 가는 막대
+      const multi = model.atoms.map(() => false);
+      model.sbonds.forEach(([i, j, o]) => {
+        const lanes = o >= 3 ? [-1, 0, 1] : o >= 1.5 ? [-0.5, 0.5] : [0];
+        if(lanes.length > 1){ multi[i] = multi[j] = true; }
+        lanes.forEach(L => { mk(i, j, 0, o, L); mk(j, i, 0, o, L); });
+      });
+      // 겹결합이 붙은 원자는 막대가 갈라지는 곳을 둥근 마디로 메운다
+      const maxo = model.atoms.map(() => 1);
+      model.sbonds.forEach(([i, j, o]) => { maxo[i] = Math.max(maxo[i], o || 1); maxo[j] = Math.max(maxo[j], o || 1); });
+      model.atoms.forEach((a, i) => { if(deg[i]) mk(i, i, 0, maxo[i], 0, true); });
       // 결합이 없는 원자는 작은 공으로
       model.atoms.forEach((a, i) => { if(!deg[i]) mk(i, i); });
       svg.appendChild(G);
@@ -24116,13 +24243,40 @@ function rxStickModel(ball){
       const x2 = s.i === s.j ? a.X + 0.01 : mx, y2 = s.i === s.j ? a.Y : my;
       const set = (l, ox, oy, ww) => { l.setAttribute('x1', (a.X + ox).toFixed(1)); l.setAttribute('y1', (a.Y + oy).toFixed(1));
         l.setAttribute('x2', (x2 + ox).toFixed(1)); l.setAttribute('y2', (y2 + oy).toFixed(1)); l.setAttribute('stroke-width', ww.toFixed(2)); };
-      const ww = s.i === s.j ? w * 1.8 : w;
-      set(s.l0, 0, 0, ww + 1.6); set(s.l1, 0, 0, ww); set(s.l2, hx, hy, ww * 0.32);
+      if(s.joint){
+        // 막대 끝을 덮는 공: 겹결합이면 막대 묶음 폭만큼
+        const rr = (s.ord >= 3 ? w * 0.66 : s.ord > 1 ? w * 0.64 : w * 0.5) + 0.6;
+        s.cc.setAttribute('cx', a.X.toFixed(1)); s.cc.setAttribute('cy', a.Y.toFixed(1)); s.cc.setAttribute('r', rr.toFixed(2));
+        s.z = a.z + 0.01;
+        return;
+      }
+      let ww = s.i === s.j ? w * 1.8 : w;
+      let ox = 0, oy = 0;
+      if(s.i !== s.j && s.ord > 1){
+        // 화면에서 결합에 수직인 방향으로 나란히 비켜 놓는다
+        let px = -(b.Y - a.Y), py = b.X - a.X; const pl = Math.hypot(px, py) || 1; px /= pl; py /= pl;
+        const thin = s.ord >= 3 ? 0.34 : 0.58;
+        const gap = w * (s.ord >= 3 ? 0.46 : 0.68);
+        ox = px * gap * s.lane; oy = py * gap * s.lane;
+        ww = w * thin;
+        if(s.ord === 1.5 && s.lane > 0) ww = w * 0.36;   // 방향족: 한쪽은 가늘게
+      }
+      set(s.l0, ox, oy, ww + 1.2); set(s.l1, ox, oy, ww); if(s.l2) set(s.l2, ox, oy, ww);
+      if(s.ag){
+        s.ag.setAttribute('x1', (a.X + ox).toFixed(1)); s.ag.setAttribute('y1', (a.Y + oy).toFixed(1));
+        s.ag.setAttribute('x2', (x2 + ox).toFixed(1)); s.ag.setAttribute('y2', (y2 + oy).toFixed(1));
+      }
+      // 그라데이션 축: 막대 가운데에서 빛 쪽(nx,ny) → 반대쪽
+      const cx0 = (a.X + x2) / 2 + ox, cy0 = (a.Y + y2) / 2 + oy, hw = ww / 2;
+      let gx = nx, gy = ny;
+      if(s.i === s.j){ gx = -0.7071; gy = -0.7071; }
+      s.lg.setAttribute('x1', (cx0 + gx * hw).toFixed(1)); s.lg.setAttribute('y1', (cy0 + gy * hw).toFixed(1));
+      s.lg.setAttribute('x2', (cx0 - gx * hw).toFixed(1)); s.lg.setAttribute('y2', (cy0 - gy * hw).toFixed(1));
       s.z = s.i === s.j ? a.z : (a.z * 3 + b.z) / 4;
     });
     // 뒤에 있는 막대부터 그린다
     const sorted = m.segs.slice().sort((p, q) => p.z - q.z);
-    const key = sorted.map(s => s.i + '_' + s.j).join(',');
+    const key = sorted.map(s => s.i + '_' + s.j + '_' + s.lane).join(',');
     if(key !== m.sorder){ m.sorder = key; sorted.forEach(s => m.stickG.appendChild(s.g)); }
     return r;
   };
@@ -26127,14 +26281,23 @@ const RX_WC_TXT = [
   { t: '183.84', u: .925, v: .9, s: .125, a: 'end', f: 'Georgia, \'Times New Roman\', serif', w: 700 },
 ];
 const RX_WC_FRAME = [.055, .055, .945, .945];
-function rxTungstenCube(){
-  const M = { c: [146, 149, 156], metal: 1 };
+/* 큐브 시리즈: 각인 글자 · 금속 색 (tint: 금속 바탕색, mixK: 바탕색이 반사보다 얼마나 진한지) */
+const RX_CUBES = {
+  W:  { txt: RX_WC_TXT, tint: [150, 154, 162], mixK: 0.38, ink: '#26282c' },
+  Cu: { txt: [['29', 'Cu', 'Copper', '99.99%', '63.546']], tint: [214, 124, 78], mixK: 0.7, ink: '#3a1d10' },
+  Ti: { txt: [['22', 'Ti', 'Titanium', '99.5%', '47.867']], tint: [158, 160, 166], mixK: 0.45, ink: '#2a2c30' },
+  Au: { txt: [['79', 'Au', 'Gold', '99.99%', '196.97']], tint: [236, 186, 72], mixK: 0.74, ink: '#4a3006' },
+};
+['Cu', 'Ti', 'Au'].forEach(k => { const [n, sy, nm, pu, wt] = RX_CUBES[k].txt[0]; RX_CUBES[k].txt = RX_WC_TXT.map((t, i) => ({ ...t, t: [n, sy, nm, pu, wt][i] })); });
+function rxTungstenCube(key){
+  const C = RX_CUBES[key || 'W'];
+  const M = { c: C.tint, metal: 1 };
   const faces = RX_WC.map(f => {
     const xs = f.p.map(q => q[0]), ys = f.p.map(q => q[1]), zs = f.p.map(q => q[2]);
     const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys), Math.max(...zs) - Math.min(...zs));
     return { p: f.p.map(q => q.slice()), n: f.n.slice(), m: M, top: f.n[1] < -0.6, front: !!f.f, big: f.p.length === 4 && span > 20 && Math.max(...f.n.map(Math.abs)) > 0.99 };
   });
-  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, tilt: -0.3, yaw0: -0.5, maxScale: 1.9, wCube: true, col: '#9da2a9' };
+  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, tilt: -0.3, yaw0: -0.5, maxScale: 1.9, wCube: true, cubeKey: key || 'W', wTxt: C.txt, tint: C.tint, mixK: C.mixK, ink: C.ink, patina: 0, col: `rgb(${C.tint.join(',')})` };
 }
 {
   const _mt2 = rxMount;
@@ -26147,9 +26310,14 @@ function rxTungstenCube(){
         // 각인: 그림 한 장 대신 글자/테두리를 따로 그려서 원근에 맞게 하나하나 붙인다
         const NS = 'http://www.w3.org/2000/svg';
         const g = document.createElementNS(NS, 'g');
-        g.setAttribute('class', 'wc-decal'); g.style.pointerEvents = 'none';
-        g.innerHTML = '<polygon class="wc-frame" fill="none" stroke="#26282c" stroke-width="1.6" stroke-linejoin="miter"/>' +
-          RX_WC_TXT.map(t => `<g><text x="0" y="0" text-anchor="${t.a}" font-family="${t.f}" font-weight="${t.w}" font-size="${t.s}" fill="#26282c">${t.t}</text></g>`).join('');
+        g.setAttribute('class', 'wc-decal'); g.style.pointerEvents = 'none'; g.setAttribute('text-rendering', 'geometricPrecision'); g.style.letterSpacing = '0'; g.style.wordSpacing = '0';
+        const ink = model.ink || '#26282c';
+        // 음각: 파인 홈의 왼쪽 위 벽은 그늘(어둡게), 오른쪽 아래 벽은 빛을 받음(밝게) → 글자를 세 겹으로
+        const tx = (t, cls, fill, d) => `<text class="${cls}" x="${d}" y="${d}" text-anchor="${t.a}" font-family="${t.f}" font-weight="${t.w}" font-size="${(t.s * 100).toFixed(1)}" fill="${fill}">${t.t}</text>`;
+        g.innerHTML = `<polygon class="wc-frame" fill="none" stroke="${ink}" stroke-width="1.6" stroke-linejoin="miter"/>` +
+          (model.wTxt || RX_WC_TXT).map(t => { const d = (t.s * 100 * 0.035).toFixed(2);
+            return `<g>${tx(t, 'wc-hl', 'rgba(255,255,255,.55)', d)}${tx(t, 'wc-sh', 'rgba(0,0,0,.55)', '-' + d)}${tx(t, 'wc-ink', ink, 0)}</g>`; }).join('') +
+          `<polygon class="wc-frame-hl" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.1" stroke-linejoin="miter"/>`;
         if(lay && lay.parentNode) lay.parentNode.insertBefore(g, lay.nextSibling); else svg.appendChild(g);
         model.wImg = g;
         // 금속 광택용 그라데이션 (큰 면 6개)
@@ -26185,16 +26353,36 @@ function rxTungstenCube(){
         return [m.cx + x1 * m.sc * f, m.cy + y1 * m.sc * f]; };
       // 금속 광택: 면이 비추는 주변 풍경(밝은 하늘 → 어두운 지평선 → 바닥) + 하이라이트
       if(m.polys){
-        const L = RX_LIGHT.L, tint = [150, 154, 162];
-        const env = (rx, ry) => rxMix(rxEnvAt(0.5 + ry * 0.5 + rx * 0.08), tint, 0.38);
+        const L = RX_LIGHT.L;
+        // 구리 녹청: 붉은 구리 → 갈색으로 어두워짐 → 청록 녹청 (patina 0~1)
+        let base = m.tint || [150, 154, 162], mk = m.mixK || 0.38, matte = 1;
+        if(m.cubeKey === 'Cu' && m.patina > 0){
+          const t = m.patina;
+          base = t < 0.4 ? rxMix(m.tint, [104, 58, 38], t / 0.4) : rxMix([104, 58, 38], [86, 148, 126], (t - 0.4) / 0.6);
+          mk = 0.7 + 0.22 * t; matte = 1 - 0.75 * Math.min(1, t / 0.5);
+        }
+        // 각인 색도 같이: 짙은 구리색 → 거무튀튀 → 짙은 청록
+        if(m.cubeKey === 'Cu' && m.wImg){
+          const t = m.patina || 0;
+          const ic = t < 0.4 ? rxMix([58, 29, 16], [34, 22, 16], t / 0.4) : rxMix([34, 22, 16], [22, 70, 56], (t - 0.4) / 0.6);
+          const col = `rgb(${ic.map(Math.round).join(',')})`;
+          if(m._ink !== col){
+            m._ink = col;
+            m.wImg.firstChild.setAttribute('stroke', col);
+            m.wImg.querySelectorAll('.wc-ink').forEach(x => x.setAttribute('fill', col));
+          }
+        }
         m.faces.forEach((fc, i) => {
           const poly = m.polys[i];
           if(!poly || poly.getAttribute('visibility') === 'hidden') return;
+          const tint = fc.ano ? rxAnodCol(fc.ano) : base, k2 = fc.ano ? 0.8 : mk;
+          const env = (rx, ry) => rxMix(rxEnvAt(0.5 + ry * 0.5 + rx * 0.08), tint, k2);
           const [a0, b0, c0] = fc.n;
           const nx = a0 * cY + c0 * sY, nz1 = -a0 * sY + c0 * cY, ny = b0 * cX - nz1 * sX, nzz = b0 * sX + nz1 * cX;
+          fc._nz = nzz;
           const rx = 2 * nzz * nx, ry = 2 * nzz * ny;
           const nd = nx * L[0] + ny * L[1] + nzz * L[2];
-          const sp = Math.pow(Math.max(0, 2 * nd * nzz - L[2]), 30) * 0.9;
+          const sp = Math.pow(Math.max(0, 2 * nd * nzz - L[2]), 30) * 0.9 * matte;
           const lg = m.wGrad && m.wGrad[i];
           if(lg){
             // 면 위로 반사 띠가 지나가게: 보는 각도에 따라 띠 위치가 움직인다
@@ -26223,13 +26411,16 @@ function rxTungstenCube(){
         m.wImg.setAttribute('visibility', 'visible');
         m.wImg.style.opacity = Math.min(1, 0.3 + nz).toFixed(2);
         const [fu0, fv0, fu1, fv1] = RX_WC_FRAME;
-        m.wImg.firstChild.setAttribute('points', [[fu0, fv0], [fu1, fv0], [fu1, fv1], [fu0, fv1]].map(([u, v]) => at(u, v).map(x => x.toFixed(1)).join(',')).join(' '));
+        const fpts = [[fu0, fv0], [fu1, fv0], [fu1, fv1], [fu0, fv1]].map(([u, v]) => at(u, v));
+        m.wImg.firstChild.setAttribute('points', fpts.map(q => q.map(x => x.toFixed(1)).join(',')).join(' '));
+        const fh = m.wImg.lastChild;
+        if(fh && fh.classList && fh.classList.contains('wc-frame-hl')) fh.setAttribute('points', fpts.map(q => (q[0] + 1.1).toFixed(1) + ',' + (q[1] + 1.1).toFixed(1)).join(' '));
         const gs = m.wImg.children;
-        RX_WC_TXT.forEach((t, k) => {
+        (m.wTxt || RX_WC_TXT).forEach((t, k) => {
           // 글자마다 그 자리에서의 기울기(야코비안)로 붙인다: 작은 조각이라 원근 오차가 거의 없음
           const h = 0.02, P0 = at(t.u, t.v), Pu = at(t.u + h, t.v), Pv = at(t.u, t.v + h);
           const a = (Pu[0] - P0[0]) / h, b = (Pu[1] - P0[1]) / h, c = (Pv[0] - P0[0]) / h, d = (Pv[1] - P0[1]) / h;
-          gs[k + 1].setAttribute('transform', `matrix(${a.toFixed(3)} ${b.toFixed(3)} ${c.toFixed(3)} ${d.toFixed(3)} ${P0[0].toFixed(2)} ${P0[1].toFixed(2)})`);
+          gs[k + 1].setAttribute('transform', `matrix(${(a / 100).toFixed(5)} ${(b / 100).toFixed(5)} ${(c / 100).toFixed(5)} ${(d / 100).toFixed(5)} ${P0[0].toFixed(2)} ${P0[1].toFixed(2)})`);
         });
       }
     }
@@ -26416,6 +26607,899 @@ try{ if(RX_TAGSET.med) RX_TAGSET.med.add('가돌리늄 조영제'); }catch(e){}
 }
 /* 예전 '제논 화합물' 기록 정리 */
 try{ if(found.has('제논 화합물')){ found.delete('제논 화합물'); saveFound(); } }catch(e){}
+</script>
+
+<style>
+  .rx-stage.light-uv.uv-green::before{background:radial-gradient(circle,#3dff6a 0%,transparent 62%);opacity:.42}
+  .rx-stage.light-uv.uv-green #mMol{filter:drop-shadow(0 0 12px rgba(80,255,120,.75))}
+</style>
+<script>
+/* 질산우라닐: 노란 결정 보기 + 자외선(UV)을 켜면 초록으로 형광 */
+Object.assign(RXT.ko, { lightUvUranyl:'자외선: 우라닐 이온이 보이지 않는 빛을 받아 초록빛으로 다시 내뿜어요 (형광)', rxTabCrystal:'결정' });
+Object.assign(RXT.en, { lightUvUranyl:'UV light: the uranyl ions soak up invisible light and give it back as green (fluorescence)', rxTabCrystal:'Crystal' });
+{
+  const _mn = rxMineral;
+  rxMineral = function(name){
+    if(name === '질산우라닐'){
+      const had = RX_MINERALS[name];
+      RX_MINERALS[name] = { habit: 'topaz', n: 3, mat: { c: [236, 212, 60], clear: 0.62, fluo: 1, uvc: [90, 255, 120] } };
+      let m = null;
+      try{ m = _mn.call(this, name); }finally{ if(had) RX_MINERALS[name] = had; else delete RX_MINERALS[name]; }
+      if(m){ m.fluo = true; m.uvNote = 'lightUvUranyl'; }
+      return m;
+    }
+    return _mn.apply(this, arguments);
+  };
+  const _rr2 = rxRender;
+  rxRender = function(){
+    const r = _rr2.apply(this, arguments);
+    try{
+      const raw = RX && RX.raw, tm = document.getElementById('mTabMin');
+      if(tm && raw === '질산우라닐' && tm.dataset.v === 'min') tm.textContent = rt('rxTabCrystal');
+    }catch(e){}
+    return r;
+  };
+  const _ts = rxToolsSync;
+  rxToolsSync = function(){
+    const r = _ts.apply(this, arguments);
+    try{ document.getElementById('mStage').classList.toggle('uv-green', !!(RX_M && RX_M.uvNote === 'lightUvUranyl')); }catch(e){}
+    return r;
+  };
+}
+/* 삼플루오린화 염소: T자 모양 (Cl–F 축 1.70 Å ×2, 적도 1.60 Å, F–Cl–F 약 87.5°)
+   아자이드화 나트륨: Na⁺ 하나 + 일직선 N₃⁻ (N–N 1.16 Å) */
+{
+  const _cr7 = rxCrystal;
+  rxCrystal = function(formula, name){
+    const S = 28;
+    if(name === '삼플루오린화 염소'){
+      const a = 87.5 * Math.PI / 180, ax = 1.70, eq = 1.60;
+      const A = [rxAt('Cl', 0, 0, 0, 16), rxAt('F', eq * S, 0, 0, 16),
+                 rxAt('F', -ax * Math.cos(a) * S, -ax * Math.sin(a) * S, 0, 16), rxAt('F', -ax * Math.cos(a) * S, ax * Math.sin(a) * S, 0, 16)];
+      return { atoms: A, bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1]], real3d: true, tilt: -0.25, yaw0: 0.4, maxScale: 1.9 };
+    }
+    if(name === '아자이드화 나트륨'){
+      const A = [rxAt('Na', -2.9 * S, 0.9 * S, 0, 16), rxAt('N', -1.16 * S, 0, 0, 16), rxAt('N', 0, 0, 0, 16), rxAt('N', 1.16 * S, 0, 0, 16)];
+      return { atoms: A, bonds: [[1, 2, 2], [2, 3, 2]], real3d: true, tilt: -0.3, yaw0: 0.5, maxScale: 1.8 };
+    }
+    return _cr7.apply(this, arguments);
+  };
+}
+</script>
+
+<style>
+  #tiPanel{position:absolute;left:10px;top:10px;z-index:6;width:min(230px,calc(100% - 20px));padding:9px 11px;border-radius:12px;
+    background:rgba(12,16,24,.9);border:1px solid var(--line2);font-size:12px;color:var(--text);backdrop-filter:blur(4px)}
+  #tiPanel[hidden]{display:none}
+  #tiPanel .tp-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+  #tiPanel input[type=range]{flex:1;min-width:0;accent-color:#9aa4ff}
+  #tiPanel .tp-chip{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.25);flex:none}
+  #tiPanel b{font-variant-numeric:tabular-nums;white-space:nowrap;min-width:46px;text-align:right}
+  #tiPanel .tp-row > span{white-space:nowrap}
+  #tiPanel button{font:inherit;font-size:11.5px;font-weight:700;padding:5px 8px;border-radius:7px;border:1px solid var(--line2);background:#eef1f6;color:#141821;cursor:pointer}
+  #tiPanel button.gh{background:transparent;color:var(--text)}
+</style>
+<script>
+/* 타이타늄 아노다이징: 전압 → 산화막 두께 → 간섭색 (대략값, 판매용 색표 기준. 빨강은 안 나옴) */
+const RX_ANOD = [[0,[158,160,166]],[10,[160,118,64]],[15,[118,78,56]],[17.5,[92,52,112]],[20,[72,52,152]],[22.5,[40,72,190]],[25,[62,112,222]],[27.5,[112,160,230]],
+  [30,[150,180,215]],[40,[176,186,196]],[47.5,[192,190,176]],[50,[222,190,90]],[55,[226,166,82]],[60,[222,140,120]],[62.5,[226,112,162]],[65,[192,92,182]],
+  [70,[150,82,192]],[75,[112,82,202]],[77.5,[72,112,212]],[80,[52,150,202]],[85,[40,172,160]],[87.5,[72,182,122]],[95,[132,196,92]],[100,[172,202,82]]];
+function rxAnodCol(v){
+  for(let i = 1; i < RX_ANOD.length; i++) if(v <= RX_ANOD[i][0]){
+    const [v0, a] = RX_ANOD[i - 1], [v1, b] = RX_ANOD[i]; return rxMix(a, b, (v - v0) / (v1 - v0));
+  }
+  return RX_ANOD[RX_ANOD.length - 1][1];
+}
+Object.assign(RXT.ko, { auPat:'녹 슬게 하기', auNo:'금: "산소 너 싫어." (원자가 촘촘해서가 아니에요. 녹이 잘 스는 구리도 원자 쌓는 방식은 금이랑 똑같아요. 금은 산소랑 붙어 봤자 에너지 이득이 거의 없어서, 녹이 생겨도 금방 다시 떨어져요)', cuPat:'녹청 슬게 하기', cuWipe:'닦기', cuPatNote:'수십 년을 몇 초로: 구리는 먼저 갈색으로 어두워졌다가 청록색 녹청으로 덮여요. 자유의 여신상도 1886년엔 동전색이었어요',
+  tiAno:'아노다이징', tiVolt:'전압', tiApply:'앞면에 전기 걸기', tiRainbow:'면마다 다르게', tiStrip:'벗기기',
+  tiNote:'보이는 면 중 정면에 가장 가까운 면에 걸려요. 돌려 가며 면마다 다른 전압을 걸어 보세요' });
+Object.assign(RXT.en, { auPat:'Let it rust', auNo:'Gold: "Oxygen, I hate you." (Not because the atoms are packed too tight: copper, which corrodes happily, stacks its atoms exactly the same way. Gold gains almost nothing by bonding with oxygen, so any oxide falls apart again)', cuPat:'Let it patinate', cuWipe:'Polish', cuPatNote:'Decades in seconds: copper first darkens to brown, then grows a blue-green patina. The Statue of Liberty was penny-coloured in 1886',
+  tiAno:'Anodise', tiVolt:'Voltage', tiApply:'Zap the front face', tiRainbow:'Different on each face', tiStrip:'Strip',
+  tiNote:'It goes on the face pointing most toward you. Spin the cube and give each face a different voltage' });
+{
+  const _th = rxToolsHTML;
+  rxToolsHTML = function(){
+    let h = _th.apply(this, arguments);
+    const m = RX_M;
+    if(m && m.wCube && m.cubeKey === 'Cu') h += `<button type="button" class="rtool" data-act="cupat" title="${rt(m.patina >= 1 ? 'cuWipe' : 'cuPat')}"><span aria-hidden="true">${m.patina >= 1 ? '✨' : '🟢'}</span><em>${rt(m.patina >= 1 ? 'cuWipe' : 'cuPat')}</em></button>`;
+    if(m && m.wCube && m.cubeKey === 'Au') h += `<button type="button" class="rtool" data-act="aupat" title="${rt('auPat')}"><span aria-hidden="true">🟤</span><em>${rt('auPat')}</em></button>`;
+    if(m && m.wCube && m.cubeKey === 'Ti') h += `<button type="button" class="rtool" data-act="tiano" title="${rt('tiAno')}"><span aria-hidden="true">⚡</span><em>${rt('tiAno')}</em></button>`;
+    return h;
+  };
+  const redraw = () => { try{ rxDraw(RX_YAW, RX_PITCH); }catch(e){} };
+  // 녹슨 정도에 따라 이름과 설명이 바뀐다
+  const CU_ST = [
+    [0,    ['(순수) 구리 큐브', '구리다'], ['(Pure) copper cube', 'Wires everywhere']],
+    [0.15, ['약간 녹슨 구리', '구리가 좀 구려졌스빈다'], ['Slightly tarnished copper', 'The copper got a bit crusty']],
+    [0.45, ['겁나 녹슨 구리', '이제 원래 색이 기억나지 않아요'], ['Seriously tarnished copper', 'Nobody remembers its original colour anymore']],
+    [0.85, ['완전 녹슨 구리', '자유의 여신상 에디션!!'], ['Fully patinated copper', 'Statue of Liberty Edition!!']],
+  ];
+  let cuLast = -1;
+  const cuStage = t => {
+    let k = 0; CU_ST.forEach((c, i) => { if(t >= c[0]) k = i; });
+    if(k === cuLast && t > 0) return; cuLast = k;
+    const [nm, sub] = CU_ST[k][LANG === 'en' ? 2 : 1];
+    const n = document.getElementById('mName'), sb = document.getElementById('mSub');
+    if(n) n.textContent = nm; if(sb) sb.textContent = sub;
+  };
+  const _tool = rxTool;
+  rxTool = function(act, btn){
+    const m = RX_M;
+    if(act === 'cupat' && m && m.cubeKey === 'Cu'){
+      if(m.patina >= 1){ m.patina = 0; redraw(); cuStage(0); rxToolsSync(); return; }
+      rxSay(rt('cuPatNote'), 5000);
+      const t0 = performance.now(), D = 6000;
+      const step = now => { if(RX_M !== m) return; m.patina = Math.min(1, (now - t0) / D); redraw(); cuStage(m.patina);
+        if(m.patina < 1) requestAnimationFrame(step); else rxToolsSync(); };
+      requestAnimationFrame(step);
+      return;
+    }
+    if(act === 'aupat' && m && m.cubeKey === 'Au'){
+      rxSay(rt('auNo'), 5200);
+      try{ document.getElementById('mMol').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 260 }); }catch(e){}
+      return;
+    }
+    if(act === 'tiano' && m && m.cubeKey === 'Ti'){
+      const st = document.getElementById('mStage');
+      let pn = document.getElementById('tiPanel');
+      if(!pn){
+        pn = document.createElement('div'); pn.id = 'tiPanel';
+        pn.addEventListener('pointerdown', e => e.stopPropagation());
+        st.appendChild(pn);
+      } else if(!pn.hidden){ pn.hidden = true; return; }
+      pn.hidden = false;
+      pn.innerHTML = `<div class="tp-row" style="margin-top:0"><span>${rt('tiVolt')}</span><input type="range" min="0" max="100" step="2.5" value="25" id="tiV"><b id="tiVt">25 V</b><span class="tp-chip" id="tiC"></span></div>
+        <div class="tp-row"><button type="button" id="tiGo">${rt('tiApply')}</button></div>
+        <div class="tp-row"><button type="button" class="gh" id="tiRb">🌈 ${rt('tiRainbow')}</button><button type="button" class="gh" id="tiSt">${rt('tiStrip')}</button></div>
+`;
+      rxSay(rt('tiNote'), 4500);
+      const V = pn.querySelector('#tiV');
+      const sync = () => { const v = +V.value; pn.querySelector('#tiVt').textContent = `${v} V`; pn.querySelector('#tiC').style.background = `rgb(${rxAnodCol(v).map(Math.round).join(',')})`; };
+      V.addEventListener('input', sync); sync();
+      const bigs = () => m.faces.filter(f => f.big);
+      pn.querySelector('#tiGo').addEventListener('click', () => {
+        const f = bigs().reduce((a, b) => (b._nz || -9) > (a._nz || -9) ? b : a);
+        f.ano = +V.value || 0; redraw();
+        try{ SFX.tick(); }catch(e){}
+      });
+      pn.querySelector('#tiRb').addEventListener('click', () => { [20, 25, 50, 62.5, 85, 95].forEach((v, i) => { const f = bigs()[i]; if(f) f.ano = v; }); redraw(); });
+      pn.querySelector('#tiSt').addEventListener('click', () => { bigs().forEach(f => { f.ano = 0; }); redraw(); });
+      return;
+    }
+    return _tool.apply(this, arguments);
+  };
+  // 다른 결과로 넘어가면 패널 닫기
+  const _rr3 = rxRender;
+  rxRender = function(){ const p = document.getElementById('tiPanel'); if(p) p.hidden = true; return _rr3.apply(this, arguments); };
+}
+/* 예전 '구리 더미' 기록은 새 이름으로 */
+try{ if(found.has('구리 더미')){ found.delete('구리 더미'); found.add('(순수) 구리 큐브'); saveFound(); } }catch(e){}
+</script>
+
+<style>
+  /* ═══ 원소 타자 ═══ */
+  .ty-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0 6px}
+  .ty-top{display:flex;gap:8px;width:min(560px,100%);align-items:stretch}
+  .ty-top div{flex:1;padding:6px 10px;border:1px solid var(--line2);border-radius:9px;background:rgba(255,255,255,.03);min-width:0}
+  .ty-top u{display:block;text-decoration:none;font-size:10.5px;color:var(--dim)}
+  .ty-top b{font-family:var(--sym);font-weight:600;font-size:17px;white-space:nowrap}
+  .ty-top b.ty-hp{color:#ff6b6b;letter-spacing:2px}
+  .ty-opts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:min(560px,100%)}
+  .ty-opts span{font-size:11px;color:var(--dim);align-self:center;margin:0 2px 0 6px}
+  #tyBoard{position:relative;width:min(560px,100%);height:clamp(250px,46vh,460px);border-radius:12px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 0%,#18233a,#0b0f17 75%);border:1px solid rgba(116,192,252,.22);user-select:none;-webkit-user-select:none;cursor:text}
+  .ty-line{position:absolute;left:0;right:0;height:2px;background:#4dabf7;box-shadow:0 0 10px #4dabf7,0 0 22px rgba(77,171,247,.6);transition:background .2s,box-shadow .2s}
+  .ty-line.hit{background:#ff6b6b;box-shadow:0 0 12px #ff6b6b,0 0 26px rgba(255,107,107,.7)}
+  .ty-line::after{content:"";position:absolute;left:0;right:0;top:2px;height:60px;background:linear-gradient(rgba(77,171,247,.08),transparent)}
+  .ty-w{position:absolute;left:0;top:0;padding:5px 11px;border-radius:9px;border:1.5px solid var(--c,#74c0fc);color:var(--c,#74c0fc);
+    background:rgba(10,14,22,.85);box-shadow:0 0 14px color-mix(in srgb,var(--c,#74c0fc) 35%,transparent);white-space:nowrap;will-change:transform;
+    font-weight:700;font-size:16px;line-height:1.15;text-align:center}
+  .ty-w.sym{font-family:var(--sym);font-size:22px;padding:4px 12px}
+  .ty-w.sym sup{font-size:.45em;vertical-align:1em;margin-right:2px;opacity:.75;font-weight:600}
+  .ty-w i{display:block;font-style:normal;font-size:11px;color:#ffd8a8;margin-top:2px;font-weight:600}
+  .ty-w.boss{--c:#ffd43b;background:linear-gradient(135deg,rgba(60,44,6,.92),rgba(20,16,4,.92));animation:tyBoss .6s ease-in-out infinite alternate}
+  .ty-w.boss::before{content:"???";position:absolute;top:-15px;left:50%;translate:-50% 0;font-size:10px;color:#ffd43b;letter-spacing:2px}
+  @keyframes tyBoss{to{box-shadow:0 0 26px #ffd43b,0 0 50px rgba(255,212,59,.35);filter:brightness(1.2)}}
+  .ty-w.shrugging{animation:tyShrug .45s ease}
+  @keyframes tyShrug{25%{scale:1.18 .82}55%{scale:.92 1.1;rotate:-6deg}80%{rotate:4deg}}
+  .ty-w i.sh{color:#a5d8ff}
+  .ty-w.near{animation:tyNear .3s ease-in-out infinite alternate}
+  @keyframes tyNear{to{box-shadow:0 0 22px #ff6b6b}}
+  .ty-fx{position:absolute;pointer-events:none;font-family:var(--sym);font-weight:700;font-size:14px;color:#8ce99a;text-shadow:0 0 6px #000;animation:tyFx .8s ease forwards}
+  @keyframes tyFx{to{transform:translateY(-30px);opacity:0}}
+  .ty-in{width:min(560px,100%);display:flex;gap:6px}
+  .ty-in input{flex:1;min-width:0;font:inherit;font-size:17px;padding:10px 14px;border-radius:10px;border:1.5px solid #4dabf7;background:#0d131d;color:var(--text);outline:none}
+  .ty-in input:focus{box-shadow:0 0 0 3px rgba(77,171,247,.25)}
+  .ty-in input.bad{border-color:#ff6b6b;animation:tyShake .25s linear}
+  .ty-in input.good{border-color:#69db7c}
+  @keyframes tyShake{25%{translate:-5px 0}50%{translate:5px 0}75%{translate:-3px 0}}
+  .ty-in button{font:inherit;font-size:13px;font-weight:700;padding:0 14px;border-radius:10px;border:1px solid var(--line2);background:none;color:var(--text);cursor:pointer}
+  #tyOver{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;padding:18px;background:rgba(6,9,14,.86);z-index:5}
+  #tyOver.on{display:flex}
+  #tyOver h3{font-size:22px}
+  #tyOver p{font-size:13px;color:var(--dim);line-height:1.55;word-break:keep-all;max-width:380px}
+  #tyOver p b{color:var(--text)}
+  #tyOver .ty-miss{font-size:12px;color:#ffc9c9}
+  #tyOver button{font:inherit;font-size:14px;font-weight:700;padding:9px 20px;border-radius:999px;border:1.5px solid #4dabf7;background:rgba(77,171,247,.12);color:#d0ebff;cursor:pointer}
+  .ty-tip{position:absolute;left:50%;top:14px;transform:translate(-50%,-8px);z-index:4;padding:7px 13px;border-radius:10px;background:#fff3bf;color:#1b1f27;
+    font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.4);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+  .ty-tip.on{opacity:1;transform:translate(-50%,0)}
+  .ty-tip b{color:#e8590c;font-family:var(--sym)}
+  .ty-in input::placeholder{font-size:14px}
+  .ty-note{font-size:11.5px;color:var(--dim);text-align:center;word-break:keep-all;max-width:560px;line-height:1.5}
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   미니게임: 원소 타자 (학습 창 탭)
+   떨어지는 원소 이름 → 기호 / 기호 → 이름을 쳐서 없앤다.
+   파란 선에 닿으면 위로 튕겼다가 빙글빙글 돌며 빠르게 떨어진다(목숨 -1).
+   ═══════════════════════════════════════════════════ */
+const RX_TY_T = {
+  ko: { tab: '⌨ 원소 타자', score: '점수', best: '최고', lv: '레벨', hp: '목숨',
+        m_sym: '이름 → 기호', m_name: '기호 → 이름', m_mix: '섞어서',
+        d_easy: '1~20번', d_normal: '1~56번', d_hard: '118개 전부',
+        mode: '문제', range: '범위',
+        start: '시작', again: '다시 하기', resume: '계속', paused: '일시정지',
+        ph: '여기에 입력하고 엔터', enter: '입력',
+        ph_sym: '이름이 떨어지면 기호를 쳐요 (수소 → H)', ph_name: '기호가 떨어지면 이름을 쳐요 (H → 수소)', ph_mix: '이름이면 기호, 기호면 이름 (수소 ↔ H)',
+        copy: (a, b) => `따라 치는 거 아니에요 ㅋ <b>${a}</b> → <b>${b}</b>`,
+        intro: '위에서 원소가 떨어져요. 파란 선에 닿기 전에 답을 치면 사라져요.',
+        note: '기호 문제는 한/영 안 바꾸고 쳐도 알아들어요. 옛 이름(나트륨=소듐, 망간, 요오드…)도 받아요.',
+        over: '게임 오버', missed: '놓친 원소', newBest: '최고 기록!',
+        shrug: '…반응 안 함', bossMiss: '아직 발견 안 됨', bossHit: '발견!?',
+        lines: [[0, '원소들이 단체로 탈출했어요'], [150, '화학 시간에 졸았던 사람 수준'], [500, '평범한 화학 수업 수준'],
+                [1000, '화학 선생님이 좋아할 실력'], [2000, '주기율표를 외운 사람이 실존했네요'], [4000, '혹시 원소예요?']] },
+  en: { tab: '⌨ Element Typing', score: 'Score', best: 'Best', lv: 'Level', hp: 'Lives',
+        m_sym: 'Name → Symbol', m_name: 'Symbol → Name', m_mix: 'Mixed',
+        d_easy: '1–20', d_normal: '1–56', d_hard: 'All 118',
+        mode: 'Type', range: 'Range',
+        start: 'Start', again: 'Play again', resume: 'Resume', paused: 'Paused',
+        ph: 'Type here and hit Enter', enter: 'Enter',
+        ph_sym: 'Names fall, you type the symbol (Hydrogen → H)', ph_name: 'Symbols fall, you type the name (H → Hydrogen)', ph_mix: 'Name → symbol, symbol → name',
+        copy: (a, b) => `Not a copy-typing game lol. <b>${a}</b> → <b>${b}</b>`,
+        intro: 'Elements fall from the top. Type the answer before they touch the blue line.',
+        note: 'Alternate spellings like Aluminum, Cesium and Sulphur count too.',
+        over: 'Game over', missed: 'You missed', newBest: 'New best!',
+        shrug: '…not reacting', bossMiss: 'not discovered yet', bossHit: 'discovered!?',
+        lines: [[0, 'The elements staged a mass escape'], [150, 'Napped through chemistry class'], [500, 'Solid average chemistry student'],
+                [1000, 'Your chemistry teacher would be proud'], [2000, 'Someone actually memorized the periodic table'], [4000, 'Are you an element?']] }
+};
+const rxTyT = () => RX_TY_T[LANG === 'en' ? 'en' : 'ko'];
+const RX_TY_ALIAS_KO = { Na: ['소듐'], K: ['포타슘'], F: ['불소'], I: ['요오드'], Cr: ['크롬'], Mn: ['망간'], Ge: ['게르마늄'], Br: ['브롬'],
+  Mo: ['몰리브덴'], Sb: ['안티몬'], La: ['란탄'], Ta: ['탄탈'], Si: ['실리콘'], Xe: ['크세논'], Ti: ['티타늄', '티탄'], Bi: ['비스무스'],
+  Uue: ['우눈엔늄', '우눈엔눔', '우누넨니움'], Se: ['셀렌'], Te: ['텔루르'], Nb: ['니오븀'], Pt: ['플래티넘'], Er: ['에르븀'], Tb: ['테르븀'], Yb: ['이테르븀'], Pa: ['프로탁티늄'] };
+const RX_TY_ALIAS_EN = { Al: ['aluminum'], Cs: ['cesium'], S: ['sulphur'] };
+/* 한글 자판 그대로 친 것 → QWERTY (기호 문제용) */
+const rxTyQwerty = (() => {
+  const CHO = 'rRseEfaqQtTdwWczxvg'.split('').map((c, i) => c), CHOK = ['r','R','s','e','E','f','a','q','Q','t','T','d','w','W','c','z','x','v','g'];
+  const JUNG = ['k','o','i','O','j','p','u','P','h','hk','ho','hl','y','n','nj','np','nl','b','m','ml','l'];
+  const JONG = ['','r','R','rt','s','sw','sg','e','f','fr','fa','fq','ft','fx','fv','fg','a','q','qt','t','T','d','w','c','z','x','v','g'];
+  const COMPAT = {'ㄱ':'r','ㄲ':'R','ㄳ':'rt','ㄴ':'s','ㄵ':'sw','ㄶ':'sg','ㄷ':'e','ㄸ':'E','ㄹ':'f','ㄺ':'fr','ㄻ':'fa','ㄼ':'fq','ㄽ':'ft','ㄾ':'fx','ㄿ':'fv','ㅀ':'fg',
+    'ㅁ':'a','ㅂ':'q','ㅃ':'Q','ㅄ':'qt','ㅅ':'t','ㅆ':'T','ㅇ':'d','ㅈ':'w','ㅉ':'W','ㅊ':'c','ㅋ':'z','ㅌ':'x','ㅍ':'v','ㅎ':'g',
+    'ㅏ':'k','ㅐ':'o','ㅑ':'i','ㅒ':'O','ㅓ':'j','ㅔ':'p','ㅕ':'u','ㅖ':'P','ㅗ':'h','ㅘ':'hk','ㅙ':'ho','ㅚ':'hl','ㅛ':'y','ㅜ':'n','ㅝ':'nj','ㅞ':'np','ㅟ':'nl','ㅠ':'b','ㅡ':'m','ㅢ':'ml','ㅣ':'l'};
+  return str => [...str].map(ch => {
+    const c = ch.charCodeAt(0);
+    if(c >= 0xAC00 && c <= 0xD7A3){ const i = c - 0xAC00; return CHOK[Math.floor(i / 588)] + JUNG[Math.floor((i % 588) / 28)] + JONG[i % 28]; }
+    return COMPAT[ch] || ch;
+  }).join('');
+})();
+const RX_TY_UUE = { n: 119, s: 'Uue', ko: '우누넨늄', en: 'Ununennium', c: 'unknown' };
+const RX_TY = { mode: 'sym', diff: 'easy', on: false, paused: false, over: false, words: [], score: 0, hp: 3, combo: 0, ok: 0,
+  lv: 1, spawnT: 0, last: 0, raf: 0, missed: [], composing: false, seq: 0 };
+try{ const sv = rxLS.get('pt_typeOpt', null); if(sv){ if(sv.mode) RX_TY.mode = sv.mode; if(sv.diff) RX_TY.diff = sv.diff; } }catch(e){}
+const rxTyBestKey = () => `pt_typeBest_${RX_TY.mode}_${RX_TY.diff}`;
+const rxTyBest = () => +rxLS.get(rxTyBestKey(), 0) || 0;
+const rxTyNorm = v => String(v || '').replace(/\s+/g, '').toLowerCase();
+function rxTyPool(){
+  const max = { easy: 20, normal: 56, hard: 118 }[RX_TY.diff] || 20;
+  return EL.filter(e => e.n <= max);
+}
+function rxTyAnswers(w){
+  const L = LANG === 'en' ? 'en' : 'ko';
+  if(w.kind === 'sym') return [rxTyNorm(w.e.s)];
+  /* 한국어판에서 영어 이름을 쳐도, 영어판에서 한국어 이름을 쳐도 정답 */
+  return [w.e[L], w.e.ko, w.e.en, ...(RX_TY_ALIAS_KO[w.e.s] || []), ...(RX_TY_ALIAS_EN[w.e.s] || [])].map(rxTyNorm);
+}
+function rxTyGeom(){
+  const b = document.getElementById('tyBoard');
+  return { b, W: b.clientWidth, H: b.clientHeight, line: b.clientHeight - 44 };
+}
+function rxTyHud(){
+  const T = rxTyT(), $ = id => document.getElementById(id);
+  if(!$('tyScore')) return;
+  $('tyScore').textContent = RX_TY.score;
+  $('tyBest').textContent = Math.max(rxTyBest(), RX_TY.score);
+  $('tyLv').textContent = RX_TY.lv + (RX_TY.combo >= 3 ? ` ×${RX_TY.combo}` : '');
+  $('tyHp').textContent = '♥'.repeat(Math.max(0, RX_TY.hp)) + '♡'.repeat(Math.max(0, 3 - RX_TY.hp));
+}
+function rxTySpawn(){
+  const G = rxTyGeom(); if(!G.W) return;
+  const pool = rxTyPool();
+  let e, tries = 0, boss = false;
+  /* 보스: 아직 아무도 못 만든 119번 */
+  if(RX_TY.lv >= 2 && Math.random() < .06 && !RX_TY.words.some(w => w.boss)){ e = RX_TY_UUE; boss = true; }
+  else do { e = pool[Math.floor(Math.random() * pool.length)]; tries++; }
+  while(tries < 12 && RX_TY.words.some(w => w.e.n === e.n));
+  const kind = RX_TY.mode === 'mix' ? (Math.random() < .5 ? 'sym' : 'name') : RX_TY.mode;
+  const L = LANG === 'en' ? 'en' : 'ko';
+  const el = document.createElement('div');
+  el.className = 'ty-w' + (kind === 'name' ? ' sym' : '') + (boss ? ' boss' : '');
+  el.style.setProperty('--c', `var(${(CAT[e.c] || CAT.unknown).v})`);
+  el.innerHTML = kind === 'name' ? `<sup>${e.n}</sup>${e.s}` : e[L];
+  G.b.appendChild(el);
+  const ww = el.offsetWidth, x = 8 + Math.random() * Math.max(0, G.W - ww - 16);
+  const w = { id: ++RX_TY.seq, e, kind, el, x, y: -el.offsetHeight - 4, ww, hh: el.offsetHeight, boss };
+  if(boss) try{ tone(1320, .12, 'sine', .05); tone(1760, .18, 'sine', .04, .1); }catch(e){}
+  el.style.transform = `translate(${x}px,${w.y}px)`;
+  RX_TY.words.push(w);
+}
+function rxTyLoop(ts){
+  RX_TY.raf = 0;
+  if(!RX_TY.on || RX_TY.paused) return;
+  const G = rxTyGeom();
+  const q = document.getElementById('quiz');
+  if(!G.b.isConnected || !q || !q.classList.contains('on') || document.hidden || document.querySelector('#rxFillAsk.on,#achBig.on')){ rxTyPause(); return; }
+  const dt = Math.min(.05, RX_TY.last ? (ts - RX_TY.last) / 1000 : 0); RX_TY.last = ts;
+  const sp = (30 + RX_TY.lv * 6.5) * (G.H / 420);
+  RX_TY.spawnT -= dt;
+  if(RX_TY.spawnT <= 0){
+    rxTySpawn();
+    RX_TY.spawnT = Math.max(.6, 2.3 - RX_TY.lv * .16) * (.8 + Math.random() * .4);
+  }
+  for(const w of [...RX_TY.words]){
+    w.y += sp * dt * (w.boss ? .8 : 1);
+    w.el.style.transform = `translate(${w.x}px,${w.y}px)`;
+    w.el.classList.toggle('near', w.y + w.hh > G.line - 50);
+    if(w.y + w.hh >= G.line) rxTyMiss(w, G);
+  }
+  if(RX_TY.on && !RX_TY.paused) RX_TY.raf = requestAnimationFrame(rxTyLoop);
+}
+/* 선에 닿음 → 위로 툭 튕겼다가 빙글빙글 돌며 가속해서 떨어짐 */
+function rxTyMiss(w, G){
+  RX_TY.words = RX_TY.words.filter(x => x !== w);
+  w.el.querySelectorAll('i').forEach(i => i.remove());
+  if(w.boss){
+    /* 보스는 놓쳐도 목숨 안 깎임: 원래 없는 원소라 그냥 사라짐 */
+    w.el.classList.remove('near');
+    w.el.insertAdjacentHTML('beforeend', `<i>${rxTyT().bossMiss}</i>`);
+    const a = w.el.animate([{ opacity: 1, filter: 'blur(0)' }, { opacity: 1, offset: .4 }, { opacity: 0, filter: 'blur(6px)' }], { duration: 1300, fill: 'forwards' });
+    w.el.style.transform = `translate(${w.x}px,${G.line - w.el.offsetHeight}px)`;
+    a.onfinish = () => w.el.remove();
+    try{ sweep(900, 300, .5, .03); }catch(e){}
+    return;
+  }
+  RX_TY.hp--; RX_TY.combo = 0;
+  RX_TY.missed.push(w.e);
+  const L = LANG === 'en' ? 'en' : 'ko';
+  w.el.classList.remove('near');
+  w.el.insertAdjacentHTML('beforeend', `<i>${w.kind === 'sym' ? w.e.s : w.e[L]}</i>`);
+  const x = w.x, y = G.line - w.el.offsetHeight;
+  const dir = Math.random() < .5 ? -1 : 1, dx = dir * (40 + Math.random() * 70), rot = dir * (260 + Math.random() * 300);
+  w.el.style.transformOrigin = '50% 50%';
+  const a = w.el.animate([
+    { transform: `translate(${x}px,${y}px) rotate(0deg)`, easing: 'cubic-bezier(.15,.75,.35,1)' },
+    { transform: `translate(${x + dx * .25}px,${y - 78}px) rotate(${rot * .12}deg)`, offset: .3, easing: 'cubic-bezier(.65,0,.95,.45)' },
+    { transform: `translate(${x + dx}px,${G.H + 90}px) rotate(${rot}deg)` }
+  ], { duration: 1150, fill: 'forwards' });
+  a.onfinish = () => w.el.remove();
+  const ln = G.b.querySelector('.ty-line'); if(ln){ ln.classList.add('hit'); setTimeout(() => ln.classList.remove('hit'), 380); }
+  try{ sweep(520, 70, .45, .05); }catch(e){}
+  rxTyHud();
+  if(RX_TY.hp <= 0) rxTyEnd();
+}
+function rxTyHit(w){
+  /* 비활성 기체: 한 번은 반응을 안 함. 위로 툭 튕기고 한 번 더 쳐야 사라짐 */
+  if(w.e.c === 'noble' && !w.shrug){
+    w.shrug = true;
+    w.y = Math.max(-6, w.y - 64);
+    w.el.insertAdjacentHTML('beforeend', `<i class="sh">${rxTyT().shrug}</i>`);
+    w.hh = w.el.offsetHeight; w.ww = w.el.offsetWidth;
+    w.el.classList.remove('shrugging'); void w.el.offsetWidth; w.el.classList.add('shrugging');
+    RX_TY.score += 5; RX_TY.combo++;
+    try{ tone(330, .12, 'sine', .05); tone(330, .12, 'sine', .04, .13); }catch(e){}
+    rxTyHud();
+    return;
+  }
+  RX_TY.words = RX_TY.words.filter(x => x !== w);
+  RX_TY.ok++; RX_TY.combo++;
+  const gain = (w.boss ? 100 : 0) + 10 + RX_TY.lv * 3 + Math.min(RX_TY.combo, 10) * 2 + (w.e.n > 86 ? 10 : 0);
+  RX_TY.score += gain;
+  RX_TY.lv = 1 + Math.floor(RX_TY.ok / 8);
+  const b = document.getElementById('tyBoard');
+  const fx = document.createElement('div'); fx.className = 'ty-fx'; fx.textContent = '+' + gain + (w.boss ? ' ' + rxTyT().bossHit : '');
+  if(w.boss){ fx.style.color = '#ffd43b'; fx.style.fontSize = '18px'; try{ [880, 1100, 1320, 1760].forEach((f, i) => tone(f, .14, 'triangle', .05, i * .07)); }catch(e){} }
+  fx.style.left = (w.x + w.ww / 2 - 12) + 'px'; fx.style.top = w.y + 'px'; b.appendChild(fx); setTimeout(() => fx.remove(), 820);
+  w.el.classList.remove('near');
+  const a = w.el.animate([{ transform: `translate(${w.x}px,${w.y}px) scale(1)`, opacity: 1, filter: 'brightness(1)' },
+    { transform: `translate(${w.x}px,${w.y - 6}px) scale(1.35)`, opacity: 0, filter: 'brightness(2.2)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' });
+  a.onfinish = () => w.el.remove();
+  try{ tone(660 + Math.min(RX_TY.combo, 12) * 45, .09, 'triangle', .06); }catch(e){}
+  if(RX_TY.score >= 1000) try{ if(!rxEvtHas('typer1000')) rxEvt('typer1000'); }catch(e){}
+  rxTyHud();
+}
+function rxTyFind(raw){
+  const v = rxTyNorm(raw); if(!v) return null;
+  const q = rxTyNorm(rxTyQwerty(raw));
+  const hits = RX_TY.words.filter(w => { const A = rxTyAnswers(w); return A.includes(v) || (w.kind === 'sym' && A.includes(q)); });
+  if(!hits.length) return null;
+  hits.sort((a, b) => b.y - a.y);
+  return hits[0];
+}
+/* 지금 친 게 다른 원소 답의 앞부분이기도 하면(C → Co, 인 → 인듐) 엔터를 기다림 */
+function rxTyAmbig(raw){
+  const v = rxTyNorm(raw), q = rxTyNorm(rxTyQwerty(raw));
+  return RX_TY.words.some(w => rxTyAnswers(w).some(a => (a.length > v.length && a.startsWith(v)) || (w.kind === 'sym' && a.length > q.length && a.startsWith(q))));
+}
+/* 한글 조합 중에는 입력칸을 건드리면 글자가 되살아나거나 키보드가 닫힘 →
+   조합 중엔 '여기까진 이미 쓴 글자'로 표시만 해 두고, 조합이 끝나면 그때 지운다 */
+function rxTyClear(inp){
+  if(RX_TY.composing) RX_TY.base = inp.value;
+  else { inp.value = ''; RX_TY.base = ''; }
+}
+function rxTyRaw(inp){
+  const b = RX_TY.base, v = inp.value;
+  if(!b) return v;
+  if(!v.startsWith(b)){ RX_TY.base = ''; return v; }
+  if(!RX_TY.composing){ inp.value = v.slice(b.length); RX_TY.base = ''; return inp.value; }
+  return v.slice(b.length);
+}
+function rxTyFlash(inp, cls){ inp.classList.remove('good', 'bad'); void inp.offsetWidth; inp.classList.add(cls); setTimeout(() => inp.classList.remove(cls), 300); }
+function rxTyInput(inp, enter){
+  if(!RX_TY.on || RX_TY.paused) return;
+  const raw = rxTyRaw(inp);
+  const w = rxTyFind(raw);
+  if(w && (enter || !rxTyAmbig(raw))){
+    /* 숨은 업적: 한/영 안 바꾸고 기호 맞히기 */
+    if(w.kind === 'sym' && /[ㄱ-ㅣ가-힣]/.test(raw)){ try{ const n = (+rxLS.get('pt_tyKo', 0) || 0) + 1; rxLS.set('pt_tyKo', n); if(n >= 10) rxEvt('tyKo10'); }catch(e){} }
+    rxTyHit(w); rxTyFlash(inp, 'good'); rxTyClear(inp); return; }
+  if(enter && rxTyNorm(raw)){
+    /* 떨어지는 글자를 그대로 따라 쳤으면 알려 줌 */
+    const L = LANG === 'en' ? 'en' : 'ko', v = rxTyNorm(raw);
+    const cp = RX_TY.words.find(w => rxTyNorm(w.kind === 'sym' ? w.e[L] : w.e.s) === v || (w.kind === 'sym' && [w.e.ko, w.e.en].map(rxTyNorm).includes(v)));
+    if(cp) rxTyTip(rxTyT().copy(cp.kind === 'sym' ? cp.e[L] : cp.e.s, cp.kind === 'sym' ? cp.e.s : cp.e[L]));
+    RX_TY.combo = 0; rxTyHud(); rxTyFlash(inp, 'bad');
+    try{ tone(150, .13, 'square', .045); }catch(e){}
+    rxTyClear(inp);
+  }
+}
+function rxTyTip(html){
+  const b = document.getElementById('tyBoard'); if(!b) return;
+  let t = b.querySelector('.ty-tip');
+  if(!t){ t = document.createElement('div'); t.className = 'ty-tip'; b.appendChild(t); }
+  t.innerHTML = html; t.classList.remove('on'); void t.offsetWidth; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200);
+}
+function rxTyStart(){
+  cancelAnimationFrame(RX_TY.raf);
+  const b = document.getElementById('tyBoard'); if(!b) return;
+  b.querySelectorAll('.ty-w,.ty-fx').forEach(e => e.remove());
+  Object.assign(RX_TY, { on: true, paused: false, over: false, words: [], score: 0, hp: 3, combo: 0, ok: 0, lv: 1, spawnT: .3, last: 0, missed: [] });
+  document.getElementById('tyOver').classList.remove('on');
+  rxTyHud();
+  const inp = document.getElementById('tyInp'); inp.value = ''; RX_TY.base = ''; inp.focus();
+  RX_TY.raf = requestAnimationFrame(rxTyLoop);
+}
+function rxTyPause(){
+  if(!RX_TY.on || RX_TY.over) return;
+  RX_TY.paused = true; cancelAnimationFrame(RX_TY.raf); RX_TY.raf = 0;
+  const o = document.getElementById('tyOver'); if(!o) return;
+  const T = rxTyT();
+  o.innerHTML = `<h3>${T.paused}</h3><button id="tyGo">${T.resume}</button>`;
+  o.classList.add('on');
+  document.getElementById('tyGo').onclick = rxTyResume;
+}
+function rxTyResume(){
+  if(!RX_TY.on) return rxTyStart();
+  RX_TY.paused = false; RX_TY.last = 0;
+  document.getElementById('tyOver').classList.remove('on');
+  document.getElementById('tyInp').focus();
+  RX_TY.raf = requestAnimationFrame(rxTyLoop);
+}
+function rxTyEnd(){
+  RX_TY.on = false; RX_TY.over = true; cancelAnimationFrame(RX_TY.raf); RX_TY.raf = 0;
+  const T = rxTyT(), L = LANG === 'en' ? 'en' : 'ko';
+  const old = rxTyBest(), nb = RX_TY.score > old;
+  if(nb) rxLS.set(rxTyBestKey(), RX_TY.score);
+  let line = T.lines[0][1]; for(const [m, s] of T.lines) if(RX_TY.score >= m) line = s;
+  const seen = new Set(), miss = RX_TY.missed.filter(e => !seen.has(e.n) && seen.add(e.n)).slice(0, 8)
+    .map(e => `${e[L]} <b>${e.s}</b>`).join(' · ');
+  const o = document.getElementById('tyOver');
+  setTimeout(() => {
+    if(!o.isConnected) return;
+    o.innerHTML = `<h3>${T.over}</h3>
+      <p><b style="font-size:26px;font-family:var(--sym)">${RX_TY.score}</b>${nb && RX_TY.score ? `<br><b style="color:#ffd43b">${T.newBest}</b>` : ''}<br>${line}</p>
+      ${miss ? `<p class="ty-miss">${T.missed}: ${miss}</p>` : ''}
+      <button id="tyGo">${T.again}</button>`;
+    o.classList.add('on');
+    document.getElementById('tyGo').onclick = rxTyStart;
+    rxTyHud();
+  }, 700);
+}
+function renderTyping(){
+  cancelAnimationFrame(RX_TY.raf); RX_TY.raf = 0;
+  Object.assign(RX_TY, { on: false, paused: false, over: false, words: [] });
+  const T = rxTyT();
+  const pick = (k, list) => list.map(v => `<button class="qpick${RX_TY[k] === v ? ' on' : ''}" data-k="${k}" data-v="${v}">${T[(k === 'mode' ? 'm_' : 'd_') + v]}</button>`).join('');
+  qBodyEl.innerHTML = `<div class="ty-wrap">
+    <div class="ty-opts"><span>${T.mode}</span>${pick('mode', ['sym', 'name', 'mix'])}<span>${T.range}</span>${pick('diff', ['easy', 'normal', 'hard'])}</div>
+    <div class="ty-top"><div><u>${T.score}</u><b id="tyScore">0</b></div><div><u>${T.best}</u><b id="tyBest">0</b></div>
+      <div><u>${T.lv}</u><b id="tyLv">1</b></div><div><u>${T.hp}</u><b id="tyHp" class="ty-hp"></b></div></div>
+    <div id="tyBoard"><div class="ty-line"></div>
+      <div id="tyOver" class="on"><h3>${T.tab}</h3><p>${T.intro}<br><b>${T['ph_' + RX_TY.mode]}</b></p><button id="tyGo">${T.start}</button></div></div>
+    <div class="ty-in"><input id="tyInp" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="${T['ph_' + RX_TY.mode] || T.ph}"><button id="tyEnter">${T.enter}</button></div>
+    <div class="ty-note">${T.note}</div>
+  </div>`;
+  const G = rxTyGeom(); G.b.querySelector('.ty-line').style.top = G.line + 'px';
+  rxTyHud();
+  document.getElementById('tyGo').onclick = rxTyStart;
+  qBodyEl.querySelectorAll('.ty-opts .qpick').forEach(btn => btn.addEventListener('click', () => {
+    RX_TY[btn.dataset.k] = btn.dataset.v;
+    try{ rxLS.set('pt_typeOpt', { mode: RX_TY.mode, diff: RX_TY.diff }); }catch(e){}
+    renderTyping();
+  }));
+  const inp = document.getElementById('tyInp');
+  inp.addEventListener('compositionstart', () => { RX_TY.composing = true; });
+  inp.addEventListener('compositionend', () => { RX_TY.composing = false; setTimeout(() => rxTyInput(inp, false), 0); });
+  inp.addEventListener('input', () => rxTyInput(inp, false));
+  inp.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if(e.key === 'Enter' && !e.isComposing && e.keyCode !== 229){ e.preventDefault(); if(!RX_TY.on && !RX_TY.paused) return rxTyStart(); rxTyInput(inp, true); }
+    else if(e.key === 'Enter'){ e.preventDefault(); setTimeout(() => rxTyInput(inp, true), 0); }
+    else if(e.key === ' ' && !e.isComposing && rxTyNorm(rxTyRaw(inp))){ e.preventDefault(); rxTyInput(inp, true); }
+  });
+  document.getElementById('tyEnter').onclick = () => { rxTyInput(inp, true); inp.focus(); };
+  G.b.addEventListener('pointerdown', e => { if(!e.target.closest('button')) setTimeout(() => inp.focus(), 0); });
+}
+addEventListener('resize', () => { const b = document.getElementById('tyBoard'); if(b && b.isConnected){ const G = rxTyGeom(); const l = b.querySelector('.ty-line'); if(l) l.style.top = G.line + 'px'; } });
+document.addEventListener('visibilitychange', () => { if(document.hidden) rxTyPause(); });
+/* 학습 창에 탭 추가 */
+{
+  const _hh = hubHead;
+  hubHead = function(){
+    const r = _hh.apply(this, arguments);
+    const tabs = qHeadEl.querySelector('.hubtabs');
+    if(tabs && !tabs.querySelector('[data-h="type"]')){
+      const b = document.createElement('button');
+      b.className = 'hubt' + (HUB === 'type' ? ' on' : ''); b.dataset.h = 'type'; b.textContent = rxTyT().tab;
+      b.addEventListener('click', () => { HUB = 'type'; openHub(); });
+      tabs.appendChild(b);
+    }
+    if(tabs){ const on = tabs.querySelector('.hubt.on'); if(on) tabs.scrollLeft = Math.max(0, on.offsetLeft - (tabs.clientWidth - on.offsetWidth) / 2); }
+    return r;
+  };
+  const _oh = openHub;
+  openHub = function(){
+    if(HUB !== 'type'){ if(RX_TY.on){ RX_TY.on = false; cancelAnimationFrame(RX_TY.raf); } return _oh.apply(this, arguments); }
+    setFocus(false);
+    QZ.on = false; QZ.q = null; MEM.on = false;
+    clearFill();
+    qBarEl.classList.remove('on');
+    quizEl.classList.add('on');
+    hubHead();
+    renderTyping();
+  };
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'typer', need: () => rxEvtHas('typer1000'),
+    ko: ['타자 좀 치네', '원소 타자 1000점. 끝'], en: ['Types Okay I Guess', '1000 points in Element Typing. That is it'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+try{ RX_ACH_IC.typer = '⌨️'; }catch(e){}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'hanyeong', secret: true, need: () => rxEvtHas('tyKo10'), prog: () => [Math.min(10, +rxLS.get('pt_tyKo', 0) || 0), 10],
+    ko: ['gksdudzlrk rhwkdskTdjdy!', '한/영 안 바꾸고 기호 10개 맞힘. ㅗ도 H임'],
+    en: ['gksdudzlrk rhwkdskTdjdy!', 'Got 10 symbols right with the Korean keyboard still on. (The title is "한영키가 고장났어요!" = "My Korean/English key is broken!" typed with the wrong layout)'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+try{ RX_ACH_IC.hanyeong = '🔣'; }catch(e){}
+</script>
+
+<script>
+/* ═══ 문 열림 소리 리워크: 잠금 해제 철컥 → 공기 빠지는 치익 → 묵직하게 미끄러짐 → 끝에서 쿵 ═══ */
+function rxNoiseEnv(o){
+  if(!sndOn) return;
+  const a = ac(); if(!a) return;
+  const t0 = a.currentTime + (o.delay || 0), dur = o.dur;
+  const n = Math.max(1, Math.floor(a.sampleRate * dur));
+  const buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+  let last = 0;
+  for(let i = 0; i < n; i++){
+    const w = Math.random() * 2 - 1;
+    if(o.brown){ last = (last + .02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
+  }
+  const src = a.createBufferSource(); src.buffer = buf;
+  const f = a.createBiquadFilter(); f.type = o.type || 'lowpass'; f.Q.value = o.q || .7;
+  f.frequency.setValueAtTime(o.f0, t0);
+  if(o.f1) f.frequency.exponentialRampToValueAtTime(o.f1, t0 + dur);
+  const g = a.createGain();
+  g.gain.setValueAtTime(0, t0);
+  for(const [tt, v] of o.env) g.gain.linearRampToValueAtTime(v, t0 + tt * dur);
+  g.gain.linearRampToValueAtTime(0, t0 + dur);
+  src.connect(f); f.connect(g); g.connect(a.destination);
+  src.start(t0); src.stop(t0 + dur + .02);
+}
+/* 금속 울림: 배음이 안 맞는 사인파 몇 개 = 쇳덩이 소리 */
+function rxClang(base, vol, delay, decay){
+  [1, 2.76, 5.40, 8.93].forEach((m, i) => rxTone(base * m, (decay || .9) / (1 + i * .6), 'sine', vol / (1 + i * 1.3), delay));
+}
+SFX.door = function(){
+  /* 1) 잠금 해제: 철컥-철컥 */
+  rxNoiseEnv({ dur: .07, type: 'bandpass', f0: 2600, q: 2, env: [[.05, .22], [.4, .08]] });
+  rxTone(95, .12, 'sine', .2, 0, 60);
+  rxNoiseEnv({ dur: .07, type: 'bandpass', f0: 3200, q: 2, env: [[.05, .18], [.4, .06]], delay: .09 });
+  rxTone(120, .1, 'sine', .14, .09, 70);
+  rxClang(410, .035, .09, .35);
+  /* 2) 공기 빠지는 치익 (필터가 내려가면서 잦아듦) */
+  rxNoiseEnv({ dur: .5, type: 'bandpass', f0: 6500, f1: 1800, q: .9, env: [[.06, .14], [.3, .09], [.8, .02]], delay: .05 });
+  /* 3) 묵직하게 미끄러지는 우르릉 (문 움직임 곡선과 같은 모양) */
+  rxNoiseEnv({ dur: .62, type: 'lowpass', f0: 180, f1: 320, q: 1.2, brown: true, env: [[.15, .25], [.5, .5], [.85, .3]], delay: .04 });
+  rxTone(55, .65, 'sine', .14, .04, 42);
+  rxNoiseEnv({ dur: .6, type: 'bandpass', f0: 900, f1: 1300, q: 6, env: [[.3, .035], [.7, .02]], delay: .08 });   // 레일 긁히는 소리
+  /* 4) 끝까지 열리며 쿵 + 쇳소리 여운 */
+  rxTone(70, .45, 'sine', .26, .6, 38);
+  rxNoiseEnv({ dur: .18, type: 'lowpass', f0: 600, env: [[.04, .3], [.3, .1]], delay: .6 });
+  rxClang(160, .05, .6, 1.2);
+};
+</script>
+
+<script>
+/* ═══ 원소 담기 소리 리워크: 원소마다 다른 소리 ═══
+   가벼운 원소일수록 높고 무거울수록 낮다 · 금속은 쇳소리 "땡", 기체는 유리 "팅" + 바람 "쉭",
+   준금속은 둔한 "똑", 방사성(84번~)은 가이거 계수기 "틱틱틱" · 여러 개 담으면 "또르륵" */
+let RX_PICK = null;
+{
+  const _add = addToMix;
+  addToMix = function(n, count){ RX_PICK = { n, c: Math.max(1, count || 1), t: performance.now() }; return _add.apply(this, arguments); };
+}
+const RX_PK_GAS = new Set([1, 2, 7, 8, 9, 10, 17, 18, 36, 54, 86, 118]);
+function rxPickEl(n, k){
+  const e = EL[n - 1]; if(!e) return false;
+  const f = 1700 * Math.pow(2, -1.6 * (n - 1) / 117);          // H 1700Hz → Og 560Hz
+  const metal = /alkali|alkaline|transition|post|lanthanide|actinide/.test(e.c);
+  const drops = Math.min(5, k);
+  for(let i = 0; i < drops; i++){
+    const d = i * .075, j = f * (0.97 + Math.random() * .06), v = i ? .7 : 1;
+    if(RX_PK_GAS.has(n)){
+      rxBell(j * 1.15, .28, .045 * v, d, [[1, 1, 1], [2.76, .35, .4]]);
+      rxNoiseEnv({ dur: .16, type: 'bandpass', f0: 4200, f1: 2400, q: 1.4, env: [[.15, .05 * v], [.6, .02]], delay: d });
+    } else if(metal){
+      rxBell(j * .9, .5, .05 * v, d, [[1, 1, 1], [2.32, .55, .6], [4.25, .3, .4], [6.8, .14, .25]]);
+      rxTone(150, .07, 'sine', .05 * v, d, 90);
+    } else {                                                   // 준금속·고체 비금속(C, P, S, Se, I…)
+      rxBell(j * .75, .16, .05 * v, d, [[1, 1, 1], [1.5, .3, .5]]);
+      rxNoiseEnv({ dur: .03, type: 'bandpass', f0: 1800, q: 2, env: [[.1, .08 * v]], delay: d });
+    }
+  }
+  if(n >= 84){                                                 // 방사성: 가이거 계수기
+    const clicks = 3 + Math.floor(Math.random() * 4);
+    let t = .05;
+    for(let i = 0; i < clicks; i++){
+      t += .02 + Math.random() * .09;
+      rxNoiseEnv({ dur: .006, type: 'highpass', f0: 2500, env: [[.1, .22]], delay: t });
+    }
+  }
+  return true;
+}
+{
+  const _pick = SFX.pick;
+  SFX.pick = function(){
+    const P = RX_PICK; RX_PICK = null;
+    if(P && performance.now() - P.t < 60){ try{ if(rxPickEl(P.n, P.c)) return; }catch(e){} }
+    return _pick.apply(this, arguments);
+  };
+}
+</script>
+
+<script>
+/* ═══ 조합 실패 소리 리워크: 앱 에러음처럼 낮게 "둥-둥" ═══ */
+SFX.fail = function(){
+  const P = [[1, 1, 1], [2, .25, .5], [3, .1, .3]];
+  rxBell(196, .35, .09, 0, P);
+  rxBell(165, .45, .09, .13, P);
+};
+</script>
+
+<script>
+/* ═══ 업적 달성 소리: 부드러운 말렛 "띵-딩- 디리링~" (올라갔다가 화음으로 내려앉음) ═══ */
+function rxMallet(freq, dur, vol, delay){
+  if(!sndOn) return;
+  const a = ac(); if(!a) return;
+  const t = a.currentTime + (delay || 0), verb = rxVerb();
+  [[1, 1, 1], [2, .28, .55], [3.01, .06, .3]].forEach(([m, amp, len]) => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(freq * m, t);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * amp, t + .012);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur * len);
+    o.connect(g); g.connect(a.destination); if(verb) g.connect(verb);
+    o.start(t); o.stop(t + dur * len + .05);
+  });
+}
+SFX.ach = function(){
+  rxMallet(784, .45, .075, 0);       // G5
+  rxMallet(988, .45, .075, .14);     // B5
+  rxMallet(587, 1.3, .07, .3);       // D5 ┐ 화음으로 내려앉음
+  rxMallet(784, 1.3, .055, .3);      // G5 │
+  rxMallet(1175, 1.1, .03, .33);     // D6 ┘ 반짝
+};
+</script>
+
+<script>
+/* ═══ 조합 시작 소리 리워크: 원소들이 "쉬익" 빨려 들어가며 반짝 아르페지오가 올라가고, 비커가 "팅" ═══ */
+SFX.start = function(){
+  rxNoiseEnv({ dur: .55, type: 'bandpass', f0: 600, f1: 3800, q: 2.5, env: [[.5, .07], [.9, .1]] });
+  [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => rxBell(f, .45, .03, i * .085, [[1, 1, 1], [2.76, .25, .4]]));
+  rxBell(880, .9, .055, .52, [[1, 1, 1], [2.76, .4, .5], [5.4, .15, .3]]);
+  rxBell(2093, .6, .02, .52);
+  rxTone(110, .2, 'sine', .08, .52, 70);
+};
+</script>
+
+<script>
+/* ═══ 쿼크 끈 끊기 소리: 고무줄처럼 "팅-" 끊기고 "뾰옹" 떨림 → 새 쿼크 쌍 "뿅뿅" → 중간자 "슈" 날아감 ═══ */
+SFX.quarkSnap = function(){
+  if(!sndOn) return;
+  const a = ac(); if(!a) return;
+  rxNoiseEnv({ dur: .03, type: 'highpass', f0: 2500, env: [[.05, .35]] });           // 탁 끊김
+  rxTone(90, .1, 'sine', .18, 0, 55);
+  const t = a.currentTime, o = a.createOscillator(), g = a.createGain(), l = a.createOscillator(), lg = a.createGain();
+  o.type = 'triangle'; o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(160, t + .35);
+  l.frequency.value = 28; lg.gain.value = 25; l.connect(lg); lg.connect(o.frequency);   // 끈이 부르르 떨림
+  g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.0001, t + .4);
+  o.connect(g); g.connect(a.destination); o.start(t); l.start(t); o.stop(t + .42); l.stop(t + .42);
+  rxTone(500, .12, 'sine', .07, .12, 1400); rxTone(700, .12, 'sine', .06, .17, 1900);  // 쿼크-반쿼크 쌍 생성
+  rxNoiseEnv({ dur: .5, type: 'bandpass', f0: 3000, f1: 500, q: 3, env: [[.2, .06], [.7, .02]], delay: .2 });   // 중간자 날아감
+};
+</script>
+
+<script>
+/* ═══ 업적 전부 모으면("아니 왜 함?") 종이 꽃가루 파티 ═══ */
+function rxConfetti(){
+  const old = document.getElementById('rxConfetti'); if(old) old.remove();
+  const cv = document.createElement('canvas'); cv.id = 'rxConfetti';
+  cv.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483000';
+  document.body.appendChild(cv);
+  const dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const g = cv.getContext('2d'); g.scale(dpr, dpr);
+  const COL = ['#ff6b6b', '#ffd43b', '#69db7c', '#4dabf7', '#b197fc', '#f783ac', '#ffa94d', '#ffffff'];
+  const less = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const P = [];
+  const add = (x, y, ang, sp, n) => { for(let i = 0; i < n; i++){
+    const a = ang + (Math.random() - .5) * .7, v = sp * (.55 + Math.random() * .6);
+    P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 7, h: 3 + Math.random() * 5,
+      r: Math.random() * 6.28, vr: (Math.random() - .5) * .3, fl: Math.random() * 6.28, vf: .08 + Math.random() * .14,
+      c: COL[Math.floor(Math.random() * COL.length)], round: Math.random() < .2 }); } };
+  const n = less ? 40 : 130, sp = Math.max(14, Math.min(24, H / 38));
+  add(0, H, -Math.PI / 2 + .55, sp, n);                       // 왼쪽 아래 대포
+  add(W, H, -Math.PI / 2 - .55, sp, n);                       // 오른쪽 아래 대포
+  setTimeout(() => { if(cv.isConnected) for(let i = 0; i < (less ? 30 : 90); i++) add(Math.random() * W, -20 - Math.random() * 120, Math.PI / 2, 2, 1); }, 650);  // 위에서 비처럼
+  try{ rxNoiseEnv({ dur: .12, type: 'highpass', f0: 900, env: [[.03, .4], [.3, .12]] }); rxTone(140, .15, 'sine', .15, 0, 70);
+       rxNoiseEnv({ dur: .12, type: 'highpass', f0: 900, env: [[.03, .35], [.3, .1]], delay: .09 }); rxTone(150, .15, 'sine', .13, .09, 70);
+       for(let i = 0; i < 14; i++) rxNoiseEnv({ dur: .015, type: 'highpass', f0: 3000, env: [[.1, .06]], delay: .2 + Math.random() * .6 }); }catch(e){}
+  const t0 = performance.now(); let last = t0;
+  (function loop(now){
+    if(!cv.isConnected) return;
+    const dt = Math.min(2.5, (now - last) / 16.67); last = now;
+    g.clearRect(0, 0, W, H);
+    for(const p of P){
+      p.vy += .32 * dt; p.vx *= Math.pow(.985, dt); p.vy *= Math.pow(.985, dt);
+      if(p.vy > 3.2) p.vy = 3.2 + (p.vy - 3.2) * .9;          // 종이라 공기 저항으로 천천히 떨어짐
+      p.x += (p.vx + Math.sin(p.fl) * .8) * dt; p.y += p.vy * dt;
+      p.r += p.vr * dt; p.fl += p.vf * dt;
+      if(p.y > H + 30) continue;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.scale(1, Math.cos(p.fl));   // 팔랑팔랑 뒤집힘
+      g.fillStyle = p.c; g.globalAlpha = Math.max(0, Math.min(1, 1.6 - (now - t0) / 4500));
+      if(p.round){ g.beginPath(); g.arc(0, 0, p.h * .8, 0, 6.28); g.fill(); } else g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      g.restore();
+    }
+    if(now - t0 < 7200) requestAnimationFrame(loop); else cv.remove();
+  })(t0);
+}
+{
+  const _at = achToast;
+  achToast = function(a){ const r = _at.apply(this, arguments); if(a && a.id === 'allAch') setTimeout(rxConfetti, 150); return r; };
+  if(typeof rxAchOpen === 'function'){
+    const _ao = rxAchOpen;
+    rxAchOpen = function(id){ const r = _ao.apply(this, arguments); try{ if(id === 'allAch' && loadAch().has('allAch')) rxConfetti(); }catch(e){} return r; };
+  }
+}
+</script>
+
+
+
+<script>
+/* ── 3.7 추가: DNA·RNA 재료 7종 (염기 5 + 당 2) ── */
+(function(){
+  const add = (key, f, ko, sub, en, enSub, smi, tmi) => {
+    EXACT[key] = [f, ko, sub]; REC_EN[ko] = [en, enSub]; RX_SMILES[ko] = smi; RX_TMI[ko] = tmi;
+    try{ if(RX_TAGSET.body) RX_TAGSET.body.add(ko); }catch(e){}
+  };
+  add("C5+H5+N5", "C₅H₅N₅", "아데닌", "DNA·RNA의 A. 사이안화 수소 5개를 합치면 딱 이 화학식", "Adenine", "The A in DNA and RNA. Exactly five hydrogen cyanides stuck together",
+    "Nc1ncnc2[nH]cnc12",
+    "화학식 C₅H₅N₅는 사이안화 수소(HCN) 다섯 개를 그대로 합친 것과 똑같아요. 실제로 1960년 무렵 후안 오로가 사이안화 수소와 암모니아를 데워서 아데닌을 만들어 냈어요. 맹독 다섯 개가 모이면 생명의 글자 하나가 되는 셈이에요. 에너지 화폐 ATP의 A도 이 아데닌이에요.");
+  add("C5+H5+N5+O1", "C₅H₅N₅O", "구아닌", "DNA·RNA의 G. 이름은 새똥에서 왔음", "Guanine", "The G in DNA and RNA. Named after bird droppings",
+    "NC1=Nc2[nH]cnc2C(=O)N1",
+    "1844년 독일 화학자 웅거가 새똥 비료인 구아노(guano)에서 처음 뽑아내서 이름이 구아닌이에요. 물고기 비늘이 은색으로 반짝이는 것도 구아닌 결정 때문이라, 아이섀도나 매니큐어에 펄 성분으로도 넣어요.");
+  add("C4+H5+N3+O1", "C₄H₅N₃O", "사이토신", "DNA·RNA의 C. 잘못하면 유라실로 변신함", "Cytosine", "The C in DNA and RNA. Can turn into uracil by accident",
+    "Nc1cc[nH]c(=O)n1",
+    "NH₂가 떨어져 나가면 유라실로 바뀌어 버려요. 몸속에서 꽤 자주 일어나는 사고예요. DNA가 유라실 대신 타이민을 쓰는 것도 이것 때문이라고 보는 게 유력해요. 그래야 DNA에 유라실이 보이면 '이건 고장 난 사이토신이구나' 하고 알아보고 고칠 수 있거든요.");
+  add("C5+H6+N2+O2", "C₅H₆N₂O₂", "타이민", "DNA에만 있는 T. 유라실에 탄소 하나 붙인 것", "Thymine", "The T, DNA only. Uracil with one extra carbon",
+    "Cc1c[nH]c(=O)[nH]c1=O",
+    "1893년 코셀과 노이만이 송아지 가슴샘(thymus)에서 처음 뽑아내서 이름이 타이민(티민)이에요. 유라실에 메틸기(CH₃) 하나만 더 붙은 모양이에요.");
+  add("C4+H4+N2+O2", "C₄H₄N₂O₂", "유라실", "RNA에만 있는 U. DNA에선 타이민이 대타", "Uracil", "The U, RNA only. DNA uses thymine instead",
+    "O=c1cc[nH]c(=O)[nH]1",
+    "1885년 독일 화학자 베렌트가 요산(uric acid) 관련 물질을 만들다가 이름을 붙였어요. RNA에서는 타이민 자리에 유라실이 들어가요. 메틸기 하나 차이라 짝짓는 상대(아데닌)도 똑같아요.");
+  add("C5+H10+O5", "C₅H₁₀O₅", "리보스", "RNA의 R. 산소 하나만 빼면 DNA 재료", "Ribose", "The R in RNA. Remove one oxygen and it is DNA material",
+    "OCC1OC(O)C(O)C1O",
+    "1891년 에밀 피셔가 이름을 지었는데, 다른 당 '아라비노스(arabinose)'의 글자를 일부 뒤섞어서 만든 이름이에요. 물속에서는 오각형 고리와 일자로 펴진 모양을 왔다 갔다 하지만, RNA 안에서는 고리 모양으로 들어가 있어요.");
+  add("C5+H10+O4", "C₅H₁₀O₄", "디옥시리보스", "DNA의 D. 리보스에서 산소 하나 뺀 것", "Deoxyribose", "The D in DNA. Ribose minus one oxygen",
+    "OCC1OC(O)CC1O",
+    "'디옥시(deoxy)'는 '산소가 빠졌다'는 뜻이에요. 리보스의 2번 탄소에 붙은 OH가 빠지고 H만 남은 모양이에요. 이 OH 하나가 없어서 RNA보다 훨씬 잘 안 끊어지고, 그래서 유전 정보를 오래 보관하는 일은 DNA가 맡아요.");
+})();
+</script>
+
+<script>
+/* ── 3.7 추가: DNA 친구들 3종 ── */
+RX_SMILES_PRE["Cl[Pt](Cl)([NH3])[NH3]"] = {"a": [["Pt", 17.3, 17.3, 0.0, 18], ["Cl", 81.9, 17.3, 0.0, 16], ["Cl", 17.3, 81.9, 0.0, 16], ["N", -39.5, 17.3, 0.0, 16], ["N", 17.3, -39.5, 0.0, 16], ["H", -48.8, 40.2, 13.2, 9.9], ["H", -48.8, -5.5, 13.2, 9.9], ["H", -48.8, 17.3, -26.4, 9.9], ["H", 40.2, -48.8, 13.2, 9.9], ["H", -5.5, -48.8, 13.2, 9.9], ["H", 17.3, -48.8, -26.4, 9.9]], "b": [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], [3, 5, 1], [3, 6, 1], [3, 7, 1], [4, 8, 1], [4, 9, 1], [4, 10, 1]]};   // 시스플라틴: 평면 사각형, Cl 둘이 같은 쪽(cis)
+(function(){
+  const add = (key, f, ko, sub, en, enSub, smi, tmi, haz, tags) => {
+    EXACT[key] = [f, ko, sub]; REC_EN[ko] = [en, enSub]; RX_SMILES[ko] = smi; RX_TMI[ko] = tmi;
+    if(haz) RX_HAZ[ko] = haz;
+    try{ (tags || []).forEach(t => RX_TAGSET[t] && RX_TAGSET[t].add(ko)); }catch(e){}
+  };
+  add("C5+H7+N3+O1", "C₅H₇N₃O", "5-메틸사이토신", "DNA의 다섯 번째 염기. 유전자 끄는 스위치", "5-Methylcytosine", "The fifth base of DNA. A switch that turns genes off",
+    "Cc1c[nH]c(=O)nc1N",
+    "사이토신에 메틸기(CH₃) 하나가 붙은 거예요. DNA 글자는 그대로인데 이게 붙으면 근처 유전자가 꺼지는 경우가 많아서 '다섯 번째 염기'라고도 불러요. 대신 약점이 있어요. NH₂가 떨어져 나가면 바로 타이민이 돼 버려서 수리 장치가 못 알아봐요. 그래서 DNA에서 돌연변이가 제일 잘 생기는 자리 중 하나예요.",
+    "", ["body"]);
+  add("Br1+C21+H20+N3", "C₂₁H₂₀BrN₃", "에티디움 브로마이드", "DNA를 주황색으로 빛나게 하는 염색약", "Ethidium bromide", "The dye that makes DNA glow orange",
+    "[Br-].CC[n+]1c(-c2ccccc2)c2cc(N)ccc2c2ccc(N)cc21",
+    "DNA 염기쌍 사이에 납작하게 끼어 들어가요. 끼어 들어가면 자외선을 비췄을 때 나오는 주황색 빛이 약 20배 세져서, 실험실에서 DNA가 어디 있는지 볼 때 써요. DNA에 끼어드는 녀석이라 돌연변이를 일으킬 수 있어서 장갑 끼고 다뤄요. 더 안전한 대체품도 나와 있지만, 싸서 아직도 많이 써요.",
+    "t2", ["color"]);
+  add("Cl2+H6+N2+Pt1", "Pt(NH₃)₂Cl₂", "시스플라틴", "백금 항암제. 발견 계기는 대장균 감전 실험", "Cisplatin", "A platinum cancer drug, found by electrocuting E. coli",
+    "Cl[Pt](Cl)([NH3])[NH3]",
+    "1965년 로젠버그 연구팀이 백금 전극으로 대장균 배양액에 전기를 걸었더니, 대장균이 자라기는 하는데 분열을 못 해서 원래보다 300배까지 길쭉해졌어요. 범인은 전기가 아니라 전극에서 녹아 나온 백금 화합물이었고, 그게 이 시스플라틴이에요. 1978년 고환암·난소암 치료제로 승인됐어요. 물질 자체는 1845년 무렵 페이로네가 이미 만들어 둔 거였어요.",
+    "e2", ["med"]);
+})();
+</script>
+
+<script>
+/* ── 3.7 추가: 5종 더 (460 맞추기) ── */
+(function(){
+  const add = (key, f, ko, sub, en, enSub, smi, tmi, tags) => {
+    EXACT[key] = [f, ko, sub]; REC_EN[ko] = [en, enSub]; RX_SMILES[ko] = smi; RX_TMI[ko] = tmi;
+    try{ (tags || []).forEach(t => RX_TAGSET[t] && RX_TAGSET[t].add(ko)); }catch(e){}
+  };
+  add("C10+H14+N2+O5", "C₁₀H₁₄N₂O₅", "디옥시티미딘", "타이민 + 디옥시리보스. DNA 글자 T의 완성형", "Deoxythymidine", "Thymine plus deoxyribose. The finished T of DNA",
+    "Cc1cn(C2CC(O)C(CO)O2)c(=O)[nH]c1=O",
+    "방금 본 타이민이랑 디옥시리보스가 손잡은 모양이에요. 여기에 인산이 붙으면 DNA 사슬에 끼워 넣을 수 있는 블록이 돼요. 그냥 '티미딘'이라고도 불러요.", ["body"]);
+  add("C9+H13+N3+O5", "C₉H₁₃N₃O₅", "사이타라빈", "가짜 DNA 블록으로 암세포를 속이는 항암제", "Cytarabine", "A cancer drug that tricks cells with a fake DNA block",
+    "Nc1ccn(C2OC(CO)C(O)C2O)c(=O)n1",
+    "사이토신에 리보스 대신 '아라비노스'라는 당이 붙어 있어요. OH 하나 방향만 다른 거라 세포가 진짜 재료인 줄 알고 DNA에 끼워 넣다가 복제가 멈춰요. 1950년대 카리브해 해면에서 찾은 물질을 본떠 만들었고, 1969년 백혈병 치료제로 승인됐어요. 바다에서 온 최초의 항암제예요.", ["med"]);
+  add("C5+Cl1+H14+N1+O1", "[C₅H₁₄NO]⁺Cl⁻", "콜린", "이름 뜻이 '쓸개즙'. 기억 물질의 재료", "Choline", "The name means bile. Raw material for a memory molecule",
+    "C[N+](C)(C)CCO.[Cl-]",
+    "1862년 슈트레커가 쓸개즙에서 처음 뽑아내서, 그리스어 '콜레(쓸개즙)'를 따 이름을 붙였어요. 몸에서 아세틸콜린을 만드는 재료라서 영양제로도 팔아요. 영양제에는 보통 이렇게 염화물(Cl⁻)로 들어 있어요.", ["body"]);
+  add("C7+Cl1+H16+N1+O2", "[C₇H₁₆NO₂]⁺Cl⁻", "아세틸콜린", "꿈에서 찾은 최초의 신경전달물질", "Acetylcholine", "The first neurotransmitter, found in a dream",
+    "CC(=O)OCC[N+](C)(C)C.[Cl-]",
+    "1921년 오토 뢰비가 꿈에서 실험 아이디어를 떠올렸어요. 개구리 심장 신경을 자극하고 그 액체를 다른 심장에 부었더니 그 심장도 느려졌어요. 신경이 '화학 물질'로 말한다는 첫 증거였고, 그 물질이 아세틸콜린이었어요. 첫날 밤 적은 메모를 못 알아봐서 꿈을 한 번 더 꿔야 했대요. 1936년 노벨상을 받았어요.", ["body"]);
+  add("C6+H13+N1+O2", "C₆H₁₃NO₂", "류신", "근육 만들라고 신호 보내는 아미노산. 이름 뜻은 '하얀'", "Leucine", "The amino acid that tells muscles to grow. Name means white",
+    "CC(C)CC(N)C(=O)O",
+    "1819년 프루스트가 치즈에서 처음 찾았고, 1820년 브라코노가 하얀 결정이라서 그리스어 '레우코스(하얀)'를 따 류신이라고 불렀어요. 헬스 보충제 BCAA의 세 아미노산 중 하나예요.", ["body", "food"]);
+})();
+</script>
+
+<script>
+/* ── 특수 발견: N₆ 헥사나이트로젠 (2025년 처음 만든 질소 동소체) ── */
+(function(){
+  SINGLE.N.push([6, 6, "N₆", "헥사나이트로젠", "2025년에 처음 만든 질소 사슬. 아주 차가워야 버팀"]);
+  REC_EN["헥사나이트로젠"] = ["Hexanitrogen", "A nitrogen chain first made in 2025. Only survives when very cold"];
+  RX_SMILES["헥사나이트로젠"] = "[N-]=[N+]=NN=[N+]=[N-]";
+  RX_SMILES_PRE["[N-]=[N+]=NN=[N+]=[N-]"] = {"a": [["N", -35.6, 64.2, 0.0, 16], ["N", -30.4, 33.1, 0.0, 16], ["N", -20.2, 0.0, 0.0, 16], ["N", 20.2, 0.0, 0.0, 16], ["N", 30.4, -33.1, 0.0, 16], ["N", 35.6, -64.2, 0.0, 16]], "b": [[0, 1, 2], [1, 2, 2], [2, 3, 1], [3, 4, 2], [4, 5, 2]]};   // 가운데 N–N 단일 결합, 꺾인 각 107°, 양 끝은 거의 일자 (트랜스)
+  RX_TMI["헥사나이트로젠"] = "질소로만 된 분자는 공기 속 N₂ 말고는 손에 쥘 수 있는 게 없었어요. 그러다 2025년 독일 기센 대학 연구팀이 N₆를 처음 만들어서 Nature에 실렸어요. 아자이드화 은에 염소 기체를 흘려서 만들고, 영하 196℃(액체 질소 온도)로 식혀야 모아 둘 수 있어요. N₃ 두 개가 가운데에서 손잡은 지그재그 사슬 모양이에요. 분해되면 N₂ 세 개가 되면서 에너지를 엄청 내놓기 때문에, 언젠가 깨끗한 에너지 저장 물질이 될 수도 있대요.";
+})();
 </script>
 </body>
 </html>
