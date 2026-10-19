@@ -25848,7 +25848,7 @@ try{ RX_ACH_IC.boomFamous = '🧨'; }catch(e){}
 <script>
 /* ── 최종 숨은 업적: 나머지 업적 전부 달성 → "아니 왜 함?" ── */
 if(typeof ACH !== 'undefined'){
-  const others = () => ACH.filter(a => a.id !== 'allAch' && a.id !== 'stolenDex');   // 남의 도감 쌔비기는 빼줌
+  const others = () => ACH.filter(a => a.id !== 'allAch' && a.id !== 'stolenDex' && a.id !== 'devtools');   // 남의 도감 쌔비기·콘솔 치트는 빼줌
   ACH.push({ id: 'allAch', secret: true,
     need: () => { const g = loadAch(); return others().every(a => g.has(a.id)); },
     prog: () => { const g = loadAch(); const o = others(); return [o.filter(a => g.has(a.id)).length, o.length]; },
@@ -27454,6 +27454,57 @@ RX_SMILES_PRE["Cl[Pt](Cl)([NH3])[NH3]"] = {"a": [["Pt", 17.3, 17.3, 0.0, 18], ["
   RX_SMILES_PRE["[N-]=[N+]=NN=[N+]=[N-]"] = {"a": [["N", -35.6, 64.2, 0.0, 16], ["N", -30.4, 33.1, 0.0, 16], ["N", -20.2, 0.0, 0.0, 16], ["N", 20.2, 0.0, 0.0, 16], ["N", 30.4, -33.1, 0.0, 16], ["N", 35.6, -64.2, 0.0, 16]], "b": [[0, 1, 2], [1, 2, 2], [2, 3, 1], [3, 4, 2], [4, 5, 2]]};   // 가운데 N–N 단일 결합, 꺾인 각 107°, 양 끝은 거의 일자 (트랜스)
   RX_TMI["헥사나이트로젠"] = "질소로만 된 분자는 공기 속 N₂ 말고는 손에 쥘 수 있는 게 없었어요. 그러다 2025년 독일 기센 대학 연구팀이 N₆를 처음 만들어서 Nature에 실렸어요. 아자이드화 은에 염소 기체를 흘려서 만들고, 영하 196℃(액체 질소 온도)로 식혀야 모아 둘 수 있어요. N₃ 두 개가 가운데에서 손잡은 지그재그 사슬 모양이에요. 분해되면 N₂ 세 개가 되면서 에너지를 엄청 내놓기 때문에, 언젠가 깨끗한 에너지 저장 물질이 될 수도 있대요.";
 })();
+</script>
+
+<script>
+/* ═══ 숨은 (실패) 업적: 개발자 도구 쓰지 마세요 ═══
+   콘솔에서 사이트 함수를 직접 부르면(업적 따기·기록 고치기) 걸린다.
+   콘솔에서 친 코드는 호출 기록(스택) 맨 밑이 파일 주소가 아니라 "<anonymous>"(크롬) / "debugger eval code"(파이어폭스)로 찍히는 걸 이용 */
+function rxFromConsole(){
+  const st = String((new Error()).stack || '');
+  if(/debugger eval code/.test(st)) return true;
+  const lines = st.split('\n').map(x => x.trim()).filter(Boolean);
+  const last = lines[lines.length - 1] || '';
+  return /^at (?:<anonymous>|[\w$.]+ \(<anonymous>)[:\d)]*$/.test(last);
+}
+let RX_DEV_BUSY = false;
+function rxDevCaught(){
+  if(RX_DEV_BUSY) return;
+  try{ if(rxEvtHas('devtools')) return; }catch(e){}
+  RX_DEV_BUSY = true;
+  setTimeout(() => { try{ rxEvt('devtools'); }catch(e){} RX_DEV_BUSY = false; }, 600);   // 콘솔 스택과 분리해서 지급
+}
+{
+  const wrap = (obj, key) => {
+    const f = obj[key]; if(typeof f !== 'function') return;
+    obj[key] = function(){ try{ if(!RX_DEV_BUSY && rxFromConsole()) rxDevCaught(); }catch(e){} return f.apply(this, arguments); };
+  };
+  wrap(window, 'rxEvt'); wrap(rxLS, 'set'); wrap(window, 'saveAch'); wrap(window, 'achToast'); wrap(window, 'checkAch'); wrap(window, 'rxConfetti');
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'devtools', secret: true, bad: true, need: () => rxEvtHas('devtools'),
+    ko: ['개발자 도구 쓰지 마세요', '콘솔로 업적 따다 걸림. 이 업적도 인정 안 됨'],
+    en: ['Stop Using DevTools', 'Caught farming achievements in the console. This one does not count either'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+try{ RX_ACH_IC.devtools = '🕵️'; }catch(e){}
+</script>
+
+<script>
+/* ═══ 콘솔 미끼: 개발자 도구 열면 보이는 안내문 + 아무나 부를 수 있는 "업적주세요()" ═══ */
+window['업적주세요'] = window.giveMeAchievements = function(){
+  rxDevCaught();
+  return LANG === 'en' ? 'Sure, here is one.' : '네, 하나 드릴게요.';
+};
+try{
+  setTimeout(() => {
+    console.log('%c페리오딕//테이블', 'font:700 22px sans-serif;color:#74c0fc');
+    console.log('%c여기서 뭐 하세요?\n업적이 필요하면 %c업적주세요()%c 를 쳐 보세요.\n(English: %cgiveMeAchievements()%c)',
+      'font:14px sans-serif;color:#ced4da', 'font:700 14px monospace;color:#ffd43b', 'font:14px sans-serif;color:#ced4da',
+      'font:700 13px monospace;color:#ffd43b', 'font:13px sans-serif;color:#868e96');
+  }, 1500);
+}catch(e){}
 </script>
 </body>
 </html>
