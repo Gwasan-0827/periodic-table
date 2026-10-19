@@ -27506,5 +27506,20 @@ try{
   }, 1500);
 }catch(e){}
 </script>
+
+<script>
+/* 모바일용 함정: 주소 끝에 #업적주세요 (또는 #cheat) 붙이고 들어오면 걸림 */
+{
+  const chk = () => {
+    let h = ''; try{ h = decodeURIComponent(location.hash || ''); }catch(e){ h = location.hash || ''; }
+    if(/업적\s*주세요|cheat|giveme/i.test(h)){
+      rxDevCaught();
+      try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+    }
+  };
+  addEventListener('hashchange', chk);
+  setTimeout(chk, 1200);
+}
+</script>
 </body>
 </html>
