@@ -29004,6 +29004,8 @@ document.addEventListener('animationend', e => {
   #dexList .dx.open > :not(.dxth){grid-column:2}
   #dexList .dx .dxth{grid-row:1 / span 6;width:62px;height:47px;border-radius:6px;background:radial-gradient(circle at 50% 45%,#1d2433,#11151d);align-self:center}
   #dexList .dx.locked{position:relative}
+  /* 검색·필터로 숨긴 카드는 진짜로 숨긴다 (위의 display:grid 가 hidden 을 덮어써서 다 보였다) */
+  #dexList .dx[hidden]{display:none!important}
   /* 도감 열기: 도감 버튼에서 튀어나오게 */
   #dex.opening{animation:setBg .22s ease-out}
   #dex.opening #dexBox{transform-origin:var(--dox,50%) var(--doy,0);animation:setPop .46s cubic-bezier(.2,1.35,.4,1)}
