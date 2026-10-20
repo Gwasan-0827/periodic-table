@@ -6124,11 +6124,15 @@ const CHANGELOG = [
     items: {
       ko: ['결정 구조도 막대-공 · 공간 채움 · 막대 세 가지로 볼 수 있어요. 결정의 공간 채움은 이온 크기로 그려서, 소금은 큰 Cl⁻ 사이에 작은 Na⁺가 끼어 있는 진짜 모양으로 나와요',
            '투어멀린 · 석영 · 방해석 · 황철석의 결정 구조를 실제 논문의 원자 좌표로 바꿨어요. 투어멀린은 위에서 보면 삼각형 대칭이, 석영은 나선으로 감겨 올라가는 SiO₄와 육각형 통로가, 방해석은 Ca 층과 CO₃ 삼각형 층이 번갈아 쌓인 게, 황철석은 S가 둘씩 짝지어 비스듬히 누운 게 보여요',
+           '비스무트 결정의 원자 배열도 진짜로 바꿨어요. 정육면체가 아니라 주름진 벌집 판이 두 겹씩 짝지어 쌓인 모양이에요',
+           '튜토리얼을 새로 만들었어요. 이제 설명만 넘기는 게 아니라 아스리엘이랑 같이 물을 직접 만들어 봐요. 설정에서 다시 볼 수 있어요',
            '도감에 ▣ 큐브 진열장이 생겼어요. 모은 큐브가 오각형으로 놓여요. 가운데 자리는 번외예요',
            '형석과 다이아몬드 결정에 단위 세포 점선 상자가 생겼어요. 다이아몬드처럼 원자끼리 전자를 나눠 붙은 결정은 공간 채움도 이온이 아니라 원자 크기로 그려요',
            '3.7에서 말 안 하고 바꾼 것: 문 열림 · 조합 시작 · 조합 실패 · 업적 달성 · 쿼크 끈 끊기 효과음을 새로 만들었어요'],
       en: ['Crystal structures now come in ball & stick, space-filling and sticks. Crystals are space-filled with ionic sizes, so salt shows small Na⁺ tucked between big Cl⁻, the way it really is',
            'Tourmaline, quartz, calcite and pyrite now use real atomic coordinates from published papers: three-fold tourmaline, SiO₄ spirals in quartz, alternating Ca and CO₃ layers in calcite, and tilted S₂ pairs in pyrite',
+           'Bismuth crystals now show the real atomic layout too: not cubes, but puckered honeycomb sheets stacked in pairs',
+           'New tutorial: instead of just reading, you make water yourself with Asriel. Replay it from Settings',
            'New ▣ Cube shelf in the index: your cubes sit in a pentagon. The middle spot is a bonus',
            'Fluorite and diamond now show their unit cell as a dashed box. Covalent crystals like diamond are space-filled with atomic, not ionic, sizes',
            'Quietly changed in 3.7: new sounds for the opening doors, starting a mix, a failed mix, unlocking an achievement and snapping a quark string'],
@@ -27826,6 +27830,197 @@ function rxCalciteAtoms(){
 <script>
 /* 새로 생긴 업적은 조건을 이미 채운 사람에게도 들어오게: 처음 들어올 때 한 번 검사 */
 setTimeout(() => { try{ if(!document.getElementById('rxIntro')) checkAch(); else { const t = setInterval(() => { if(!document.getElementById('rxIntro')){ clearInterval(t); setTimeout(() => { try{ checkAch(); }catch(e){} }, 800); } }, 500); } }catch(e){} }, 2500);
+</script>
+<style>
+  /* 폰: 오른쪽 위에 버튼(핵 속으로·뮤온·불꽃)이 쌓여서 오비탈 칩(3d⁷ 4s²)이 아래 '크게 보기'와 겹쳤다 → 왼쪽 아래로 */
+  @media (max-width:700px){ #atomBox .atom-subs{top:auto;bottom:34px;left:8px;right:auto} }
+</style>
+<script>
+/* 비스무트 진짜 구조: 삼방정계 R3̄m (A7, 회색 비소형), 능면체 a=4.7459 Å α=57.237°, Bi (u,u,u) u=0.237
+   (Wyckoff, Crystal Structures 1, 1963 — AMCSD 0011254 / COD 9008576) → 육방 a=4.546 c=11.862 Å
+   단순 입방이 아니라 주름진 벌집 모양 두 겹 판(이중층)이 c축(세로)으로 쌓인다. 판 안 이웃 3개 3.11 Å, 판 사이 3.48 Å */
+const RX_BI = {"a":[["Bi",-2.273,-6.562,4.765],["Bi",-4.546,-5.249,3.097],["Bi",-4.546,-2.625,4.765],["Bi",-4.546,-2.625,-0.857],["Bi",-6.819,-1.312,3.097],["Bi",-6.819,1.312,4.765],["Bi",0.0,-5.249,-3.143],["Bi",2.273,-6.562,4.765],["Bi",0.0,-5.249,3.097],["Bi",-2.273,-1.312,-3.143],["Bi",-2.273,-3.937,0.811],["Bi",-2.273,-3.937,-4.811],["Bi",0.0,-2.625,4.765],["Bi",0.0,-2.625,-0.857],["Bi",-2.273,-1.312,3.097],["Bi",-4.546,2.625,-3.143],["Bi",-4.546,0.0,0.811],["Bi",-4.546,0.0,-4.811],["Bi",-2.273,1.312,4.765],["Bi",-2.273,1.312,-0.857],["Bi",-4.546,2.625,3.097],["Bi",-4.546,5.249,4.765],["Bi",4.546,-5.249,3.097],["Bi",2.273,-1.312,-3.143],["Bi",2.273,-3.937,0.811],["Bi",2.273,-3.937,-4.811],["Bi",4.546,-2.625,4.765],["Bi",4.546,-2.625,-0.857],["Bi",2.273,-1.312,3.097],["Bi",0.0,2.625,-3.143],["Bi",0.0,0.0,0.811],["Bi",0.0,0.0,-4.811],["Bi",2.273,1.312,4.765],["Bi",2.273,1.312,-0.857],["Bi",0.0,2.625,3.097],["Bi",-2.273,3.937,0.811],["Bi",-2.273,3.937,-4.811],["Bi",0.0,5.249,4.765],["Bi",0.0,5.249,-0.857],["Bi",-2.273,6.562,3.097],["Bi",6.819,-1.312,3.097],["Bi",4.546,2.625,-3.143],["Bi",4.546,0.0,0.811],["Bi",4.546,0.0,-4.811],["Bi",6.819,1.312,4.765],["Bi",4.546,2.625,3.097],["Bi",2.273,3.937,0.811],["Bi",2.273,3.937,-4.811],["Bi",4.546,5.249,4.765],["Bi",2.273,6.562,3.097]],"b":[[0,1],[0,8],[1,2],[2,4],[2,14],[3,10],[3,16],[4,5],[5,20],[6,11],[6,25],[7,8],[7,22],[8,12],[9,11],[9,17],[9,31],[10,13],[12,14],[12,28],[13,24],[13,30],[14,18],[15,17],[15,36],[16,19],[18,20],[18,34],[19,30],[19,35],[20,21],[21,39],[22,26],[23,25],[23,31],[23,43],[24,27],[26,28],[26,40],[27,42],[28,32],[29,31],[29,36],[29,47],[30,33],[32,34],[32,45],[33,42],[33,46],[34,37],[35,38],[37,39],[37,49],[38,46],[40,44],[41,43],[41,47],[44,45],[45,48],[48,49]]};
+function rxBismuthAtoms(){
+  const S = 14, A = RX_BI.a.map(([s, x, y, z]) => rxAt(s, x * S, -z * S, y * S, 8));
+  return { atoms: A, bonds: RX_BI.b.map(([i, j]) => [i, j]), crystal: true, tilt: -0.12, yaw0: 0.52, maxScale: 1.5 };
+}
+{
+  const _cr7 = rxCrystal;
+  rxCrystal = function(formula, name){ if(name === '비스무트 결정') return rxBismuthAtoms(); return _cr7.apply(this, arguments); };
+}
+</script>
+<style>
+  /* 따라 하기 단계: 화면을 눌러야 하니 막을 뚫어 준다 */
+  #rxTut.do{pointer-events:none}
+  #rxTut.do .tu-card{pointer-events:auto}
+  #rxTut.do .tu-next{display:none}
+  #rxTut.hide{visibility:hidden}
+  .tu-ring.go{border-color:#ffd166;box-shadow:0 0 0 9999px rgba(4,6,10,.6),0 0 0 4px rgba(255,209,102,.25),0 0 26px rgba(255,209,102,.6);animation:tuPulse 1.1s ease-in-out infinite}
+  @keyframes tuPulse{50%{box-shadow:0 0 0 9999px rgba(4,6,10,.6),0 0 0 9px rgba(255,209,102,.12),0 0 34px rgba(255,209,102,.8)}}
+  .tu-card .tu-do[hidden]{display:none}
+  .tu-card .tu-do{display:block;font-size:11px;font-weight:700;color:#ffd166;margin-bottom:4px;letter-spacing:.02em}
+  @media (prefers-reduced-motion:reduce){.tu-ring.go{animation:none}}
+</style>
+<script>
+/* ═══ 튜토리얼 리워크: 물을 직접 만들어 보는 따라 하기 ═══ */
+Object.assign(RXT.ko, {
+  tuDo:'따라 하기',
+  tuAdd:'이제 직접 하나 만들어 봐요. 오늘의 요리는 물이에요. 먼저 ＋ 담기를 눌러 켜세요',
+  tuH:'수소(H)를 두 번 누르세요. 누를 때마다 아래 조합 칸에 하나씩 담겨요',
+  tuO:'이번엔 산소(O)를 한 번',
+  tuMix:'H 두 개, O 하나. 조합하기를 누르세요',
+  tuDone:'만들었어요. 원소 종류랑 개수가 맞으면 물질이 나오고, 안 맞으면 실패해요. 실패도 나름 볼만해요',
+  tuQty:'같은 원소를 잔뜩 넣을 땐 여기서 개수를 먼저 정하고 누르면 한 번에 담겨요',
+  tuChip:'담긴 재료는 −, ＋로 개수를 고치고, 비우기로 싹 비울 수 있어요',
+  tuLearn:'학습에는 퀴즈랑 미니게임이 있어요',
+  tuSet:'이 튜토리얼은 설정(⚙)에서 다시 볼 수 있어요. 그럼 마음껏 섞어 보세요',
+});
+Object.assign(RXT.en, {
+  tuDo:'Your turn',
+  tuAdd:'Now make something yourself. Today we are cooking water. First press ＋ Add to turn it on',
+  tuH:'Tap hydrogen (H) twice. Each tap drops one into the tray below',
+  tuO:'Now oxygen (O), once',
+  tuMix:'Two H, one O. Press Mix',
+  tuDone:'Done. Get the elements and counts right and you get a substance. Get them wrong and it fails, which is fun in its own way',
+  tuQty:'For lots of the same element, set the count here first and one tap adds them all',
+  tuChip:'Fix counts in the tray with − and ＋, or empty it with Clear',
+  tuLearn:'Learn has quizzes and minigames',
+  tuSet:'You can replay this tutorial from Settings (⚙). Now go mix things',
+});
+{
+  const cnt = s => mix.filter(n => byNum[n] && byNum[n].s === s).length;
+  // 한 원소를 정해진 개수까지만 남기고, 다른 원소는 빼 버린다 (튜토리얼 중 실수 정리)
+  const keepOnly = want => {
+    const c = {}, out = [];
+    mix.forEach(n => { const s = byNum[n].s; if(want[s] && (c[s] || 0) < want[s]){ c[s] = (c[s] || 0) + 1; out.push(n); } });
+    if(out.length !== mix.length){ mix = out; renderChips(); }
+  };
+  const modalOn = () => { const m = document.getElementById('modal'); return !!(m && m.classList.contains('on')); };
+  RX_TUT.length = 0;
+  RX_TUT.push(
+    { sel: null, key: 'tut0' },
+    { sel: '#tableWrap, #grid', key: 'tut1' },
+    { sel: '#addModeBtn', key: 'tuAdd', prep(){ try{ mix = []; renderChips(); if(ADD_MODE) setAddMode(false); setQty(1); }catch(e){} },
+      done: () => ADD_MODE },
+    { sel: '#grid .cell[data-n="1"]', key: 'tuH', scroll: true,
+      done(){ if(!ADD_MODE) setAddMode(true); if(ADD_QTY !== 1) setQty(1); keepOnly({ H: 2 }); return cnt('H') >= 2; } },
+    { sel: '#grid .cell[data-n="8"]', key: 'tuO', scroll: true,
+      done(){ if(!ADD_MODE) setAddMode(true); if(ADD_QTY !== 1) setQty(1); keepOnly({ H: 2, O: 1 }); return cnt('O') >= 1; } },
+    { sel: '#mixBtn', key: 'tuMix', wait: 'modal',
+      done(){ keepOnly({ H: 2, O: 1 }); return false; } },
+    { sel: '#tray', key: 'tuDone', prep(){ try{ if(ADD_MODE) setAddMode(false); }catch(e){} } },
+    { sel: '#qtyBox', key: 'tuQty' },
+    { sel: '#dexBtn', key: 'tut4' },
+    { sel: '#quizBtn', key: 'tuLearn' },
+    { sel: '#setBtn', key: 'tuSet' },
+  );
+
+  rxTut = function(){
+    if(document.getElementById('rxTut')) return;
+    try{ if(!rxEvtHas('rielHello')) rxEvt('rielHello'); }catch(e){}
+    const box = document.createElement('div');
+    box.id = 'rxTut';
+    box.innerHTML = `<div class="tu-ring" id="tuRing"></div>
+      <div class="tu-card" id="tuCard">
+        <div class="tu-ril" aria-hidden="true"><img id="tuRilImg" alt="" src="${RIEL_SRC.idle}"></div>
+        <img class="tu-mad" alt="" aria-hidden="true" src="${RIEL_SRC.mad}">
+        <b class="tu-name">${rt('rielName')}</b>
+        <span class="tu-do" id="tuDo" hidden>${rt('tuDo')}</span>
+        <p id="tuText"></p>
+        <div class="tu-dots" id="tuDots"></div>
+        <div class="tu-btns">
+          <button type="button" class="tu-skip" id="tuSkip">${rt('introSkip')}</button>
+          <button type="button" class="tu-next" id="tuNext">${rt('introNext')}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(box);
+    let i = 0, seenModal = false, tick = 0, lastKey = '';
+    const ring = document.getElementById('tuRing');
+    const card = document.getElementById('tuCard');
+    const place = () => {
+      const st = RX_TUT[i]; if(!st) return;
+      const el = st.sel ? document.querySelector(st.sel) : null;
+      const vis = el && el.getClientRects().length;
+      const r = vis ? el.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 2 - 60, width: 0, height: 0, right: innerWidth / 2, bottom: innerHeight / 2 - 60 };
+      ring.classList.toggle('none', !vis);
+      const pad = vis ? (st.done ? 5 : 8) : 0;
+      ring.style.left = (r.left - pad) + 'px';
+      ring.style.top = (r.top - pad) + 'px';
+      ring.style.width = (r.width + pad * 2) + 'px';
+      ring.style.height = (r.height + pad * 2) + 'px';
+      const cardH = card.offsetHeight || 150, cw = card.offsetWidth;
+      const ril = !!card.querySelector('.tu-ril');
+      let below = r.bottom + 16;
+      const goBelow = below + cardH < innerHeight - 10;
+      let left = r.left + r.width / 2 - cw / 2;
+      if(goBelow && ril && vis){
+        // 아래에 붙일 땐 카드 위로 솟은 아스리엘 머리(카드 왼쪽 10~122px)가 대상을 가리지 않게
+        const clampL = x => Math.max(12, Math.min(innerWidth - cw - 12, x));
+        const hits = x => x + 10 < r.right && x + 122 > r.left;
+        if(hits(clampL(left))) left = r.right - 4;
+        if(hits(clampL(left))) left = r.left - 128;
+        if(hits(clampL(left))) below += 104;
+      }
+      const top = Math.max(124, goBelow ? below : r.top - cardH - 16);
+      card.style.top = Math.min(top, innerHeight - cardH - 8) + 'px';
+      card.style.left = Math.max(12, Math.min(innerWidth - cw - 12, left)) + 'px';
+    };
+    const show = () => {
+      const st = RX_TUT[i];
+      if(st.prep && lastKey !== st.key) st.prep();
+      const doing = !!st.done;
+      box.classList.toggle('do', doing);
+      ring.classList.toggle('go', doing);
+      document.getElementById('tuDo').hidden = !doing;
+      if(lastKey !== st.key){ card.classList.remove('say'); void card.offsetWidth; card.classList.add('say'); }
+      lastKey = st.key;
+      if(st.scroll){
+        const el = document.querySelector(st.sel);
+        try{ if(el) el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); }catch(e){}
+      }
+      document.getElementById('tuText').textContent = rt(st.key);
+      document.getElementById('tuDots').innerHTML = RX_TUT.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('');
+      document.getElementById('tuNext').textContent = i === RX_TUT.length - 1 ? rt('introGo') : rt('introNext');
+      place();
+    };
+    const next = () => { i++; seenModal = false; if(i >= RX_TUT.length) end(false); else show(); };
+    // 따라 하기 단계: 조건을 채웠는지 계속 본다 (스크롤해도 링이 따라가게 위치도 같이)
+    tick = setInterval(() => {
+      if(!document.body.contains(box)){ clearInterval(tick); return; }
+      const st = RX_TUT[i]; if(!st) return;
+      if(st.wait === 'modal'){
+        if(modalOn()){ seenModal = true; box.classList.add('hide'); return; }
+        if(seenModal){ box.classList.remove('hide'); next(); return; }
+      }
+      if(st.done && st.done()){ try{ SFX.pick && SFX.pick(); }catch(e){} next(); return; }
+      if(!box.classList.contains('hide')) place();
+    }, 180);
+    const end = skipped => {
+      clearInterval(tick);
+      rxLS.set('pt_seentut', true);
+      removeEventListener('resize', place);
+      box.classList.remove('do', 'hide');
+      if(skipped && typeof rielOn === 'function' && rielOn()){
+        document.getElementById('tuRilImg').src = RIEL_SRC.angry;
+        document.getElementById('tuText').textContent = rt('tutSkipSay');
+        card.classList.remove('say'); card.classList.add('angry');
+        card.querySelectorAll('button').forEach(b => b.disabled = true);
+        setTimeout(() => { box.remove(); rxEvt('skiptut'); }, 1100);
+        return;
+      }
+      box.remove();
+      if(skipped) rxEvt('skiptut');
+    };
+    document.getElementById('tuNext').addEventListener('click', next);
+    document.getElementById('tuSkip').addEventListener('click', () => end(true));
+    if(typeof rielOn === 'function' && !rielOn()){
+      card.querySelector('.tu-ril').remove(); card.querySelector('.tu-mad').remove(); card.querySelector('.tu-name').remove();
+    }
+    addEventListener('resize', place);
+    show();
+    requestAnimationFrame(place);
+  };
+}
 </script>
 </body>
 </html>
