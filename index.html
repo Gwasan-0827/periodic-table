@@ -28846,11 +28846,21 @@ function rxSetBgApply(){
     let [a, b] = RX_SETBG[k] || RX_SETBG.violet, ang = 135;
     if(k === 'custom'){ a = rxLS.get('pt_setbg1', '#141923'); b = rxLS.get('pt_setbg2', '#1e1b33'); ang = rxLS.get('pt_setbgA', 135); }
     document.documentElement.style.setProperty('--setbg', `linear-gradient(${ang}deg, ${a} 0%, ${b} 100%)`);
+    // 배경이 밝으면 글자·버튼을 어둡게 (두 색의 평균 밝기로 판단, WCAG 상대 휘도)
+    const lum = h => { const v = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+    const la = lum(a), lb = lum(b), L = (la + lb) / 2;
+    document.documentElement.classList.toggle('setbg-light', L > 0.28);
+    // 한쪽은 밝고 한쪽은 진하면(흰색 → 새파랑 같은) 어떤 글자색도 한쪽에선 안 보인다 → 줄마다 밝은 받침을 깐다
+    const pm = rxLS.get('pt_setpanel', 'on');
+    const mixed = pm === 'on' || (pm === 'auto' && L > 0.28 && Math.min(la, lb) < 0.12);
+    document.documentElement.classList.toggle('setbg-mixed', mixed && L > 0.28);
+    // 어두운 배경에서 '항상'을 고르면 어두운 반투명 받침
+    document.documentElement.classList.toggle('setbg-mixed-dark', mixed && L <= 0.28);
   }catch(e){}
 }
 rxSetBgApply();
-Object.assign(RXT.ko, { sbg: '설정 창 배경', sbgNote: '이 창이랑 오비탈 고르기 창의 바탕색', sbgCus: '직접', sbgA: '방향' });
-Object.assign(RXT.en, { sbg: 'Settings background', sbgNote: 'Behind this window and the orbital picker', sbgCus: 'Custom', sbgA: 'Angle' });
+Object.assign(RXT.ko, { sbg: '설정 창 배경', sbgNote: '설정·도감·오비탈 고르기 창의 바탕색. 밝게 고르면 글자가 알아서 어두워져요', sbgCus: '직접', sbgA: '방향', sbgReset: '기본값', sbgPanel: '줄 받침', sbgPAuto: '자동', sbgPOn: '항상', sbgPOff: '끄기' });
+Object.assign(RXT.en, { sbg: 'Settings background', sbgNote: 'Behind settings, the codex and the orbital picker. Pick something light and the text turns dark on its own', sbgCus: 'Custom', sbgA: 'Angle', sbgReset: 'Default', sbgPanel: 'Row panels', sbgPAuto: 'Auto', sbgPOn: 'Always', sbgPOff: 'Off' });
 {
   const _rsB = renderSettings;
   renderSettings = function(){
@@ -28862,13 +28872,21 @@ Object.assign(RXT.en, { sbg: 'Settings background', sbgNote: 'Behind this window
       const c1 = rxLS.get('pt_setbg1', '#141923'), c2 = rxLS.get('pt_setbg2', '#1e1b33'), an = rxLS.get('pt_setbgA', 135);
       const ctl = `<div data-sbg="1"><div class="sbg-sw">${Object.entries(RX_SETBG).map(([id, [a, b]]) =>
           `<button type="button" data-k="${id}" class="${k === id ? 'on' : ''}" title="${id}" style="background:linear-gradient(135deg,${a},${b})"></button>`).join('')}
-          <button type="button" data-k="custom" class="cus${k === 'custom' ? ' on' : ''}">${rt('sbgCus')}</button></div>
+          <button type="button" data-k="custom" class="cus${k === 'custom' ? ' on' : ''}">${rt('sbgCus')}</button>
+          <button type="button" data-k="reset" class="cus" title="${rt('sbgReset')}">↺ ${rt('sbgReset')}</button></div>
+        <div class="sbg-cus"><span>${rt('sbgPanel')}</span>${[['auto', rt('sbgPAuto')], ['on', rt('sbgPOn')], ['off', rt('sbgPOff')]].map(([kk, l]) =>
+          `<button type="button" class="sopt${rxLS.get('pt_setpanel', 'on') === kk ? ' on' : ''}" data-panel="${kk}" style="padding:4px 10px">${l}</button>`).join('')}</div>
         ${k === 'custom' ? `<div class="sbg-cus"><input type="color" data-c="1" value="${c1}"><span>→</span><input type="color" data-c="2" value="${c2}"><span>${rt('sbgA')}</span><input type="range" min="0" max="360" step="15" value="${an}" data-c="a"></div>` : ''}</div>`;
       const tmp = document.createElement('div'); tmp.innerHTML = row(rt('sbg'), ctl, rt('sbgNote'));
       const el = tmp.firstElementChild; el.dataset.tab = 'view';
       const anchor = [...body.querySelectorAll('.srow[data-tab="view"]')].pop();
       if(anchor) anchor.after(el); else body.appendChild(el);
-      el.querySelectorAll('.sbg-sw button').forEach(b => b.addEventListener('click', () => { rxLS.set('pt_setbg', b.dataset.k); rxSetBgApply(); renderSettings(); }));
+      el.querySelectorAll('.sbg-sw button').forEach(b => b.addEventListener('click', () => {
+        if(b.dataset.k === 'reset'){ ['pt_setbg', 'pt_setbg1', 'pt_setbg2', 'pt_setbgA', 'pt_setpanel'].forEach(x => { try{ localStorage.removeItem(x); }catch(e){} }); }
+        else rxLS.set('pt_setbg', b.dataset.k);
+        rxSetBgApply(); renderSettings();
+      }));
+      el.querySelectorAll('[data-panel]').forEach(b => b.addEventListener('click', () => { rxLS.set('pt_setpanel', b.dataset.panel); rxSetBgApply(); renderSettings(); }));
       el.querySelectorAll('.sbg-cus input').forEach(inp => inp.addEventListener('input', () => {
         const c = inp.dataset.c; rxLS.set(c === 'a' ? 'pt_setbgA' : 'pt_setbg' + c, c === 'a' ? +inp.value : inp.value); rxSetBgApply();
       }));
@@ -29428,5 +29446,47 @@ try{
   const hi = rxLS.get('pt_hint', null); if(hi && hi[OLD] != null){ hi[NEW] = hi[OLD]; delete hi[OLD]; rxLS.set('pt_hint', hi); }
 }catch(e){}
 </script>
+<style>
+  /* 밝은 설정 창 배경: 글자·선·버튼 대비 뒤집기 (설정 · 도감 · 오비탈 고르기 창 안에서만) */
+  .setbg-light #setBox, .setbg-light body:not(.w95) #dexBox, .setbg-light #orbPick .op-box{
+    --text:#141821; --dim:#3f4859; --line:rgba(20,24,33,.14); --line2:rgba(20,24,33,.28); color:#141821}
+  .setbg-light #setBox .snote, .setbg-light #dexPane > .dxh small, .setbg-light #dexProg, .setbg-light #orbPick .op-head small, .setbg-light #orbPick .op-grp b{color:#465065}
+  .setbg-light #setBox .sopt.on, .setbg-light #dexNav .dn.on{background:#141821;color:#fff;border-color:#141821}
+  .setbg-light #setNav button.on{background:rgba(20,24,33,.1);color:#141821;box-shadow:inset 3px 0 0 #3d5f95}
+  .setbg-light #setBox .sswitch{background:rgba(255,255,255,.6)}
+  .setbg-light #setBox select, .setbg-light #dexProg select, .setbg-light .orb-btn{background:rgba(255,255,255,.7);color:#141821}
+  .setbg-light body:not(.w95) #dexPane .dx, .setbg-light body:not(.w95) #dexPane #dexSearch{background:rgba(255,255,255,.55);border-color:rgba(20,24,33,.16)}
+  .setbg-light body:not(.w95) #dexPane .dx.open:hover{background:rgba(255,255,255,.8)}
+  .setbg-light #dexSearch input, .setbg-light #dexQ{background:rgba(255,255,255,.85)!important;color:#141821!important;border-color:rgba(20,24,33,.25)!important}
+  .setbg-light #dexSearch button:not(.on), .setbg-light #dexTags button:not(.on){background:rgba(255,255,255,.6);color:#141821}
+  .setbg-light #dexBox .dx .f{color:#1d5fa8}
+  .setbg-light #dexBox .dx.locked .n, .setbg-light #dexBox .dx.locked .f{color:#3f4859}
+  .setbg-light #rielDexSw{background-image:linear-gradient(45deg,#1c4f8f 0%,#1c4f8f 30%,#5aa0e6 50%,#1c4f8f 70%,#1c4f8f 100%);filter:none}
+  .setbg-light #dexSearch button.on, .setbg-light #dexTags button.on{color:#fff!important}
+  .setbg-light #dexBox .hbtn{color:#1d5fa8;border-color:rgba(29,95,168,.5)}
+  .setbg-light .sbg-sw button.cus{background:rgba(255,255,255,.75);color:#141821}
+  .setbg-light .sbg-sw button.cus.on{background:#141821;color:#fff}
+  .setbg-light #dexPane .dx .s{color:#465065}
+  .setbg-light #orbPick .op-card{background:rgba(20,24,33,.7)}
+  .setbg-light #orbPick .op-card span{color:#eef1f6}
+</style>
+<style>
+  .setbg-mixed #setBody .srow, .setbg-mixed #setBody .stabh, .setbg-mixed #setNav,
+  .setbg-mixed #dexNav, .setbg-mixed #dexPane > .dxh, .setbg-mixed #dexProg,
+  .setbg-mixed #orbPick .op-head, .setbg-mixed #orbPick .op-grp b{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .setbg-mixed #setBody .srow{border-radius:10px;padding-left:12px;padding-right:12px;margin:6px 0;border-bottom:0}
+  .setbg-mixed #setBody .stabh{border-radius:10px;padding:8px 12px}
+  .setbg-mixed #dexPane > .dxh, .setbg-mixed #dexProg{border-radius:10px;padding:8px 12px}
+  .setbg-mixed #orbPick .op-grp b{display:inline-block;border-radius:6px;padding:2px 8px}
+  .setbg-mixed body:not(.w95) #dexPane .dx{background:rgba(255,255,255,.78)}
+</style>
+<style>
+  .setbg-mixed-dark #setBody .srow, .setbg-mixed-dark #setBody .stabh, .setbg-mixed-dark #setNav,
+  .setbg-mixed-dark #dexNav, .setbg-mixed-dark #dexPane > .dxh, .setbg-mixed-dark #dexProg,
+  .setbg-mixed-dark #orbPick .op-head, .setbg-mixed-dark #orbPick .op-grp b{background:rgba(8,10,18,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .setbg-mixed-dark #setBody .srow{border-radius:10px;padding-left:12px;padding-right:12px;margin:6px 0;border-bottom:0}
+  .setbg-mixed-dark #setBody .stabh, .setbg-mixed-dark #dexPane > .dxh, .setbg-mixed-dark #dexProg{border-radius:10px;padding:8px 12px}
+  .setbg-mixed-dark #orbPick .op-grp b{display:inline-block;border-radius:6px;padding:2px 8px}
+</style>
 </body>
 </html>
