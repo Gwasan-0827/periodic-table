@@ -6107,16 +6107,33 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '3.7';
+const APP_VER = '3.7.1';
 
 /* 버전 표기 (시대 구분): αV = 1.x / βV = 2.0 ~ 4.x / ΔV = 5.0 부터. 뒷자리는 아래 첨자 (3.2 → βV.3.₂) */
 function verLabel(v){
-  const [a, b] = String(v).split('.');
-  const sub = String(b || 0).replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'[d]);
+  const [a, b, c] = String(v).split('.');
+  const sb = d => String(d).replace(/\d/g, k => '₀₁₂₃₄₅₆₇₈₉'[k]);
+  const sub = sb(b || 0) + (c ? '.' + sb(c) : '');
   const era = +a <= 1 ? 'α' : +a <= 4 ? 'β' : 'Δ';
   return `${era}V.${a}.${sub}`;
 }
 const CHANGELOG = [
+  {
+    v: '3.7.1', date: '2026-10-20',
+    title: { ko: '결정 속 들여다보기', en: 'Inside the crystal' },
+    items: {
+      ko: ['결정 구조도 막대-공 · 공간 채움 · 막대 세 가지로 볼 수 있어요. 결정의 공간 채움은 이온 크기로 그려서, 소금은 큰 Cl⁻ 사이에 작은 Na⁺가 끼어 있는 진짜 모양으로 나와요',
+           '투어멀린 · 석영 · 방해석 · 황철석의 결정 구조를 실제 논문의 원자 좌표로 바꿨어요. 투어멀린은 위에서 보면 삼각형 대칭이, 석영은 나선으로 감겨 올라가는 SiO₄와 육각형 통로가, 방해석은 Ca 층과 CO₃ 삼각형 층이 번갈아 쌓인 게, 황철석은 S가 둘씩 짝지어 비스듬히 누운 게 보여요',
+           '도감에 ▣ 큐브 진열장이 생겼어요. 모은 큐브가 오각형으로 놓여요. 가운데 자리는 번외예요',
+           '형석과 다이아몬드 결정에 단위 세포 점선 상자가 생겼어요. 다이아몬드처럼 원자끼리 전자를 나눠 붙은 결정은 공간 채움도 이온이 아니라 원자 크기로 그려요',
+           '3.7에서 말 안 하고 바꾼 것: 문 열림 · 조합 시작 · 조합 실패 · 업적 달성 · 쿼크 끈 끊기 효과음을 새로 만들었어요'],
+      en: ['Crystal structures now come in ball & stick, space-filling and sticks. Crystals are space-filled with ionic sizes, so salt shows small Na⁺ tucked between big Cl⁻, the way it really is',
+           'Tourmaline, quartz, calcite and pyrite now use real atomic coordinates from published papers: three-fold tourmaline, SiO₄ spirals in quartz, alternating Ca and CO₃ layers in calcite, and tilted S₂ pairs in pyrite',
+           'New ▣ Cube shelf in the index: your cubes sit in a pentagon. The middle spot is a bonus',
+           'Fluorite and diamond now show their unit cell as a dashed box. Covalent crystals like diamond are space-filled with atomic, not ionic, sizes',
+           'Quietly changed in 3.7: new sounds for the opening doors, starting a mix, a failed mix, unlocking an achievement and snapping a quark string'],
+    },
+  },
   {
     v: '3.7', date: '2026-10-19',
     title: { ko: '형광등 켜 보세요', en: 'Turn on the black light' },
@@ -10102,7 +10119,10 @@ function rxDiamond(a, b){
   fcc.forEach(([x, y, z]) => A.push(rxAt(a, (x - .5) * L, (y - .5) * L, (z - .5) * L, 9)));
   [[.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75]].forEach(([x, y, z]) =>
     A.push(rxAt(b, (x - .5) * L, (y - .5) * L, (z - .5) * L, 9)));
-  return { atoms: A, bonds: rxNear(A, Math.sqrt(3) / 4 * L, 1), crystal: true, tilt: -0.42, yaw0: 0.5, maxScale: 1.6 };
+  // 단위 세포 모서리(꼭짓점 원자 0~7)는 점선
+  const B = rxNear(A, Math.sqrt(3) / 4 * L, 1), cellB = [];
+  for(let i = 0; i < 8; i++) for(let j = i + 1; j < 8; j++) if(fcc[i].reduce((n, v, k) => n + (v !== fcc[j][k] ? 1 : 0), 0) === 1){ cellB.push(B.length); B.push([i, j]); }
+  return { atoms: A, bonds: B, cellB, crystal: true, tilt: -0.42, yaw0: 0.5, maxScale: 1.6 };
 }
 
 /* 흑연형: 육각 판 두 겹, 엇갈려 쌓임. 원소가 둘이면 질화붕소 */
@@ -25680,7 +25700,13 @@ function rxFluoriteLattice(){
   const ca = [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],[.5,.5,0],[.5,0,.5],[0,.5,.5],[.5,.5,1],[.5,1,.5],[1,.5,.5]];
   ca.forEach(([x,y,z]) => A.push(rxAt('Ca', (x - .5) * a, (y - .5) * a, (z - .5) * a, 8)));
   for(const x of [.25,.75]) for(const y of [.25,.75]) for(const z of [.25,.75]) A.push(rxAt('F', (x - .5) * a, (y - .5) * a, (z - .5) * a, 8));
-  return { atoms: A, bonds: rxNear(A, a * Math.sqrt(3) / 4, 1), crystal: true, tilt: -0.4, yaw0: 0.5, maxScale: 1.6 };
+  // 실제 격자 상수 a = 5.463 Å (76칸 ≈ 5.46 Å × 14). 단위 세포 모서리는 남동석처럼 점선으로
+  const B = rxNear(A, a * Math.sqrt(3) / 4, 1), cellB = [];
+  for(let i = 0; i < 8; i++) for(let j = i + 1; j < 8; j++){
+    const d = ca[i].reduce((n, v, k) => n + (v !== ca[j][k] ? 1 : 0), 0);
+    if(d === 1){ cellB.push(B.length); B.push([i, j]); }
+  }
+  return { atoms: A, bonds: B, cellB, crystal: true, tilt: -0.4, yaw0: 0.5, maxScale: 1.6 };
 }
 function rxRutile(){
   // 루틸(TiO₂): 정방정계 a=4.59Å, c=2.96Å, u=0.305. 타이타늄마다 산소 6개(찌그러진 팔면체)
@@ -27577,6 +27603,222 @@ try{ RX_TMI['(순수) 은 큐브'] = '모든 금속 중에 전기랑 열을 제�
     }
     return _tool.apply(this, arguments);
   };
+}
+</script>
+
+<script>
+/* 결정의 공간 채움은 이온 반지름(Shannon, 6배위 기준, Å)으로: 소금이면 Na⁺가 Cl⁻보다 작게 나와야 맞다
+   (분자용 반데르발스 반지름을 쓰면 Na가 Cl보다 커지는 엉터리가 됨) */
+const RX_ION_R = { Li:.76, Na:1.02, K:1.38, Rb:1.52, Cs:1.67, Fr:1.80, Be:.45, Mg:.72, Ca:1.00, Sr:1.18, Ba:1.35, Ra:1.48,
+  Al:.535, Ga:.62, In:.80, Fe:.78, Co:.745, Ni:.69, Cu:.73, Zn:.74, Mn:.83, Cr:.615, Ti:.605, Zr:.72, V:.64, Pb:1.19, Ag:1.15, Hg:1.02, Cd:.95,
+  Sn:.69, Sb:.76, Bi:1.03, U:.73, Th:.94, Ce:1.01, La:1.03, Y:.90, Nd:.983, Gd:.938, Sc:.745, Au:1.37, Pt:.80, Pd:.86,
+  F:1.33, Cl:1.81, Br:1.96, I:2.20, O:1.40, S:1.84, Se:1.98, Te:2.21,
+  Si:.40, Ge:.53, B:.27, C:.16, N:.16, P:.38, As:.46, H:.35 };
+function rxCrystalFill(m){
+  const A = m.atoms, B = m.bonds || [];
+  if(A.length < 2 || !B.length) return null;
+  const k = B.map(([i, j]) => { const a = A[i], b = A[j];
+    return Math.hypot(a.x - b.x, a.y - b.y, (a.z || 0) - (b.z || 0)) / ((RX_ION_R[a.s] || 1.2) + (RX_ION_R[b.s] || 1.2)); }).filter(v => v > 0).sort((a, b) => a - b);
+  if(!k.length) return null;
+  const upa0 = k[k.length >> 1];
+  // 공유 결합 결정(다이아몬드·규소·흑연·질화붕소처럼 원소 하나이거나 B·C·N·Si·Ge만)은 이온이 아니라 공유 반지름으로
+  const els = [...new Set(A.map(a => a.s).filter(Boolean))];
+  const cov = els.length === 1 || els.every(e => ['B', 'C', 'N', 'Si', 'Ge'].includes(e));
+  const R = s => cov ? (RX_COV[s] || 1.2) : (RX_ION_R[s] || (RX_COV[s] || 1.2));
+  const k2 = B.map(([i, j]) => { const a = A[i], b = A[j];
+    return Math.hypot(a.x - b.x, a.y - b.y, (a.z || 0) - (b.z || 0)) / (R(a.s) + R(b.s)); }).filter(v => v > 0).sort((a, b) => a - b);
+  const upa = cov ? k2[k2.length >> 1] : upa0;
+  const book = rxFillSize() === 'book';
+  const out = Object.assign({}, m);
+  out.atoms = A.map(a => Object.assign({}, a, { r: R(a.s) * upa * (cov ? 1.15 : 1) * (book ? 0.9 : 1) }));
+  out.fillBook = book; out.bonds = []; out.fill = true;
+  return out;
+}
+/* ═══ 결정 구조도 막대-공 / 공간 채움 / 막대 세 가지로 ═══
+   광물 결과: [광물 | 막대-공 | 공간 채움 | 막대], 탭 없던 결정 결과: [막대-공 | 공간 채움 | 막대] */
+function rxCrystalTabs(){
+  if(!RX) return;
+  const tabs = document.getElementById('mTabs'); if(!tabs) return;
+  const tb = tabs.querySelectorAll('button'), sb = document.getElementById('mTabStick');
+  const L = RX_MOL_TAB[LANG === 'en' ? 'en' : 'ko'], stickL = LANG === 'en' ? 'Sticks' : '막대';
+  const mk = base => {
+    if(!base || base.faces || base.wCube || base.kin || !base.atoms || base.atoms.length < 2 || !(base.bonds || []).length) return null;
+    if(base.cellB && base.cellB.length && !base.atoms.some(a => a.cellPt)){
+      const cb = new Set(base.cellB); base = Object.assign({}, base, { cellB: null, bonds: base.bonds.filter((b, i) => !cb.has(i)) });
+    }
+    if(base.atoms.some(a => a.cellPt)){   // 단위 세포 상자(보이지 않는 꼭짓점·점선)는 빼고
+      const keep = [], map = {}; base.atoms.forEach((a, i) => { if(!a.cellPt){ map[i] = keep.length; keep.push(a); } });
+      base = Object.assign({}, base, { atoms: keep, cellB: null, bonds: base.bonds.filter(b => map[b[0]] != null && map[b[1]] != null).map(b => [map[b[0]], map[b[1]]].concat(b.slice(2))) });
+    }
+    const fill = rxCrystalFill(base); if(!fill) return null;
+    // 막대 보기: 결합이 하나도 없는 원자(단위 세포 꼭짓점 등)는 덩그러니 공으로 남으니 뺀다
+    let stick = null; try{
+      const deg = base.atoms.map(() => 0); base.bonds.forEach(b => { deg[b[0]]++; deg[b[1]]++; });
+      const map = {}, keep = []; base.atoms.forEach((a, i) => { if(deg[i]){ map[i] = keep.length; keep.push(a); } });
+      stick = rxStickModel(Object.assign({}, base, { atoms: keep, bonds: base.bonds.map(b => [map[b[0]], map[b[1]]].concat(b.slice(2))) }));
+    }catch(e){}
+    return { fill, stick };
+  };
+  if(RX.views && RX.views.atom && RX.views.min && !RX.molTabs){
+    const x = mk(RX.views.atom); if(!x) return;
+    RX.views.afill = x.fill;
+    tb[1].textContent = L[0];
+    tb[2].dataset.v = 'afill'; tb[2].textContent = L[1]; tb[2].hidden = false;
+    if(sb){ if(x.stick){ RX.views.stick = x.stick; sb.textContent = stickL; sb.hidden = false; } else sb.hidden = true; }
+    rxTabsSync();
+  } else if(!RX.views && RX_M && RX_M.crystal && !RX_M.wCube){
+    const x = mk(RX_M); if(!x) return;
+    RX.views = { ball: RX_M, fill: x.fill }; if(x.stick) RX.views.stick = x.stick;
+    RX.molTabs = true; RX_VIEW = 'ball';
+    tb[0].dataset.v = 'ball'; tb[0].textContent = L[0];
+    tb[1].dataset.v = 'fill'; tb[1].textContent = L[1]; tb[2].hidden = true;
+    if(sb){ sb.textContent = stickL; sb.hidden = !x.stick; }
+    tabs.hidden = false; rxTabsSync();
+  }
+}
+{
+  const _r = rxRender;
+  rxRender = function(){
+    const r = _r.apply(this, arguments);
+    try{ rxCrystalTabs(); }catch(e){}
+    return r;
+  };
+}
+</script>
+
+<script>
+/* 투어멀린(쇼를) 결정 구조: 삼방정계 R3m, a=15.963 c=7.148 Å
+   원자 좌표: F. F. Foit, American Mineralogist 74, 422 (1989) (산업기술종합연구소 결정구조 DB 경유)
+   c축(세로) 한가운데 Na 통로를 둘러싼 한 층: SiO₄ 여섯 개가 이룬 고리 + BO₃ 삼각형 + Fe·Al 팔면체 */
+const RX_TOUR_X = {"a":[["Na",-0.0,0.0,-1.543],["Fe",1.472,0.85,1.375],["Fe",-1.472,0.85,1.375],["Fe",0.0,-1.699,1.375],["Al",2.671,3.613,1.23],["Al",-4.464,0.507,1.23],["Al",1.793,-4.12,1.23],["Al",-1.793,-4.12,1.23],["Al",-2.671,3.613,1.23],["Al",4.464,0.507,1.23],["B",-0.0,3.044,0.116],["B",-0.0,-6.172,2.498],["B",-2.636,-1.522,0.116],["B",5.345,3.086,2.498],["B",2.636,-1.522,0.116],["B",-5.345,3.086,2.498],["Si",1.547,2.624,-3.126],["Si",-3.046,0.028,-3.126],["Si",1.499,-2.652,-3.126],["Si",-1.499,-2.652,-3.126],["Si",-1.547,2.624,-3.126],["Si",3.046,0.028,-3.126],["O",-0.0,0.0,2.429],["O",-0.0,1.705,0.356],["O",-1.476,-0.852,0.356],["O",1.476,-0.852,0.356],["O",3.192,1.843,0.507],["O",-4.79,-2.765,-1.875],["O",-3.192,1.843,0.507],["O",4.79,-2.765,-1.875],["O",-0.0,-3.686,0.507],["O",-0.0,5.531,-1.875],["O",-0.0,2.593,-2.63],["O",-2.246,-1.297,-2.63],["O",2.246,-1.297,-2.63],["O",2.247,1.297,-2.467],["O",-2.247,1.297,-2.467],["O",-0.0,-2.595,-2.467],["O",1.656,2.581,2.416],["O",-3.063,0.144,2.416],["O",1.407,-2.725,2.416],["O",-1.407,-2.725,2.416],["O",-1.656,2.581,2.416],["O",3.063,0.144,2.416],["O",2.273,3.954,-2.566],["O",2.273,-5.262,-0.184],["O",-5.708,-0.654,2.199],["O",-4.561,-0.008,-2.566],["O",3.421,4.6,-0.184],["O",3.421,-4.617,2.199],["O",2.288,-3.945,-2.566],["O",-5.694,0.663,-0.184],["O",2.288,5.271,2.199],["O",-2.288,-3.945,-2.566],["O",5.694,0.663,-0.184],["O",-2.288,5.271,2.199],["O",-2.273,3.954,-2.566],["O",-2.273,-5.262,-0.184],["O",5.708,-0.654,2.199],["O",4.561,-0.008,-2.566],["O",-3.421,4.6,-0.184],["O",-3.421,-4.617,2.199],["O",1.191,3.741,0.017],["O",1.191,-5.475,2.4],["O",-3.835,-0.839,0.017],["O",4.146,3.769,2.4],["O",2.644,-2.902,0.017],["O",-5.337,1.706,2.4],["O",-2.644,-2.902,0.017],["O",5.337,1.706,2.4],["O",-1.191,3.741,0.017],["O",-1.191,-5.475,2.4],["O",3.835,-0.839,0.017],["O",-4.146,3.769,2.4],["H",3.209,1.852,-0.281],["H",-4.773,-2.756,-2.664],["H",-3.209,1.852,-0.281],["H",4.773,-2.756,-2.664],["H",-0.0,-3.705,-0.281],["H",-0.0,5.511,-2.664]],"b":[[0,23],[0,24],[0,25],[1,22],[1,23],[1,25],[1,26],[1,38],[1,43],[2,22],[2,23],[2,24],[2,28],[2,39],[2,42],[3,22],[3,24],[3,25],[3,30],[3,40],[3,41],[4,26],[4,38],[4,48],[4,52],[4,62],[4,65],[5,28],[5,39],[5,46],[5,51],[5,64],[5,67],[6,30],[6,40],[6,45],[6,49],[6,63],[6,66],[7,30],[7,41],[7,57],[7,61],[7,68],[7,71],[8,28],[8,42],[8,55],[8,60],[8,70],[8,73],[9,26],[9,43],[9,54],[9,58],[9,69],[9,72],[10,23],[10,62],[10,70],[11,63],[11,71],[12,24],[12,64],[12,68],[13,65],[13,69],[14,25],[14,66],[14,72],[15,67],[15,73],[16,32],[16,35],[16,44],[17,33],[17,36],[17,47],[18,34],[18,37],[18,50],[19,33],[19,37],[19,53],[20,32],[20,36],[20,56],[21,34],[21,35],[21,59],[26,74],[27,75],[28,76],[29,77],[30,78],[31,79]]};
+function rxTourmalineAtoms(){
+  const S = 14, A = RX_TOUR_X.a.map(([s, x, y, z]) => rxAt(s, x * S, -z * S, y * S, s === 'H' ? 6 : 8));
+  return { atoms: A, bonds: RX_TOUR_X.b.map(([i, j]) => [i, j]), crystal: true, tilt: -1.25, yaw0: 0, maxScale: 1.5 };
+}
+{
+  const _cr4 = rxCrystal;
+  rxCrystal = function(formula, name){ if(name === '투어멀린') return rxTourmalineAtoms(); return _cr4.apply(this, arguments); };
+}
+</script>
+
+<script>
+/* 석영(α-quartz) 결정 구조: 삼방정계 P3₂21, a=4.916 c=5.4054 Å
+   원자 좌표: Levien, Prewitt & Weidner, American Mineralogist 65, 920 (1980) — Si(0.4697,0,⅔) O(0.4135,0.2669,0.1191+⅔)
+   SiO₄ 정사면체가 c축(세로)을 따라 나선으로 감겨 올라가고, 위에서 보면 육각형 통로가 뚫려 있다. Si–O 1.605/1.614 Å */
+const RX_QTZ = {"a":[["Si",-3.84,-2.171,-0.458],["Si",-3.84,-2.171,4.947],["Si",1.076,-2.171,-0.458],["Si",1.076,-2.171,4.947],["Si",-1.382,2.086,-0.458],["Si",-1.382,2.086,4.947],["Si",3.534,2.086,-0.458],["Si",3.534,2.086,4.947],["Si",0.071,-4.429,-2.26],["Si",0.071,-4.429,3.145],["Si",-2.387,-0.172,-2.26],["Si",-2.387,-0.172,3.145],["Si",2.529,-0.172,-2.26],["Si",2.529,-0.172,3.145],["Si",0.071,4.086,-2.26],["Si",0.071,4.086,3.145],["Si",-2.387,-4.171,-4.062],["Si",-2.387,-4.171,1.343],["Si",-4.845,0.086,-4.062],["Si",-4.845,0.086,1.343],["Si",2.529,-4.171,-4.062],["Si",2.529,-4.171,1.343],["Si",0.071,0.086,-4.062],["Si",0.071,0.086,1.343],["Si",-2.387,4.344,-4.062],["Si",-2.387,4.344,1.343],["Si",4.987,0.086,-4.062],["Si",4.987,0.086,1.343],["Si",2.529,4.344,-4.062],["Si",2.529,4.344,1.343],["O",-2.314,-5.293,-5.22],["O",-2.314,-5.293,0.185],["O",-4.772,-1.035,-5.22],["O",-4.772,-1.035,0.185],["O",-4.772,-1.035,5.591],["O",2.602,-5.293,-5.22],["O",2.602,-5.293,0.185],["O",0.144,-1.035,-5.22],["O",0.144,-1.035,0.185],["O",0.144,-1.035,5.591],["O",-2.314,3.222,-5.22],["O",-2.314,3.222,0.185],["O",-2.314,3.222,5.591],["O",5.06,-1.035,-5.22],["O",5.06,-1.035,0.185],["O",2.602,3.222,-5.22],["O",2.602,3.222,0.185],["O",2.602,3.222,5.591],["O",-0.447,-5.805,-1.616],["O",-0.447,-5.805,3.789],["O",-2.905,-1.547,-1.616],["O",-2.905,-1.547,3.789],["O",2.011,-1.547,-1.616],["O",2.011,-1.547,3.789],["O",-0.447,2.71,-1.616],["O",-0.447,2.71,3.789],["O",4.469,2.71,-1.616],["O",4.469,2.71,3.789],["O",-0.937,-3.932,-3.418],["O",-0.937,-3.932,1.987],["O",-3.395,0.326,-3.418],["O",-3.395,0.326,1.987],["O",3.979,-3.932,-3.418],["O",3.979,-3.932,1.987],["O",1.521,0.326,-3.418],["O",1.521,0.326,1.987],["O",-0.937,4.583,-3.418],["O",-0.937,4.583,1.987],["O",6.437,0.326,-3.418],["O",6.437,0.326,1.987],["O",3.979,4.583,-3.418],["O",3.979,4.583,1.987],["O",-3.395,-4.668,-2.904],["O",-3.395,-4.668,2.501],["O",-5.853,-0.411,-2.904],["O",-5.853,-0.411,2.501],["O",1.521,-4.668,-2.904],["O",1.521,-4.668,2.501],["O",-0.937,-0.411,-2.904],["O",-0.937,-0.411,2.501],["O",-3.395,3.846,-2.904],["O",-3.395,3.846,2.501],["O",3.979,-0.411,-2.904],["O",3.979,-0.411,2.501],["O",1.521,3.846,-2.904],["O",1.521,3.846,2.501],["O",-4.772,-3.308,-1.102],["O",-4.772,-3.308,4.303],["O",0.144,-3.308,-1.102],["O",0.144,-3.308,4.303],["O",-2.314,0.95,-1.102],["O",-2.314,0.95,4.303],["O",2.602,0.95,-1.102],["O",2.602,0.95,4.303],["O",0.144,5.207,-1.102],["O",0.144,5.207,4.303],["O",-2.905,-2.796,-4.706],["O",-2.905,-2.796,0.7],["O",-2.905,-2.796,6.105],["O",-5.363,1.462,-4.706],["O",-5.363,1.462,0.7],["O",2.011,-2.796,-4.706],["O",2.011,-2.796,0.7],["O",2.011,-2.796,6.105],["O",-0.447,1.462,-4.706],["O",-0.447,1.462,0.7],["O",-0.447,1.462,6.105],["O",-2.905,5.719,-4.706],["O",-2.905,5.719,0.7],["O",4.469,1.462,-4.706],["O",4.469,1.462,0.7],["O",4.469,1.462,6.105],["O",2.011,5.719,-4.706],["O",2.011,5.719,0.7]],"b":[[0,33],[0,50],[0,86],[0,97],[1,34],[1,51],[1,87],[1,98],[2,38],[2,52],[2,88],[2,102],[3,39],[3,53],[3,89],[3,103],[4,41],[4,54],[4,90],[4,105],[5,42],[5,55],[5,91],[5,106],[6,46],[6,56],[6,92],[6,110],[7,47],[7,57],[7,93],[7,111],[8,48],[8,58],[8,76],[8,88],[9,49],[9,59],[9,77],[9,89],[10,50],[10,60],[10,78],[10,90],[11,51],[11,61],[11,79],[11,91],[12,52],[12,64],[12,82],[12,92],[13,53],[13,65],[13,83],[13,93],[14,54],[14,66],[14,84],[14,94],[15,55],[15,67],[15,85],[15,95],[16,30],[16,58],[16,72],[16,96],[17,31],[17,59],[17,73],[17,97],[18,32],[18,60],[18,74],[18,99],[19,33],[19,61],[19,75],[19,100],[20,35],[20,62],[20,76],[20,101],[21,36],[21,63],[21,77],[21,102],[22,37],[22,64],[22,78],[22,104],[23,38],[23,65],[23,79],[23,105],[24,40],[24,66],[24,80],[24,107],[25,41],[25,67],[25,81],[25,108],[26,43],[26,68],[26,82],[26,109],[27,44],[27,69],[27,83],[27,110],[28,45],[28,70],[28,84],[28,112],[29,46],[29,71],[29,85],[29,113]]};
+function rxQuartzAtoms(){
+  const S = 14, A = RX_QTZ.a.map(([s, x, y, z]) => rxAt(s, x * S, -z * S, y * S, 8));
+  return { atoms: A, bonds: RX_QTZ.b.map(([i, j]) => [i, j]), crystal: true, tilt: -1.4, yaw0: 0.1, maxScale: 1.4 };
+}
+{
+  const _cr5 = rxCrystal;
+  rxCrystal = function(formula, name){ if(name === '석영' || name === '자수정') return rxQuartzAtoms(); return _cr5.apply(this, arguments); };
+}
+</script>
+
+<style>
+  /* ═══ 큐브 진열장 (오각형) ═══ */
+  .cube-pent{position:relative;width:min(460px,100%);aspect-ratio:1;margin:4px auto 0;border-radius:50%;
+    background:radial-gradient(circle at 50% 52%,#232a37 0,#151a23 62%,transparent 63%),
+      conic-gradient(from -90deg,#1d2430,#151a22,#1d2430,#151a22,#1d2430,#151a22,#1d2430,#151a22,#1d2430,#151a22,#1d2430)}
+  .cube-pent::before{content:"";position:absolute;inset:9%;clip-path:polygon(50% 0%,97.6% 34.5%,79.4% 90.5%,20.6% 90.5%,2.4% 34.5%);
+    background:linear-gradient(#2a3140,#1a1f29);opacity:.55}
+  .cube-slot{position:absolute;width:30%;transform:translate(-50%,-50%);font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;transition:transform .25s}
+  .cube-slot svg{width:100%;aspect-ratio:4/3;display:block}
+  .cube-slot .plate{margin-top:-4px;min-width:84%;padding:3px 8px;font-size:11px}
+  .cube-slot .plate b{font-size:11px;white-space:nowrap}
+  .cube-slot.empty{cursor:default}
+  .cube-slot.empty .q{width:100%;aspect-ratio:4/3;display:grid;place-items:center;font-size:30px;color:#3a4252;font-weight:800}
+  .cube-slot.mag{width:24%}
+  .cube-slot.mag .plate{background:linear-gradient(#c9ccd3,#9da2ab)}
+  .cube-slot.pull{transform:translate(calc(-50% + var(--px)),calc(-50% + var(--py)))}
+  .cube-note{text-align:center;font-size:12.5px;color:var(--dim);margin:10px auto 0;max-width:420px;line-height:1.55;word-break:keep-all;min-height:2.6em}
+  .cube-note b{color:var(--text)}
+</style>
+<script>
+const RX_CUBE_SET = ['(순수) 텅스텐 큐브', '(순수) 구리 큐브', '(순수) 타이타늄 큐브', '(순수) 금 큐브', '(순수) 은 큐브'];
+const RX_CUBE_MAG = '네오디뮴 자석';
+Object.assign(RXT.ko, { cubeBtn: '큐브', cubeTitle: '큐브 진열장', cubeSub: n => `순수 큐브 ${n} / 5 · 오각형으로 모셔 둠`,
+  cubeMagT: '번외', cubeTap: '큐브를 누르면 결과 창으로 가요. 가운데 자석도 눌러 보세요',
+  cubePull: '자석: "다 붙어라!" …<b>아무도 안 붙음.</b> 텅스텐·구리·타이타늄·금·은은 전부 자석에 달라붙는 금속(강자성체)이 아니에요. 철·니켈·코발트 같은 애들만 붙어요.' });
+Object.assign(RXT.en, { cubeBtn: 'Cubes', cubeTitle: 'Cube shelf', cubeSub: n => `Pure cubes ${n} / 5 · arranged in a pentagon`,
+  cubeMagT: 'Bonus', cubeTap: 'Tap a cube to open it. Try the magnet in the middle too',
+  cubePull: 'Magnet: "Come to me!" …<b>nobody moves.</b> Tungsten, copper, titanium, gold and silver are not ferromagnetic. Only things like iron, nickel and cobalt stick.' });
+function rxOpenCubes(){
+  const have = RX_CUBE_SET.filter(n => found.has(n)), mag = found.has(RX_CUBE_MAG);
+  const P = RX_CUBE_SET.map((n, k) => { const a = (-90 + 72 * k) * Math.PI / 180; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
+  const slot = (n, [x, y], cls) => found.has(n)
+    ? `<button type="button" class="cube-slot ${cls || ''}" data-n="${n}" style="left:${x}%;top:${y}%"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet"></svg><span class="plate"><b>${rxLocName(n).replace(/^\((순수|Pure)\)\s*/i, '')}</b>${cls === 'mag' ? `<i>${rt('cubeMagT')}</i>` : ''}</span></button>`
+    : `<div class="cube-slot empty ${cls || ''}" style="left:${x}%;top:${y}%"><div class="q">?</div><span class="plate"><b>???</b></span></div>`;
+  const body = rxPanel(rt('cubeTitle'), RXT[LANG === 'en' ? 'en' : 'ko'].cubeSub(have.length), `
+    <div class="cube-pent" id="cubePent">${RX_CUBE_SET.map((n, k) => slot(n, P[k])).join('')}${mag ? slot(RX_CUBE_MAG, [50, 53], 'mag') : ''}</div>
+    <p class="cube-note" id="cubeNote">${rt('cubeTap')}</p>`);
+  const items = [];
+  body.querySelectorAll('.cube-slot[data-n]').forEach((b, k) => {
+    const th = rxThumb(b.querySelector('svg'), b.dataset.n, -0.5 + k * 0.4);
+    if(th){ th.always = true; items.push(th); }
+  });
+  rxPanelSpin(() => items);
+  body.querySelector('#cubePent').addEventListener('click', e => {
+    const b = e.target.closest('.cube-slot[data-n]'); if(!b) return;
+    if(b.classList.contains('mag')){
+      // 자석이 다 끌어당기려 하지만… 아무도 안 옴 (살짝 움찔하고 끝)
+      const others = [...body.querySelectorAll('.cube-slot[data-n]:not(.mag)')];
+      others.forEach(o => { const x = parseFloat(o.style.left) - 50, y = parseFloat(o.style.top) - 50;
+        o.style.setProperty('--px', (-x * 0.12) + '%'); o.style.setProperty('--py', (-y * 0.12) + '%'); o.classList.add('pull'); });
+      try{ rxTone(220, .5, 'sine', .06, 0, 330); }catch(e){}
+      setTimeout(() => { others.forEach(o => o.classList.remove('pull')); try{ rxTone(330, .35, 'sine', .05, 0, 160); }catch(e){} }, 380);
+      body.querySelector('#cubeNote').innerHTML = rt('cubePull');
+      return;
+    }
+    rxPanelClose(); rxShowEntry(b.dataset.n);
+  });
+}
+{
+  const _od2 = openDex;
+  openDex = function(){
+    const r = _od2.apply(this, arguments);
+    try{
+      const tools = document.getElementById('dexTools');
+      if(tools && !tools.querySelector('[data-x="cube"]') && (RX_CUBE_SET.some(n => found.has(n)) || found.has(RX_CUBE_MAG))){
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.x = 'cube'; b.textContent = '▣ ' + rt('cubeBtn');
+        b.addEventListener('click', e => { e.stopPropagation(); rxOpenCubes(); });
+        tools.appendChild(b);
+      }
+    }catch(e){}
+    return r;
+  };
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id: 'cube5', secret: true, need: () => RX_CUBE_SET.every(n => found.has(n)), prog: () => [RX_CUBE_SET.filter(n => found.has(n)).length, 5],
+    ko: ['정육면체 오형제', '책상이 버틸지 모르겠음'], en: ['The Five Cube Brothers', 'Not sure the desk can take this'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+}
+try{ RX_ACH_IC.cube5 = '🧊'; }catch(e){}
+</script>
+
+<script>
+/* 황철석(FeS₂) 진짜 구조: 입방정계 Pa3̄, a=5.417 Å, S 매개변수 u≈0.385 (Bayliss, American Mineralogist 62, 1168, 1977)
+   Fe는 소금의 Na 자리처럼 면심입방, S는 두 개씩 짝(S₂, 2.16 Å)을 지어 [111] 방향으로 비스듬히 누워 있다. 단위 세포 하나 + 점선 상자 */
+const RX_PYR = {"a":[["Fe",-2.708,-2.708,-2.708],["Fe",-2.708,-2.708,2.708],["Fe",-2.708,2.708,-2.708],["Fe",-2.708,2.708,2.708],["Fe",2.708,-2.708,-2.708],["Fe",2.708,-2.708,2.708],["Fe",2.708,2.708,-2.708],["Fe",2.708,2.708,2.708],["Fe",0.0,0.0,-2.708],["Fe",0.0,0.0,2.708],["Fe",0.0,-2.708,0.0],["Fe",0.0,2.708,0.0],["Fe",-2.708,0.0,0.0],["Fe",2.708,0.0,0.0],["S",-0.623,-0.623,-0.623],["S",-2.086,0.623,-3.331],["S",-2.086,0.623,2.086],["S",3.331,0.623,-3.331],["S",3.331,0.623,2.086],["S",0.623,-3.331,-2.086],["S",0.623,-3.331,3.331],["S",0.623,2.086,-2.086],["S",0.623,2.086,3.331],["S",-3.331,-2.086,0.623],["S",-3.331,3.331,0.623],["S",2.086,-2.086,0.623],["S",2.086,3.331,0.623],["S",0.623,0.623,0.623],["S",-3.331,-0.623,-2.086],["S",-3.331,-0.623,3.331],["S",2.086,-0.623,-2.086],["S",2.086,-0.623,3.331],["S",-0.623,-2.086,-3.331],["S",-0.623,-2.086,2.086],["S",-0.623,3.331,-3.331],["S",-0.623,3.331,2.086],["S",-2.086,-3.331,-0.623],["S",-2.086,2.086,-0.623],["S",3.331,-3.331,-0.623],["S",3.331,2.086,-0.623]],"b":[[0,28],[0,32],[0,36],[1,23],[1,29],[1,33],[2,15],[2,34],[2,37],[3,16],[3,24],[3,35],[4,19],[4,30],[4,38],[5,20],[5,25],[5,31],[6,17],[6,21],[6,39],[7,18],[7,22],[7,26],[8,14],[8,15],[8,21],[8,30],[8,32],[9,16],[9,22],[9,27],[9,31],[9,33],[10,14],[10,19],[10,25],[10,33],[10,36],[11,21],[11,26],[11,27],[11,35],[11,37],[12,14],[12,16],[12,23],[12,28],[12,37],[13,18],[13,25],[13,27],[13,30],[13,39],[14,27],[15,28],[16,29],[17,30],[18,31],[19,32],[20,33],[21,34],[22,35],[23,36],[24,37],[25,38],[26,39]],"c":[2.708,2.708,2.708],"cell":[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]]};
+rxPyrite = function(){
+  const S = 14, A = RX_PYR.a.map(([s, x, y, z]) => rxAt(s, x * S, -y * S, z * S, s === 'Fe' ? 8.5 : 7));
+  const B = RX_PYR.b.map(([i, j]) => [i, j]), cellB = [];
+  RX_PYR.cell.forEach(([i, j]) => { cellB.push(B.length); B.push([i, j]); });
+  return { atoms: A, bonds: B, cellB, crystal: true, tilt: -0.45, yaw0: 0.55, maxScale: 1.6 };
+};
+/* 방해석(CaCO₃) 진짜 구조: 삼방정계 R3̄c, a=4.990 c=17.0615 Å, O x=0.2578 (Graf, American Mineralogist 46, 1283, 1961)
+   Ca 층과 평평한 CO₃ 삼각형 층이 c축(세로)을 따라 번갈아 쌓이고, 층마다 삼각형 방향이 뒤집힌다 */
+const RX_CAL = {"a":[["Ca",0.0,0.0,-4.265],["Ca",0.0,-2.881,1.422],["Ca",-2.495,1.44,1.422],["Ca",2.495,1.44,1.422],["Ca",0.0,0.0,4.265],["Ca",-2.495,-1.44,-1.422],["Ca",2.495,-1.44,-1.422],["Ca",0.0,2.881,-1.422],["C",-4.99,0.0,0.0],["C",2.495,-4.321,0.0],["C",0.0,0.0,0.0],["C",2.495,4.321,0.0],["C",0.0,-2.881,-2.844],["C",-2.495,1.44,-2.844],["C",2.495,1.44,-2.844],["C",-2.495,-1.44,2.844],["C",2.495,-1.44,2.844],["C",0.0,2.881,2.844],["O",-3.704,0.0,0.0],["O",3.781,-4.321,0.0],["O",1.286,0.0,0.0],["O",3.781,4.321,0.0],["O",-5.633,1.114,0.0],["O",1.852,-3.207,0.0],["O",-0.643,1.114,0.0],["O",1.852,5.436,0.0],["O",-5.633,-1.114,0.0],["O",1.852,-5.436,0.0],["O",-0.643,-1.114,0.0],["O",1.852,3.207,0.0],["O",-1.286,-2.881,-2.844],["O",-3.781,1.44,-2.844],["O",1.209,1.44,-2.844],["O",-3.781,-1.44,2.844],["O",1.209,-1.44,2.844],["O",-1.286,2.881,2.844],["O",0.643,-3.995,-2.844],["O",-1.852,0.326,-2.844],["O",3.138,0.326,-2.844],["O",-1.852,-2.555,2.844],["O",3.138,-2.555,2.844],["O",0.643,1.767,2.844],["O",0.643,-1.767,-2.844],["O",-1.852,2.555,-2.844],["O",3.138,2.555,-2.844],["O",-1.852,-0.326,2.844],["O",3.138,-0.326,2.844],["O",0.643,3.995,2.844]],"b":[[0,32],[0,37],[0,42],[1,23],[1,28],[1,34],[1,39],[2,18],[2,24],[2,35],[2,45],[3,20],[3,29],[3,41],[3,46],[4,34],[4,41],[4,45],[5,18],[5,28],[5,30],[5,37],[6,20],[6,23],[6,38],[6,42],[7,24],[7,29],[7,32],[7,43],[8,18],[8,22],[8,26],[9,19],[9,23],[9,27],[10,20],[10,24],[10,28],[11,21],[11,25],[11,29],[12,30],[12,36],[12,42],[13,31],[13,37],[13,43],[14,32],[14,38],[14,44],[15,33],[15,39],[15,45],[16,34],[16,40],[16,46],[17,35],[17,41],[17,47]],"c":[-0.0,-0.0,4.265]};
+function rxCalciteAtoms(){
+  const S = 14, A = RX_CAL.a.map(([s, x, y, z]) => rxAt(s, x * S, -z * S, y * S, s === 'Ca' ? 8.5 : 7));
+  return { atoms: A, bonds: RX_CAL.b.map(([i, j]) => [i, j]), crystal: true, tilt: -0.3, yaw0: 0.3, maxScale: 1.5 };
+}
+{
+  const _cr6 = rxCrystal;
+  rxCrystal = function(formula, name){ if(name === '방해석 / 아라고나이트') return rxCalciteAtoms(); return _cr6.apply(this, arguments); };
 }
 </script>
 </body>
