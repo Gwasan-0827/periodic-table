@@ -27760,6 +27760,7 @@ function rxOpenCubes(){
     if(th){ th.always = true; items.push(th); }
   });
   rxPanelSpin(() => items);
+  try{ checkAch(); }catch(e){}   // 업적이 생기기 전에 이미 다 모아 둔 사람도 여기서 받게
   body.querySelector('#cubePent').addEventListener('click', e => {
     const b = e.target.closest('.cube-slot[data-n]'); if(!b) return;
     if(b.classList.contains('mag')){
@@ -27820,6 +27821,11 @@ function rxCalciteAtoms(){
   const _cr6 = rxCrystal;
   rxCrystal = function(formula, name){ if(name === '방해석 / 아라고나이트') return rxCalciteAtoms(); return _cr6.apply(this, arguments); };
 }
+</script>
+
+<script>
+/* 새로 생긴 업적은 조건을 이미 채운 사람에게도 들어오게: 처음 들어올 때 한 번 검사 */
+setTimeout(() => { try{ if(!document.getElementById('rxIntro')) checkAch(); else { const t = setInterval(() => { if(!document.getElementById('rxIntro')){ clearInterval(t); setTimeout(() => { try{ checkAch(); }catch(e){} }, 800); } }, 500); } }catch(e){} }, 2500);
 </script>
 </body>
 </html>
