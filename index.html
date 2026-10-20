@@ -6126,7 +6126,7 @@ function verLabel(v){
 }
 const CHANGELOG = [
   {
-    v: '3.8', date: '2026-10-20',
+    v: '3.8', date: '2026-10-20', big: true,   // 대규모 업데이트
     title: { ko: '대규모 UX 재작업', en: 'The big UX rework' },
     items: {
       ko: ['원자 커서를 전자 구름으로 새로 그렸어요. 원소 칸 위에 올리면 그 원소의 전자 구름으로 변신해요. 전자가 궤도를 도는 게 아니라 있을 법한 곳에서 깜빡여요. 설정의 "커서 전자"에서 오비탈을 고르면 1s부터 5g까지 원하는 오비탈 하나를 커서로 쓸 수 있어요. 점으로 볼지 안개로 볼지, 크기(작게·보통·크게)도 골라요. 기본 크기도 키웠어요. 꼬리 진하기·길이, 전자 속도, 원소 기호 딱지, 클릭 파장도 커서 탭에서 바꿀 수 있어요 (보어 모형, 옛날 커서도 있어요). 사라져 있던 원자 커서 켜기/끄기도 다시 생겼어요',
@@ -29487,6 +29487,23 @@ try{
   .setbg-mixed-dark #setBody .srow{border-radius:10px;padding-left:12px;padding-right:12px;margin:6px 0;border-bottom:0}
   .setbg-mixed-dark #setBody .stabh, .setbg-mixed-dark #dexPane > .dxh, .setbg-mixed-dark #dexProg{border-radius:10px;padding:8px 12px}
   .setbg-mixed-dark #orbPick .op-grp b{display:inline-block;border-radius:6px;padding:2px 8px}
+</style>
+<style>
+  /* 설정 → 정보: 패치노트 카드도 배경색이 비치게 */
+  #setBox .cl{background:rgba(8,10,16,.42);border-color:rgba(150,165,200,.18)}
+  #setBox .clhead:hover{background:rgba(255,255,255,.05)}
+  #setBox .cld{color:#8e99ad}
+  .setbg-mixed #setBox .cl, .setbg-light #setBox .cl{background:rgba(255,255,255,.72);border-color:rgba(20,24,33,.16)}
+  .setbg-mixed #setBox .clhead:hover, .setbg-light #setBox .clhead:hover{background:rgba(255,255,255,.9)}
+  .setbg-mixed #setBox .cl.big .clt, .setbg-light #setBox .cl.big .clt{color:#1d5fa8}
+  .setbg-mixed #setBox .cl.mid .clt, .setbg-light #setBox .cl.mid .clt{color:#3a72b8}
+  .setbg-mixed #setBox .cld, .setbg-light #setBox .cld{color:#465065}
+  .setbg-mixed #setBox .clv, .setbg-light #setBox .clv{background:#141821;color:#fff}
+  .setbg-mixed #setBox .clkey b, .setbg-light #setBox .clkey b{color:#1d5fa8}
+  .setbg-mixed #setBox .clkey i, .setbg-light #setBox .clkey i{color:#3a72b8}
+  /* 줄 받침: 정보 탭의 나머지 덩어리(머리글·색 설명·앱 정보)도 */
+  .setbg-mixed #setBody > .ssec:not(.s-hide), .setbg-mixed #setBody > .clkey, .setbg-mixed #setBody > .sabout{background:rgba(255,255,255,.72);border-radius:10px;padding:8px 12px;margin:6px 0}
+  .setbg-mixed-dark #setBody > .ssec:not(.s-hide), .setbg-mixed-dark #setBody > .clkey, .setbg-mixed-dark #setBody > .sabout{background:rgba(8,10,18,.5);border-radius:10px;padding:8px 12px;margin:6px 0}
 </style>
 </body>
 </html>
