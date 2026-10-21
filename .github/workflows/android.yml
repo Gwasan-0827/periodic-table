@@ -8,6 +8,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ android-app ]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,6 +38,12 @@ jobs:
         with:
           name: app-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: APK를 apk-builds 브랜치에도 올리기 (바로 받기 쉽게)
+        run: |
+          mkdir -p /tmp/out && cp android/app/build/outputs/apk/debug/app-debug.apk /tmp/out/periodic-table-debug.apk
+          cd /tmp/out && git init -q -b apk-builds && git add -A
+          git -c user.name="github-actions" -c user.email="actions@github.com" commit -qm "debug APK ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" apk-builds
       - name: 출시용 AAB 만들기 (서명 키가 있을 때만)
         if: env.HAS_KEY == 'true'
         working-directory: android
