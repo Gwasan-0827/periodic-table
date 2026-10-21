@@ -3182,10 +3182,13 @@
   if(!LOW) return;
   document.documentElement.classList.add('lowpow');
   const _raf = window.requestAnimationFrame.bind(window);
-  let q = [], ids = new Set(), next = 1, tick = 0, pending = false;
+  let q = [], ids = new Set(), next = 1, tick = 0, pending = false, lastIn = performance.now(), idle = false;
+  const wake = () => { lastIn = performance.now(); if(idle){ idle = false; document.documentElement.classList.remove('idle'); } };
+  ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart'].forEach(e => addEventListener(e, wake, { passive: true, capture: true }));
   function pump(t){
     pending = false; tick++;
-    if(tick % 2){ pending = true; _raf(pump); return; }      // 두 프레임에 한 번만 → 30fps
+    if(!idle && t - lastIn > 15000){ idle = true; document.documentElement.classList.add('idle'); }
+    if(tick % (idle ? 6 : 2)){ pending = true; _raf(pump); return; }      // 평소 30fps, 15초 손 안 대면 10fps
     const run = q; q = [];
     for(const [id, cb] of run){ if(ids.delete(id)){ try{ cb(t); }catch(e){ setTimeout(() => { throw e; }); } } }
   }
@@ -9752,6 +9755,10 @@ function rxMount(model, svgEl){
       `<feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>` +
       `<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="g"/>` +
       // 덩어리 모양(g)을 다시 흐려서 볼록한 면으로 보고 빛을 비춘다: 넓은 윤기 + 작은 반짝 하이라이트 + 가장자리 테두리 빛
+      // (저전력이면 가벼운 반짝임 하나만: 이 필터는 매 프레임 다시 계산돼서 폰을 데움)
+      (window.RX_LOWPOW ? `<feSpecularLighting in="b" surfaceScale="4" specularConstant=".7" specularExponent="22" lighting-color="#fff" result="sp3"><feDistantLight azimuth="235" elevation="55"/></feSpecularLighting>` +
+        `<feComposite in="sp3" in2="g" operator="in" result="s3"/><feMerge><feMergeNode in="g"/><feMergeNode in="s3"/></feMerge></filter></defs>` : '') +
+      (window.RX_LOWPOW ? '' :
       `<feGaussianBlur in="g" stdDeviation="6" result="h"/>` +
       `<feSpecularLighting in="h" surfaceScale="7" specularConstant=".55" specularExponent="9" lighting-color="#fff" result="sp1"><feDistantLight azimuth="235" elevation="50"/></feSpecularLighting>` +
       `<feSpecularLighting in="h" surfaceScale="7" specularConstant="1.3" specularExponent="30" lighting-color="#fff" result="sp2"><feDistantLight azimuth="225" elevation="22"/></feSpecularLighting>` +
@@ -9763,7 +9770,7 @@ function rxMount(model, svgEl){
       `<feMorphology in="g" operator="erode" radius="2" result="er"/>` +
       `<feComposite in="g" in2="er" operator="out" result="rim0"/>` +
       `<feColorMatrix in="rim0" mode="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .22 0" result="rim"/>` +
-      `<feMerge><feMergeNode in="g"/><feMergeNode in="s1b"/><feMergeNode in="s3"/><feMergeNode in="s2"/><feMergeNode in="rim"/></feMerge></filter></defs>`;
+      `<feMerge><feMergeNode in="g"/><feMergeNode in="s1b"/><feMergeNode in="s3"/><feMergeNode in="s2"/><feMergeNode in="rim"/></feMerge></filter></defs>`);
   }
   if(model.rods){
     // 투명 결정의 뒷면 → 바늘 → 앞면 순서로 겹친다
@@ -15414,7 +15421,7 @@ function rxFxApply(){
 rxFxApply();
 {
   const _ws = rxwStart;
-  rxwStart = function(){ if(RX_FX === 'lo') return; return _ws.apply(this, arguments); };
+  rxwStart = function(){ if(RX_FX === 'lo' || window.RX_LOWPOW) return; return _ws.apply(this, arguments); };
   const _bs = rxBoomScreen;
   rxBoomScreen = function(lv){
     if(RX_FX === 'lo'){
@@ -30184,14 +30191,14 @@ function rxVerPop(force){
     const a = v.split(',').map(Number); return a.length === 3 && a.every(x => !isNaN(x)) ? a : [127,138,155];
   };
   let col = [127,138,155], colT = col.slice();
-  function count(){ const f = fx(); const base = Math.round(W * H / 16000); return Math.min(f === 'lo' ? 0 : f === 'mid' ? 45 : 90, window.RX_LOWPOW ? 40 : 999, base); }
+  function count(){ const f = fx(); const base = Math.round(W * H / 16000); return Math.min(f === 'lo' ? 0 : f === 'mid' ? 45 : 90, window.RX_LOWPOW ? 28 : 999, base); }
   function seed(){
     const n = count(); P = [];
     for(let i = 0; i < n; i++) P.push({x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.15, vy:-.05-Math.random()*.18,
       r:.6+Math.random()*1.6, ph:Math.random()*6.28, tint:Math.random() < .55});
   }
   function size(){
-    DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    DPR = window.RX_LOWPOW ? 1 : Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
     cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
     ctx.setTransform(DPR,0,0,DPR,0,0); seed();
   }
@@ -30383,6 +30390,12 @@ function rxVerPop(force){
   @keyframes hintIn{from{opacity:0;transform:translate(-50%,-8px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
   @keyframes hintOut{to{opacity:0;transform:translate(-50%,-6px)}}
   @media (prefers-reduced-motion:reduce){ #mHint.long,#mHint.long.out{animation:none} }
+  /* 폰: 긴 안내는 한 줄 얇은 띠로 — 결과물을 안 가리게, 탭하면 바로 닫힘 */
+  @media (max-width:520px){
+    #mHint.long{top:var(--hintTop,8px);font-size:11px;line-height:1.35;padding:5px 10px 5px 22px;border-radius:10px;
+      max-width:calc(100% - 16px);background:rgba(14,18,26,.72);box-shadow:0 4px 12px rgba(0,0,0,.35);cursor:pointer;pointer-events:auto}
+    #mHint.long::before{left:9px;top:50%;width:6px;height:6px;margin-top:-3px}
+  }
 </style>
 <script>
 (function(){
@@ -30399,8 +30412,8 @@ function rxVerPop(force){
       if(!long && narrow) h.style.setProperty('--hintTop', (tbx.offsetTop + tbx.offsetHeight + 8) + 'px');
       if(long){
         const st = document.getElementById('mStage'), tb = document.getElementById('mTabs');
-        let top = 12;
-        if(tb && !tb.hidden && tb.offsetHeight) top = tb.offsetTop + tb.offsetHeight + 8;
+        let top = innerWidth <= 520 ? 8 : 12;
+        if(tb && !tb.hidden && tb.offsetHeight) top = tb.offsetTop + tb.offsetHeight + (innerWidth <= 520 ? 6 : 8);
         h.style.setProperty('--hintTop', top + 'px');
         try{ const c = getComputedStyle(document.getElementById('card')).getPropertyValue('--cc-rgb').trim(); if(c) h.style.setProperty('--hintC', c); }catch(e){}
         h.classList.remove('out');
@@ -30421,6 +30434,7 @@ function rxVerPop(force){
       h._ot = setTimeout(() => { if(h.classList.contains('long')) h.classList.add('out'); }, Math.max(0, ms - 260));
     };
   }
+  h.addEventListener('click', () => { if(h.classList.contains('long')){ clearTimeout(RX_HINT_T); h.classList.add('out'); setTimeout(() => { h.hidden = true; }, 240); } });
   fit();
 })();
 </script>
@@ -30885,7 +30899,7 @@ function rxGaCube(){
       const b = document.getElementById('lvBtn'); if(b){ b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); }
       if(!quiet){
         const t = TIERS.find(t => t[1] > old && t[2] <= MAXN);
-        setTimeout(() => { try{ rxToast(L('레벨 업', 'Level up'), `Lv.${LV}`, t ? L(`${t[4][0]} 원소가 열렸어요`, `${t[4][1]} unlocked`) : L('다음 해금까지 조금만 더', 'A little more to the next unlock')); }catch(e){} }, 700);
+        setTimeout(() => { try{ rxToast(L('레벨 업', 'Level up'), `Lv.${LV}`, t ? L(`${t[4][0]} 원소가 열렸어요`, `${t[4][1]} unlocked`) : MAXN >= 118 ? L('원소는 이미 다 열렸어요. 이제부턴 순수 자랑용', 'Everything is unlocked. This one is just for bragging') : L('다음 해금까지 조금만 더', 'A little more to the next unlock')); }catch(e){} }, 700);
       }
     } else btn();
   }
@@ -30933,8 +30947,6 @@ function rxGaCube(){
 <style>
   /* 저전력: 흐린 빛 덩어리는 모양 꿈틀(매 프레임 다시 그림)을 빼고 천천히 떠다니기만, 흐림도 가볍게 */
   html.lowpow #glow i{filter:blur(28px)!important;will-change:transform}
-  html.lowpow #glow i:nth-child(1){animation:gdrift1 40s ease-in-out infinite alternate!important}
-  html.lowpow #glow i:nth-child(2){animation:gdrift2 48s ease-in-out infinite alternate!important}
   html.lowpow #glow i:nth-child(n+3){display:none}
   /* 창이 화면을 덮으면 뒤의 배경 애니메이션 정지 */
   html.lowpow body.ovl #glow i, html.lowpow body.ovl #waves svg{animation-play-state:paused!important}
@@ -30973,5 +30985,13 @@ function rxGaCube(){
   };
 })();
 </script>
+<style>
+  /* 저전력 2단계: 뒤를 흐리게 비치는 유리 효과(backdrop-filter)는 뒤가 움직일 때마다 다시 계산돼서 폰에선 가장 뜨거움 → 끔 */
+  html.lowpow *, html.lowpow *::before, html.lowpow *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  html.lowpow #glow i{animation:none!important}
+  html.lowpow #waves svg{animation:none!important}
+  /* 15초 동안 손을 안 대면 장식 애니메이션 멈춤 (만지면 바로 다시 움직임) */
+  html.lowpow.idle *, html.lowpow.idle *::before, html.lowpow.idle *::after{animation-play-state:paused!important}
+</style>
 </body>
 </html>
