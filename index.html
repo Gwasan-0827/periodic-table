@@ -7568,6 +7568,7 @@ function markScore(ok, q){
   if(q && q.e) (ok ? noteHit : noteMiss)(q.e.s);
   if(ok){
     QZ.score++; QZ.streak++;
+    try{ if(typeof rxLvQuiz === 'function') rxLvQuiz(); }catch(e){}
     if(QZ.streak > QZ.bestStreak) QZ.bestStreak = QZ.streak;
     SFX.ok();
   } else {
@@ -9688,8 +9689,10 @@ function rxMount(model, svgEl){
       html += `<line class="mol-burst" x1="${W/2 + Math.cos(a)*18}" y1="${H/2 + Math.sin(a)*18}" x2="${W/2 + Math.cos(a)*L}" y2="${H/2 + Math.sin(a)*L}"/>`;
     }
   }
+  // 액체 필터 id는 그릴 때마다 새로: 도감 썸네일(숨겨진 창) 안의 같은 id를 먼저 잡으면 광택이 사라졌다
+  const gooId = (model.metal ? 'rxGooM' : 'rxGoo') + '_' + (window.RX_GOO_N = (window.RX_GOO_N || 0) + 1);
   if(model.liquid && model.metal){
-    html += `<defs><filter id="rxGooM" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">` +
+    html += `<defs><filter id="${gooId}" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">` +
       `<feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>` +
       `<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="g"/>` +
       `<feGaussianBlur in="g" stdDeviation="5" result="h"/>` +
@@ -9706,13 +9709,22 @@ function rxMount(model, svgEl){
       `<feComposite in="lit" in2="g" operator="in" result="body"/>` +
       `<feMerge><feMergeNode in="body"/><feMergeNode in="band2"/><feMergeNode in="spc"/></feMerge></filter></defs>`;
   } else if(model.liquid){
-    html += `<defs><filter id="rxGoo" x="-20%" y="-20%" width="140%" height="140%">` +
+    html += `<defs><filter id="${gooId}" x="-20%" y="-20%" width="140%" height="140%">` +
       `<feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>` +
       `<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="g"/>` +
-      `<feSpecularLighting in="b" surfaceScale="4" specularConstant=".6" specularExponent="22" lighting-color="#fff" result="sp"><feDistantLight azimuth="235" elevation="55"/></feSpecularLighting>` +
-      `<feComposite in="sp" in2="g" operator="in" result="spc"/>` +
-      `<feComposite in="g" in2="g" operator="over" result="body"/>` +
-      `<feMerge><feMergeNode in="body"/><feMergeNode in="spc"/></feMerge></filter></defs>`;
+      // 덩어리 모양(g)을 다시 흐려서 볼록한 면으로 보고 빛을 비춘다: 넓은 윤기 + 작은 반짝 하이라이트 + 가장자리 테두리 빛
+      `<feGaussianBlur in="g" stdDeviation="6" result="h"/>` +
+      `<feSpecularLighting in="h" surfaceScale="7" specularConstant=".55" specularExponent="9" lighting-color="#fff" result="sp1"><feDistantLight azimuth="235" elevation="50"/></feSpecularLighting>` +
+      `<feSpecularLighting in="h" surfaceScale="7" specularConstant="1.3" specularExponent="30" lighting-color="#fff" result="sp2"><feDistantLight azimuth="225" elevation="22"/></feSpecularLighting>` +
+      `<feSpecularLighting in="b" surfaceScale="4" specularConstant=".6" specularExponent="22" lighting-color="#fff" result="sp3"><feDistantLight azimuth="235" elevation="55"/></feSpecularLighting>` +
+      `<feComposite in="sp1" in2="g" operator="in" result="s1"/>` +
+      `<feComponentTransfer in="s1" result="s1b"><feFuncA type="linear" slope="0"/></feComponentTransfer>` +
+      `<feComposite in="sp2" in2="g" operator="in" result="s2"/>` +
+      `<feComposite in="sp3" in2="g" operator="in" result="s3"/>` +
+      `<feMorphology in="g" operator="erode" radius="2" result="er"/>` +
+      `<feComposite in="g" in2="er" operator="out" result="rim0"/>` +
+      `<feColorMatrix in="rim0" mode="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .22 0" result="rim"/>` +
+      `<feMerge><feMergeNode in="g"/><feMergeNode in="s1b"/><feMergeNode in="s3"/><feMergeNode in="s2"/><feMergeNode in="rim"/></feMerge></filter></defs>`;
   }
   if(model.rods){
     // 투명 결정의 뒷면 → 바늘 → 앞면 순서로 겹친다
@@ -9747,7 +9759,7 @@ function rxMount(model, svgEl){
   else if(model.faces) html += '<g class="mol-faces">' + model.faces.map(() => '<polygon/>').join('') + '</g>';
   html += `<g class="mol-bonds${model.faint ? ' faint' : ''}${model.crystal ? ' crystal' : ''}">` + model.bonds.map(() => '<line/>').join('') +
     (model.bonds.some(b => b[2] > 1) ? model.bonds.map(b => b[2] === 1.5 ? '<line class="bx ar"/>' : b[2] === 2 ? '<line class="bx"/>' : b[2] === 3 ? '<line class="bx"/><line class="bx"/>' : '').join('') : '') + '</g>' +
-    `<g class="mol-atoms${model.liquid ? ' liquid' : ''}${model.clear ? ' clear' : ''}${model.neon ? ' neon' : ''}"${model.liquid ? ` filter="url(#${model.metal ? 'rxGooM' : 'rxGoo'})"` : ''}>`;
+    `<g class="mol-atoms${model.liquid ? ' liquid' : ''}${model.clear ? ' clear' : ''}${model.neon ? ' neon' : ''}"${model.liquid ? ` filter="url(#${gooId})"` : ''}>`;
   A.forEach((a, i) => {
     const r = a.r * model.sc;
     const fs = Math.min(r * 0.95, 22);
@@ -30725,5 +30737,145 @@ function rxGaCube(){
   #settings::before, #dex::before{transform-origin:50% 100%}
   @media (prefers-reduced-motion:reduce){ #settings.on::before, #dex.on::before, #settings.on::after, #dex.on::after{animation:none!important;opacity:1;transform:none} }
 </style>
+<style>
+  /* ═══ 레벨 시스템 (앱 전용): H~Ca 로 시작, 레벨이 오르면 주기 단위로 해금 ═══ */
+  .cell.lv-lock{opacity:.32;filter:saturate(.25)}
+  .cell.lv-lock::after{content:"";position:absolute;right:4px;top:4px;width:9px;height:11px;opacity:.85;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 11'%3E%3Cpath d='M2 5V3.4a2.5 2.5 0 0 1 5 0V5' fill='none' stroke='%23c9d1dd' stroke-width='1.3'/%3E%3Crect x='.5' y='5' width='8' height='5.5' rx='1.2' fill='%23c9d1dd'/%3E%3C/svg%3E") center/contain no-repeat}
+  .cell.lv-open{animation:lvOpen .9s cubic-bezier(.2,1.4,.4,1) both}
+  @keyframes lvOpen{0%{transform:scale(.6);opacity:.3;box-shadow:0 0 0 0 rgba(255,212,59,.9)}60%{transform:scale(1.12);opacity:1}100%{transform:none;box-shadow:0 0 0 12px rgba(255,212,59,0)}}
+  #lvBtn{display:inline-flex;align-items:center;gap:7px;font-variant-numeric:tabular-nums}
+  #lvBtn b{font-weight:800;color:#ffd43b}
+  #lvBtn .lvb{width:42px;height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  #lvBtn .lvb i{display:block;height:100%;background:linear-gradient(90deg,#ffd43b,#ffa94d);border-radius:3px;transition:width .6s}
+  #lvBtn.up{animation:lvUp .8s ease}
+  @keyframes lvUp{30%{transform:scale(1.18);box-shadow:0 0 18px rgba(255,212,59,.7)}}
+  .lv-head{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .lv-big{font:800 44px/1 'Orbit',sans-serif;color:#ffd43b;text-shadow:0 0 18px rgba(255,212,59,.35)}
+  .lv-bar{flex:1}.lv-bar .bg{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+  .lv-bar .bg i{display:block;height:100%;background:linear-gradient(90deg,#ffd43b,#ffa94d);border-radius:6px}
+  .lv-bar small{display:block;margin-top:6px;font-size:12px;color:var(--dim)}
+  .lv-tiers{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+  .lv-tiers li{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid #262d3a;background:rgba(255,255,255,.03);font-size:13px}
+  .lv-tiers li.on{border-color:rgba(255,212,59,.4);background:rgba(255,212,59,.06)}
+  .lv-tiers li em{font-style:normal;font-weight:800;min-width:46px;color:#ffd43b}
+  .lv-tiers li.off em{color:var(--dim)}
+  .lv-tiers li span{flex:1}
+  .lv-tiers li small{color:var(--dim)}
+  .lv-how{margin:14px 0 0;font-size:12.5px;color:var(--dim);line-height:1.7}
+</style>
+<script>
+(function(){
+  // 앱(또는 시험용 pt_lvtest)에서만 켠다. 웹은 지금처럼 118개 전부 열림
+  let force = false; try{ force = localStorage.getItem('pt_lvtest') === '1'; }catch(e){}
+  const ON = (typeof APP_MODE !== 'undefined' && APP_MODE) || force;
+  window.RX_LV_ON = ON;
+  if(!ON) return;
+  const TH = [0, 40, 100, 180, 280, 400, 550, 720];           // 레벨 1~8 에 필요한 누적 경험치, 그 뒤는 +200씩
+  const need = L => L <= TH.length ? TH[L - 1] : TH[TH.length - 1] + (L - TH.length) * 200;
+  // [열리는 레벨, 첫 번호, 끝 번호, 이름]
+  const TIERS = [
+    [1, 1, 20,  ['1~3주기 + 칼륨·칼슘', 'Periods 1–3 + K, Ca'], ['H ~ Ca', 'H – Ca']],
+    [2, 21, 36, ['4주기 나머지', 'Rest of period 4'], ['Sc ~ Kr', 'Sc – Kr']],
+    [4, 37, 54, ['5주기', 'Period 5'], ['Rb ~ Xe', 'Rb – Xe']],
+    [6, 55, 86, ['6주기 + 란타넘족', 'Period 6 + lanthanides'], ['Cs ~ Rn', 'Cs – Rn']],
+    [8, 87, 118,['7주기 + 악티늄족', 'Period 7 + actinides'], ['Fr ~ Og', 'Fr – Og']],
+  ];
+  const en = () => LANG === 'en';
+  const L = (ko, e) => en() ? e : ko;
+  const get = (k, d) => { try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } };
+  const set = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  // 경험치: 기록에서 계산 (그래서 웹에서 옮겨 온 백업도 바로 맞는 레벨이 된다)
+  function xp(){
+    let disc = 0, ach = 0;
+    try{ disc = codexGot(); }catch(e){}
+    try{ ach = loadAch().size; }catch(e){}
+    return disc * 10 + ach * 20 + Math.min(get('pt_xpq', 0), 400) * 2 + get('pt_xpt', []).length * 15;
+  }
+  function level(x){ let lv = 1; while(x >= need(lv + 1)) lv++; return lv; }
+  const unlockedMax = lv => TIERS.filter(t => lv >= t[0]).reduce((m, t) => Math.max(m, t[2]), 0);
+  const tierOf = n => TIERS.find(t => n >= t[1] && n <= t[2]);
+  let LV = level(xp()), MAXN = unlockedMax(LV);
+  window.rxLvLocked = n => n > MAXN;
+  function paintCells(fresh){
+    document.querySelectorAll('#grid .cell[data-n]').forEach(c => {
+      const n = +c.dataset.n, lock = n > MAXN;
+      const was = c.classList.contains('lv-lock');
+      c.classList.toggle('lv-lock', lock);
+      if(fresh && was && !lock){ c.classList.remove('lv-open'); void c.offsetWidth; c.classList.add('lv-open'); setTimeout(() => c.classList.remove('lv-open'), 1200); }
+      if(lock){ const t = tierOf(n); c.title = L(`Lv.${t[0]}에서 열려요`, `Unlocks at Lv.${t[0]}`); } else if(c.title && /Lv\./.test(c.title)) c.title = '';
+    });
+  }
+  function btn(){
+    let b = document.getElementById('lvBtn');
+    if(!b){
+      const dx = document.getElementById('dexBtn'); if(!dx) return;
+      b = document.createElement('button'); b.className = 'tbtn'; b.id = 'lvBtn'; b.type = 'button';
+      dx.parentNode.insertBefore(b, dx);
+      b.addEventListener('click', openPanel);
+    }
+    const x = xp(), a = need(LV), z = need(LV + 1);
+    b.innerHTML = `<b>Lv.${LV}</b><span class="lvb"><i style="width:${Math.min(100, (x - a) / (z - a) * 100).toFixed(1)}%"></i></span>`;
+    b.title = L(`레벨 ${LV} · 경험치 ${x} / ${z}`, `Level ${LV} · XP ${x} / ${z}`);
+  }
+  function openPanel(){
+    const x = xp(), a = need(LV), z = need(LV + 1);
+    const rows = TIERS.map(t => { const on = LV >= t[0];
+      return `<li class="${on ? 'on' : 'off'}"><em>Lv.${t[0]}</em><span>${t[3][en() ? 1 : 0]} <small>${t[4][en() ? 1 : 0]}</small></span><small>${on ? L('열림', 'Open') : L(`경험치 ${need(t[0])}`, `${need(t[0])} XP`)}</small></li>`; }).join('');
+    rxPanel(L('레벨', 'Level'), L('레벨이 오르면 잠긴 원소가 주기 단위로 열려요', 'Levelling up unlocks locked elements one period at a time'), `
+      <div class="lv-head"><div class="lv-big">Lv.${LV}</div><div class="lv-bar"><div class="bg"><i style="width:${Math.min(100, (x - a) / (z - a) * 100).toFixed(1)}%"></i></div>
+      <small>${L(`경험치 ${x} · 다음 레벨까지 ${z - x}`, `${x} XP · ${z - x} to next level`)}</small></div></div>
+      <ul class="lv-tiers">${rows}</ul>
+      <p class="lv-how">${L('경험치 얻는 법: 새 조합 발견 +10 · 업적 +20 · 오늘의 과제 +15 · 퀴즈 정답 +2<br>잠긴 원소도 눌러서 정보는 볼 수 있어요. 조합 칸에 담는 것만 레벨이 필요해요.',
+        'How to earn XP: new discovery +10 · achievement +20 · daily task +15 · quiz answer +2<br>You can still tap locked elements to read about them. Only adding them to the mix needs the level.')}</p>`);
+  }
+  function refresh(quiet){
+    const nl = level(xp());
+    if(nl > LV){
+      const old = MAXN; LV = nl; MAXN = unlockedMax(LV);
+      paintCells(true); btn();
+      const b = document.getElementById('lvBtn'); if(b){ b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); }
+      if(!quiet){
+        const t = TIERS.find(t => t[1] > old && t[2] <= MAXN);
+        setTimeout(() => { try{ rxToast(L('레벨 업', 'Level up'), `Lv.${LV}`, t ? L(`${t[4][0]} 원소가 열렸어요`, `${t[4][1]} unlocked`) : L('다음 해금까지 조금만 더', 'A little more to the next unlock')); }catch(e){} }, 700);
+      }
+    } else btn();
+  }
+  window.rxLvQuiz = () => { set('pt_xpq', get('pt_xpq', 0) + 1); refresh(); };
+  // 막기: 잠긴 원소는 조합 칸에 못 담음
+  let lastWarn = 0;
+  function warn(n){
+    const now = Date.now(); if(now - lastWarn < 1200) return; lastWarn = now;
+    const e = byNum[n], t = tierOf(n);
+    try{ SFX.fail(); }catch(_){}
+    try{ rxToast(L('잠긴 원소', 'Locked'), `${e.s} ${elName(e)}`, L(`Lv.${t[0]}에서 열려요. 정보는 지금도 볼 수 있어요`, `Unlocks at Lv.${t[0]}. You can still read about it`)); }catch(_){}
+  }
+  const _add = addToMix;
+  addToMix = function(n){ if(n > MAXN){ warn(n); return; } return _add.apply(this, arguments); };
+  // 랜덤 · 노트 다시 하기 등 직접 mix 에 넣는 곳: 그리기 전에 걸러 낸다 (랜덤이면 열린 원소로 바꿈)
+  let fromRand = false;
+  const rb = document.getElementById('randBtn'); if(rb) rb.addEventListener('click', () => { fromRand = true; }, true);
+  const _rc = renderChips;
+  renderChips = function(){
+    if(mix.some(n => n > MAXN)){
+      if(fromRand) mix = mix.map(n => n > MAXN ? 1 + Math.floor(Math.random() * MAXN) : n);
+      else { const bad = mix.find(n => n > MAXN); mix = mix.filter(n => n <= MAXN); warn(bad); }
+    }
+    fromRand = false;
+    return _rc.apply(this, arguments);
+  };
+  // 경험치가 바뀌는 때: 발견·업적 확인 직후, 오늘의 과제
+  const _ca = checkAch;
+  checkAch = function(){ const r = _ca.apply(this, arguments); try{ refresh(); }catch(e){} return r; };
+  if(typeof rxEvt === 'function'){
+    const _ev = rxEvt;
+    rxEvt = function(){ const r = _ev.apply(this, arguments);
+      try{ if(rxTaskDone()){ const d = get('pt_xpt', []), k = todayKey(); if(!d.includes(k)){ d.push(k); set('pt_xpt', d.slice(-400)); refresh(); } } }catch(e){}
+      return r; };
+  }
+  paintCells(false); btn();
+  if(typeof applyStaticText === 'function'){ const _as = applyStaticText; applyStaticText = function(){ const r = _as.apply(this, arguments); try{ btn(); paintCells(false); }catch(e){} return r; }; }
+})();
+</script>
 </body>
 </html>
