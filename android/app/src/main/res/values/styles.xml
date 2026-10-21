@@ -13,6 +13,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- 상태바·내비게이션바 뒤가 회색으로 보이지 않게 앱 배경색(#0b0d11)으로 -->
+        <item name="android:windowBackground">@color/pt_bg</item>
+        <item name="android:statusBarColor">@color/pt_bg</item>
+        <item name="android:navigationBarColor">@color/pt_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
 

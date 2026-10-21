@@ -3,6 +3,11 @@
   "appName": "페리오딕//테이블",
   "webDir": "www",
   "android": {
-    "backgroundColor": "#0d1117"
+    "backgroundColor": "#0b0d11"
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK"
+    }
   }
 }
