@@ -30390,6 +30390,12 @@ function rxVerPop(force){
   @keyframes hintIn{from{opacity:0;transform:translate(-50%,-8px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
   @keyframes hintOut{to{opacity:0;transform:translate(-50%,-6px)}}
   @media (prefers-reduced-motion:reduce){ #mHint.long,#mHint.long.out{animation:none} }
+  /* 폰: 긴 안내는 한 줄 얇은 띠로 — 결과물을 안 가리게, 탭하면 바로 닫힘 */
+  @media (max-width:520px){
+    #mHint.long{top:var(--hintTop,8px);font-size:11px;line-height:1.35;padding:5px 10px 5px 22px;border-radius:10px;
+      max-width:calc(100% - 16px);background:rgba(14,18,26,.72);box-shadow:0 4px 12px rgba(0,0,0,.35);cursor:pointer;pointer-events:auto}
+    #mHint.long::before{left:9px;top:50%;width:6px;height:6px;margin-top:-3px}
+  }
 </style>
 <script>
 (function(){
@@ -30406,8 +30412,8 @@ function rxVerPop(force){
       if(!long && narrow) h.style.setProperty('--hintTop', (tbx.offsetTop + tbx.offsetHeight + 8) + 'px');
       if(long){
         const st = document.getElementById('mStage'), tb = document.getElementById('mTabs');
-        let top = 12;
-        if(tb && !tb.hidden && tb.offsetHeight) top = tb.offsetTop + tb.offsetHeight + 8;
+        let top = innerWidth <= 520 ? 8 : 12;
+        if(tb && !tb.hidden && tb.offsetHeight) top = tb.offsetTop + tb.offsetHeight + (innerWidth <= 520 ? 6 : 8);
         h.style.setProperty('--hintTop', top + 'px');
         try{ const c = getComputedStyle(document.getElementById('card')).getPropertyValue('--cc-rgb').trim(); if(c) h.style.setProperty('--hintC', c); }catch(e){}
         h.classList.remove('out');
@@ -30428,6 +30434,7 @@ function rxVerPop(force){
       h._ot = setTimeout(() => { if(h.classList.contains('long')) h.classList.add('out'); }, Math.max(0, ms - 260));
     };
   }
+  h.addEventListener('click', () => { if(h.classList.contains('long')){ clearTimeout(RX_HINT_T); h.classList.add('out'); setTimeout(() => { h.hidden = true; }, 240); } });
   fit();
 })();
 </script>
