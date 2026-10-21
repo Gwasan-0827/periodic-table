@@ -6139,7 +6139,7 @@ const CHANGELOG = [
            '비스무트 결정의 원자 배열을 진짜로 바꿨어요. 정육면체가 아니라 주름진 벌집 판이 두 겹씩 짝지어 쌓인 모양이에요',
            '도감 ▣ 큐브 진열장에 큐브 무게가 적혀요 (재 본 한 변 4.7 cm 기준). 여섯 개 다 모으면 볼링공급이에요',
            '새 큐브: 갈륨. ✋ 쥐기를 누르면 손 온도에 녹아내려요. 온도계가 붙어 있어서, 녹는 동안 온도가 29.76°C에 멈추는 것, 놓으면 녹는점 아래에서도 액체로 버티는 과냉각, 씨앗을 넣으면 굳으면서 온도가 다시 올라가는 것까지 볼 수 있어요. 큐브 진열장은 육각형이 됐어요',
-           'PC에서 ? 키를 누르면 키보드 단축키 안내가 떠요. 방향키로 원소 옮기기, Enter로 담기, / 로 검색 같은 걸 한눈에 볼 수 있어요. 설정 → 일반에도 버튼이 있어요. 도감은 닫을 때도 도감 버튼 쪽으로 쏙 들어가요',
+           'PC에서 ? 키를 누르면 키보드 단축키 안내가 떠요. 방향키로 원소 옮기기, Enter로 담기, / 로 검색 같은 걸 한눈에 볼 수 있어요. 설정 → 일반에도 버튼이 있어요. 도감과 설정 창은 이제 화면 아래에서 가운데로 쏙 올라오고, 열려 있는 동안 화면 아래쪽에 푸른 빛줄기가 깔려요. 닫으면 다시 아래로 내려가요',
            '광물 모델 넷을 새로 만들었어요. 방해석은 비스듬한 육면체로 쪼개진 투명한 조각(아이슬란드 스파), 석회석은 흰빛 돌덩이, 진사는 흰 바탕돌 위 주홍 결정, 로도크로사이트는 검은 바탕돌 위 장밋빛 능면체예요. 듀모티어라이트 석영도 새 모델이에요: 모서리가 둥근 푸르스름한 석영 속에 반짝이는 파란 바늘 1278개. 페리도트는 블렌더로 새로 깎은 오벌 컷 보석이 됐어요 (10 × 8 mm). 자수정은 육각 기둥 33개가 바탕돌에서 솟은 군집이 됐어요. 천청석은 속이 빈 석회암 정동 안에 하늘색 결정 110개가 빼곡히, 안쪽 깊은 곳일수록 어둡게',
            '액체를 얼리고 녹일 때 소리를 새로 만들었어요. 쉬이익 서리가 내려앉고, 녹을 땐 스르르 풀리며 보글보글해요',
            '학습 창도 설정처럼 왼쪽 탭 + 오른쪽 내용으로 바꿨어요. 탭마다 아이콘, 항목마다 받침 카드, 빛나는 시작 버튼, 배경색도 설정 창을 따라가요',
@@ -6156,7 +6156,7 @@ const CHANGELOG = [
            'Bismuth crystals now show the real atomic layout too: not cubes, but puckered honeycomb sheets stacked in pairs',
            'The ▣ Cube shelf now shows each cube\'s weight (for a 4.7 cm cube). All six together weigh about as much as a bowling ball',
            'New cube: gallium. Press ✋ Hold and it melts from the warmth of your hand. A thermometer shows the temperature stalling at 29.76°C while it melts, staying liquid below the melting point after you let go (supercooling), and climbing back up when a seed makes it freeze. The cube shelf is now a hexagon',
-           'On a computer, press ? to see the keyboard shortcuts: arrows to move, Enter to add, / to search and more. There is also a button in Settings → General. The codex now shrinks back into its button when it closes',
+           'On a computer, press ? to see the keyboard shortcuts: arrows to move, Enter to add, / to search and more. There is also a button in Settings → General. The codex and settings now slide up from the bottom of the screen with a blue glow along the bottom edge while open, and slide back down when closed',
            'Four new mineral models: calcite as clear rhombic cleavage pieces (Iceland spar), limestone as a pale rock, cinnabar as scarlet crystals on white matrix, and rhodochrosite as rose rhombs on dark matrix. Dumortierite quartz is new too: a pale blue, softly bevelled quartz with 1278 glossy blue needles inside. Peridot is now an oval-cut gem freshly cut in Blender (10 × 8 mm). Amethyst is now a cluster of 33 hexagonal points rising from a rock base. Celestite is now an open geode packed with 110 sky-blue crystals, darker towards the deep centre',
            'New sounds for freezing and melting liquids: a frosty hiss with a chime, and a soft unwinding fizz when it melts',
            'The Learn window now matches Settings: tabs on the left with icons, card rows, a glowing start button and the same background colour',
@@ -8449,7 +8449,7 @@ function closeSettings(){
   if(!setEl.classList.contains('on')) return;
   setEl.classList.remove('opening'); setEl.classList.add('closing');
   clearTimeout(setEl._ct);
-  setEl._ct = setTimeout(() => { setEl.classList.remove('on', 'closing'); }, 200);
+  setEl._ct = setTimeout(() => { setEl.classList.remove('on', 'closing'); }, 330);
 }
 
 document.getElementById('setBtn').addEventListener('click', openSettings);
@@ -15153,7 +15153,7 @@ const RXT = {
     shelfAdded:'진열장에 올렸어요 · 돌인데 특별대우 중', shelfFull:'진열장이 꽉 찼어요 (9칸)', shelfHas:'이미 진열장에 있어요',
     twinGo:'구성원은 같은데 자리 배치가 다름', twinLocked:'아직 못 찾은 구조예요',
     viewing:'도감에서 보는 중', replayNote:'방금 거 한 번만 더',
-    cardDark:'어두운 카드', cardLight:'밝은 카드', cardSaved:'발견 증거 확보.', cardFound:'발견',
+    cardDark:'어두운 카드', cardLight:'밝은 카드', cardShare:'공유하기', cardAppNote:'공유 창에서 "이미지 저장"이나 갤러리를 고르면 폰에 저장돼요', cardSaved:'발견 증거 확보.', cardFound:'발견',
     shelf:'진열장', shelfTitle:'나만의 광물 진열장', shelfSub:'돌인데 특별대우 중', shelfEmpty:'올리기',
     shelfPick:'올릴 광물 고르기', shelfNone:'아직 찾은 광물이 없어요. 소금이나 황철석부터 만들어 보세요',
     shelfRemove:'내리기', shelfOpen:'결과 보기',
@@ -15182,7 +15182,7 @@ const RXT = {
     shelfAdded:'Put on the shelf · VIP treatment for a rock', shelfFull:'The shelf is full (9 spots)', shelfHas:'Already on the shelf',
     twinGo:'Same members, different seating plan', twinLocked:'You have not found this form yet',
     viewing:'Viewing from the codex', replayNote:'One more time',
-    cardDark:'Dark card', cardLight:'Light card', cardSaved:'Evidence secured.', cardFound:'Found',
+    cardDark:'Dark card', cardLight:'Light card', cardShare:'Share', cardAppNote:'Pick "Save image" or your gallery in the share sheet to keep it', cardSaved:'Evidence secured.', cardFound:'Found',
     shelf:'Shelf', shelfTitle:'My mineral shelf', shelfSub:'VIP treatment for rocks', shelfEmpty:'Add',
     shelfPick:'Pick a mineral', shelfNone:'No minerals found yet. Try salt or pyrite first',
     shelfRemove:'Remove', shelfOpen:'Open',
@@ -15892,12 +15892,28 @@ function rxShowEntry(name, keepLog){
 }
 
 /* ═══ 발견 카드 ═══ */
+var RX_CARD_SHARE = false;
+function rxNative(){ try{ return !!(window.Capacitor && (typeof Capacitor.isNativePlatform !== 'function' || Capacitor.isNativePlatform())); }catch(e){ return false; } }
+function rxCanShareFile(){ try{ return !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })); }catch(e){ return false; } }
+function rxCapPlugin(n){ try{ return (Capacitor.Plugins && Capacitor.Plugins[n]) || (Capacitor.registerPlugin ? Capacitor.registerPlugin(n) : null); }catch(e){ return null; } }
+/* 앱 전용: Blob → 앱 캐시 폴더에 파일로 쓰고 → 안드로이드 공유 창 */
+async function rxNativeShareFile(blob, file, title){
+  try{
+    const FS = rxCapPlugin('Filesystem'), SH = rxCapPlugin('Share');
+    if(!FS || !SH) return false;
+    const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+    const w = await FS.writeFile({ path: file, data: b64, directory: 'CACHE' });
+    await SH.share({ title: title || file, files: [w.uri] });
+    return true;
+  }catch(e){ return !!(e && /cancel/i.test(String(e.message || e))); }
+}
 function rxCardMenu(btn){
   let mn = document.getElementById('rxCardMenu');
   if(mn){ mn.remove(); return; }
   mn = document.createElement('div');
   mn.id = 'rxCardMenu'; mn.className = 'rx-pop';
-  mn.innerHTML = `<button type="button" data-th="dark">${rt('cardDark')}</button><button type="button" data-th="light">${rt('cardLight')}</button>`;
+  mn.innerHTML = `<button type="button" data-th="dark">${rt('cardDark')}</button><button type="button" data-th="light">${rt('cardLight')}</button>` +
+    (rxCanShareFile() && !rxNative() ? `<button type="button" data-th="dark" data-share="1">↗ ${rt('cardShare')}</button>` : '');
   document.getElementById('mStage').appendChild(mn);
   mn.addEventListener('pointerdown', e => e.stopPropagation());
   mn.addEventListener('click', e => {
@@ -15905,6 +15921,7 @@ function rxCardMenu(btn){
     if(!b) return;
     e.stopPropagation();
     mn.remove();
+    RX_CARD_SHARE = !!b.dataset.share;
     rxSaveCard(b.dataset.th);
   });
 }
@@ -16167,13 +16184,20 @@ async function rxSaveCard(theme){
   if(!blob) return;
   const file = `${(name || 'card').replace(/[\\/:*?"<>|\s]+/g, '_')}_${ds}.png`;
   let shared = false;
+  // 앱(안드로이드 웹뷰)은 다운로드가 안 돼서, 파일로 써 두고 공유 창을 연다
+  if(rxNative()){
+    const ok = await rxNativeShareFile(blob, file, name);
+    if(ok){ rxSay(rt('cardAppNote'), 3600); rxEvt('card'); return; }
+  }
+  // 폰 브라우저: 기본은 바로 저장, '공유하기'를 고른 경우만 공유 창
   try{
     const f = new File([blob], file, { type: 'image/png' });
-    if(navigator.canShare && navigator.canShare({ files: [f] }) && matchMedia('(pointer: coarse)').matches){
+    if(RX_CARD_SHARE && navigator.canShare && navigator.canShare({ files: [f] })){
       await navigator.share({ files: [f], title: name });
       shared = true;
     }
   }catch(e){ shared = e && e.name === 'AbortError'; }
+  RX_CARD_SHARE = false;
   if(!shared){
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -16693,6 +16717,12 @@ function rxBackupData(){
 function rxBackup(kind){
   if(kind === 'save' || kind === 'copy'){
     const txt = JSON.stringify(rxBackupData());
+    if(kind === 'save' && rxNative()){
+      const d = new Date();
+      const fn = `periodic-table-backup-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.json`;
+      rxNativeShareFile(new Blob([txt], { type: 'application/json' }), fn, fn).then(ok => { if(!ok) rxBackupShowText(txt); });
+      return;
+    }
     if(kind === 'save'){
       const d = new Date();
       const a = document.createElement('a');
@@ -27959,6 +27989,8 @@ if(typeof ACH !== 'undefined'){
   if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
 }
 try{ RX_ACH_IC.cube5 = '🧊'; }catch(e){}
+/* 과산이 그림판으로 그린 '첫 조합' 업적 그림 (당신이 해냈서요!) */
+try{ RX_ACH_IMG.first = 'data:image/webp;base64,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'; }catch(e){}
 </script>
 
 <script>
@@ -29072,7 +29104,7 @@ document.addEventListener('click', e => {
 }, true);
 // 열기 애니메이션이 끝나면 표시를 지워서, 나중에 다시 그릴 때 또 튀지 않게
 document.addEventListener('animationend', e => {
-  if(e.target && e.target.id === 'setBox' && e.animationName === 'setPop') document.getElementById('settings').classList.remove('opening');
+  if(e.target && e.target.id === 'setBox' && (e.animationName === 'setPop' || e.animationName === 'sheetUp')) document.getElementById('settings').classList.remove('opening');
 });
 </script>
 <style>
@@ -29272,7 +29304,7 @@ document.addEventListener('animationend', e => {
           dex.style.setProperty('--dox', (g.left + g.width / 2 - bx.left) + 'px'); dex.style.setProperty('--doy', (g.top + g.height / 2 - bx.top) + 'px');
         }catch(e){}
         dex.classList.remove('opening'); void dex.offsetWidth; dex.classList.add('opening');
-        clearTimeout(dex._ot); dex._ot = setTimeout(() => dex.classList.remove('opening'), 600);
+        clearTimeout(dex._ot); dex._ot = setTimeout(() => dex.classList.remove('opening'), 680);
         anim();
       }
     }catch(e){}
@@ -30624,7 +30656,7 @@ function rxGaCube(){
     cl.remove = function(...names){
       const closing = names.includes('on') && cl.contains('on');
       _rm(...names);
-      if(closing){ clearTimeout(tm); _rm('opening'); _add('closing'); tm = setTimeout(() => _rm('closing'), 220); }
+      if(closing){ clearTimeout(tm); _rm('opening'); _add('closing'); tm = setTimeout(() => _rm('closing'), 330); }
     };
     cl.add = function(...names){
       if(names.includes('on')){ clearTimeout(tm); _rm('closing'); }
@@ -30654,5 +30686,29 @@ function rxGaCube(){
   };
 })();
 </script>
+<style>
+  /* ═══ 도감·설정 열기 리워크: 화면 아래에서 가운데로 쏙 (가감속) + 열려 있는 동안 아래쪽에 푸른 빛줄기 ═══ */
+  #settings.opening #setBox, #dex.opening #dexBox{transform-origin:50% 100%;animation:sheetUp .62s cubic-bezier(.7,0,.22,1.06) both}
+  #settings.closing #setBox, #dex.closing #dexBox{transform-origin:50% 100%;animation:sheetDown .3s cubic-bezier(.55,0,.85,.35) forwards}
+  @keyframes sheetUp{0%{transform:translateY(calc(50vh + 60%)) scale(.94);opacity:.4}55%{opacity:1}100%{transform:none;opacity:1}}
+  @keyframes sheetDown{to{transform:translateY(calc(50vh + 60%)) scale(.94);opacity:.3}}
+  /* 아래쪽 빛: 가는 선 + 위로 번지는 빛 */
+  #settings::before, #dex::before{content:"";position:fixed;left:0;right:0;bottom:0;height:34vh;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 60% 100% at 50% 100%,rgba(77,171,247,.28),rgba(77,171,247,.08) 45%,transparent 75%);
+    opacity:0;transition:opacity .45s ease}
+  #settings::after, #dex::after{content:"";position:fixed;left:6%;right:6%;bottom:0;height:3px;border-radius:3px;pointer-events:none;z-index:0;
+    background:linear-gradient(90deg,transparent,#4dabf7 18%,#a5d8ff 50%,#4dabf7 82%,transparent);
+    box-shadow:0 0 14px 3px rgba(77,171,247,.75),0 0 40px 8px rgba(77,171,247,.35);
+    transform:scaleX(0);opacity:0;transition:transform .55s cubic-bezier(.7,0,.22,1),opacity .3s}
+  #settings.on::before, #dex.on::before{opacity:1}
+  #settings.on::after, #dex.on::after{transform:scaleX(1);opacity:1}
+  #settings.closing::before, #dex.closing::before, #settings.closing::after, #dex.closing::after{opacity:0;transition:opacity .25s}
+  #setBox, #dexBox{position:relative;z-index:1}
+  @keyframes glowBreath{0%,100%{opacity:1}50%{opacity:.65}}
+  #settings.on:not(.closing)::after, #dex.on:not(.closing)::after{animation:glowBreath 3.2s ease-in-out .6s infinite}
+  body.w95 #settings::before, body.w95 #dex::before, body.w95 #settings::after, body.w95 #dex::after{display:none}
+  @media (prefers-reduced-motion:reduce){ #settings.opening #setBox, #dex.opening #dexBox, #settings.closing #setBox, #dex.closing #dexBox{animation:none!important} #settings::after, #dex::after{animation:none!important} }
+  body.rm #settings.opening #setBox, body.rm #dex.opening #dexBox, body.rm #settings.closing #setBox, body.rm #dex.closing #dexBox{animation:none!important}
+</style>
 </body>
 </html>
