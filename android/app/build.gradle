@@ -18,6 +18,13 @@ android {
     }
     // 출시용 서명: 환경 변수(또는 GitHub Secrets)에 키가 있을 때만 사용. 키 파일은 저장소에 절대 올리지 않는다
     signingConfigs {
+        // 테스트용 APK 서명을 빌드마다 똑같이: 안 그러면 새 APK가 기존 앱 위에 덮어 설치되지 않음
+        debug {
+            storeFile file("pt-debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
         release {
             if (System.getenv("PT_KEYSTORE")) {
                 storeFile file(System.getenv("PT_KEYSTORE"))
