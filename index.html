@@ -3639,7 +3639,7 @@ const RECIPES = {
   "C+H+N":["HCN","사이안화수소","청산가스. 청산가리랑은 다른 물질"],
   "C+K+N":["KCN","사이안화 칼륨","진짜 청산가리"],
   "C+H+N+O+P":["(뉴클레오타이드)ₙ","핵산","뉴클레오타이드가 길게 이어진 사슬. DNA와 RNA가 여기 속함"],
-  "Al+Ga":["Al + Ga","부서진 알루미늄","갈륨이 스며들면 튼튼한 알루미늄이 과자처럼 바스러짐"],
+  "Al+Ga":["Al + Ga","알루미늄 의문의 1패","갈륨이 스며들면 튼튼한 알루미늄이 과자처럼 바스러짐"],
   "Ag+Hg":["Ag-Hg","은 아말감","수은이 은을 녹여 만든 말랑한 금속 반죽"],
   "Al+B+Fe+H+Na+O+Si":["NaFe₃Al₆(BO₃)₃Si₆O₁₈(OH)₄","투어멀린","색이 제일 다양한 보석 중 하나. 수박처럼 속과 겉 색이 다른 것도 있음"],
   "C+H+N+O":["C₂H₅NO₂","글라이신","가장 간단한 아미노산"],
@@ -4070,7 +4070,7 @@ const EXACT = {
     "C1+Ca1+H1+N1+O3":["CaCO₃ + 단백질","진주","조개가 만든 아라고나이트"],
 "Al2+Cr1+O3":["Al₂O₃:Cr","루비","크로뮴 조금 섞였더니 빨개짐"],
   "O8+U3":["U₃O₈","팔산화삼우라늄","옐로케이크라 불림. 이름은 귀여운데 우라늄임"],"N2+O8+U1":["UO₂(NO₃)₂","질산우라닐","노란 결정. 자외선 받으면 초록으로 빛남"],"C16+Gd1+H25+N4+O8":["C₁₆H₂₅GdN₄O₈","가돌리늄 조영제","MRI 찍을 때 혈관에 넣는 약. 독한 가돌리늄을 분자 우리에 가둠"],"C15+H10+O7":["C₁₅H₁₀O₇","쿼세틴","양파·사과·케이퍼 속 노란 색소"],"Cl1+F3":["ClF₃","삼플루오린화 염소","모래도 유리도 불태움"],"F2+O2":["O₂F₂","이플루오린화 이산소","화학식 그대로 읽으면 FOOF"],"N3+Na1":["NaN₃","아자이드화 나트륨","에어백을 부풀리는 가루"],"C6+H6+O2":["C₆H₆O₂","하이드로퀴논","폭탄먼지벌레 엉덩이 대포의 재료"],"C2+H2+Kr1":["HKrC≡CH","HKrCCH","크립톤이 들어간 최초의 유기 화합물. −233 °C만 넘어도 부서짐"],"N4+S4":["S₄N₄","테트라설퍼 테트라나이트라이드","주황 결정. 망치로 치면 터짐"],"Al2+O3+Ti1":["Al₂O₃:Ti","사파이어","타이타늄 조금 섞였더니 파래짐"],"Al2+Fe1+O3+Ti1":["Al₂O₃:Ti,Fe","사파이어","철까지 함께여야 제대로 파래짐"],
-  "Al2+Fe1+O3":["Al₂O₃:Fe","황옥강옥","노란 사파이어"],
+  "Al2+Fe1+O3":["Al₂O₃:Fe","노란색 사파이어","사파이어인데 노랑. 철이 쪼끔 섞임"],
   "Al2+Mg1+O4":["MgAl₂O₄","스피넬","루비인 줄 알았던 것"],
   "O4+Si1+Zr1":["ZrSiO₄","지르콘","가짜 다이아 소리 듣지만 진짜 보석임"],
   "Fe1+Mg1+O4+Si1":["(Mg,Fe)₂SiO₄","페리도트","감람석 중 보석급. 운석에서도 나옴"],
@@ -4117,6 +4117,7 @@ const SINGLE = {
   Al: [[2,99,"Al","알루미늄 호일","주방에 하나씩 있는 은색 종이"]],
   W:  [[150,150,"W","(순수) 텅스텐 큐브","작은데 쓸데없이 무거운 정육면체"]],
   Ti: [[150,150,"Ti","(순수) 타이타늄 큐브","가볍고 튼튼한 정육면체. 전기 맛을 보면 색이 바뀜"]],
+  Ga: [[150,150,"Ga","(순수) 갈륨 큐브","쥐고 있으면 녹는 정육면체. 손난로 아님"]],
 };
 
 function singleResult(sym, cnt){
@@ -4131,7 +4132,7 @@ function singleResult(sym, cnt){
   return [sym, `${e ? e.ko : sym} 덩어리`, `${cnt}개 모아봤자 그냥 ${e ? e.ko : sym}임`];
 }
 
-const GEMS = ["대기","지각","지구","달","바닷물","사람 몸","태양","화성 대기","금성 대기","목성 대기","혜성","포르스테라이트","진주","자개","루비", "사파이어", "에메랄드", "아쿠아마린", "자수정", "토파즈", "페리도트", "지르콘", "스피넬", "터키석", "오팔", "다이아몬드", "라피스라줄리", "형석", "녹주석", "황옥강옥"];
+const GEMS = ["대기","지각","지구","달","바닷물","사람 몸","태양","화성 대기","금성 대기","목성 대기","혜성","포르스테라이트","진주","자개","루비", "사파이어", "에메랄드", "아쿠아마린", "자수정", "토파즈", "페리도트", "지르콘", "스피넬", "터키석", "오팔", "다이아몬드", "라피스라줄리", "형석", "녹주석", "노란색 사파이어"];
 
 
 /* 화학식의 유니코드 아래/위첨자를 <sub>/<sup> 로 */
@@ -5312,7 +5313,7 @@ const REC_EN = {
 "엽록소":["Chlorophyll","Why plants are green — the magnesium in the middle catches sunlight"],
 "가넷":["Garnet","January birthstone — named after red pomegranate seeds"],
 "크야수이트":["Kyawthuite","The rarest mineral on Earth — only one crystal has ever been found"],
-"부서진 알루미늄":["Crumbled aluminium","Gallium seeps in and sturdy aluminium crumbles like a biscuit"],
+"알루미늄 의문의 1패":["Aluminium's mysterious loss","Gallium seeps in and sturdy aluminium crumbles like a biscuit"],
 "헬륨-3":["Helium-3","Light helium that is one neutron short. Plentiful on the Moon"],
 "삼중수소":["Tritium","It glows on its own — used in exit signs and watch hands. Half-life 12.3 years"],
 "은 아말감":["Silver amalgam","A soft metal paste made when mercury dissolves silver"],
@@ -5564,7 +5565,7 @@ const REC_EN = {
 "산화구리":["Copper oxide","Black powder"],
 "이산화타이타늄":["Titanium dioxide","The white in sunscreen"],
 "사플루오린화제논":["Xenon tetrafluoride","The gas that supposedly reacts with nothing"],
-"황옥강옥":["Yellow sapphire","Corundum with iron"],
+"노란색 사파이어":["Yellow sapphire","Corundum with iron"],
 "파얄라이트":["Fayalite","The iron end of olivine. More iron, duller colour"],
 "유기 조각":["Organic fragment","A formyl radical. Not enough to make anything yet"],
 "오존":["Ozone","Helpful up high, harmful down low"],
@@ -5621,6 +5622,7 @@ const REC_EN = {
 "수은 웅덩이":["Pool of mercury","Do not touch"],
 "비스무트 결정":["Bismuth crystal","Just pretty"],
 "(순수) 구리 큐브":["(Pure) copper cube","Wires everywhere"],
+"(순수) 갈륨 큐브":["(Pure) gallium cube","A cube that melts if you hold it. Not a hand warmer"],
 "(순수) 타이타늄 큐브":["(Pure) titanium cube","A light, tough cube. Give it a jolt and it changes colour"],
 "수소 덩어리":["Mass of hydrogen","This much and it might become a star"],
 "산소 과다":["Excess oxygen","Add a spark and you have a problem"],
@@ -6135,7 +6137,9 @@ const CHANGELOG = [
            '튜토리얼을 새로 만들었어요. 이제 설명만 넘기는 게 아니라 아스리엘이랑 같이 물을 직접 만들어 봐요. 설정에서 다시 볼 수 있어요',
            '주기율표 칸에 원자량이 생겼어요. [ ] 안의 숫자는 안정 동위원소가 없는 원소라 가장 오래 사는 동위원소의 질량수예요. 지르코늄은 2024년 IUPAC 개정값(91.222)으로 고쳤어요. 설정에서 끌 수 있어요',
            '비스무트 결정의 원자 배열을 진짜로 바꿨어요. 정육면체가 아니라 주름진 벌집 판이 두 겹씩 짝지어 쌓인 모양이에요',
-           '도감 ▣ 큐브 진열장에 큐브 무게가 적혀요 (재 본 한 변 4.7 cm 기준). 다섯 개 다 모으면 볼링공급이에요',
+           '도감 ▣ 큐브 진열장에 큐브 무게가 적혀요 (재 본 한 변 4.7 cm 기준). 여섯 개 다 모으면 볼링공급이에요',
+           '새 큐브: 갈륨. ✋ 쥐기를 누르면 손 온도에 녹아내려요. 온도계가 붙어 있어서, 녹는 동안 온도가 29.76°C에 멈추는 것, 놓으면 녹는점 아래에서도 액체로 버티는 과냉각, 씨앗을 넣으면 굳으면서 온도가 다시 올라가는 것까지 볼 수 있어요. 큐브 진열장은 육각형이 됐어요',
+           'PC에서 ? 키를 누르면 키보드 단축키 안내가 떠요. 방향키로 원소 옮기기, Enter로 담기, / 로 검색 같은 걸 한눈에 볼 수 있어요. 설정 → 일반에도 버튼이 있어요. 도감은 닫을 때도 도감 버튼 쪽으로 쏙 들어가요',
            '광물 모델 넷을 새로 만들었어요. 방해석은 비스듬한 육면체로 쪼개진 투명한 조각(아이슬란드 스파), 석회석은 흰빛 돌덩이, 진사는 흰 바탕돌 위 주홍 결정, 로도크로사이트는 검은 바탕돌 위 장밋빛 능면체예요. 듀모티어라이트 석영도 새 모델이에요: 모서리가 둥근 푸르스름한 석영 속에 반짝이는 파란 바늘 1278개. 페리도트는 블렌더로 새로 깎은 오벌 컷 보석이 됐어요 (10 × 8 mm). 자수정은 육각 기둥 33개가 바탕돌에서 솟은 군집이 됐어요. 천청석은 속이 빈 석회암 정동 안에 하늘색 결정 110개가 빼곡히, 안쪽 깊은 곳일수록 어둡게',
            '액체를 얼리고 녹일 때 소리를 새로 만들었어요. 쉬이익 서리가 내려앉고, 녹을 땐 스르르 풀리며 보글보글해요',
            '학습 창도 설정처럼 왼쪽 탭 + 오른쪽 내용으로 바꿨어요. 탭마다 아이콘, 항목마다 받침 카드, 빛나는 시작 버튼, 배경색도 설정 창을 따라가요',
@@ -6143,14 +6147,16 @@ const CHANGELOG = [
            '아래 조합 칸이 화면 끝까지 늘어진 막대에서 가운데 떠 있는 도크로 바뀌었어요. 재료를 담으면 조합하기 버튼이 빛나요',
            '알림도 새로 짰어요. 업적 카드엔 아이콘·반짝임·남은 시간 막대가 붙고, 업데이트 뒤 처음 열면 오른쪽 아래에 새 버전 요약 카드가 떠요',
            '설정 · 도감 창이 버튼에서 튀어나오며 열려요. 폰에서 오비탈 칩(3d⁷ 4s² 같은 것)이 "크게 보기" 버튼과 겹치던 것도 고쳤어요',
-           '자잘한 것들: 원소를 담으면 그 칸이 통 튀며 흔들려요. 타이타늄 큐브 각인도 아노다이징 색을 따라가요. 천청석은 "천청석 / 셀레스타이트"로 이름이 바뀌었어요. 설정 창 배경엔 기본값 버튼, 밝은 배경이면 글자가 알아서 어두워지는 기능, 줄 받침(자동 · 항상 · 끄기)이 생겼어요. 비스무트 미리보기가 예전 모형으로 나오던 것도 고쳤어요. 학습 → 성격 질문이 8개에서 16개로 늘었어요. 광물 진열장은 유리장으로 바뀌고 6칸에서 9칸이 됐어요. 배경엔 원소 색을 따라가는 입자들이 떠다니며 서로 이어지고, 원소를 누르면 그 칸에서 물결이 퍼지고, 표 위쪽 빈자리에 그 원소 기호가 크게 깔려요. 뒤에 떠 있던 동그라미 두 개는 모양이 꿈틀대는 빛 덩어리 네 개로 바뀌었어요. 덜 찬 오비탈(알루미늄 3p¹ 같은 것)도 이제 방을 전부 켜서 보여 줘요'],
+           '자잘한 것들: 원소를 담으면 그 칸이 통 튀며 흔들려요. 타이타늄 큐브 각인도 아노다이징 색을 따라가요. 천청석은 "천청석 / 셀레스타이트"로 이름이 바뀌었어요. 설정 창 배경엔 기본값 버튼, 밝은 배경이면 글자가 알아서 어두워지는 기능, 줄 받침(자동 · 항상 · 끄기)이 생겼어요. 비스무트 미리보기가 예전 모형으로 나오던 것도 고쳤어요. 학습 → 성격 질문이 8개에서 16개로 늘었어요. 광물 진열장은 유리장으로 바뀌고 6칸에서 9칸이 됐어요. 배경엔 원소 색을 따라가는 입자들이 떠다니며 서로 이어지고, 원소를 누르면 그 칸에서 물결이 퍼지고, 표 위쪽 빈자리에 그 원소 기호가 크게 깔려요. 뒤에 떠 있던 동그라미 두 개는 모양이 꿈틀대는 빛 덩어리 네 개로 바뀌었어요. 덜 찬 오비탈(알루미늄 3p¹ 같은 것)도 이제 방을 전부 켜서 보여 줘요. 결과 창의 긴 안내 문구(물 마시기 같은 것)가 폰에서 탭을 가리던 것도 탭 아래 카드로 옮겼어요. 부서진 알루미늄(Al + Ga)은 이름이 "알루미늄 의문의 1패"로, 황옥강옥은 "노란색 사파이어"로 이름이 바뀌었어요'],
       en: ['Redrawn atom cursor as an electron cloud: hover an element and it becomes that element\'s cloud. Electrons do not orbit, they flicker where they are likely to be. Pick Orbital in Settings > Cursor electrons to wear any single orbital from 1s to 5g as your cursor, drawn as dots or fog, in three sizes (the default is bigger now). Trail strength and length, electron speed, the symbol tag and the click ripple are all in the Cursor tab too (Bohr and the classic cursor are there too). The missing atom cursor on/off switch is back too',
            'Settings are now split into tabs: General, Display, Models, Cursor, Accessibility, Records, About. The new Accessibility tab has reduced motion and high contrast. Plus new options: temperature unit (°C, K, °F), achievement pop-up position, cell corners, symbol font, atom symbols on models and the settings background',
            'Redesigned codex: tabs on the left (Compounds, Achievements, Specials, Tools), little model previews on found compounds, progress bars and sorting (name, recently found, most atoms, missing first)',
            'New tutorial: instead of just reading, you make water yourself with Asriel. Replay it from Settings',
            'Table cells now show atomic weights. Numbers in [ ] are the mass number of the longest-lived isotope, for elements with no stable one. Zirconium updated to the 2024 IUPAC value (91.222). You can turn it off in Settings',
            'Bismuth crystals now show the real atomic layout too: not cubes, but puckered honeycomb sheets stacked in pairs',
-           'The ▣ Cube shelf now shows each cube\'s weight (for a 4.7 cm cube). All five together weigh about as much as a bowling ball',
+           'The ▣ Cube shelf now shows each cube\'s weight (for a 4.7 cm cube). All six together weigh about as much as a bowling ball',
+           'New cube: gallium. Press ✋ Hold and it melts from the warmth of your hand. A thermometer shows the temperature stalling at 29.76°C while it melts, staying liquid below the melting point after you let go (supercooling), and climbing back up when a seed makes it freeze. The cube shelf is now a hexagon',
+           'On a computer, press ? to see the keyboard shortcuts: arrows to move, Enter to add, / to search and more. There is also a button in Settings → General. The codex now shrinks back into its button when it closes',
            'Four new mineral models: calcite as clear rhombic cleavage pieces (Iceland spar), limestone as a pale rock, cinnabar as scarlet crystals on white matrix, and rhodochrosite as rose rhombs on dark matrix. Dumortierite quartz is new too: a pale blue, softly bevelled quartz with 1278 glossy blue needles inside. Peridot is now an oval-cut gem freshly cut in Blender (10 × 8 mm). Amethyst is now a cluster of 33 hexagonal points rising from a rock base. Celestite is now an open geode packed with 110 sky-blue crystals, darker towards the deep centre',
            'New sounds for freezing and melting liquids: a frosty hiss with a chime, and a soft unwinding fizz when it melts',
            'The Learn window now matches Settings: tabs on the left with icons, card rows, a glowing start button and the same background colour',
@@ -6158,7 +6164,7 @@ const CHANGELOG = [
            'The mix tray is now a floating dock in the middle instead of a bar stretched edge to edge, and the Mix button glows once you have ingredients',
            'Redesigned notifications: achievement cards get an icon, a shine and a countdown bar, and after an update a summary card of the new version appears bottom right',
            'Settings and the codex now pop out of their buttons. Also fixed the orbital chips overlapping the Enlarge button on phones',
-           'Small stuff: a chip bounces and wobbles when you add an element, the titanium cube engraving follows the anodised colour, celestite is now shown as both names, the settings background gets a reset button, automatic dark text on light colours and row panels (auto, always, off), and the bismuth preview no longer shows the old model. The personality test now has 16 questions instead of 8. The mineral shelf is now a glass cabinet with 9 spots instead of 6. The background now has drifting particles that link up in the element colour, a ripple spreads from the cell you click, and the selected symbol sits large in the empty space at the top of the table. The two round glows behind everything are now four shape-shifting clouds. Partly filled orbitals (like aluminium 3p¹) now show all their rooms'],
+           'Small stuff: a chip bounces and wobbles when you add an element, the titanium cube engraving follows the anodised colour, celestite is now shown as both names, the settings background gets a reset button, automatic dark text on light colours and row panels (auto, always, off), and the bismuth preview no longer shows the old model. The personality test now has 16 questions instead of 8. The mineral shelf is now a glass cabinet with 9 spots instead of 6. The background now has drifting particles that link up in the element colour, a ripple spreads from the cell you click, and the selected symbol sits large in the empty space at the top of the table. The two round glows behind everything are now four shape-shifting clouds. Partly filled orbitals (like aluminium 3p¹) now show all their rooms. Long messages in the result window (like drinking water) no longer cover the tabs on phones. Crumbled aluminium (Al + Ga) is now called "Aluminium\'s mysterious loss"'],
     },
   },
   {
@@ -10626,7 +10632,7 @@ const RX_MINERALS = {
   '녹주석':   { habit: 'beryl', n: 2, mat: { c: [186, 214, 150], clear: 0.66 } },
   '루비':     { habit: 'corundum', n: 1, mat: { c: [214, 22, 62], clear: 0.74, gem: 1 } },
   '사파이어': { habit: 'corundum', n: 1, mat: { c: [34, 74, 206], clear: 0.74, gem: 1 } },
-  '황옥강옥': { habit: 'corundum', n: 1, mat: { c: [242, 192, 44], clear: 0.7, gem: 1 } },
+  '노란색 사파이어': { habit: 'corundum', n: 1, mat: { c: [242, 192, 44], clear: 0.7, gem: 1 } },
   '석회석':   { habit: 'rhomb', n: 3, mat: { c: [242, 228, 194], clear: 0.55 } },
   '방해석 / 아라고나이트': { habit: 'rhomb', n: 3, mat: { c: [242, 228, 194], clear: 0.55 } },
   '황산구리': { habit: 'rhomb', n: 2, mat: { c: [34, 112, 224], clear: 0.72, gem: 1 } },
@@ -11318,7 +11324,7 @@ const RX_CUS_F = [3,0,108,109,110,3,0,113,114,112,3,0,120,121,122,3,0,125,126,12
 /* 강옥 보석: [어두운 몸통, 밝은 번쩍임, 가장자리 빛, 배경 빛] */
 const RX_CORUNDUM = {
   '사파이어': [[10, 30, 110],  [95, 150, 255], [190, 215, 255], '#2f6bff'],
-  '황옥강옥': [[150, 95, 5],   [255, 215, 80], [255, 240, 190], '#ffc93c'],
+  '노란색 사파이어': [[150, 95, 5],   [255, 215, 80], [255, 240, 190], '#ffc93c'],
 };
 function rxCushionGem(name){
   const P = RX_CORUNDUM[name];
@@ -11543,7 +11549,7 @@ function rxMineral(name){
   if(name === '루비') return rxRubyGem();
   if(name === '크야수이트') return rxKyawthuite();
   if(name === '토파즈') return rxTopazGem();
-  if(name === '사파이어' || name === '황옥강옥') return rxCushionGem(name);
+  if(name === '사파이어' || name === '노란색 사파이어') return rxCushionGem(name);
   if(name === '아쿠아마린') return rxAquaGem();
   if(name === '진주') return rxPearl();
   if(name === '스피넬') return rxSpinelGem();
@@ -12735,7 +12741,7 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     const one = fromMix.length === 1 && single && /^[A-Z][a-z]?$/.test(rxPlain(fs)) ? fromMix[0] : null;
     const liq = !RX_REDUCED && RX_LIQ_NAMED[nm];
     if(nm === '마이크로 주기율표'){ model = rxMicroTable(); try{ rxEvt('micro118'); }catch(e){} }
-    else if(!RX_REDUCED && nm === '부서진 알루미늄') model = rxEmbrittleModel(rnd);
+    else if(!RX_REDUCED && nm === '알루미늄 의문의 1패') model = rxEmbrittleModel(rnd);
     else if(liq) model = rxSolutionModel(liq, fs, rnd);
     else if(nm === '헬륨-3') model = rxHelium3(0);
     else if(!RX_REDUCED && nm === '삼중수소') model = rxTritium(rnd);
@@ -12746,6 +12752,7 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     else if(nm === '(순수) 타이타늄 큐브') model = rxTungstenCube('Ti');
     else if(nm === '(순수) 금 큐브') model = rxTungstenCube('Au');
     else if(nm === '(순수) 은 큐브') model = rxTungstenCube('Ag');
+    else if(nm === '(순수) 갈륨 큐브') model = rxGaCube();
     else if(nm === '네오디뮴 자석') model = rxTungstenCube('Nd');
     else if(nm === '지구') model = rxPicModel('earth');
     else if(nm === '태양') model = rxPicModel('sun');
@@ -13637,7 +13644,7 @@ addEventListener('keydown', ev => {
 /* 도감에 저장되는 이름은 순화·번역 전의 원본 이름이다 */
 const A_GEM = ['진주','자개','루비','사파이어','에메랄드','아쿠아마린','자수정','토파즈',
   '페리도트','지르콘','스피넬','터키석','오팔','다이아몬드','라피스라줄리','형석','녹주석',
-  '황옥강옥','포르스테라이트'];
+  '노란색 사파이어','포르스테라이트'];
 const A_SPACE = ['대기','지각','지구','달','태양','화성 대기','금성 대기','목성 대기','혜성'];
 const A_BOOM = ['폭발','더 큰 폭발','존나 큰 폭발','루비듐 폭발'];
 const A_BODY = ['오줌','땀','침','눈물','방귀','사람 몸','뼈'];
@@ -14746,7 +14753,7 @@ const RX_TMI = {
   '바닷물':'바닷물의 소금을 다 꺼내 육지에 깔면 150m가 넘는 두께가 된대요.',
   '방귀':'방귀 냄새의 주범은 전체의 1%도 안 되는 황화수소 같은 황 화합물이에요.',
   '베이킹소다':'머핀이나 팬케이크가 부푸는 건 베이킹소다가 산을 만나 이산화탄소 거품을 내기 때문이에요.',
-  '부서진 알루미늄':'그래서 갈륨은 수은처럼 비행기에 들고 탈 수 없어요. 알루미늄 기체를 망가뜨릴 수 있거든요.',
+  '알루미늄 의문의 1패':'그래서 갈륨은 수은처럼 비행기에 들고 탈 수 없어요. 알루미늄 기체를 망가뜨릴 수 있거든요.',
   '부탄':'라이터와 휴대용 가스레인지 연료예요. 조금만 눌러줘도 쉽게 액체가 돼요.',
   '붕사':'슬라임을 탱글탱글하게 굳히는 게 바로 붕사예요.',
   '붕산':'바퀴벌레 약에도 들어가요.',
@@ -14974,7 +14981,7 @@ const RX_TMI = {
   '황산암모늄':'질소와 황을 같이 주는 비료예요.',
   '황산칼륨':'칼륨 비료로 써요. 칼륨 비료는 대부분 염화칼륨이지만, 담배나 감자처럼 염소를 싫어하는 작물에는 이걸 줘요.',
   '황산칼슘':'석고예요. 깁스와 두부 응고제로 쓰여요.',
-  '황옥강옥':'노란 사파이어예요. 강옥은 빨강만 루비고 나머지 색은 다 사파이어라고 불러요.',
+  '노란색 사파이어':'강옥은 빨강만 루비고 나머지 색은 다 사파이어라고 불러요. 노란색은 철이 조금 섞여서 나요. 예전 이름은 황옥강옥이었어요.',
   '황철석':'금처럼 보여서 "바보의 금"이라고 불려요.',
   '황화나트륨':'가죽 공장에서 털을 없애는 데 써요.',
   '황화수소':'썩은 달걀 냄새예요. 진하면 오히려 코가 냄새를 못 맡게 돼서 더 위험해요.',
@@ -15124,6 +15131,7 @@ const RX_TMI = {
   '네온사인':'네온 자체는 주황빛 빨강만 내요. 다른 색 간판은 다른 기체나 형광 코팅을 써요.',
   '수은 웅덩이':'상온에서 액체인 금속은 수은뿐이에요. 갈륨과 세슘은 30℃ 가까이 되어야 녹아요.',
   '비스무트 결정':'무지갯빛은 색소가 아니라 표면의 얇은 산화막 때문에 생겨요.',
+  '(순수) 갈륨 큐브':'갈륨은 29.76°C에서 녹아요. 손이 따뜻하면 쥐고만 있어도 녹고, 찬 손이면 잘 안 녹아요. 그리고 물처럼 얼 때 부피가 약 3% 늘어나는 드문 금속이라, 꽉 찬 유리병에 넣고 얼리면 병이 깨질 수 있어요.',
   '(순수) 타이타늄 큐브':'타이타늄에 전기를 걸면 표면에 아주 얇은 산화막이 자라요. 그 막에서 반사된 빛끼리 간섭해서 색이 생기는데, 막 두께는 걸어 준 전압으로 정해져요. 물감 없이 두께만으로 내는 색이에요.',
   '(순수) 구리 큐브':'구리는 세균을 죽이는 성질이 있어서 문손잡이에 쓰기도 해요.',
 };
@@ -15212,7 +15220,7 @@ function rxSay(text, ms = 2200){
 
 /* 이름을 바로잡은 항목: 예전 이름으로 찾은 기록을 새 이름으로 옮긴다 */
 {
-  const RENAME = { '석회석 / 아라고나이트': '방해석 / 아라고나이트', '아말감': '금 아말감' };
+  const RENAME = { '석회석 / 아라고나이트': '방해석 / 아라고나이트', '아말감': '금 아말감', '부서진 알루미늄': '알루미늄 의문의 1패', '황옥강옥': '노란색 사파이어' };
   try{
     let moved = false;
     Object.entries(RENAME).forEach(([o, n]) => { if(found.has(o)){ found.delete(o); found.add(n); moved = true; } });
@@ -15385,7 +15393,7 @@ rxFxApply();
 
 /* ═══ 결과 창 도구 ═══ */
 const RX_TWINS = { '흑연':'다이아몬드', '다이아몬드':'흑연', '산소 기체':'오존', '오존':'산소 기체' };
-const RX_MIN_NAMES = () => [...new Set([...Object.keys(RX_MINERALS), '비스무트 결정', '다이아몬드', '듀모티어라이트', '자철석', '형석', '크야수이트', '가넷', '에메랄드', '루비', '토파즈', '사파이어', '황옥강옥', '아쿠아마린', '진주', '스피넬', '투어멀린'])];
+const RX_MIN_NAMES = () => [...new Set([...Object.keys(RX_MINERALS), '비스무트 결정', '다이아몬드', '듀모티어라이트', '자철석', '형석', '크야수이트', '가넷', '에메랄드', '루비', '토파즈', '사파이어', '노란색 사파이어', '아쿠아마린', '진주', '스피넬', '투어멀린'])];
 const rxIsMineral = n => RX_MIN_NAMES().includes(n);
 var RX_PREV = null, RX_NOLOG = false, RX_VIEWING = false, RX_REPLAYING = false;
 
@@ -22131,7 +22139,7 @@ addEventListener('keydown', e => { if(e.key === 'Escape' && RX_LME.on){ e.stopIm
   const _html = rxToolsHTML;
   rxToolsHTML = function(){
     let h = _html.apply(this, arguments);
-    if(h && RX && RX.raw === '부서진 알루미늄'){
+    if(h && RX && RX.raw === '알루미늄 의문의 1패'){
       const T = rxLmeT();
       h += `<button type="button" class="rtool" data-act="lme" title="${T.btn}" aria-label="${T.btn}"><span aria-hidden="true">⌕</span><em>${T.btn}</em></button>`;
     }
@@ -26432,10 +26440,11 @@ const RX_CUBES = {
   Ti: { txt: [['22', 'Ti', 'Titanium', '99.5%', '47.867']], tint: [158, 160, 166], mixK: 0.45, ink: '#2a2c30' },
   Au: { txt: [['79', 'Au', 'Gold', '99.99%', '196.97']], tint: [236, 186, 72], mixK: 0.74, ink: '#4a3006' },
   Ag: { txt: [['47', 'Ag', 'Silver', '99.99%', '107.87']], tint: [212, 214, 218], mixK: 0.33, ink: '#2a2c30' },
+  Ga: { txt: [['31', 'Ga', 'Gallium', '99.99%', '69.723']], tint: [184, 190, 202], mixK: 0.3, ink: '#24272e' },
   // 네오디뮴 자석: 니켈 도금이라 밝은 은색. 모서리에 N극/S극, 등급 N52
   Nd: { txt: [['N', 'Nd', 'Nd₂Fe₁₄B', 'N52', 'S']], tint: [196, 199, 205], mixK: 0.42, ink: '#24272c' },
 };
-['Cu', 'Ti', 'Au', 'Nd', 'Ag'].forEach(k => { const [n, sy, nm, pu, wt] = RX_CUBES[k].txt[0]; RX_CUBES[k].txt = RX_WC_TXT.map((t, i) => ({ ...t, t: [n, sy, nm, pu, wt][i] })); });
+['Cu', 'Ti', 'Au', 'Nd', 'Ag', 'Ga'].forEach(k => { const [n, sy, nm, pu, wt] = RX_CUBES[k].txt[0]; RX_CUBES[k].txt = RX_WC_TXT.map((t, i) => ({ ...t, t: [n, sy, nm, pu, wt][i] })); });
 function rxTungstenCube(key){
   const C = RX_CUBES[key || 'W'];
   const M = { c: C.tint, metal: 1 };
@@ -27872,17 +27881,18 @@ function rxQuartzAtoms(){
   .cube-kg{text-align:center;font-size:11.5px;color:var(--dim);margin:2px auto 0;opacity:.85;max-width:420px;line-height:1.5;word-break:keep-all}
 </style>
 <script>
-const RX_CUBE_SET = ['(순수) 텅스텐 큐브', '(순수) 구리 큐브', '(순수) 타이타늄 큐브', '(순수) 금 큐브', '(순수) 은 큐브'];
+const RX_CUBE_SET = ['(순수) 텅스텐 큐브', '(순수) 구리 큐브', '(순수) 타이타늄 큐브', '(순수) 금 큐브', '(순수) 은 큐브', '(순수) 갈륨 큐브'];
+const RX_CUBE_FIVE = RX_CUBE_SET.slice(0, 5);
 const RX_CUBE_MAG = '네오디뮴 자석';
-Object.assign(RXT.ko, { cubeBtn: '큐브', cubeTitle: '큐브 진열장', cubeSub: n => `순수 큐브 ${n} / 5 · 오각형으로 모셔 둠`,
+Object.assign(RXT.ko, { cubeBtn: '큐브', cubeTitle: '큐브 진열장', cubeSub: n => `순수 큐브 ${n} / 6 · 육각형으로 모셔 둠`,
   cubeMagT: '번외', cubeTap: '큐브를 누르면 결과 창으로 가요. 가운데 자석도 눌러 보세요',
-  cubePull: '자석: "다 붙어라!" …<b>아무도 안 붙음.</b> 텅스텐·구리·타이타늄·금·은은 전부 자석에 달라붙는 금속(강자성체)이 아니에요. 철·니켈·코발트 같은 애들만 붙어요.' });
-Object.assign(RXT.en, { cubeBtn: 'Cubes', cubeTitle: 'Cube shelf', cubeSub: n => `Pure cubes ${n} / 5 · arranged in a pentagon`,
+  cubePull: '자석: "다 붙어라!" …<b>아무도 안 붙음.</b> 텅스텐·구리·타이타늄·금·은·갈륨은 전부 자석에 달라붙는 금속(강자성체)이 아니에요. 철·니켈·코발트 같은 애들만 붙어요.' });
+Object.assign(RXT.en, { cubeBtn: 'Cubes', cubeTitle: 'Cube shelf', cubeSub: n => `Pure cubes ${n} / 6 · arranged in a hexagon`,
   cubeMagT: 'Bonus', cubeTap: 'Tap a cube to open it. Try the magnet in the middle too',
-  cubePull: 'Magnet: "Come to me!" …<b>nobody moves.</b> Tungsten, copper, titanium, gold and silver are not ferromagnetic. Only things like iron, nickel and cobalt stick.' });
+  cubePull: 'Magnet: "Come to me!" …<b>nobody moves.</b> Tungsten, copper, titanium, gold, silver and gallium are not ferromagnetic. Only things like iron, nickel and cobalt stick.' });
 /* 큐브 무게: 과산이 자로 잰 텅스텐 큐브 한 변 4.7 cm 기준, 전부 같은 크기라고 치고
-   밀도(g/cm³, 상온): Ti 4.506 · Cu 8.96 · Ag 10.49 · W 19.25 · Au 19.3 (위키백과 원소 밀도 표), 소결 NdFeB 자석 7.4~7.7 → 7.5 */
-const RX_CUBE_RHO = { '(순수) 텅스텐 큐브': 19.25, '(순수) 구리 큐브': 8.96, '(순수) 타이타늄 큐브': 4.506, '(순수) 금 큐브': 19.3, '(순수) 은 큐브': 10.49, '네오디뮴 자석': 7.5 };
+   밀도(g/cm³, 상온): Ga 5.91(고체) · Ti 4.506 · Cu 8.96 · Ag 10.49 · W 19.25 · Au 19.3 (위키백과 원소 밀도 표), 소결 NdFeB 자석 7.4~7.7 → 7.5 */
+const RX_CUBE_RHO = { '(순수) 텅스텐 큐브': 19.25, '(순수) 구리 큐브': 8.96, '(순수) 타이타늄 큐브': 4.506, '(순수) 금 큐브': 19.3, '(순수) 은 큐브': 10.49, '(순수) 갈륨 큐브': 5.91, '네오디뮴 자석': 7.5 };
 const RX_CUBE_CM = 4.7;
 const rxCubeG = n => (RX_CUBE_RHO[n] || 0) * RX_CUBE_CM ** 3;
 const rxKgTxt = g => g >= 1000 ? (g / 1000).toFixed(g >= 1950 ? 1 : 2).replace(/\.?0+$/, m => m.length > 1 && m[0] === '.' ? '' : m) + ' kg' : Math.round(g / 10) * 10 + ' g';
@@ -27892,12 +27902,12 @@ function rxCubeTotal(have){
   const en = LANG === 'en';
   if(!have.length) return '';
   const base = en ? `All ${RX_CUBE_CM} cm cubes. Shelf total ≈ ${rxKgTxt(g)}` : `전부 한 변 ${RX_CUBE_CM} cm 기준. 진열장 합계 ≈ ${rxKgTxt(g)}`;
-  if(have.length === 5) return base + (en ? '. Almost a 16 lb (7.26 kg) bowling ball, the heaviest allowed. Is the desk OK?' : '. 규정상 제일 무거운 볼링공(16파운드, 7.26 kg)에 거의 맞먹어요. 책상 괜찮아요?');
+  if(have.length === RX_CUBE_SET.length) return base + (en ? '. Almost a 16 lb (7.26 kg) bowling ball, the heaviest allowed. Is the desk OK?' : '. 규정상 제일 무거운 볼링공(16파운드, 7.26 kg)에 거의 맞먹어요. 책상 괜찮아요?');
   return base;
 }
 function rxOpenCubes(){
   const have = RX_CUBE_SET.filter(n => found.has(n)), mag = found.has(RX_CUBE_MAG);
-  const P = RX_CUBE_SET.map((n, k) => { const a = (-90 + 72 * k) * Math.PI / 180; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
+  const P = RX_CUBE_SET.map((n, k) => { const a = (-90 + 360 / RX_CUBE_SET.length * k) * Math.PI / 180; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
   const slot = (n, [x, y], cls) => found.has(n)
     ? `<button type="button" class="cube-slot ${cls || ''}" data-n="${n}" style="left:${x}%;top:${y}%"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet"></svg><span class="plate"><b>${rxLocName(n).replace(/^\((순수|Pure)\)\s*/i, '')}</b><i>${cls === 'mag' ? rt('cubeMagT') + ' · ' : ''}${rxCubeKg(n)}</i></span></button>`
     : `<div class="cube-slot empty ${cls || ''}" style="left:${x}%;top:${y}%"><div class="q">?</div><span class="plate"><b>???</b></span></div>`;
@@ -27944,7 +27954,7 @@ function rxOpenCubes(){
 }
 if(typeof ACH !== 'undefined'){
   const i = ACH.findIndex(a => a.id === 'master');
-  const a = { id: 'cube5', secret: true, need: () => RX_CUBE_SET.every(n => found.has(n)), prog: () => [RX_CUBE_SET.filter(n => found.has(n)).length, 5],
+  const a = { id: 'cube5', secret: true, need: () => RX_CUBE_FIVE.every(n => found.has(n)), prog: () => [RX_CUBE_FIVE.filter(n => found.has(n)).length, 5],
     ko: ['정육면체 오형제', '책상이 버틸지 모르겠음'], en: ['The Five Cube Brothers', 'Not sure the desk can take this'] };
   if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
 }
@@ -28896,8 +28906,8 @@ function rxSetBgApply(){
   }catch(e){}
 }
 rxSetBgApply();
-Object.assign(RXT.ko, { sbg: '설정 창 배경', sbgNote: '설정·도감·오비탈 고르기 창의 바탕색. 밝게 고르면 글자가 알아서 어두워져요', sbgCus: '직접', sbgA: '방향', sbgReset: '기본값', sbgPanel: '줄 받침', sbgPAuto: '자동', sbgPOn: '항상', sbgPOff: '끄기' });
-Object.assign(RXT.en, { sbg: 'Settings background', sbgNote: 'Behind settings, the codex and the orbital picker. Pick something light and the text turns dark on its own', sbgCus: 'Custom', sbgA: 'Angle', sbgReset: 'Default', sbgPanel: 'Row panels', sbgPAuto: 'Auto', sbgPOn: 'Always', sbgPOff: 'Off' });
+Object.assign(RXT.ko, { sbg: '설정 창 배경', sbgNote: '설정·도감·오비탈 고르기·단축키 안내 창의 바탕색. 밝게 고르면 글자가 알아서 어두워져요', sbgCus: '직접', sbgA: '방향', sbgReset: '기본값', sbgPanel: '줄 받침', sbgPAuto: '자동', sbgPOn: '항상', sbgPOff: '끄기' });
+Object.assign(RXT.en, { sbg: 'Settings background', sbgNote: 'Behind settings, the codex, the orbital picker and the shortcut guide. Pick something light and the text turns dark on its own', sbgCus: 'Custom', sbgA: 'Angle', sbgReset: 'Default', sbgPanel: 'Row panels', sbgPAuto: 'Auto', sbgPOn: 'Always', sbgPOff: 'Off' });
 {
   const _rsB = renderSettings;
   renderSettings = function(){
@@ -30273,6 +30283,375 @@ function rxVerPop(force){
         return r; };
     }
   }catch(e){ console.warn('glow', e); }
+})();
+</script>
+<style>
+  /* ═══ 반응 카드 말풍선 리워크 (3.8): 긴 말은 탭 아래 가운데 카드로, 안 가리게 ═══ */
+  #mHint.long{left:50%;right:auto;top:var(--hintTop,12px);transform:translateX(-50%);max-width:min(440px,calc(100% - 24px));width:max-content;
+    text-align:left;font-size:12.5px;line-height:1.55;color:#e6ebf3;padding:9px 14px 9px 34px;border-radius:12px;
+    background:rgba(14,18,26,.94);border:1px solid rgba(var(--hintC,165,216,255),.35);box-shadow:0 8px 24px rgba(0,0,0,.45);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);word-break:keep-all;overflow-wrap:anywhere;z-index:6;
+    animation:hintIn .35s cubic-bezier(.2,.9,.3,1.2) both}
+  #mHint.long::before{content:"";position:absolute;left:13px;top:13px;width:9px;height:9px;border-radius:50%;
+    background:rgb(var(--hintC,165,216,255));box-shadow:0 0 10px rgb(var(--hintC,165,216,255))}
+  #mHint.long.out{animation:hintOut .25s ease both}
+  @keyframes hintIn{from{opacity:0;transform:translate(-50%,-8px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+  @keyframes hintOut{to{opacity:0;transform:translate(-50%,-6px)}}
+  @media (prefers-reduced-motion:reduce){ #mHint.long,#mHint.long.out{animation:none} }
+</style>
+<script>
+(function(){
+  const h = document.getElementById('mHint'); if(!h) return;
+  let busy = false;
+  function fit(){
+    if(busy) return; busy = true;
+    try{
+      const long = !h.hidden && (h.textContent || '').trim().length > 16;
+      h.classList.toggle('long', long);
+      if(long){
+        const st = document.getElementById('mStage'), tb = document.getElementById('mTabs');
+        let top = 12;
+        if(tb && !tb.hidden && tb.offsetHeight) top = tb.offsetTop + tb.offsetHeight + 8;
+        h.style.setProperty('--hintTop', top + 'px');
+        try{ const c = getComputedStyle(document.getElementById('card')).getPropertyValue('--cc-rgb').trim(); if(c) h.style.setProperty('--hintC', c); }catch(e){}
+        h.classList.remove('out');
+      }
+    }catch(e){}
+    busy = false;
+  }
+  new MutationObserver(fit).observe(h, {childList:true, characterData:true, subtree:true, attributes:true, attributeFilter:['hidden']});
+  addEventListener('resize', fit);
+  // 닫힐 때 툭 사라지지 않게: rxSay 의 타이머 직전에 페이드
+  if(typeof rxSay === 'function'){
+    const _say = rxSay;
+    rxSay = function(text, ms = 2200){
+      _say.call(this, text, ms);
+      clearTimeout(h._ot);
+      h._ot = setTimeout(() => { if(h.classList.contains('long')) h.classList.add('out'); }, Math.max(0, ms - 260));
+    };
+  }
+  fit();
+})();
+</script>
+<style>
+  #gaTemp{position:absolute;left:12px;bottom:58px;z-index:5;display:flex;align-items:center;gap:8px;padding:5px 10px 5px 8px;border-radius:20px;
+    background:rgba(14,18,26,.85);border:1px solid #2f3747;font-size:12px;color:#d7dde8;pointer-events:none;font-variant-numeric:tabular-nums}
+  #gaTemp[hidden]{display:none}
+  #gaTemp .gt-bar{position:relative;width:8px;height:26px;border-radius:5px;background:#1c2230;overflow:hidden;border:1px solid #39424f}
+  #gaTemp .gt-bar i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#ff8a65,#4dabf7);border-radius:4px}
+  #gaTemp .gt-bar b{position:absolute;left:-2px;right:-2px;height:1.5px;background:#ffd43b}
+  #gaTemp .gt-t{font-weight:700;font-size:13px;display:block}
+  #gaTemp .gt-s{font-size:10.5px;color:#9aa4b5;display:block}
+  .rtool[data-act="gahold"][aria-pressed="true"]{background:#ffb08a;color:#2a1608;border-color:#ffb08a}
+</style>
+<script>
+/* ═══ (순수) 갈륨 큐브: 쥐고 있으면 녹는다 ═══
+   녹는점 29.76°C (29.7646). 녹는 동안은 온도가 녹는점에 머문다(열이 녹이는 데 쓰임).
+   놓으면 녹는점 아래로 식어도 액체로 버틴다(과냉각). 결정 씨앗을 넣으면 굳으면서 열을 내놔 녹는점 근처로 다시 오른다.
+   얼 때 부피 약 3.1% 증가. 손 온도는 환경 따라 30°C 언저리라 시뮬은 32°C로 잡음 */
+const RX_GA_MP = 29.76, RX_GA_ROOM = 24, RX_GA_HAND = 32;
+Object.assign(RXT.ko, { gaHold:'✋ 쥐기', gaLet:'✋ 놓기', gaSeed:'씨앗 넣기', gaRoom:'실온', gaHandT:'손에 쥠', gaMelting:'녹는 중', gaLiq:'액체', gaSuper:'과냉각 액체', gaFreezing:'굳는 중', gaSolid:'고체',
+  gaM1:'29.76°C. 녹기 시작했어요. 녹는 동안은 온도가 안 올라가요. 들어오는 열이 전부 녹이는 데 쓰여서요',
+  gaM2:'다 녹았어요. 손이 따뜻하면 갈륨 녹는점(29.76°C)보다 뜨거워서 이렇게 돼요. 찬 손이면 잘 안 녹아요',
+  gaM3:'녹는점 아래로 식었는데 안 굳어요. 갈륨은 과냉각이 잘 돼서, 결정 씨앗이 없으면 한참 액체로 버텨요. 씨앗 넣기를 눌러 보세요',
+  gaM4:'굳기 시작했어요. 굳을 때 열(응고열)을 내놔서 온도가 녹는점 쪽으로 다시 올라가요. 그리고 얼면서 부피가 약 3% 늘어나요',
+  gaM5:'다시 굳었어요. 근데 큐브 모양으로는 안 돌아와요. 다시 보기(↻)를 누르면 새 큐브가 나와요',
+  gaM0:'갈륨 큐브예요. ✋ 쥐기를 눌러서 손으로 쥐어 보세요' });
+Object.assign(RXT.en, { gaHold:'✋ Hold', gaLet:'✋ Let go', gaSeed:'Add a seed', gaRoom:'Room temp', gaHandT:'In your hand', gaMelting:'Melting', gaLiq:'Liquid', gaSuper:'Supercooled liquid', gaFreezing:'Freezing', gaSolid:'Solid',
+  gaM1:'29.76°C. It has started to melt. The temperature stops rising while it melts, because all the heat goes into melting',
+  gaM2:'Fully melted. A warm hand is hotter than gallium\'s melting point (29.76°C). A cold hand barely melts it',
+  gaM3:'It has cooled below the melting point but stays liquid. Gallium supercools easily and can stay liquid for a long time without a seed crystal. Try Add a seed',
+  gaM4:'It is freezing. Freezing gives off heat, so the temperature climbs back toward the melting point. It also expands by about 3% as it freezes',
+  gaM5:'Solid again, but it will not turn back into a cube. Press replay (↻) for a new one',
+  gaM0:'A gallium cube. Press ✋ Hold to hold it in your hand' });
+function rxGaCube(){
+  const m = rxTungstenCube('Ga');
+  m.gaCube = true;
+  m.ga = { T: RX_GA_ROOM, liq: 0, shape: 0, held: false, seed: false, said: {}, t: 0, last: 0 };
+  m.gaBase = m.faces.map(f => ({ p: f.p.map(q => q.slice()), n: f.n.slice() }));
+  m.gaN = m.faces.length;
+  // 녹기 시작하면 쓰는 말랑한 덩어리(초타원체) 그물: 처음엔 숨겨 둠
+  const M = m.faces[0].m, U = 40, V = 16;
+  m.gaUV = [U, V];
+  for(let j = 0; j < V; j++) for(let i = 0; i < U; i++) m.faces.push({ p: [[0,0,0],[0,0,0],[0,0,0],[0,0,0]], n: [0, 0, -1], m: M, blob: true, gi: i, gj: j });
+  return m;
+}
+(function(){
+  const S = () => RXT[LANG === 'en' ? 'en' : 'ko'];
+  // 꼭짓점 하나: 바닥(y=+36)으로 주저앉고, 옆으로 퍼지고, 네모가 동그랗게
+  function warp(x, y, z, sh, liq, t){
+    const F = 36, h = 1 - 0.84 * sh, sp = Math.min(1.85, 1 / Math.sqrt(h));
+    const r = Math.hypot(x, z), mx = Math.max(Math.abs(x), Math.abs(z));
+    const c = r > 0 ? 1 + (mx / r - 1) * Math.min(1, sh * 1.3) : 1;
+    let X = x * c * sp, Z = z * c * sp, Y = F - (F - y) * h;
+    if(liq > 0.02 && y < 0){ Y += Math.sin(t * 2.2 + x * 0.09 + z * 0.07) * 1.6 * liq * sh; }
+    return [X, Y, Z, c * sp, h];
+  }
+  const spow = (b, e) => Math.sign(b) * Math.pow(Math.abs(b), e);
+  function shapeFaces(m){
+    const G = m.ga, t = G.t, N = m.gaN, Z = [0, 0, 0];
+    if(G.shape > 0.002){
+      // 큐브 면은 접고, 덩어리 그물로 그린다
+      for(let i = 0; i < N; i++){ m.faces[i].p = m.gaBase[i].p.map(() => [0, 35.9, 0]); m.faces[i].n = [0, 1, 0]; }
+      const sh = G.shape, h = 1 - 0.7 * sh, sp = Math.min(1.7, 1 / Math.sqrt(h));
+      const R = 36 * sp, Hh = 36 * h, yc = 36 - Hh;
+      const e2 = 0.1 + 0.9 * Math.min(1, sh * 1.4), e1 = 0.1 + 0.75 * Math.min(1, sh * 1.2);
+      const [U, V] = m.gaUV;
+      const P = (i, j) => {
+        const u = -Math.PI + 2 * Math.PI * i / U, v = -Math.PI / 2 + Math.PI * j / V;
+        const cv = spow(Math.cos(v), e1), sv = spow(Math.sin(v), e1);
+        let x = R * cv * spow(Math.cos(u), e2), z = R * cv * spow(Math.sin(u), e2), y = yc - Hh * sv;
+        if(sv > 0.2 && G.liq > 0.02) y += Math.sin(t * 2.4 + x * 0.08 + z * 0.06) * 1.4 * G.liq * sv;
+        return [x, Math.min(36, y), z];
+      };
+      for(let k = N; k < m.faces.length; k++){
+        const f = m.faces[k], i = f.gi, j = f.gj;
+        const a = P(i, j), b = P(i + 1, j), c = P(i + 1, j + 1), d = P(i, j + 1);
+        f.p = [a, b, c, d];
+        const ux = c[0] - a[0], uy = c[1] - a[1], uz = c[2] - a[2], vx = d[0] - b[0], vy = d[1] - b[1], vz = d[2] - b[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2 - yc, mz = (a[2] + c[2]) / 2;
+        if(nx * mx + ny * my + nz * mz < 0){ nx = -nx; ny = -ny; nz = -nz; }
+        const L = Math.hypot(nx, ny, nz) || 1; f.n = [nx / L, ny / L, nz / L];
+      }
+      if(m.wImg) m.wImg.style.display = 'none';
+    } else {
+      for(let k = N; k < m.faces.length; k++){ const f = m.faces[k]; f.p = [Z.slice(), Z.slice(), Z.slice(), Z.slice()]; f.n = [0, 0, -1]; }
+    }
+    if(G.shape > 0.002){ tone(m); return; }
+    m.faces.slice(0, N).forEach((f, i) => {
+      const B = m.gaBase[i];
+      let cx = 0, cz = 0, k = 0, ks = 1, kh = 1;
+      f.p = B.p.map(([x, y, z]) => { const w = warp(x, y, z, G.shape, G.liq, t); cx += w[0]; cz += w[2]; k++; ks = w[3]; kh = w[4]; return [w[0], w[1], w[2]]; });
+      let [nx, ny, nz] = B.n; nx /= ks; ny /= kh; nz /= ks;
+      if(Math.abs(B.n[1]) < 0.9 && G.shape > 0){ const L = Math.hypot(cx, cz) || 1, b = Math.min(1, G.shape * 1.2), hl = Math.hypot(nx, nz) || 1; nx = nx + (cx / L * hl - nx) * b; nz = nz + (cz / L * hl - nz) * b; }
+      const L = Math.hypot(nx, ny, nz) || 1; f.n = [nx / L, ny / L, nz / L];
+    });
+    const fr = m.faces.find(f => f.front);
+    if(fr){
+      const xs = fr.p.map(q => q[0]), ys = fr.p.map(q => q[1]), z = Math.max(...fr.p.map(q => q[2]));
+      m.wQuad = [[Math.min(...xs), Math.min(...ys), z], [Math.max(...xs), Math.min(...ys), z], [Math.min(...xs), Math.max(...ys), z]];
+    }
+    if(m.wImg) m.wImg.style.display = '';
+    tone(m);
+  }
+  function tone(m){
+    const G = m.ga;
+    // 액체는 거울처럼, 다시 굳은 갈륨은 뿌옇게
+    const solidAfter = G.shape > 0.05 && G.liq < 0.98;
+    m.mixK = 0.3 - 0.14 * G.liq + (solidAfter ? 0.28 * (1 - G.liq) : 0);
+    m.tint = solidAfter ? rxMix([184, 190, 202], [150, 156, 166], 1 - G.liq) : [184, 190, 202];
+  }
+  function say(m, k){ if(m.ga.said[k]) return; m.ga.said[k] = 1; try{ rxSay(S()[k], 5200); }catch(e){} }
+  function step(m, now){
+    const G = m.ga; const dt = Math.min(0.25, G.last ? (now - G.last) / 1000 : 0); G.last = now; G.t += dt;
+    if(G.held){
+      G.seed = false;
+      if(G.T >= RX_GA_MP - 0.005 && G.liq < 1){ G.T = RX_GA_MP; G.liq = Math.min(1, G.liq + dt * 0.12); say(m, 'gaM1'); if(G.liq >= 1) say(m, 'gaM2'); }
+      else G.T += (RX_GA_HAND - G.T) * Math.min(1, dt * 0.35);
+      if(G.T > RX_GA_MP && G.liq < 1 && G.T - dt * 2 < RX_GA_MP) G.T = RX_GA_MP;
+    } else if(G.seed && G.liq > 0){
+      G.liq = Math.max(0, G.liq - dt * 0.16);
+      G.T += (RX_GA_MP - 0.15 - G.T) * Math.min(1, dt * 1.6);
+      if(G.liq <= 0){ G.seed = false; say(m, 'gaM5'); }
+    } else {
+      G.T += (RX_GA_ROOM - G.T) * Math.min(1, dt * 0.12);
+      if(G.liq > 0.3 && G.T < RX_GA_MP - 0.3) say(m, 'gaM3');
+    }
+    G.shape = Math.max(G.shape, G.liq);
+    const key = G.held + '|' + (G.liq > 0.05) + '|' + G.seed;
+    if(G.key !== key){ const first = G.key == null; G.key = key; if(!first) try{ rxToolsSync(); }catch(e){} else setTimeout(() => say(m, 'gaM0'), 900); }
+    shapeFaces(m);
+    tempUI(m);
+    // 다 녹으면 아래 설명도 같이 녹음
+    const sub = document.getElementById('mSub');
+    if(sub){
+      if(G.sub0 == null) G.sub0 = /^(으앙 녹음|Waaah, it melted)$/.test(sub.textContent) ? (window._gaSub0 || sub.textContent) : (window._gaSub0 = sub.textContent);
+      const want = G.liq >= 1 || (G.shape >= 1 && G.liq > 0.02) ? (LANG === 'en' ? 'Waaah, it melted' : '으앙 녹음') : G.sub0;
+      if(sub.textContent !== want) sub.textContent = want;
+    }
+  }
+  function tempUI(m){
+    const st = document.getElementById('mStage'); if(!st) return;
+    let el = document.getElementById('gaTemp');
+    if(!el){ el = document.createElement('div'); el.id = 'gaTemp'; el.innerHTML = '<span class="gt-bar"><i></i><b></b></span><span><span class="gt-t"></span><span class="gt-s"></span></span>'; st.appendChild(el); }
+    el.hidden = false;
+    const G = m.ga, T = S();
+    const f = v => Math.max(0, Math.min(1, (v - 18) / (36 - 18)));
+    el.querySelector('.gt-bar i').style.height = (f(G.T) * 100).toFixed(1) + '%';
+    el.querySelector('.gt-bar b').style.bottom = (f(RX_GA_MP) * 100).toFixed(1) + '%';
+    el.querySelector('.gt-t').textContent = G.T.toFixed(2) + '°C';
+    const state = G.held ? (G.liq < 1 && G.T >= RX_GA_MP - 0.01 ? T.gaMelting : G.liq >= 1 ? T.gaLiq : T.gaSolid)
+      : G.seed ? T.gaFreezing : G.liq > 0.02 ? (G.T < RX_GA_MP ? T.gaSuper : T.gaLiq) : T.gaSolid;
+    el.querySelector('.gt-s').textContent = (G.held ? T.gaHandT : T.gaRoom) + ' · ' + state + (G.liq > 0.02 && G.liq < 0.98 ? ' ' + Math.round(G.liq * 100) + '%' : '');
+  }
+  // 매 프레임: 모델이 갈륨 큐브일 때만
+  (function loop(now){
+    requestAnimationFrame(loop);
+    const m = typeof RX_M !== 'undefined' ? RX_M : null;
+    const modal = document.getElementById('modal');
+    if(m && m.gaCube && modal && modal.classList.contains('on')) step(m, now);
+    else { const el = document.getElementById('gaTemp'); if(el) el.hidden = true; if(m && m.gaCube) m.ga.last = 0; }
+  })(performance.now());
+  // 덩어리 그물은 면 사이 선이 안 보이게 테두리를 면 색과 같게
+  const _drG = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _drG.apply(this, arguments);
+    const m = mm || RX_M;
+    if(m && m.gaCube && m.polys && m.ga && m.ga.shape > 0.002){
+      for(let k = m.gaN; k < m.faces.length; k++){ const pl = m.polys[k]; if(pl){ const f = pl.getAttribute('fill'); if(f && pl._sf !== f){ pl._sf = f; pl.setAttribute('stroke', f); } } }
+    }
+    return r;
+  };
+  const _html = rxToolsHTML;
+  rxToolsHTML = function(){
+    let h = _html.apply(this, arguments);
+    const m = RX_M;
+    if(m && m.gaCube){
+      const T = S(), G = m.ga;
+      const hl = G.held ? T.gaLet : T.gaHold;
+      h += `<button type="button" class="rtool" data-act="gahold" title="${hl}" aria-label="${hl}" aria-pressed="${G.held}"><span aria-hidden="true">✋</span><em>${hl.replace('✋ ', '')}</em></button>`;
+      if(!G.held && G.liq > 0.05 && !G.seed) h += `<button type="button" class="rtool" data-act="gaseed" title="${T.gaSeed}" aria-label="${T.gaSeed}"><span aria-hidden="true">✦</span><em>${T.gaSeed}</em></button>`;
+    }
+    return h;
+  };
+  const _tool = rxTool;
+  rxTool = function(act, btn){
+    const m = RX_M;
+    if(m && m.gaCube && (act === 'gahold' || act === 'gaseed')){
+      const G = m.ga;
+      if(act === 'gahold'){ G.held = !G.held; try{ rxTone(G.held ? 260 : 200, .18, 'sine', .05, 0, G.held ? 340 : 150); }catch(e){} if(!G.held && G.liq > 0.3 && G.T < RX_GA_MP) say(m, 'gaM3'); }
+      else { G.seed = true; say(m, 'gaM4'); try{ rxTone(1400, .25, 'triangle', .04, 0, 900); }catch(e){} }
+      try{ rxToolsSync(); }catch(e){}
+      return;
+    }
+    return _tool.apply(this, arguments);
+  };
+})();
+</script>
+<style>
+  /* ═══ 키보드 단축키 안내 (?) ═══ */
+  .kb-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .kb-sec{background:rgba(255,255,255,.03);border:1px solid #262d3a;border-radius:12px;padding:12px 14px}
+  .kb-sec h3{margin:0 0 8px;font-size:12px;color:var(--dim);font-weight:600;letter-spacing:.04em}
+  .kb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px dashed #232a36;font-size:13px}
+  .kb-sec h3 + .kb-row{border-top:0}
+  .kb-keys{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;flex:none}
+  .kb-keys kbd{min-width:24px;height:24px;padding:0 7px;display:inline-grid;place-items:center;border-radius:6px;font:600 12px/1 'Orbit',ui-monospace,monospace;
+    color:#e8edf5;background:linear-gradient(#2b3342,#1d2330);border:1px solid #3a4456;border-bottom-width:3px;box-shadow:0 2px 4px rgba(0,0,0,.35)}
+  .kb-keys .or{color:var(--dim);font-size:11px;align-self:center}
+  .kb-foot{margin:12px 0 0;text-align:center;font-size:12px;color:var(--dim)}
+  .kb-wrap .kb-sec{animation:kbIn .35s cubic-bezier(.2,.9,.3,1.15) both}
+  .kb-wrap .kb-sec:nth-child(2){animation-delay:.05s}.kb-wrap .kb-sec:nth-child(3){animation-delay:.1s}.kb-wrap .kb-sec:nth-child(4){animation-delay:.15s}
+  @keyframes kbIn{from{opacity:0;transform:translateY(8px)}}
+  @media (prefers-reduced-motion:reduce){ .kb-wrap .kb-sec{animation:none} }
+  @media (max-width:640px){ .kb-wrap{grid-template-columns:1fr} }
+  /* 설정에서 고른 창 배경을 따라감 (밝으면 글자 어둡게, 받침 모드면 칸마다 받침) */
+  #rxPanel.kb .rp-box{background:var(--setbg, linear-gradient(135deg,#141923 0%,#191c2a 55%,#1e1b33 100%));border-color:#343b4e}
+  .setbg-light #rxPanel.kb .rp-box{--text:#141821;--dim:#3f4859;color:#141821}
+  .setbg-light #rxPanel.kb .rp-sub, .setbg-light #rxPanel.kb .kb-foot, .setbg-light #rxPanel.kb .kb-sec h3{color:#3f4859}
+  .setbg-light #rxPanel.kb .kb-sec{background:rgba(255,255,255,.55);border-color:rgba(20,24,33,.16)}
+  .setbg-light #rxPanel.kb .kb-row{border-top-color:rgba(20,24,33,.14)}
+  .setbg-light #rxPanel.kb .rp-x{color:#141821;border-color:rgba(20,24,33,.3);background:rgba(255,255,255,.6)}
+  .setbg-mixed #rxPanel.kb .kb-sec{background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .setbg-mixed #rxPanel.kb .rp-head > div, .setbg-mixed #rxPanel.kb .kb-foot{background:rgba(255,255,255,.72);border-radius:10px;padding:6px 12px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .setbg-mixed #rxPanel.kb .kb-foot{display:table;margin:12px auto 0}
+  .setbg-mixed-dark #rxPanel.kb .kb-sec{background:rgba(8,10,18,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .setbg-mixed-dark #rxPanel.kb .rp-head > div{background:rgba(8,10,18,.5);border-radius:10px;padding:6px 12px}
+</style>
+<script>
+(function(){
+  const K = {
+    ko: { title:'키보드 단축키', sub:'? 를 한 번 더 누르면 닫혀요',
+      secs:[
+        ['주기율표', [[['↑','↓','←','→'], '원소 옮겨 다니기'], [['Enter','/','Space'], '고른 원소 조합 칸에 담기'], [['/'], '원소 검색칸으로']]],
+        ['창', [[['Esc'], '열린 창 닫기'], [['Esc'], '검색칸에서 빠져나오기'], [['?'], '이 안내 열고 닫기']]],
+        ['결과 창 · 도감', [[['←','→'], '도감에서 연 결과: 이전 · 다음 항목'], [['Enter','/','Space'], '도감 카드 열기'], [['Esc'], '도감 검색어 지우기 (검색칸에서)']]],
+        ['업적', [[['←','→'], '업적 창: 이전 · 다음 업적'], [['Enter','/','Space'], '업적 카드 열기']]]
+      ], foot:'입력칸에 글자를 치는 중에는 단축키가 꺼져요' },
+    en: { title:'Keyboard shortcuts', sub:'Press ? again to close',
+      secs:[
+        ['Periodic table', [[['↑','↓','←','→'], 'Move between elements'], [['Enter','/','Space'], 'Add the selected element to the mix'], [['/'], 'Jump to element search']]],
+        ['Windows', [[['Esc'], 'Close the open window'], [['Esc'], 'Leave the search box'], [['?'], 'Open or close this guide']]],
+        ['Results · Codex', [[['←','→'], 'From the codex: previous · next entry'], [['Enter','/','Space'], 'Open a codex card'], [['Esc'], 'Clear the codex search (in the box)']]],
+        ['Achievements', [[['←','→'], 'Achievement window: previous · next'], [['Enter','/','Space'], 'Open an achievement card']]]
+      ], foot:'Shortcuts are off while you are typing in a box' }
+  };
+  const keys = ks => ks.map(k => k === '/' && ks.length > 1 ? `<span class="or">/</span>` : `<kbd>${k}</kbd>`).join('');
+  let open = false;
+  // 다른 패널이 열리면 단축키 창 색 입히기를 뗀다
+  const _rp = rxPanel;
+  rxPanel = function(){ const pp = document.getElementById('rxPanel'); if(pp) pp.classList.remove('kb'); return _rp.apply(this, arguments); };
+  window.rxKeysOpen = function(){
+    const T = K[LANG === 'en' ? 'en' : 'ko'];
+    const html = `<div class="kb-wrap">${T.secs.map(([h, rows]) => `<div class="kb-sec"><h3>${h}</h3>${rows.map(([ks, d]) => `<div class="kb-row"><span>${d}</span><span class="kb-keys">${keys(ks)}</span></div>`).join('')}</div>`).join('')}</div><p class="kb-foot">${T.foot}</p>`;
+    rxPanel(T.title, T.sub, html, () => { open = false; const pp = document.getElementById('rxPanel'); if(pp) pp.classList.remove('kb'); });
+    document.getElementById('rxPanel').classList.add('kb');
+    open = true;
+    try{ rxEvt('keys'); }catch(e){}
+  };
+  addEventListener('keydown', e => {
+    if(e.key !== '?' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target, tag = (t && t.tagName) || '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || (t && t.isContentEditable)) return;
+    const p = document.getElementById('rxPanel');
+    if(open && p && p.classList.contains('on')){ e.preventDefault(); rxPanelClose(); open = false; return; }
+    // 다른 창이 떠 있으면 방해하지 않기
+    if(document.querySelector('#modal.on, #dex.on, #settings.on, #quiz.on, #rxFillAsk, #rxTut, #rxIntro, #rxMaint') || (p && p.classList.contains('on'))) return;
+    e.preventDefault();
+    rxKeysOpen();
+  });
+})();
+</script>
+<style>
+  /* ═══ 도감 닫기: 열릴 때처럼 도감 버튼 쪽으로 빨려 들어감 ═══ */
+  #dex.closing{display:flex;pointer-events:none;animation:setBgOut .2s ease-in forwards}
+  #dex.closing #dexBox{transform-origin:var(--dox,50%) var(--doy,0);animation:setOut .2s cubic-bezier(.5,0,.8,.4) forwards}
+  @media (prefers-reduced-motion:reduce){ #dex.closing{display:none} }
+  body.rm #dex.closing{display:none}
+  /* 설정 → 단축키 버튼 */
+  .sbtn.kbbtn{display:inline-flex;align-items:center;gap:6px}
+  .sbtn.kbbtn kbd{min-width:18px;height:18px;padding:0 5px;display:inline-grid;place-items:center;border-radius:4px;font:600 11px/1 'Orbit',monospace;
+    background:linear-gradient(#2b3342,#1d2330);border:1px solid #3a4456;border-bottom-width:2px;color:#e8edf5}
+</style>
+<script>
+(function(){
+  // 도감 닫기 애니메이션: 'on' 은 바로 빼서(다른 코드가 닫힌 걸로 알게) 모양만 잠깐 남겨 둔다
+  const dx = document.getElementById('dex');
+  if(dx){
+    const cl = dx.classList, _rm = cl.remove.bind(cl), _add = cl.add.bind(cl);
+    let tm = 0;
+    cl.remove = function(...names){
+      const closing = names.includes('on') && cl.contains('on');
+      _rm(...names);
+      if(closing){ clearTimeout(tm); _rm('opening'); _add('closing'); tm = setTimeout(() => _rm('closing'), 220); }
+    };
+    cl.add = function(...names){
+      if(names.includes('on')){ clearTimeout(tm); _rm('closing'); }
+      _add(...names);
+    };
+  }
+  // 설정 '일반' 탭에 단축키 안내 버튼 (마우스·키보드가 있는 기기만)
+  Object.assign(RXT.ko, { kbRow:'키보드 단축키', kbRowNote:'어디서든 ? 키를 눌러도 열려요', kbRowBtn:'보기' });
+  Object.assign(RXT.en, { kbRow:'Keyboard shortcuts', kbRowNote:'Press ? anywhere to open it too', kbRowBtn:'Show' });
+  const _rsK = renderSettings;
+  renderSettings = function(){
+    const r = _rsK.apply(this, arguments);
+    try{
+      const body = document.getElementById('setBody');
+      if(!body || body.querySelector('[data-rxkb]') || !matchMedia('(pointer: fine)').matches) return r;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = row(rt('kbRow'), `<button type="button" class="sbtn kbbtn" data-rxkb="1"><kbd>?</kbd>${rt('kbRowBtn')}</button>`, rt('kbRowNote'));
+      const el = tmp.firstElementChild; el.dataset.tab = 'gen';
+      const anchor = [...body.querySelectorAll('.srow[data-tab="gen"]')].pop();
+      if(anchor) anchor.after(el); else body.appendChild(el);
+      el.querySelector('[data-rxkb]').addEventListener('click', () => {
+        try{ closeSettings(); }catch(e){}
+        setTimeout(() => { try{ rxKeysOpen(); }catch(e){} }, 260);
+      });
+    }catch(e){}
+    return r;
+  };
 })();
 </script>
 </body>
