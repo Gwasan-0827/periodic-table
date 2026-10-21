@@ -30710,5 +30710,20 @@ function rxGaCube(){
   @media (prefers-reduced-motion:reduce){ #settings.opening #setBox, #dex.opening #dexBox, #settings.closing #setBox, #dex.closing #dexBox{animation:none!important} #settings::after, #dex::after{animation:none!important} }
   body.rm #settings.opening #setBox, body.rm #dex.opening #dexBox, body.rm #settings.closing #setBox, body.rm #dex.closing #dexBox{animation:none!important}
 </style>
+<style>
+  /* 아래 빛줄기: display:none 에서 켜질 땐 transition 이 안 먹어서 툭 나타났다 → 키프레임으로 스르륵 */
+  #settings::before, #dex::before, #settings::after, #dex::after{transition:none}
+  #settings.on::before, #dex.on::before{animation:glowIn .9s cubic-bezier(.22,.7,.3,1) .12s both}
+  #settings.on:not(.closing)::after, #dex.on:not(.closing)::after{animation:lineIn .85s cubic-bezier(.22,.7,.25,1) .1s both, glowBreath 3.6s ease-in-out 1.1s infinite}
+  #settings.closing::before, #dex.closing::before{animation:glowOut .3s ease-in forwards}
+  #settings.closing::after, #dex.closing::after{animation:lineOut .3s ease-in forwards}
+  @keyframes glowIn{from{opacity:0;transform:translateY(30%) scaleY(.6)}to{opacity:1;transform:none}}
+  @keyframes glowOut{from{opacity:1}to{opacity:0;transform:translateY(30%) scaleY(.6)}}
+  @keyframes lineIn{0%{opacity:0;transform:scaleX(.08);filter:blur(4px)}35%{opacity:.85}100%{opacity:1;transform:scaleX(1);filter:blur(0)}}
+  @keyframes lineOut{from{opacity:1;transform:scaleX(1)}to{opacity:0;transform:scaleX(.3);filter:blur(4px)}}
+  @keyframes glowBreath{0%,100%{opacity:1}50%{opacity:.7}}
+  #settings::before, #dex::before{transform-origin:50% 100%}
+  @media (prefers-reduced-motion:reduce){ #settings.on::before, #dex.on::before, #settings.on::after, #dex.on::after{animation:none!important;opacity:1;transform:none} }
+</style>
 </body>
 </html>
