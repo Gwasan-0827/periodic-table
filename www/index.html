@@ -6190,7 +6190,8 @@ const CHANGELOG = [
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
            '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요',
-           '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요'],
+           '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요',
+           '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 염소한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 표정 연기까지 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6209,7 +6210,8 @@ const CHANGELOG = [
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
            'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now',
-           'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles'],
+           'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles',
+           'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, facial expressions included. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene'],
     },
   },
   {
@@ -32482,6 +32484,258 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     box.querySelector('#mxSwap').addEventListener('click', swap);
     box.querySelector('#mxWipe').addEventListener('click', () => { MX.drops = []; MX.P = []; if(stc) stc.getContext('2d').clearRect(0, 0, stc.width, stc.height); MX.on = false; try{ SFX.pick(); }catch(e){} renderIonMove(); });
     readout(); kick();
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 4.0 이온 탭: 이온은 어떻게 만들어지나요? (전자 뺏기 애니메이션) ═══ */
+  .im-seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .im-seg::-webkit-scrollbar{display:none}
+  .im-seg button{white-space:nowrap}
+  @media (max-width:480px){ .im-seg button{padding:5px 8px;font-size:12px;letter-spacing:-.02em} }
+  .mk{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px}
+  .mk-ctl{justify-content:center}
+  .mk-stage{position:relative;max-width:640px;margin:0 auto;width:100%;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:radial-gradient(ellipse at 50% 45%,rgba(116,192,252,.07),transparent 70%),rgba(255,255,255,.02);overflow:hidden;cursor:pointer;user-select:none}
+  .mk-svg{display:block;width:100%;height:auto}
+  .mk-b{position:absolute;transform:translate(-50%,-100%);max-width:46%;padding:6px 11px;border-radius:12px;background:#f4f6fb;color:#151a24;font:700 12.5px/1.35 system-ui,sans-serif;word-break:keep-all;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.35);animation:mkB .25s cubic-bezier(.3,1.6,.5,1);pointer-events:none;white-space:normal}
+  .mk-b::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#f4f6fb}
+  @keyframes mkB{from{transform:translate(-50%,-100%) scale(.4);opacity:0}}
+  .mk-tap{position:absolute;right:10px;bottom:8px;font:600 10.5px system-ui;color:var(--hub-dim,#8e99ad);pointer-events:none}
+  .mk-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .mk-ctl button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;font:700 12.5px system-ui,sans-serif;cursor:pointer}
+  .mk-ctl button.pri{background:#ffd43b;border-color:#ffd43b;color:#1a1a1a}
+  .mk-side{display:grid;gap:8px}
+  .mk-pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .mk-pairs button{padding:8px 4px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;font:800 14px/1.1 system-ui,sans-serif;cursor:pointer}
+  .mk-pairs button small{display:block;font:600 10px system-ui,sans-serif;color:var(--hub-dim,#8e99ad);margin-top:3px}
+  .mk-pairs button.on{border-color:#ffd43b;background:rgba(255,212,59,.08)}
+  .mk-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;counter-reset:mk}
+  @media (max-width:640px){ .mk-steps{grid-template-columns:1fr} }
+  .mk-steps li{counter-increment:mk;position:relative;padding:8px 10px 8px 34px;border-radius:10px;border:1px solid rgba(255,255,255,.06);font-size:12.5px;line-height:1.5;color:var(--hub-dim,#8e99ad);word-break:keep-all;transition:background .3s,border-color .3s,color .3s}
+  .mk-steps li::before{content:counter(mk);position:absolute;left:9px;top:8px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font:800 11px system-ui;background:rgba(255,255,255,.08);color:var(--hub-fg,#e7ecf4)}
+  .mk-steps li.on{color:var(--hub-fg,#e7ecf4);border-color:rgba(255,212,59,.45);background:rgba(255,212,59,.06)}
+  .mk-steps li.on::before{background:#ffd43b;color:#1a1a1a}
+  .mk-steps b{color:var(--hub-fg,#e7ecf4)}
+  .mk-eq{padding:10px;border-radius:12px;border:1px solid rgba(105,219,124,.4);background:rgba(105,219,124,.06);text-align:center;font:800 19px/1.3 system-ui,sans-serif;opacity:.25;transition:opacity .4s}
+  .mk-eq.on{opacity:1}
+  .mk-eq small{display:block;font:600 12px system-ui,sans-serif;color:var(--hub-dim,#8e99ad);margin-top:3px}
+</style>
+<script>
+(() => {
+  const PAIRS = [
+    { n: 1, c: { sym: 'Na', ko: '나트륨', en: 'Sodium', ion: '나트륨 이온', ionEn: 'sodium ion', sh: [2, 8, 1], col: '#ffa94d' },
+            a: { sym: 'Cl', ko: '염소', en: 'Chlorine', ion: '염화 이온', ionEn: 'chloride ion', sh: [2, 8, 7], col: '#69db7c' }, f: 'NaCl', fk: '염화나트륨 (소금)', fe: 'sodium chloride (salt)' },
+    { n: 2, c: { sym: 'Mg', ko: '마그네슘', en: 'Magnesium', ion: '마그네슘 이온', ionEn: 'magnesium ion', sh: [2, 8, 2], col: '#ffa94d' },
+            a: { sym: 'O', ko: '산소', en: 'Oxygen', ion: '산화 이온', ionEn: 'oxide ion', sh: [2, 6], col: '#ff8787' }, f: 'MgO', fk: '산화마그네슘', fe: 'magnesium oxide' },
+    { n: 1, c: { sym: 'Li', ko: '리튬', en: 'Lithium', ion: '리튬 이온', ionEn: 'lithium ion', sh: [2, 1], col: '#ffa94d' },
+            a: { sym: 'F', ko: '플루오린', en: 'Fluorine', ion: '플루오린화 이온', ionEn: 'fluoride ion', sh: [2, 7], col: '#a9e34b' }, f: 'LiF', fk: '플루오린화 리튬', fe: 'lithium fluoride' } ];
+  const T = {
+    ko: { tab: '이온은 어떻게 만들어지나요?', pick: '누가 누구한테 뺏길까', again: '↻ 처음부터', pause: '⏸ 멈춤', play: '▶ 재생', tap: '화면을 누르면 다음 장면',
+          b0: '전자 {n}개만 더 있으면 꽉 차는데…', b1: '왜… 왜 그렇게 봐?', b2: '앗 내 전자!!', b3: 'ㅎㅎ 이제 내 거', b4: '…근데 왜 너한테 끌리지?', b5: '반대 전하라서 그래 ㅋ',
+          s1: '<b>{c}</b>은 바깥 껍질에 전자가 <b>{cn}개</b>뿐이에요. 이걸 내주면 안쪽 껍질이 꽉 찬 상태가 돼서 오히려 편해요.',
+          s2: '<b>{a}</b>는 바깥 껍질에 전자가 <b>{an}개</b>. <b>{n}개</b>만 더 받으면 8개로 꽉 차요.',
+          s3: '전자 {n}개가 {c} → {a}로 넘어가요. 전자(−)를 잃은 쪽은 <b>{ci}</b>, 얻은 쪽은 <b>{ai}</b>이 돼요.',
+          s4: '+와 −는 서로 끌어당겨요. 이렇게 붙는 게 <b>이온 결합</b>이에요.' },
+    en: { tab: 'How are ions made?', pick: 'Who loses to whom', again: '↻ Replay', pause: '⏸ Pause', play: '▶ Play', tap: 'Tap for the next scene',
+          b0: 'Just {n} more electron(s) and I\'m full…', b1: 'W-why are you staring at me?', b2: 'Hey, my electron!!', b3: 'Heh, mine now', b4: '…why am I drawn to you?', b5: 'Opposite charges, buddy',
+          s1: '<b>{c}</b> has only <b>{cn}</b> electron(s) in its outer shell. Giving it away leaves a full inner shell, which is more stable.',
+          s2: '<b>{a}</b> has <b>{an}</b> outer electrons. <b>{n}</b> more fills it to 8.',
+          s3: '{n} electron(s) move from {c} to {a}. The one that lost electrons (−) becomes <b>{ci}</b>, the one that gained them becomes <b>{ai}</b>.',
+          s4: '+ and − attract each other. Sticking together like this is an <b>ionic bond</b>.' } };
+  const L = () => ionLang() ? 'en' : 'ko';
+  const tt = k => (T[L()] || T.ko)[k];
+  const MK = { p: 0, t: 0, play: true, raf: 0, last: 0, said: -1 };
+  window.MK = MK;
+  const SCN = [0, 1.7, 3.1, 4.6, 5.9, 7.4, 9.6];   // 장면 시작 시각
+  const W = 480, H = 270, CY = 128, SR = [26, 44, 62];
+  const ease = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+  const lerp = (a, b, u) => a + (b - a) * u;
+  const supN = (q, neg) => (q > 1 ? String(q).replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]) : '') + (neg ? '⁻' : '⁺');
+
+  function face(x, y, mood, look){
+    const k = '#1a1f2b', lx = look * 1.4;
+    let s = '';
+    const eye = (ex, r) => `<circle cx="${ex + lx}" cy="${y - 3}" r="${r}" fill="${k}"/>`;
+    if(mood === 'shock') s += `<circle cx="${x - 5}" cy="${y - 3}" r="3.4" fill="#fff" stroke="${k}" stroke-width="1"/><circle cx="${x + 5}" cy="${y - 3}" r="3.4" fill="#fff" stroke="${k}" stroke-width="1"/><circle cx="${x - 5 + lx}" cy="${y - 3}" r="1.3" fill="${k}"/><circle cx="${x + 5 + lx}" cy="${y - 3}" r="1.3" fill="${k}"/><ellipse cx="${x}" cy="${y + 7}" rx="2.6" ry="3.4" fill="${k}"/>`;
+    else if(mood === 'sly') s += `<path d="M${x - 8} ${y - 3} q3 -2 6 0 M${x + 2} ${y - 3} q3 -2 6 0" stroke="${k}" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${x - 5} ${y + 5} Q${x + 1} ${y + 9} ${x + 6} ${y + 3}" stroke="${k}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    else if(mood === 'happy') s += `<path d="M${x - 8} ${y - 2} q3 -4 6 0 M${x + 2} ${y - 2} q3 -4 6 0" stroke="${k}" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${x - 5} ${y + 3} Q${x} ${y + 10} ${x + 5} ${y + 3} Z" fill="${k}"/>`;
+    else {
+      s += eye(x - 5, 2.1) + eye(x + 5, 2.1);
+      if(mood === 'nervous') s += `<path d="M${x - 5} ${y + 6} q2.5 -2.5 5 0 t5 0" stroke="${k}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M${x + 13} ${y - 12} q3 5 0 7 q-3 -2 0 -7" fill="#74c0fc"/>`;
+      else if(mood === 'sad') s += `<path d="M${x - 8} ${y - 8} l5 2 M${x + 8} ${y - 8} l-5 2" stroke="${k}" stroke-width="1.4" stroke-linecap="round"/><path d="M${x - 4} ${y + 8} Q${x} ${y + 4} ${x + 4} ${y + 8}" stroke="${k}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+      else s += `<path d="M${x - 4} ${y + 5} Q${x} ${y + 8} ${x + 4} ${y + 5}" stroke="${k}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+      if(mood === 'blush') s += `<ellipse cx="${x - 9}" cy="${y + 3}" rx="3" ry="1.8" fill="#ff8fab" opacity=".85"/><ellipse cx="${x + 9}" cy="${y + 3}" rx="3" ry="1.8" fill="#ff8fab" opacity=".85"/>`;
+    }
+    return s;
+  }
+  // 한 원자의 껍질과 전자. drop: 안 그릴 바깥 전자 수, slots: 바깥 껍질 빈자리 표시
+  function atomSVG(x, A, opt){
+    const t = MK.t, sh = A.sh.slice();
+    let s = '';
+    const last = sh.length - 1;
+    sh.forEach((n, k) => {
+      const R = SR[k], isOut = k === last;
+      const ringOp = isOut ? opt.outOp : 1;
+      if(ringOp <= 0) return;
+      s += `<circle cx="${x}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,${.2 * ringOp})" stroke-width="1.2"${isOut && opt.dash ? ' stroke-dasharray="4 4"' : ''}/>`;
+      if(isOut && opt.cat){
+        // 양이온 바깥 전자: 상대 쪽(오른쪽)을 보고 있음
+        for(let j = 0; j < n; j++){ if(j < opt.gone) continue; const ang = (j - (n - 1) / 2) * .45; s += `<circle cx="${x + Math.cos(ang) * R}" cy="${CY + Math.sin(ang) * R}" r="4.3" fill="#ffd43b" stroke="#1a1f2b" stroke-width="1"/>`; }
+      } else if(isOut && !opt.cat){
+        // 음이온 바깥 껍질 8자리, 왼쪽(π)부터 빈자리
+        const tg = opt.targets;
+        for(let i = 0; i < 8; i++){
+          const ang = Math.PI + i * Math.PI / 4, px = x + Math.cos(ang) * R, py = CY + Math.sin(ang) * R;
+          const ti = tg.indexOf(i);
+          if(ti >= 0){ if(ti < opt.got) s += `<circle cx="${px}" cy="${py}" r="4.3" fill="#ffd43b" stroke="#1a1f2b" stroke-width="1"/>`; else s += `<circle cx="${px}" cy="${py}" r="4.6" fill="none" stroke="#ffd43b" stroke-dasharray="2 2" opacity="${.5 + .4 * Math.sin(t * 6)}"/>`; }
+          else s += `<circle cx="${px}" cy="${py}" r="3.6" fill="#74c0fc"/>`;
+        }
+      } else {
+        const rot = t * .5 * (k % 2 ? -1 : 1);
+        for(let j = 0; j < n; j++){ const ang = rot + j * 2 * Math.PI / n; s += `<circle cx="${x + Math.cos(ang) * R}" cy="${CY + Math.sin(ang) * R}" r="3.6" fill="#74c0fc"/>`; }
+      }
+    });
+    s += `<circle cx="${x}" cy="${CY}" r="${17 * opt.pulse}" fill="${A.col}"/>` + face(x, CY, opt.mood, opt.look);
+    return s;
+  }
+  const targetsFor = n => n === 1 ? [0] : [7, 1];
+  function frame(){
+    const svg = document.getElementById('mkSvg'); if(!svg) return false;
+    const P = PAIRS[MK.p], t = MK.t, n = P.n, c = P.c, a = P.a;
+    const cOutR = SR[c.sh.length - 1], aOutR = SR[a.sh.length - 1], cInR = SR[c.sh.length - 2];
+    // 위치: 기울기 → 끌림
+    const lean = ease((t - SCN[1]) / .8) * 16 - ease((t - SCN[3]) / .6) * 16;
+    const pull = ease((t - SCN[4]) / 1.2);
+    const gap = cInR + aOutR + 10, mid = W / 2;
+    const cx = lerp(130, mid - gap / 2 - 4, pull) + Math.sin(t * 2.1) * 1.5 * (1 - pull);
+    const ax = lerp(350, mid + gap / 2 + 4, pull) - lean + Math.sin(t * 1.7 + 1) * 1.5 * (1 - pull);
+    // 전자 이동
+    const fly = j => (t - SCN[2] - .25 - j * .4) / .85;
+    let gone = 0, got = 0, flying = '';
+    const tg = targetsFor(n);
+    for(let j = 0; j < n; j++){
+      const u = fly(j);
+      if(u > 0) gone++;
+      if(u >= 1){ got++; continue; }
+      if(u > 0){
+        const ang0 = (j - (n - 1) / 2) * .45, ang1 = Math.PI + tg[j] * Math.PI / 4;
+        const x0 = cx + Math.cos(ang0) * cOutR, y0 = CY + Math.sin(ang0) * cOutR, x1 = ax + Math.cos(ang1) * aOutR, y1 = CY + Math.sin(ang1) * aOutR;
+        const e = ease(u), x = lerp(x0, x1, e), y = lerp(y0, y1, e) - Math.sin(Math.PI * e) * 46;
+        flying += `<circle cx="${x}" cy="${y}" r="10" fill="#ffd43b" opacity=".18"/><circle cx="${x}" cy="${y}" r="4.6" fill="#ffd43b" stroke="#1a1f2b" stroke-width="1"/>`;
+      }
+    }
+    const lost = got === n;
+    const fade = lost ? 1 - ease((t - (SCN[2] + .25 + (n - 1) * .4 + .85)) / .6) : 1;
+    const cMood = t < SCN[1] ? 'calm' : t < SCN[2] ? 'nervous' : t < SCN[3] + .3 ? 'shock' : t < SCN[4] ? 'sad' : 'blush';
+    const aMood = t < SCN[1] ? 'calm' : t < SCN[3] ? 'sly' : 'happy';
+    const ionized = t >= SCN[3];
+    const pop = u => 1 + .25 * Math.sin(Math.PI * Math.max(0, Math.min(1, u)));
+    let s = '';
+    // 끌림 선
+    if(t > SCN[4]) s += `<g opacity="${ease((t - SCN[4]) / .5) * (1 - pull * .7)}">${[-14, 0, 14].map(dy => `<path d="M${cx + cInR + 6} ${CY + dy} L${ax - aOutR - 6} ${CY + dy}" stroke="#ffd43b" stroke-width="1.2" stroke-dasharray="3 5" opacity=".7"/>`).join('')}</g>`;
+    s += atomSVG(cx, c, { cat: true, outOp: fade, gone, mood: cMood, look: t < SCN[3] ? 1 : 0, pulse: pop((t - SCN[3]) / .4), dash: lost });
+    s += atomSVG(ax, a, { cat: false, outOp: 1, targets: tg, got, mood: aMood, look: t < SCN[4] ? -1 : -.5, pulse: pop((t - SCN[3]) / .4) });
+    s += flying;
+    // 이름표
+    const lab = (x, A, ion, neg, R) => {
+      const shNow = ion ? (neg ? A.sh.slice(0, -1).concat(A.sh[A.sh.length - 1] + n) : A.sh.slice(0, -1)) : A.sh;
+      return `<text x="${x}" y="${CY + Math.max(R, 44) + 26}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="20" font-weight="800" fill="${ion ? (neg ? '#69a8ff' : '#ff8787') : '#e7ecf4'}">${A.sym}${ion ? supN(n, neg) : ''}</text>
+              <text x="${x}" y="${CY + Math.max(R, 44) + 43}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#8e99ad">${shNow.join(' · ')}</text>`;
+    };
+    s += lab(cx, c, ionized, false, ionized ? cInR : cOutR) + lab(ax, a, ionized, true, aOutR);
+    if(ionized){
+      const u = ease((t - SCN[3]) / .4);
+      s += `<g transform="translate(${cx + 14} ${CY - (ionized ? cInR : cOutR) - 4}) scale(${u})"><circle r="11" fill="#ff8787"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="900" fill="#1a1f2b" font-family="system-ui">+${n > 1 ? n : ''}</text></g>`;
+      s += `<g transform="translate(${ax + 16} ${CY - aOutR - 4}) scale(${u})"><circle r="11" fill="#69a8ff"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="900" fill="#1a1f2b" font-family="system-ui">−${n > 1 ? n : ''}</text></g>`;
+    }
+    svg.innerHTML = s;
+    // 말풍선
+    const sc = SCN.findIndex((v, i) => t >= v && t < (SCN[i + 1] ?? 1e9));
+    if(sc !== MK.said){
+      MK.said = sc;
+      const st = svg.parentElement; st.querySelectorAll('.mk-b').forEach(b => b.remove());
+      const who = [ 'a', 'c', 'c', 'a', 'c', 'a', null ][sc];
+      if(who){
+        const b = document.createElement('div'); b.className = 'mk-b';
+        b.textContent = tt('b' + sc).replace('{n}', n);
+        b.dataset.who = who; st.appendChild(b);
+        if(sc === 2) try{ rxBell(660, .3, .06, 0); rxBell(440, .35, .05, .12); }catch(e){}
+        if(sc === 3) try{ rxBell(1320, .25, .04, 0); }catch(e){}
+        if(sc === 5) try{ SFX.ok(); }catch(e){}
+      }
+      const k = sc < 2 ? sc : sc < 4 ? 2 : 3;
+      document.querySelectorAll('.mk-steps li').forEach((li, i) => li.classList.toggle('on', i === Math.min(3, k)));
+      document.getElementById('mkEq')?.classList.toggle('on', sc >= 5);
+    }
+    const b = svg.parentElement.querySelector('.mk-b');
+    if(b){ const r = svg.getBoundingClientRect(), sx = r.width / W, x = b.dataset.who === 'c' ? cx : ax, R = b.dataset.who === 'c' ? (ionized ? cInR : cOutR) : aOutR;
+      b.style.left = Math.max(70, Math.min(r.width - 70, x * sx)) + 'px'; b.style.top = Math.max(b.offsetHeight + 4, (CY - R - 14) * sx) + 'px'; }
+    return true;
+  }
+  function loop(now){
+    const dt = Math.min(.05, (now - (MK.last || now)) / 1000); MK.last = now;
+    if(MK.play){ MK.t = Math.min(SCN[SCN.length - 1], MK.t + dt); if(MK.t >= SCN[SCN.length - 1]){ MK.play = false; MK.sync && MK.sync(); } }
+    if(!frame()){ MK.raf = 0; return; }
+    MK.raf = requestAnimationFrame(loop);
+  }
+  const kick = () => { if(!MK.raf){ MK.last = 0; MK.raf = requestAnimationFrame(loop); } };
+
+  function renderMake(){
+    ionTextInit(); setFocus(false);
+    qHeadEl.querySelector('.hubtabs') || hubHead();
+    const P = PAIRS[MK.p], en = L() === 'en', n = P.n;
+    const nm = A => en ? A.en : A.ko;
+    const fill = s => s.replace(/\{n\}/g, n).replace('{c}', nm(P.c)).replace('{a}', nm(P.a)).replace('{cn}', P.c.sh[P.c.sh.length - 1]).replace('{an}', P.a.sh[P.a.sh.length - 1])
+      .replace('{ci}', (en ? P.c.ionEn : P.c.ion) + ' ' + P.c.sym + supN(n, false)).replace('{ai}', (en ? P.a.ionEn : P.a.ion) + ' ' + P.a.sym + supN(n, true));
+    qBodyEl.innerHTML = segHTML('make') + `<div class="mk">
+      <div>
+        <div class="mk-stage" id="mkStage"><svg class="mk-svg" id="mkSvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${tt('tab')}"></svg><span class="mk-tap">${tt('tap')}</span></div>
+        <div class="mk-ctl"><button type="button" class="pri" id="mkPlay">${MK.play && MK.t < SCN[SCN.length - 1] ? tt('pause') : tt('play')}</button><button type="button" id="mkAgain">${tt('again')}</button></div>
+      </div>
+      <div class="mk-side">
+        <div class="ix-lab">${tt('pick')}</div>
+        <div class="mk-pairs">${PAIRS.map((p, i) => `<button type="button" data-p="${i}" class="${i === MK.p ? 'on' : ''}">${p.c.sym} → ${p.a.sym}<small>${en ? p.fe : p.fk.replace(/ \(.*\)/, '')}</small></button>`).join('')}</div>
+        <ol class="mk-steps">${['s1', 's2', 's3', 's4'].map(k => `<li>${fill(tt(k))}</li>`).join('')}</ol>
+        <div class="mk-eq" id="mkEq">${P.c.sym}${supN(n, false)} + ${P.a.sym}${supN(n, true)} → ${P.f}<small>${en ? P.fe : P.fk}</small></div>
+      </div>
+    </div>`;
+    bindSeg();
+    MK.said = -1;
+    const playBtn = document.getElementById('mkPlay');
+    const syncBtn = () => { playBtn.textContent = MK.play && MK.t < SCN[SCN.length - 1] ? tt('pause') : tt('play'); };
+    playBtn.addEventListener('click', () => { if(MK.t >= SCN[SCN.length - 1]){ MK.t = 0; MK.said = -1; MK.play = true; } else MK.play = !MK.play; syncBtn(); try{ SFX.pick(); }catch(e){} });
+    document.getElementById('mkAgain').addEventListener('click', () => { MK.t = 0; MK.said = -1; MK.play = true; syncBtn(); try{ SFX.pick(); }catch(e){} });
+    document.getElementById('mkStage').addEventListener('click', () => {
+      const nx = SCN.find(v => v > MK.t + .01);
+      if(nx == null || nx >= SCN[SCN.length - 1]){ MK.t = SCN[SCN.length - 1]; } else MK.t = nx;
+      MK.play = true; syncBtn();
+    });
+    qBodyEl.querySelectorAll('[data-p]').forEach(b => b.addEventListener('click', () => { MK.p = +b.dataset.p; MK.t = 0; MK.play = true; try{ SFX.pick(); }catch(e){} renderMake(); }));
+    MK.sync = syncBtn;
+    kick();
+  }
+  // 탭 줄: 만들기 · 결합 · 이동
+  function segHTML(cur){
+    const v = [['make', tt('tab')], ['bond', rt('imTabBond')], ['move', rt('imTabMove')]];
+    return `<div class="im-seg" role="tablist">${v.map(([k, l]) => `<button type="button" role="tab" class="${cur === k ? 'on' : ''}" data-v="${k}">${l}</button>`).join('')}</div>`;
+  }
+  function bindSeg(){
+    qBodyEl.querySelectorAll('.im-seg button').forEach(b => b.addEventListener('click', () => {
+      const v = b.dataset.v, cur = ION.view || 'bond';
+      if(v === cur) return;
+      ION.view = v; try{ SFX.pick(); }catch(e){} renderIon();
+    }));
+  }
+  const _prev = renderIon;
+  renderIon = function(){
+    if(ION.view === 'make'){ renderMake(); return; }
+    _prev.apply(this, arguments);
+    const seg = qBodyEl.querySelector('.im-seg');
+    if(seg && !seg.querySelector('[data-v="make"]')){
+      const tmp = document.createElement('div'); tmp.innerHTML = segHTML(ION.view === 'move' ? 'move' : 'bond');
+      seg.replaceWith(tmp.firstChild); bindSeg();
+    }
   };
 })();
 </script>
