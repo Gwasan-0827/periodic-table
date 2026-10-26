@@ -6191,7 +6191,7 @@ const CHANGELOG = [
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
            '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요',
            '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요',
-           '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 클로린한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 의인화 캐릭터 나트륨과 클로린이 직접 나와서 표정 연기까지 하고, 전자를 뺏는 순간 클로린은 클로라이드로 이름이 바뀌어요. 마그네슘 → 산소 짝에는 옥시젠도 나와서, 전자 두 개를 뺏고 옥사이드가 돼요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
+           '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 클로린한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 의인화 캐릭터 나트륨과 클로린이 직접 나와서 표정 연기까지 하고, 전자를 뺏는 순간 클로린은 클로라이드로 이름이 바뀌어요. 마그네슘 → 산소 짝에는 옥시젠도 나와서, 전자 두 개를 뺏고 옥사이드가 돼요. 보어 모형과 전자 구름 중에 골라 볼 수 있고, 진짜 전자가 어떻게 퍼져 있는지 오비탈 단면으로 바로 넘어갈 수도 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
            '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요',
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
@@ -6213,7 +6213,7 @@ const CHANGELOG = [
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
            'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now',
            'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles',
-           'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, starring Sodium and Chlorine as characters. The moment she takes it, Chlorine becomes Chloride. Oxygen appears in the magnesium pair too, taking two electrons and becoming Oxide. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
+           'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, starring Sodium and Chlorine as characters. The moment she takes it, Chlorine becomes Chloride. Oxygen appears in the magnesium pair too, taking two electrons and becoming Oxide. Switch between a Bohr model and an electron cloud, or jump straight to orbital slices to see how real electrons spread out. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
            'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later',
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience'],
     },
@@ -32514,6 +32514,11 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   .mk-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .mk-ctl button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;font:700 12.5px system-ui,sans-serif;cursor:pointer}
   .mk-ctl button.pri{background:#ffd43b;border-color:#ffd43b;color:#1a1a1a}
+  .mk-ctl .mk-seg{display:inline-flex;gap:2px;padding:2px;border-radius:11px;border:1px solid rgba(255,255,255,.12)}
+  .mk-ctl .mk-seg button{border:0;padding:6px 10px;border-radius:8px;background:none;color:var(--hub-dim,#8e99ad)}
+  .mk-ctl .mk-seg button.on{background:var(--hub-fg,#e7ecf4);color:#0f141c}
+  .mk-note{max-width:640px;margin:8px auto 0;font-size:12px;line-height:1.55;color:var(--hub-dim,#8e99ad);text-align:center;word-break:keep-all}
+  .mk-note button{margin-left:4px;padding:2px 8px;border-radius:999px;border:1px solid rgba(116,192,252,.45);background:rgba(116,192,252,.08);color:#a5d8ff;font:600 11.5px system-ui,sans-serif;cursor:pointer;white-space:nowrap}
   .mk-side{display:grid;gap:8px}
   .mk-pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
   .mk-pairs button{padding:8px 4px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;font:800 14px/1.1 system-ui,sans-serif;cursor:pointer}
@@ -32542,13 +32547,17 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     { n: 1, c: { sym: 'Li', ko: '리튬', en: 'Lithium', ion: '리튬 이온', ionEn: 'lithium ion', sh: [2, 1], col: '#ffa94d' },
             a: { sym: 'F', ko: '플루오린', en: 'Fluorine', ion: '플루오린화 이온', ionEn: 'fluoride ion', sh: [2, 7], col: '#a9e34b' }, f: 'LiF', fk: '플루오린화 리튬', fe: 'lithium fluoride' } ];
   const T = {
-    ko: { tab: '이온은 어떻게 만들어지나요?', pick: '누가 누구한테 뺏길까', again: '↻ 처음부터', pause: '⏸ 멈춤', play: '▶ 재생', tap: '화면을 누르면 다음 장면',
+    ko: { tab: '이온은 어떻게 만들어지나요?', pick: '누가 누구한테 뺏길까', again: '↻ 처음부터', pause: '⏸ 멈춤', play: '▶ 재생', tap: '화면을 누르면 다음 장면', bohr: '보어 모형', cloud: '전자 구름', orb: '오비탈 단면 보기',
+          noteB: '※ 이해를 돕기 위한 보어 모형이에요. 진짜 전자는 정해진 궤도를 돌지 않고 구름처럼 퍼져 있어요.',
+          noteC: '※ 점이 빽빽한 곳일수록 전자가 있을 확률이 높아요. 껍질처럼 층이 지는 건 진짜예요.',
           b0: '전자 {n}개만 더 있으면 꽉 차는데…', b1: '왜… 왜 그렇게 봐?', b2: '앗 내 전자!!', b3: 'ㅎㅎ 이제 내 거', b4: '…근데 왜 너한테 끌리지?', b5: '반대 전하라서 그래 ㅋ',
           s1: '<b>{c}</b>은 바깥 껍질에 전자가 <b>{cn}개</b>뿐이에요. 이걸 내주면 안쪽 껍질이 꽉 찬 상태가 돼서 오히려 편해요.',
           s2: '<b>{a}</b>는 바깥 껍질에 전자가 <b>{an}개</b>. <b>{n}개</b>만 더 받으면 8개로 꽉 차요.',
           s3: '전자 {n}개가 {c} → {a}로 넘어가요. 전자(−)를 잃은 쪽은 <b>{ci}</b>, 얻은 쪽은 <b>{ai}</b>이 돼요.',
           s4: '+와 −는 서로 끌어당겨요. 이렇게 붙는 게 <b>이온 결합</b>이에요.' },
-    en: { tab: 'How are ions made?', pick: 'Who loses to whom', again: '↻ Replay', pause: '⏸ Pause', play: '▶ Play', tap: 'Tap for the next scene',
+    en: { tab: 'How are ions made?', pick: 'Who loses to whom', again: '↻ Replay', pause: '⏸ Pause', play: '▶ Play', tap: 'Tap for the next scene', bohr: 'Bohr model', cloud: 'Electron cloud', orb: 'See orbital slices',
+          noteB: '※ A Bohr model, to make it easier to follow. Real electrons do not orbit on tracks; they spread out like a cloud.',
+          noteC: '※ The denser the dots, the more likely an electron is there. The shell-like layers are real.',
           b0: 'Just {n} more electron(s) and I\'m full…', b1: 'W-why are you staring at me?', b2: 'Hey, my electron!!', b3: 'Heh, mine now', b4: '…why am I drawn to you?', b5: 'Opposite charges, buddy',
           s1: '<b>{c}</b> has only <b>{cn}</b> electron(s) in its outer shell. Giving it away leaves a full inner shell, which is more stable.',
           s2: '<b>{a}</b> has <b>{an}</b> outer electrons. <b>{n}</b> more fills it to 8.',
@@ -32556,7 +32565,7 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
           s4: '+ and − attract each other. Sticking together like this is an <b>ionic bond</b>.' } };
   const L = () => ionLang() ? 'en' : 'ko';
   const tt = k => (T[L()] || T.ko)[k];
-  const MK = { p: 0, t: 0, play: true, raf: 0, last: 0, said: -1 };
+  const MK = { p: 0, t: 0, play: true, raf: 0, last: 0, said: -1, model: 'bohr' };
   window.MK = MK;
   const SCN = [0, 1.7, 3.1, 4.6, 5.9, 7.4, 9.6];   // 장면 시작 시각
   const W = 480, H = 270, CY = 128; let SR = [26, 44, 62];
@@ -32581,11 +32590,32 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     return s;
   }
   // 한 원자의 껍질과 전자. drop: 안 그릴 바깥 전자 수, slots: 바깥 껍질 빈자리 표시
+  // 전자 구름: 전자 하나마다 점 몇 개를 확률대로 흩뿌린다 (매 프레임 새로 → 반짝반짝)
+  const gs = () => (Math.random() + Math.random() + Math.random() - 1.5) * 1.15;
+  function cloudSVG(x, sh, opt){
+    let s = '';
+    const last = sh.length - 1;
+    sh.forEach((n0, k) => {
+      const R = SR[k], isOut = k === last;
+      let n = n0, op = 1;
+      if(isOut && opt.cat){ n = n0 - opt.gone; op = opt.outOp; }
+      if(isOut && !opt.cat) n = n0 + opt.got;
+      if(n <= 0 || op <= 0) return;
+      s += `<circle cx="${x}" cy="${CY}" r="${R}" fill="none" stroke="#74c0fc" stroke-opacity="${(.035 + n * .012) * op}" stroke-width="${10 + k * 3}"/>`;
+      const w = 4 + k * 2.2;
+      for(let i = 0; i < n * 9; i++){
+        const r = R + gs() * w, a = Math.random() * 6.2832;
+        s += `<circle cx="${(x + Math.cos(a) * r).toFixed(1)}" cy="${(CY + Math.sin(a) * r).toFixed(1)}" r="1.3" fill="#a5d8ff" opacity="${(.35 + Math.random() * .4) * op}"/>`;
+      }
+    });
+    return s;
+  }
   function atomSVG(x, A, opt){
     const t = MK.t, sh = A.sh.slice();
     let s = '';
     const last = sh.length - 1;
-    sh.forEach((n, k) => {
+    if(MK.model === 'cloud') s = cloudSVG(x, sh, opt);
+    else sh.forEach((n, k) => {
       const R = SR[k], isOut = k === last;
       const ringOp = isOut ? opt.outOp : 1;
       if(ringOp <= 0) return;
@@ -32640,7 +32670,8 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
         const ang0 = (j - (n - 1) / 2) * .45, ang1 = Math.PI + tg[j] * Math.PI / 4;
         const x0 = cx + Math.cos(ang0) * cOutR, y0 = CY + Math.sin(ang0) * cOutR, x1 = ax + Math.cos(ang1) * aOutR, y1 = CY + Math.sin(ang1) * aOutR;
         const e = ease(u), x = lerp(x0, x1, e), y = lerp(y0, y1, e) - Math.sin(Math.PI * e) * 46;
-        flying += `<circle cx="${x}" cy="${y}" r="10" fill="#ffd43b" opacity=".18"/><circle cx="${x}" cy="${y}" r="4.6" fill="#ffd43b" stroke="#1a1f2b" stroke-width="1"/>`;
+        if(MK.model === 'cloud'){ flying += `<circle cx="${x}" cy="${y}" r="12" fill="#ffd43b" opacity=".12"/>`; for(let q = 0; q < 14; q++) flying += `<circle cx="${(x + gs() * 7).toFixed(1)}" cy="${(y + gs() * 7).toFixed(1)}" r="1.5" fill="#ffd43b" opacity="${.5 + Math.random() * .4}"/>`; }
+        else flying += `<circle cx="${x}" cy="${y}" r="10" fill="#ffd43b" opacity=".18"/><circle cx="${x}" cy="${y}" r="4.6" fill="#ffd43b" stroke="#1a1f2b" stroke-width="1"/>`;
       }
     }
     const lost = got === n;
@@ -32717,7 +32748,8 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     qBodyEl.innerHTML = segHTML('make') + `<div class="mk">
       <div>
         <div class="mk-stage" id="mkStage"><svg class="mk-svg" id="mkSvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${tt('tab')}"></svg><span class="mk-tap">${tt('tap')}</span></div>
-        <div class="mk-ctl"><button type="button" class="pri" id="mkPlay">${MK.play && MK.t < SCN[SCN.length - 1] ? tt('pause') : tt('play')}</button><button type="button" id="mkAgain">${tt('again')}</button></div>
+        <div class="mk-ctl"><button type="button" class="pri" id="mkPlay">${MK.play && MK.t < SCN[SCN.length - 1] ? tt('pause') : tt('play')}</button><button type="button" id="mkAgain">${tt('again')}</button><span class="mk-seg" role="group">${['bohr', 'cloud'].map(m => `<button type="button" data-m="${m}" class="${MK.model === m ? 'on' : ''}">${tt(m)}</button>`).join('')}</span></div>
+        <p class="mk-note" id="mkNote">${tt(MK.model === 'cloud' ? 'noteC' : 'noteB')}<button type="button" id="mkOrb">🌀 ${tt('orb')}</button></p>
       </div>
       <div class="mk-side">
         <div class="ix-lab">${tt('pick')}</div>
@@ -32731,6 +32763,12 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     const playBtn = document.getElementById('mkPlay');
     const syncBtn = () => { playBtn.textContent = MK.play && MK.t < SCN[SCN.length - 1] ? tt('pause') : tt('play'); };
     playBtn.addEventListener('click', () => { if(MK.t >= SCN[SCN.length - 1]){ MK.t = 0; MK.said = -1; MK.play = true; } else MK.play = !MK.play; syncBtn(); try{ SFX.pick(); }catch(e){} });
+    qBodyEl.querySelectorAll('.mk-seg button').forEach(b => b.addEventListener('click', () => {
+      MK.model = b.dataset.m; try{ SFX.pick(); }catch(e){}
+      qBodyEl.querySelectorAll('.mk-seg button').forEach(o => o.classList.toggle('on', o === b));
+      const nt = document.getElementById('mkNote'); nt.firstChild.textContent = tt(MK.model === 'cloud' ? 'noteC' : 'noteB');
+    }));
+    document.getElementById('mkOrb').addEventListener('click', () => { try{ SFX.pick(); }catch(e){} HUB = 'orbx'; openHub(); });
     document.getElementById('mkAgain').addEventListener('click', () => { MK.t = 0; MK.said = -1; MK.play = true; syncBtn(); try{ SFX.pick(); }catch(e){} });
     document.getElementById('mkStage').addEventListener('click', () => {
       const nx = SCN.find(v => v > MK.t + .01);
