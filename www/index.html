@@ -6178,7 +6178,7 @@ const CHANGELOG = [
            '고리 탄화수소: 의자 모양 사이클로헥세인, 브로민수를 지우는 사이클로헥센, 억지로 구부린 삼중 결합 사이클로헵타인, 황이 들어간 3,4-다이메틸싸이오펜',
            '몸과 약: 세린, 라이신, 글리코젠(셀룰로스와 같은 재료로 한 번 더), 글리세르알데하이드(젖산과 같은 재료로 한 번 더), 탈리도마이드, 세인트존스워트의 하이퍼포린·하이퍼리신. 그리고 모자이크에 \'겸\'열됨 도장까지 찍힌 코█인',
            '조합 트레이에 이제 원소를 200개까지 담을 수 있어요 (원래 150개)',
-           '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요',
+           '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요'],
       en: ['22 new entries, for 482 in total',
@@ -6187,7 +6187,7 @@ const CHANGELOG = [
            'Ring hydrocarbons: chair-shaped cyclohexane, cyclohexene, the forcibly bent triple bond of cycloheptyne, and sulfur-ringed 3,4-dimethylthiophene',
            'Body and medicine: serine, lysine, glycogen (combine the cellulose ingredients again), glyceraldehyde (combine the lactic acid ingredients again), thalidomide, hyperforin and hypericin from St John\'s wort. Plus one co█aine, mosaicked and stamped',
            'The mix now holds 200 elements instead of 150',
-           'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule',
+           'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close'],
     },
@@ -31165,7 +31165,13 @@ function rxGaCube(){
   /* 결과 창에 그려질 막대-공 모형을 읽어서 화면 좌표로 */
   function layout(w, h){
     let m = null;
-    try{ m = (typeof RX !== 'undefined' && RX && RX.views && RX.views.ball) || (typeof RX_M !== 'undefined' ? RX_M : null); }catch(e){}
+    try{
+      const V = typeof RX !== 'undefined' && RX && RX.views;
+      // 분자 → 막대-공 / 광물 → 결정 구조(원자 배열) / 그 밖엔 결과 모형
+      m = (V && V.ball) || (V && V.atom && V.atom.atoms && V.atom.atoms.length <= 180 ? V.atom : null) || (typeof RX_M !== 'undefined' ? RX_M : null);
+    }catch(e){}
+    // 원자가 없는 3D 모형(큐브·지구·진주 등): 모형 표면의 점으로 모였다가 모형이 드러남
+    if(m && (!m.atoms || !m.atoms.length) && m.faces && m.faces.length) return meshLayout(m, w, h);
     if(!m || !m.atoms || !m.atoms.length || m.atoms.length > 180) return null;
     const yaw = typeof RX_YAW === 'number' ? RX_YAW : 0, pitch = typeof RX_PITCH === 'number' ? RX_PITCH : 0;
     const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
@@ -31191,6 +31197,42 @@ function rxGaCube(){
     let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
     atoms.forEach(a => { bx0 = Math.min(bx0, a.X - a.r); bx1 = Math.max(bx1, a.X + a.r); by0 = Math.min(by0, a.Y - a.r); by1 = Math.max(by1, a.Y + a.r); });
     return { atoms, bonds: B.map(([i, j, o]) => ({ i, j, o, t0: Infinity })), bw: Math.max(1.8, r * 0.36), box: [bx0, by0, bx1, by1], cx, cy };
+  }
+
+  function meshLayout(m, w, h){
+    const yaw = (typeof RX_YAW === 'number' ? RX_YAW : 0), pitch = (typeof RX_PITCH === 'number' ? RX_PITCH : 0);
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+    const rot = q => { const x = q[0], y = q[1], z = q[2] || 0, x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const rn = n => { const x = n[0], y = n[1], z = n[2] || 0, x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const FS = m.faces.length > 900 ? m.faces.filter((f, i) => i % Math.ceil(m.faces.length / 900) === 0) : m.faces;
+    const faces = FS.filter(f => f && f.p && f.p.length >= 3).map(f => {
+      const P = f.p.map(rot); let zc = 0; P.forEach(q => { zc += q[2]; }); zc /= P.length;
+      const c = (f.m && f.m.c) || [180, 186, 198];
+      const nz = f.n ? rn(f.n) : [0, 0, 1];
+      const lit = clamp(.55 + .45 * (-nz[0] * .35 - nz[1] * .45 + nz[2] * .8), .35, 1.15);
+      return { P, zc, col: `rgb(${c.map(v => clamp(Math.round(v * lit), 0, 255)).join(',')})` };
+    });
+    if(!faces.length) return null;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    faces.forEach(f => f.P.forEach(q => { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }));
+    const S = Math.min(w, h) * (w < 600 ? 0.5 : 0.36);
+    const sc = Math.min(S / Math.max(1e-6, x1 - x0), S / Math.max(1e-6, y1 - y0));
+    const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, cx = w / 2, cy = h / 2 - Math.min(40, h * 0.04);
+    const X = q => cx + (q[0] - mx) * sc, Y = q => cy + (q[1] - my) * sc;
+    faces.forEach(f => { f.S = f.P.map(q => [X(q), Y(q)]); });
+    faces.sort((p, q) => p.zc - q.zc);
+    // 표면 점 후보: 앞쪽 면의 꼭짓점과 가운데 → 서로 멀리 떨어진 점을 골라 원자 자리로
+    const cand = [];
+    faces.forEach(f => { if(f.zc < 0 && faces.length > 12) return; f.P.forEach(q => cand.push([X(q), Y(q), q[2]])); let a = 0, b = 0, c = 0; f.P.forEach(q => { a += q[0]; b += q[1]; c += q[2]; }); cand.push([X([a / f.P.length]), Y([0, b / f.P.length]), c / f.P.length]); });
+    const want = clamp((typeof mix !== 'undefined' ? mix.length : 20), 10, 42);
+    const pick = []; if(cand.length){ pick.push(cand[0]);
+      const d = cand.map(q => Math.hypot(q[0] - cand[0][0], q[1] - cand[0][1]));
+      while(pick.length < Math.min(want, cand.length)){ let bi = 0; for(let i = 1; i < d.length; i++) if(d[i] > d[bi]) bi = i; if(d[bi] < 4) break; const q = cand[bi]; pick.push(q); for(let i = 0; i < d.length; i++) d[i] = Math.min(d[i], Math.hypot(cand[i][0] - q[0], cand[i][1] - q[1])); } }
+    const r = clamp(S / 14, 5, 12);
+    const atoms = pick.map(q => ({ s: null, X: q[0], Y: q[1], z: q[2], dz: .5, r, col: '#9aa3b2', arr: Infinity, src: -1, mesh: true }));
+    let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
+    faces.forEach(f => f.S.forEach(q => { bx0 = Math.min(bx0, q[0]); bx1 = Math.max(bx1, q[0]); by0 = Math.min(by0, q[1]); by1 = Math.max(by1, q[1]); }));
+    return { atoms, bonds: [], bw: 2, box: [bx0, by0, bx1, by1], cx, cy, mesh: faces };
   }
 
   /* 소리: 결합 "틱" (너무 촘촘하면 건너뜀) */
@@ -31234,6 +31276,13 @@ function rxGaCube(){
     let tAssembled = 0, tGlow = 0, tEnd = 0;
     if(L){
       // 같은 원소끼리 가까운 자리부터 짝짓기 (트레이에서 먼저 나간 원자가 분자 가운데 쪽부터 채움)
+      if(L.mesh){
+        // 모형 표면 점에는 원소 구분 없이 담은 순서대로 (원소별로 고르게 섞이도록 번갈아)
+        const byEl = {}; fly.forEach((f, k) => { (byEl[f.s] = byEl[f.s] || []).push(k); });
+        const order = []; const qs = Object.values(byEl); for(let r = 0; order.length < fly.length; r++) qs.forEach(q => { if(q[r] != null) order.push(q[r]); });
+        L.atoms.forEach((a, i) => { const k = order[i]; if(k == null) return; a.s = fly[k].s; a.col = hex(rxCpk(a.s)) || (typeof RX_CPK !== 'undefined' && hex(RX_CPK[a.s])) || '#9aa3b2'; });
+        L.atoms = L.atoms.filter(a => a.s);
+      }
       const free = {};
       L.atoms.forEach((a, i) => { (free[a.s] = free[a.s] || []).push(i); });
       Object.values(free).forEach(q => q.sort((p, r) => Math.hypot(L.atoms[p].X - L.cx, L.atoms[p].Y - L.cy) - Math.hypot(L.atoms[r].X - L.cx, L.atoms[r].Y - L.cy)));
@@ -31250,7 +31299,7 @@ function rxGaCube(){
       order.forEach(b => { const ready = Math.max(L.atoms[b.i].arr, L.atoms[b.j].arr) + 30 * SP; b.t0 = Math.max(ready, prev + step); prev = b.t0; });
       const BD = 150 * SP;   // 결합 하나가 이어지는 시간
       L.BD = BD;
-      tAssembled = Math.max(flyEnd + 120 * SP, ...order.map(b => b.t0 + BD));
+      tAssembled = Math.max(flyEnd + (L.mesh ? 200 : 120) * SP, ...order.map(b => b.t0 + BD));
     } else {
       const flyEnd = fly.reduce((m, f) => Math.max(m, f.d + f.T), 0);
       if(!ok){
@@ -31377,6 +31426,16 @@ function rxGaCube(){
         g.addColorStop(0, `rgba(170,205,255,${.22 * eOut(u) * fade})`); g.addColorStop(1, 'rgba(170,205,255,0)');
         fctx.fillStyle = g; fctx.beginPath(); fctx.arc(L.cx, L.cy, R, 0, Math.PI * 2); fctx.fill();
       }
+      // 3D 모형: 원자가 다 모이면 모형이 드러남
+      if(L.mesh){
+        const k = clamp((el - (F.tAssembled - 120)) / 300, 0, 1);
+        F.meshK = k;
+        if(k > 0){
+          fctx.globalAlpha = eOut(k) * fade;
+          L.mesh.forEach(f => { fctx.fillStyle = f.col; fctx.strokeStyle = f.col; fctx.lineWidth = .8; fctx.beginPath(); f.S.forEach((q, i) => i ? fctx.lineTo(q[0], q[1]) : fctx.moveTo(q[0], q[1])); fctx.closePath(); fctx.fill(); fctx.stroke(); });
+          fctx.globalAlpha = 1;
+        }
+      }
       // 결합 막대 (가운데에서 양쪽으로 뻗음) + 이어지는 순간 작은 빛
       fctx.lineCap = 'round';
       L.bonds.forEach(b => {
@@ -31429,7 +31488,8 @@ function rxGaCube(){
           if(!F.landed.has(k) && !F.skip){ F.landed.add(k); land(); }
           const since = el - arr, [ox, oy] = F.skip ? [0, 0] : settle(f, since);
           const m = clamp(since / 110, 0, 1);   // 칩 → 공으로 바뀜
-          items.push({ z: a.z, f: () => { if(m < 1) chip(a.X + ox, a.Y + oy, a.r, f.col, f.s, (1 - m) * fade); ball(a.X + ox, a.Y + oy, a.r, a.col, m * fade); } });
+          const mk = L.mesh ? 1 - (F.meshK || 0) : 1;
+          items.push({ z: L.mesh ? 1e8 : a.z, f: () => { if(m < 1) chip(a.X + ox, a.Y + oy, a.r, f.col, f.s, (1 - m) * fade * mk); ball(a.X + ox, a.Y + oy, a.r * (L.mesh ? 1 - .5 * (1 - mk) : 1), a.col, m * fade * mk); } });
         }
       } else {
         // 분자에 자리가 없는 원자: 가운데로 빨려 들어가며 사라짐
