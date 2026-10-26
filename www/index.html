@@ -6181,6 +6181,7 @@ const CHANGELOG = [
            '황만 담아서 조합하면 유황이 나와요. 황 원자 8개가 왕관처럼 둘러앉은 고리 모양이에요',
            '학습에 "원자 사진" 탭이 생겼어요. 1955년 처음 원자를 본 순간부터 원자로 쓴 글씨, 수소의 전자 구름 사진, 평범한 카메라로 찍은 원자 하나, 지금까지 가장 선명한 원자 사진까지 어떻게 찍었는지 정리했어요',
            '특수 발견에 나노카가 생겼어요. 풀러렌 바퀴 네 개로 굴러가는 분자 자동차예요. 진짜는 원자가 716개라 그대로는 못 담으니, 탄소·수소·산소를 진짜 나노카와 같은 비율로 섞어 보세요',
+           '학습에 "오비탈 단면" 탭이 생겼어요. 주양자수·부양자수·자기양자수와 평면(xy·yz·zx)을 고르면 수소 원자의 전자 확률을 공식으로 바로 계산해서 단면을 칠해 줘요. 면마디를 고르면 까맣게 나오는 것까지 진짜예요',
            '숨은 조합 하나: 코발트, 플루오린 둘, 철을 섞어 보세요. 화학식을 소리 내어 읽어 보면 알아요',
            '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
@@ -6194,6 +6195,7 @@ const CHANGELOG = [
            'Combine sulfur on its own to get elemental sulfur: eight atoms in a crown-shaped ring',
            'New Learn tab, "Atom photos": how people first saw atoms in 1955, wrote with them, photographed hydrogen\'s electron cloud, caught a single atom on an ordinary camera, and took the sharpest atom picture yet',
            'New special discovery: the nanocar, a molecule that rolls on four fullerene wheels. The real one has 716 atoms, too many to hold, so mix carbon, hydrogen and oxygen in the same ratio',
+           'New Learn tab, "Orbital slices": pick n, l, m and a plane (xy, yz, zx) and the hydrogen electron probability is calculated from the formula and painted instantly. Pick a nodal plane and it really is black',
            'One hidden combination: try cobalt, two fluorines and iron, then read the formula out loud',
            'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
@@ -31762,6 +31764,185 @@ function rxGaCube(){
     if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
   }
   try{ RX_ACH_IC.nanocar = '🏎'; }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 4.0 학습 → 오비탈 단면: n·l·m·평면을 고르면 수소 원자 전자 확률을 공식으로 바로 계산해서 칠한다 ═══ */
+  .ox-wrap{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;max-width:820px;margin:0 auto;padding:2px 2px 16px}
+  .ox-stage{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.1)}
+  .ox-stage canvas{width:100%;height:100%;display:block}
+  .ox-ax{position:absolute;font:700 11px/1 Orbit,system-ui,sans-serif;color:rgba(255,255,255,.55);pointer-events:none}
+  .ox-ax.h{right:8px;top:50%;transform:translateY(-130%)} .ox-ax.v{left:50%;top:8px;transform:translateX(8px)}
+  .ox-name{position:absolute;left:10px;top:10px;font:800 20px/1 Orbit,system-ui,sans-serif;color:#fff;text-shadow:0 2px 10px #000}
+  .ox-name small{display:block;margin-top:5px;font:600 11px/1.3 system-ui,sans-serif;color:rgba(255,255,255,.6)}
+  .ox-msg{position:absolute;inset:auto 10px 10px 10px;padding:8px 10px;border-radius:10px;background:rgba(10,14,22,.85);border:1px solid rgba(255,255,255,.12);font-size:12.5px;line-height:1.5;color:#e6ebf3}
+  .ox-msg[hidden]{display:none}
+  .ox-side{display:flex;flex-direction:column;gap:10px}
+  .ox-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+  .ox-row b{font:800 15px Orbit,system-ui,sans-serif;min-width:28px;text-align:center}
+  .ox-row span{font-size:12.5px;color:var(--fg2,#c4cbd6)}
+  .ox-row span i{font-style:normal;font-weight:800;color:var(--fg,#eef2f7)}
+  .ox-st{display:flex;align-items:center;gap:4px}
+  .ox-st button,.ox-seg button,.ox-q button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:inherit;border-radius:8px;cursor:pointer;font:inherit}
+  .ox-st button{width:28px;height:28px;font-size:16px;line-height:1}
+  .ox-st button:disabled{opacity:.3;cursor:default}
+  .ox-seg{display:flex;gap:4px}
+  .ox-seg button{flex:1;padding:6px 0;font-size:12.5px;font-weight:700}
+  .ox-seg button.on,.ox-q button.on{background:#e9eef6;color:#10141b;border-color:#e9eef6}
+  .ox-q{display:flex;flex-wrap:wrap;gap:4px}
+  .ox-q button{padding:4px 8px;font-size:12px}
+  .ox-tg{display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;user-select:none}
+  .ox-tg input{accent-color:#7aa2ff}
+  .ox-info{font-size:12.5px;line-height:1.65;color:var(--fg2,#c4cbd6);word-break:keep-all}
+  .ox-info b{color:var(--fg,#eef2f7)}
+  .ox-leg{height:8px;border-radius:4px}
+  @media (max-width:640px){ .ox-wrap{grid-template-columns:1fr} }
+</style>
+<script>
+(function(){
+  const T = {
+    ko: { tab: '🌀 오비탈 단면', n: '주양자수', l: '부양자수', m: '자기양자수', plane: '평면', phase: '부호(위상)로 칠하기', quick: '바로 보기',
+      nodal: '이 평면은 <b>면마디</b>예요. 여기서는 전자가 있을 확률이 정확히 0이라 까맣게 나와요. 다른 평면을 골라 보세요.',
+      info: (n, l, m) => `전자 껍질 <b>${n}</b>번째, 모양 <b>${'spdfghi'[l]}</b>. 공처럼 둥근 마디(반지름 마디) <b>${n - l - 1}</b>개, 평면·원뿔 모양 마디(각 마디) <b>${l}</b>개, 합쳐서 마디 <b>${n - 1}</b>개예요.`,
+      about: '수소 원자의 전자가 어디에 있을 확률이 높은지를 <b>공식으로 바로 계산</b>해서, 고른 평면으로 자른 단면을 칠해요. 밝을수록 확률이 높아요. 자기양자수는 화학 시간에 쓰는 실수 오비탈(p<sub>x</sub>, d<sub>xy</sub> 같은)로 그려요.' },
+    en: { tab: '🌀 Orbital slices', n: 'Principal n', l: 'Angular l', m: 'Magnetic m', plane: 'Plane', phase: 'Colour by sign (phase)', quick: 'Quick picks',
+      nodal: 'This plane is a <b>nodal plane</b>: the chance of finding the electron here is exactly zero, so it is black. Try another plane.',
+      info: (n, l, m) => `Shell <b>${n}</b>, shape <b>${'spdfghi'[l]}</b>. <b>${n - l - 1}</b> radial (spherical) nodes and <b>${l}</b> angular nodes, <b>${n - 1}</b> in total.`,
+      about: 'The hydrogen electron\'s probability is <b>calculated from the formula on the spot</b> and painted on a slice through the chosen plane. Brighter means more likely. m is drawn as the real orbitals used in chemistry (p<sub>x</sub>, d<sub>xy</sub> and so on).' },
+  };
+  const tt = () => T[LANG === 'en' ? 'en' : 'ko'];
+  const S = { n: 3, l: 2, m: 0, pl: 'zx', ph: false };
+  try{ const v = JSON.parse(localStorage.getItem('pt_orbx') || 'null'); if(v && v.n) Object.assign(S, v); }catch(e){}
+  const save = () => { try{ localStorage.setItem('pt_orbx', JSON.stringify(S)); }catch(e){} };
+
+  // 실수 오비탈 이름
+  const NAMES = {
+    0: { 0: '' }, 1: { 0: 'z', 1: 'x', '-1': 'y' },
+    2: { 0: 'z²', 1: 'xz', '-1': 'yz', 2: 'x²−y²', '-2': 'xy' },
+    3: { 0: 'z³', 1: 'xz²', '-1': 'yz²', 2: 'z(x²−y²)', '-2': 'xyz', 3: 'x(x²−3y²)', '-3': 'y(3x²−y²)' },
+  };
+  const oname = () => { const L = 'spdfghi'[S.l], sub = NAMES[S.l] ? NAMES[S.l][S.m] : 'm=' + S.m; return `${S.n}${L}<sub style="font-size:.6em">${sub || ''}</sub>`; };
+
+  // 일반화 라게르 다항식 L_k^a(x) (점화식)
+  function lag(k, a, x){ if(k === 0) return 1; let p0 = 1, p1 = 1 + a - x; for(let j = 1; j < k; j++){ const p2 = ((2 * j + 1 + a - x) * p1 - (j + a) * p0) / (j + 1); p0 = p1; p1 = p2; } return p1; }
+  // 연관 르장드르 P_l^m(x), m ≥ 0 (부호 관례는 상관없음: 세기만 칠하거나 부호만 비교)
+  function leg(l, m, x){
+    let pmm = 1; const s = Math.sqrt(Math.max(0, 1 - x * x));
+    for(let i = 1; i <= m; i++) pmm *= (2 * i - 1) * s;
+    if(l === m) return pmm;
+    let pm1 = x * (2 * m + 1) * pmm; if(l === m + 1) return pm1;
+    let pl = 0; for(let k = m + 2; k <= l; k++){ pl = ((2 * k - 1) * x * pm1 - (k + m - 1) * pmm) / (k - m); pmm = pm1; pm1 = pl; }
+    return pl;
+  }
+  function psi(n, l, m, x, y, z){
+    const r = Math.hypot(x, y, z); if(r < 1e-9) return l === 0 ? 1 : 0;
+    const rho = 2 * r / n;
+    const R = Math.pow(rho, l) * Math.exp(-rho / 2) * lag(n - l - 1, 2 * l + 1, rho);
+    const ct = z / r, ph = Math.atan2(y, x), am = Math.abs(m);
+    const ang = leg(l, am, ct) * (m > 0 ? Math.cos(am * ph) : m < 0 ? Math.sin(am * ph) : 1);
+    return R * ang;
+  }
+  // 색: 검정 → 보라 → 주황 → 노랑 → 흰색 / 부호 모드: 파랑(−) · 주황(+)
+  const STOPS = [[0, 0, 0, 0], [.18, 40, 10, 80], [.42, 150, 30, 120], [.66, 240, 100, 40], [.86, 255, 205, 80], [1, 255, 250, 225]];
+  function cmap(t){ t = Math.max(0, Math.min(1, t)); for(let i = 1; i < STOPS.length; i++){ const a = STOPS[i - 1], b = STOPS[i]; if(t <= b[0]){ const k = (t - a[0]) / (b[0] - a[0]); return [a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k]; } } return [255, 250, 225]; }
+
+  function draw(){
+    const cv = document.getElementById('oxCv'); if(!cv) return;
+    const N = window.RX_LOWPOW ? 180 : 260;
+    cv.width = N; cv.height = N;
+    const g = cv.getContext('2d'), img = g.createImageData(N, N), d = img.data;
+    const L = S.n * (1.7 * S.n + 3);   // 보여 줄 범위 (보어 반지름 단위)
+    const vals = new Float32Array(N * N); let mx = 0;
+    for(let j = 0; j < N; j++) for(let i = 0; i < N; i++){
+      const u = (i + .5) / N * 2 - 1, v = 1 - (j + .5) / N * 2, a = u * L, b = v * L;
+      const [x, y, z] = S.pl === 'xy' ? [a, b, 0] : S.pl === 'yz' ? [0, a, b] : [a, 0, b];
+      const p = psi(S.n, S.l, S.m, x, y, z); vals[j * N + i] = p; mx = Math.max(mx, p * p);
+    }
+    // 면마디: 이 평면 전체가 0 (반지름 쪽 값과 견줘서 판단)
+    let ref = 0; for(let k = 1; k <= 40; k++){ const r = k / 40 * L; for(const [x, y, z] of [[r, 0, 0], [0, r, 0], [0, 0, r], [r * .6, r * .6, r * .5]]){ const p = psi(S.n, S.l, S.m, x, y, z); ref = Math.max(ref, p * p); } }
+    const nodal = mx < ref * 1e-9;
+    for(let k = 0; k < N * N; k++){
+      const p = vals[k], t = nodal ? 0 : Math.pow(p * p / mx, 0.38);
+      let c;
+      if(S.ph && !nodal){ const w = Math.pow(Math.abs(p) / Math.sqrt(mx), 0.6); c = p >= 0 ? [255 * w, 140 * w, 40 * w] : [50 * w, 130 * w, 255 * w]; }
+      else c = cmap(t);
+      d[k * 4] = c[0]; d[k * 4 + 1] = c[1]; d[k * 4 + 2] = c[2]; d[k * 4 + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+    const D = tt();
+    document.getElementById('oxName').innerHTML = oname() + `<small>(n, l, m) = (${S.n}, ${S.l}, ${S.m}) · ${S.pl} · ${LANG === 'en' ? 'width' : '폭'} ${Math.round(2 * L)} a₀</small>`;
+    const msg = document.getElementById('oxMsg'); msg.hidden = !nodal; msg.innerHTML = D.nodal;
+    document.getElementById('oxInfo').innerHTML = D.info(S.n, S.l, S.m);
+    const [h, vv] = S.pl === 'xy' ? ['x', 'y'] : S.pl === 'yz' ? ['y', 'z'] : ['x', 'z'];
+    document.getElementById('oxAh').textContent = h; document.getElementById('oxAv').textContent = vv;
+    document.getElementById('oxLeg').style.background = S.ph ? 'linear-gradient(90deg,#3282ff,#000,#ff8c28)' : 'linear-gradient(90deg,#000,#280a50,#961e78,#f06428,#ffcd50,#fffae1)';
+  }
+  function sync(){
+    S.l = Math.min(S.l, S.n - 1); S.m = Math.max(-S.l, Math.min(S.l, S.m));
+    const box = document.getElementById('oxSide'); if(!box) return;
+    box.querySelector('[data-v="n"]').textContent = S.n; box.querySelector('[data-v="l"]').textContent = S.l; box.querySelector('[data-v="m"]').textContent = S.m;
+    box.querySelector('[data-k="n"][data-d="-1"]').disabled = S.n <= 1; box.querySelector('[data-k="n"][data-d="1"]').disabled = S.n >= 7;
+    box.querySelector('[data-k="l"][data-d="-1"]').disabled = S.l <= 0; box.querySelector('[data-k="l"][data-d="1"]').disabled = S.l >= S.n - 1;
+    box.querySelector('[data-k="m"][data-d="-1"]').disabled = S.m <= -S.l; box.querySelector('[data-k="m"][data-d="1"]').disabled = S.m >= S.l;
+    box.querySelectorAll('.ox-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === S.pl));
+    box.querySelectorAll('.ox-q button').forEach(b => { const [n, l, m] = b.dataset.q.split(',').map(Number); b.classList.toggle('on', n === S.n && l === S.l && m === S.m); });
+    save();
+    cancelAnimationFrame(sync.raf); sync.raf = requestAnimationFrame(draw);
+  }
+  const QUICK = [[1,0,0,'1s'],[2,0,0,'2s'],[2,1,0,'2p<sub>z</sub>'],[3,2,0,'3d<sub>z²</sub>'],[3,2,2,'3d<sub>x²−y²</sub>'],[4,3,0,'4f<sub>z³</sub>'],[5,2,1,'5d<sub>xz</sub>']];
+  function render(){
+    const D = tt();
+    qBodyEl.innerHTML = `<div class="ox-wrap">
+      <div><div class="ox-stage"><canvas id="oxCv"></canvas><div class="ox-name" id="oxName"></div><span class="ox-ax h" id="oxAh"></span><span class="ox-ax v" id="oxAv"></span><div class="ox-msg" id="oxMsg" hidden></div></div>
+        <div class="ox-leg" id="oxLeg" style="margin-top:8px"></div></div>
+      <div class="ox-side" id="oxSide">
+        ${[['n', D.n], ['l', D.l], ['m', D.m]].map(([k, lab]) => `<div class="ox-row"><span>${lab} <i>${k}</i></span><div class="ox-st"><button type="button" data-k="${k}" data-d="-1">−</button><b data-v="${k}"></b><button type="button" data-k="${k}" data-d="1">+</button></div></div>`).join('')}
+        <div class="ox-row" style="flex-direction:column;align-items:stretch"><span>${D.plane}</span><div class="ox-seg">${['xy', 'yz', 'zx'].map(p => `<button type="button" data-p="${p}">${p}</button>`).join('')}</div></div>
+        <label class="ox-tg"><input type="checkbox" id="oxPh" ${S.ph ? 'checked' : ''}>${D.phase}</label>
+        <div><span style="font-size:12px;color:var(--fg2,#c4cbd6)">${D.quick}</span><div class="ox-q" style="margin-top:5px">${QUICK.map(([n, l, m, t]) => `<button type="button" data-q="${n},${l},${m}">${t}</button>`).join('')}</div></div>
+        <div class="ox-info" id="oxInfo"></div>
+        <div class="ox-info">${D.about}</div>
+      </div></div>`;
+    const side = document.getElementById('oxSide');
+    side.addEventListener('click', e => {
+      const b = e.target.closest('button'); if(!b) return;
+      if(b.dataset.k){ const k = b.dataset.k, dlt = +b.dataset.d; S[k] += dlt; if(k === 'n') S.n = Math.max(1, Math.min(7, S.n)); if(k === 'l') S.l = Math.max(0, Math.min(S.n - 1, S.l)); }
+      else if(b.dataset.p) S.pl = b.dataset.p;
+      else if(b.dataset.q){ const [n, l, m] = b.dataset.q.split(',').map(Number); Object.assign(S, { n, l, m }); }
+      sync();
+    });
+    document.getElementById('oxPh').addEventListener('change', e => { S.ph = e.target.checked; sync(); });
+    sync();
+    try{ if(!rxEvtHas('orbSlice')) rxEvt('orbSlice'); }catch(e){}
+  }
+  if(typeof hubHead === 'function'){
+    const _hh = hubHead;
+    hubHead = function(){
+      const r = _hh.apply(this, arguments);
+      const tabs = qHeadEl.querySelector('.hubtabs');
+      if(tabs && !tabs.querySelector('[data-h="orbx"]')){
+        const b = document.createElement('button');
+        b.className = 'hubt' + (HUB === 'orbx' ? ' on' : ''); b.dataset.h = 'orbx'; b.textContent = tt().tab;
+        b.addEventListener('click', () => { HUB = 'orbx'; openHub(); });
+        const ph = tabs.querySelector('[data-h="photo"]'); if(ph) tabs.insertBefore(b, ph); else tabs.appendChild(b);
+      }
+      return r;
+    };
+  }
+  if(typeof openHub === 'function'){
+    const _oh = openHub;
+    openHub = function(){
+      if(HUB !== 'orbx') return _oh.apply(this, arguments);
+      setFocus(false);
+      QZ.on = false; QZ.q = null; MEM.on = false;
+      clearFill();
+      qBarEl.classList.remove('on');
+      quizEl.classList.add('on');
+      hubHead();
+      render();
+    };
+  }
+  window.rxOrbxPsi = psi;   // 테스트용
 })();
 </script>
 </body>
