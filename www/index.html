@@ -6178,6 +6178,7 @@ const CHANGELOG = [
            '고리 탄화수소: 의자 모양 사이클로헥세인, 브로민수를 지우는 사이클로헥센, 억지로 구부린 삼중 결합 사이클로헵타인, 황이 들어간 3,4-다이메틸싸이오펜',
            '몸과 약: 세린, 라이신, 글리코젠(셀룰로스와 같은 재료로 한 번 더), 글리세르알데하이드(젖산과 같은 재료로 한 번 더), 탈리도마이드, 세인트존스워트의 하이퍼포린·하이퍼리신. 그리고 모자이크에 \'겸\'열됨 도장까지 찍힌 코█인',
            '조합 트레이에 이제 원소를 200개까지 담을 수 있어요 (원래 150개)',
+           '황만 담아서 조합하면 유황이 나와요. 황 원자 8개가 왕관처럼 둘러앉은 고리 모양이에요',
            '숨은 조합 하나: 코발트, 플루오린 둘, 철을 섞어 보세요. 화학식을 소리 내어 읽어 보면 알아요',
            '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
@@ -6188,6 +6189,7 @@ const CHANGELOG = [
            'Ring hydrocarbons: chair-shaped cyclohexane, cyclohexene, the forcibly bent triple bond of cycloheptyne, and sulfur-ringed 3,4-dimethylthiophene',
            'Body and medicine: serine, lysine, glycogen (combine the cellulose ingredients again), glyceraldehyde (combine the lactic acid ingredients again), thalidomide, hyperforin and hypericin from St John\'s wort. Plus one co█aine, mosaicked and stamped',
            'The mix now holds 200 elements instead of 150',
+           'Combine sulfur on its own to get elemental sulfur: eight atoms in a crown-shaped ring',
            'One hidden combination: try cobalt, two fluorines and iron, then read the formula out loud',
            'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
@@ -31585,6 +31587,18 @@ function rxGaCube(){
     if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
   }
   try{ RX_ACH_IC.coffe = '☕'; }catch(e){}
+})();
+</script>
+<script>
+/* ── 4.0 추가: 유황 (황만 담으면) ── */
+(function(){
+  SINGLE.S = [[8, 8, "S₈", "유황", "딱 8개! 황은 원자 여덟 개가 왕관처럼 고리를 이뤄요"],
+              [2, 999, "S₈", "유황", "노란 가루. 황은 원자 8개짜리 왕관 고리로 뭉쳐 있어요"]];
+  RX_SMILES_PRE["S1SSSSSSS1"] = {"a":[["S",65.7,-12.3,-6.5,16],["S",46.4,-9.5,47.5,16],["S",0.0,-43.1,51.5,16],["S",-46.4,-9.5,47.5,16],["S",-65.7,-12.3,-6.5,16],["S",-46.4,34.0,-34.4,16],["S",-0.0,18.6,-64.6,16],["S",46.4,34.0,-34.4,16]],"b":[[0,1,1],[1,2,1],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,0,1]]};
+  RX_SMILES["유황"] = "S1SSSSSSS1";
+  REC_EN["유황"] = ["Sulfur", "Yellow powder. Sulfur clumps into crown-shaped rings of eight atoms"];
+  RX_TMI["유황"] = "화산 근처에서 노란 결정으로 나와요. 흔히 '유황 냄새'라고 하는 계란 썩은 냄새는 사실 유황이 아니라 황화수소(H₂S) 냄새이고, 순수한 유황은 냄새가 거의 없어요. 녹이면 노란 액체가 되는데, 더 뜨겁게 데우면 왕관 고리가 끊어져 긴 사슬로 엉키면서 끈적한 적갈색으로 변해요.";
+  try{ RX_DEX_ALIAS["유황"] = "황 sulfur sulphur"; }catch(e){}
 })();
 </script>
 </body>
