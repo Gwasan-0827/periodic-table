@@ -6191,7 +6191,8 @@ const CHANGELOG = [
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
            '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요',
            '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요',
-           '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 염소한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 표정 연기까지 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요'],
+           '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 염소한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 표정 연기까지 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
+           '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6211,7 +6212,8 @@ const CHANGELOG = [
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
            'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now',
            'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles',
-           'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, facial expressions included. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene'],
+           'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, facial expressions included. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
+           'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later'],
     },
   },
   {
@@ -32737,6 +32739,89 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
       seg.replaceWith(tmp.firstChild); bindSeg();
     }
   };
+})();
+</script>
+
+<style>
+  /* ═══ 새 버전 알림: status.json 의 latest 가 지금 버전보다 높으면 뜬다 ═══ */
+  #rxUpd{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:rgba(5,8,14,.62);backdrop-filter:blur(3px);animation:updFade .25s ease}
+  @keyframes updFade{from{opacity:0}}
+  #rxUpd .up-card{position:relative;width:min(420px,100%);max-height:100%;overflow:auto;border-radius:18px;border:1px solid rgba(255,212,59,.45);background:linear-gradient(180deg,#171d2a,#10141d);color:#e7ecf4;padding:20px 18px 16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.7),0 0 0 4px rgba(255,212,59,.06);animation:updPop .4s cubic-bezier(.25,1.5,.5,1);font-family:system-ui,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+  @keyframes updPop{from{transform:translateY(14px) scale(.92);opacity:0}}
+  #rxUpd .up-top{font:800 17px/1.3 Orbit,system-ui,sans-serif;color:#ffd43b;text-align:center;letter-spacing:.01em;word-break:keep-all}
+  #rxUpd .up-top span{display:inline-block;animation:updBlink 1.2s steps(2) infinite}
+  @keyframes updBlink{50%{opacity:.35}}
+  #rxUpd .up-ver{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 4px;font:800 22px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+  #rxUpd .up-ver s{color:#6b7790;text-decoration-thickness:2px}
+  #rxUpd .up-ver i{font-style:normal;color:#6b7790;font-size:16px}
+  #rxUpd .up-ver b{color:#69db7c}
+  #rxUpd .up-title{text-align:center;font-weight:700;font-size:14px;color:#c9d2e2;margin-bottom:10px}
+  #rxUpd ul{margin:0 0 14px;padding:10px 12px 10px 28px;border-radius:12px;background:rgba(255,255,255,.04);font-size:13px;line-height:1.55;color:#c9d2e2;word-break:keep-all}
+  #rxUpd li+li{margin-top:4px}
+  #rxUpd .up-btns{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+  #rxUpd button{padding:11px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:inherit;font:700 14px system-ui,sans-serif;cursor:pointer}
+  #rxUpd button.go{background:#ffd43b;border-color:#ffd43b;color:#1a1a1a}
+  #rxUpd button:focus-visible{outline:2px solid #ffd43b;outline-offset:2px}
+  #rxUpd .up-note{margin:10px 0 0;text-align:center;font-size:11.5px;color:#7d8aa3}
+</style>
+<script>
+(() => {
+  if(/[?&]dev\b/.test(location.search)) return;
+  const SITE = 'https://gwasan-0827.github.io/periodic-table/';
+  const T = {
+    ko: { top: '[ 새 버전이 발견되었습니다!! ]', go: '지금 업데이트', later: '나중에', appGo: '새 버전 받기', appNone: '앱 스토어에서 업데이트해 주세요', webNote: '누르면 새로고침돼요. 저장된 기록은 그대로예요' },
+    en: { top: '[ A new version has been found!! ]', go: 'Update now', later: 'Later', appGo: 'Get the new version', appNone: 'Please update from the app store', webNote: 'The page will reload. Your progress stays saved' } };
+  const esc = s => String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+  const newer = (a, b) => {   // a 가 b 보다 새 버전인가 ("4.10" > "4.9")
+    const x = String(a).split('.').map(n => parseInt(n, 10) || 0), y = String(b).split('.').map(n => parseInt(n, 10) || 0);
+    for(let i = 0; i < Math.max(x.length, y.length); i++){ const d = (x[i] || 0) - (y[i] || 0); if(d) return d > 0; }
+    return false;
+  };
+  const pick = v => v && typeof v === 'object' && !Array.isArray(v) ? (v[ptLang()] || v.ko || v.en) : v;
+  const url = () => (/github\.io$/.test(location.hostname) ? 'status.json' : SITE + 'status.json') + '?t=' + Date.now();
+  let lastCheck = 0;
+  function check(){
+    if(Date.now() - lastCheck < 30 * 60e3) return;
+    lastCheck = Date.now();
+    fetch(url(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(st => {
+      if(!st || st.maintenance || !st.latest || !newer(st.latest, APP_VER)) return;
+      try{ if(sessionStorage.getItem('pt_updlater') === String(st.latest)) return; }catch(e){}
+      const go = () => { if(document.getElementById('rxMaint') || document.getElementById('rxUpd')) return; show(st); };
+      // 다른 창(업데이트 내역·튜토리얼)이 떠 있으면 잠깐 기다렸다가
+      let tries = 0; const wait = () => { const busy = [...document.querySelectorAll('[aria-modal="true"], #verPop')].some(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).display !== 'none'); if(busy && tries++ < 20) setTimeout(wait, 1500); else go(); };
+      setTimeout(wait, 1800);
+    }).catch(() => {});
+  }
+  function show(st){
+    const t = T[ptLang()] || T.ko, app = typeof APP_MODE !== 'undefined' && APP_MODE;
+    const notes = (pick(st.notes) || []).slice(0, 5), title = pick(st.title);
+    const appUrl = st.store || st.apk || '';
+    const el = document.createElement('div'); el.id = 'rxUpd';
+    el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', t.top);
+    el.innerHTML = `<div class="up-card">
+      <div class="up-top"><span>${t.top}</span></div>
+      <div class="up-ver"><s>${esc(APP_VER)}</s><i>→</i><b>${esc(st.latest)}</b></div>
+      ${title ? `<div class="up-title">${esc(title)}</div>` : ''}
+      ${notes.length ? `<ul>${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+      <div class="up-btns"><button type="button" class="later">${t.later}</button>${!app || appUrl ? `<button type="button" class="go">${app ? t.appGo : t.go}</button>` : ''}</div>
+      <p class="up-note">${app ? (appUrl ? '' : t.appNone) : t.webNote}</p>
+    </div>`;
+    if(app && !appUrl) el.querySelector('.up-btns').style.gridTemplateColumns = '1fr';
+    document.body.appendChild(el);
+    try{ rxBell(880, .3, .05, 0); rxBell(1320, .35, .05, .1); rxBell(1760, .4, .04, .2); }catch(e){}
+    const close = () => el.remove();
+    el.querySelector('.later').addEventListener('click', () => { try{ sessionStorage.setItem('pt_updlater', String(st.latest)); }catch(e){} close(); });
+    el.addEventListener('click', e => { if(e.target === el){ try{ sessionStorage.setItem('pt_updlater', String(st.latest)); }catch(e2){} close(); } });
+    const g = el.querySelector('.go');
+    if(g) g.addEventListener('click', () => {
+      if(app){ try{ const w = window.open(appUrl, '_blank'); if(!w) location.href = appUrl; }catch(e){ location.href = appUrl; } close(); }
+      else { const u = new URL(location.href); u.searchParams.set('v', st.latest); location.replace(u.toString()); }
+    });
+    (g || el.querySelector('.later')).focus({ preventScroll: true });
+  }
+  if(document.readyState === 'complete') check(); else addEventListener('load', check);
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') check(); });
+  window.rxUpdTest = st => show(Object.assign({ latest: '9.9' }, st || {}));
 })();
 </script>
 
