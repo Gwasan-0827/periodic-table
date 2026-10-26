@@ -3088,10 +3088,10 @@
   <button class="btn" id="addModeBtn" aria-pressed="false">＋ 담기</button>
   <span id="qtyBox">
     <button type="button" id="qtyDn" aria-label="줄이기">−</button>
-    <input id="qtyN" type="number" min="1" max="150" step="1" value="1" inputmode="numeric">
+    <input id="qtyN" type="number" min="1" max="200" step="1" value="1" inputmode="numeric">
     <button type="button" id="qtyUp" aria-label="늘리기">＋</button>
   </span>
-  <span id="qtyNote">150개가 최대입니다</span>
+  <span id="qtyNote">200개가 최대입니다</span>
   <button class="btn" id="randBtn" style="background:#2a3342;color:var(--text)">랜덤</button>
   <button class="btn" id="clearBtn">비우기</button>
   <button class="btn" id="mixBtn" disabled>조합하기</button>
@@ -4221,7 +4221,7 @@ const mixBtn   = document.getElementById('mixBtn');
 const clearBtn = document.getElementById('clearBtn');
 const modal    = document.getElementById('modal');
 
-const MIX_MAX = 150;
+const MIX_MAX = 200;
 
 function renderChips(){
   if(!mix.length){
@@ -4926,7 +4926,7 @@ const UI = {
   ko:{
     title:"페리오딕//테이블", docTitle:"페리오딕//테이블 — 주기율표", sub:"과학적으로 정확한 헛소리를 지향합니다.", sub2:"교과서보다 더 깊게.", subHint:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
     search:"원소 검색…", tox:"☠ 독성", dex:"도감", quiz:"퀴즈", safe:"순화",
-    tray:"조합", trayPh:"원소를 담아보세요 (최대 150개)", total:"총",
+    tray:"조합", trayPh:"원소를 담아보세요 (최대 200개)", total:"총",
     rand:"랜덤", clear:"비우기", mixBtn:"조합하기", close:"닫기",
     pickEl:"원소를 선택하세요", addMix:"조합에 담기  +",
     atomN:"원자번호", atomM:"원자량", group:"족", period:"주기", conf:"전자 배치",
@@ -4980,7 +4980,7 @@ const UI = {
     setRecords:"기록", setDex:"조합 도감", setLearnRec:"학습 기록", setAll:"전체 기록",
     setReset:"초기화", setSure:"정말요?", setOftenMissed:"자주 틀림:", setNoRec:"아직 기록 없음",
     addOff:"＋ 담기", addOn:"담는 중",
-    addMixN:"조합에 담기", qtyNote:"150개가 최대입니다",
+    addMixN:"조합에 담기", qtyNote:"200개가 최대입니다",
     trayPhAdd:"표에서 원소를 눌러 담으세요",
     mixNew:"NEW", mixKnown:"이미 있음", mixWipe:"비우고 계속", rxAdded:"도감 등록!", rxBoom:"펑!", rxTabMin:"광물", rxTabAtom:"원자 구조", rxThrow:"잡아서 던져보기", rxMelt:"꾹 잡고 있으면 손의 열로 녹아요", rxHgTouch:"만지지 말랬는데…", rxMelting:"녹는 중…", rxThrowTilt:"잡아서 던지거나 기울여 보기", rxDrag:"드래그해서 돌려보기", rxDexH:"도감", keepClose:"담은 채로 닫기",
     rxMore:"자세히 알아보기", rxBack:"요약으로", rxMolar:"몰질량", rxMass:"질량 구성",
@@ -4998,7 +4998,7 @@ const UI = {
   en:{
     title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Proudly committed to scientifically accurate nonsense.", sub2:"Deeper than the textbook.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
     search:"Search elements…", tox:"☠ Toxic", dex:"Codex", quiz:"Quiz", safe:"Clean",
-    tray:"Mix", trayPh:"Add some elements (max 150)", total:"Total",
+    tray:"Mix", trayPh:"Add some elements (max 200)", total:"Total",
     rand:"Random", clear:"Clear", mixBtn:"Combine", close:"Close",
     pickEl:"Select an element", addMix:"Add to mix  +",
     atomN:"Atomic number", atomM:"Atomic mass", group:"Group", period:"Period", conf:"Configuration",
@@ -5051,7 +5051,7 @@ const UI = {
     setRecords:"Records", setDex:"Compound codex", setLearnRec:"Learning records", setAll:"Everything",
     setReset:"Reset", setSure:"Are you sure?", setOftenMissed:"Often missed:", setNoRec:"No records yet",
     addOff:"＋ Add", addOn:"Adding",
-    addMixN:"Add to mix", qtyNote:"150 is the maximum",
+    addMixN:"Add to mix", qtyNote:"200 is the maximum",
     trayPhAdd:"Tap elements on the table to add them",
     mixNew:"NEW", mixKnown:"Already found", mixWipe:"Clear and continue", rxAdded:"New entry!", rxBoom:"Boom!", rxTabMin:"Mineral", rxTabAtom:"Atoms", rxThrow:"Grab and throw", rxMelt:"Hold it — your hand will melt it", rxHgTouch:"I said don't touch…", rxMelting:"Melting…", rxThrowTilt:"Grab, throw or tilt your phone", rxDrag:"Drag to rotate", rxDexH:"Codex", keepClose:"Close, keep tray",
     rxMore:"Learn more", rxBack:"Back", rxMolar:"Molar mass", rxMass:"Mass composition",
@@ -6176,14 +6176,16 @@ const CHANGELOG = [
            '비타민 B 군단: B1 싸이아민, B5 판토텐산, B6 피리독신, B7 바이오틴, B9 엽산, 그리고 가운데 코발트가 박힌 거대 분자 B12 코발라민',
            '감미료: 사이클라메이트, 아세설팜칼륨과 아세설팜, 쓴 귤껍질로 만든 네오헤스페리딘 DC',
            '고리 탄화수소: 의자 모양 사이클로헥세인, 브로민수를 지우는 사이클로헥센, 억지로 구부린 삼중 결합 사이클로헵타인, 황이 들어간 3,4-다이메틸싸이오펜',
-           '몸과 약: 세린, 라이신, 글리코젠(셀룰로스와 같은 재료로 한 번 더), 글리세르알데하이드(젖산과 같은 재료로 한 번 더), 탈리도마이드, 세인트존스워트의 하이퍼포린·하이퍼리신. 그리고 검열된 코█인',
+           '몸과 약: 세린, 라이신, 글리코젠(셀룰로스와 같은 재료로 한 번 더), 글리세르알데하이드(젖산과 같은 재료로 한 번 더), 탈리도마이드, 세인트존스워트의 하이퍼포린·하이퍼리신. 그리고 모자이크에 \'겸\'열됨 도장까지 찍힌 코█인',
+           '조합 트레이에 이제 원소를 200개까지 담을 수 있어요 (원래 150개)',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요'],
       en: ['22 new entries, for 482 in total',
            'The vitamin B squad: B1 thiamine, B5 pantothenic acid, B6 pyridoxine, B7 biotin, B9 folic acid, and the giant cobalt-centred B12 cobalamin',
            'Sweeteners: sodium cyclamate, acesulfame potassium and acesulfame, and neohesperidin DC made from bitter orange peel',
            'Ring hydrocarbons: chair-shaped cyclohexane, cyclohexene, the forcibly bent triple bond of cycloheptyne, and sulfur-ringed 3,4-dimethylthiophene',
-           'Body and medicine: serine, lysine, glycogen (combine the cellulose ingredients again), glyceraldehyde (combine the lactic acid ingredients again), thalidomide, hyperforin and hypericin from St John\'s wort. Plus one censored co█aine',
+           'Body and medicine: serine, lysine, glycogen (combine the cellulose ingredients again), glyceraldehyde (combine the lactic acid ingredients again), thalidomide, hyperforin and hypericin from St John\'s wort. Plus one co█aine, mosaicked and stamped',
+           'The mix now holds 200 elements instead of 150',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close'],
     },
@@ -31051,5 +31053,50 @@ function rxGaCube(){
   /* 15초 동안 손을 안 대면 장식 애니메이션 멈춤 (만지면 바로 다시 움직임) */
   html.lowpow.idle *, html.lowpow.idle *::before, html.lowpow.idle *::after{animation-play-state:paused!important}
 </style>
+<style>
+  /* ═══ 4.0: 코█인 모자이크 + '겸'열됨 도장 ═══ */
+  .rx-mosaic{display:inline-flex;align-items:center;gap:8px;vertical-align:middle}
+  .rx-mosaic canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+  .rx-stamp{display:inline-block;padding:1px 7px 2px;border:2px solid #ff4d4f;border-radius:5px;color:#ff4d4f;font-weight:800;
+    font-size:.62em;line-height:1.3;letter-spacing:.02em;transform:rotate(-7deg);white-space:nowrap;background:rgba(255,77,79,.08);
+    box-shadow:0 0 0 1px rgba(255,77,79,.25) inset}
+</style>
+<script>
+(function(){
+  const NAMES = { '코█인': '코카인', 'Co█aine': 'Cocaine' };
+  function mosaic(el){
+    if(!el || el.dataset.mz === '1') return;
+    const txt = (el.textContent || '').trim();
+    if(!NAMES[txt]) return;
+    el.dataset.mz = '1';
+    const cs = getComputedStyle(el), fs = parseFloat(cs.fontSize) || 18;
+    const font = `${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
+    const big = document.createElement('canvas'), g = big.getContext('2d');
+    g.font = font; const w = Math.ceil(g.measureText(NAMES[txt]).width) + 8, h = Math.ceil(fs * 1.35);
+    big.width = w; big.height = h; g.font = font; g.fillStyle = cs.color; g.textBaseline = 'middle'; g.strokeStyle = cs.color; g.lineWidth = Math.max(1.5, fs * .12); g.lineJoin = 'round'; g.strokeText(NAMES[txt], 4, h / 2); g.fillText(NAMES[txt], 4, h / 2);
+    const blk = Math.max(4, Math.round(fs / 4));
+    const sm = document.createElement('canvas'); sm.width = Math.max(1, Math.ceil(w / blk)); sm.height = Math.max(1, Math.ceil(h / blk));
+    const sg = sm.getContext('2d'); sg.imageSmoothingEnabled = true; sg.drawImage(big, 0, 0, sm.width, sm.height);
+    try{ const id = sg.getImageData(0, 0, sm.width, sm.height), d = id.data; for(let i = 3; i < d.length; i += 4){ if(d[i] > 25){ const k = 255 / d[i]; d[i - 3] = Math.min(255, d[i - 3] * k); d[i - 2] = Math.min(255, d[i - 2] * k); d[i - 1] = Math.min(255, d[i - 1] * k); d[i] = d[i] > 70 ? 235 : 150; } else d[i] = 0; } sg.putImageData(id, 0, 0); }catch(e){}
+    const out = document.createElement('canvas'); out.width = w; out.height = h; out.style.width = w + 'px'; out.style.height = h + 'px';
+    const og = out.getContext('2d'); og.imageSmoothingEnabled = false; og.drawImage(sm, 0, 0, w, h);
+    out.setAttribute('role', 'img'); out.setAttribute('aria-label', LANG === 'en' ? 'Censored' : '검열됨');
+    const wrap = document.createElement('span'); wrap.className = 'rx-mosaic';
+    const st = document.createElement('span'); st.className = 'rx-stamp'; st.textContent = LANG === 'en' ? '\'CENSROED\'!!' : '\'겸\'열됨!!';
+    wrap.append(out, st);
+    el.textContent = ''; el.appendChild(wrap);
+  }
+  const nm = document.getElementById('mName');
+  if(nm) new MutationObserver(() => { if(nm.dataset.mz === '1' && !nm.querySelector('.rx-mosaic')) nm.dataset.mz = ''; mosaic(nm); })
+    .observe(nm, { childList: true, characterData: true, subtree: true });
+  function dex(){
+    document.querySelectorAll('#dexList .dx').forEach(d => {
+      if(!NAMES[d.dataset.name] && d.dataset.name !== '코█인') return;
+      d.querySelectorAll('*').forEach(e => { if(e.children.length === 0 && NAMES[(e.textContent || '').trim()]) mosaic(e); });
+    });
+  }
+  if(typeof openDex === 'function'){ const _o = openDex; openDex = function(){ const r = _o.apply(this, arguments); try{ dex(); setTimeout(dex, 60); }catch(e){} return r; }; }
+})();
+</script>
 </body>
 </html>
