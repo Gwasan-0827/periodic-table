@@ -6188,7 +6188,8 @@ const CHANGELOG = [
            '숨은 조합 하나: 코발트, 플루오린 둘, 철을 섞어 보세요. 화학식을 소리 내어 읽어 보면 알아요',
            '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
-           '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요'],
+           '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
+           '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6205,7 +6206,8 @@ const CHANGELOG = [
            'One hidden combination: try cobalt, two fluorines and iron, then read the formula out loud',
            'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
-           'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close'],
+           'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
+           'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now'],
     },
   },
   {
@@ -32055,6 +32057,162 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   try{ RX_BENZ.push("파톡스"); }catch(e){}
   try{ Object.assign(RX_DEX_ALIAS, { "맨세인": "manxane 맨섬", "파톡스": "펜타클로로나이트로벤젠 fartox earthcide 방귀", "미스피클": "황비철석 아르세노파이라이트 arsenopyrite mispickel", "시알산": "노노스 nonose 뉴라민산 sialic" }); }catch(e){}
   try{ RX_WEIRDOS.push("맨세인", "파톡스", "미스피클", "시알산"); }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 4.0 이온 결합 리워크: 왼쪽 이온 타일 · 오른쪽 결합판(이온 알갱이 + 전하 저울) ═══ */
+  .ix{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start;margin-top:10px}
+  @media (max-width:760px){ .ix{grid-template-columns:1fr;gap:10px} }
+  .ix-side{display:grid;gap:8px}
+  .ix-lab{font:700 11.5px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hub-dim,#8e99ad);display:flex;justify-content:space-between;align-items:center}
+  .ix-lab i{font-style:normal;font-weight:600;letter-spacing:0}
+  .ix-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  @media (max-width:760px){ .ix-tiles{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none} .ix-tiles::-webkit-scrollbar{display:none} .ix-t{flex:0 0 52px} }
+  .ix-t{position:relative;aspect-ratio:1;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--c);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font:800 15px/1 Orbit,system-ui,sans-serif;transition:transform .12s,background .15s,border-color .15s}
+  .ix-t sub{font-size:.62em} .ix-t sup{font-size:.6em;font-weight:800}
+  .ix-t small{font:600 9px/1 system-ui,sans-serif;color:var(--hub-dim,#8e99ad);white-space:nowrap}
+  .ix-t:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
+  .ix-t.on{background:var(--c);border-color:var(--c);color:#0f141c}
+  .ix-t.on small{color:#0f141c;opacity:.75}
+  .ix-t.got::after{content:"";position:absolute;right:4px;top:4px;width:5px;height:5px;border-radius:50%;background:#69db7c}
+  .ix-t.on.got::after{background:#0f141c}
+  .ix-dexb{margin-top:4px;width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:inherit;font:600 12.5px system-ui,sans-serif;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .ix-dexb b{font-variant-numeric:tabular-nums}
+  .ix-dexbar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px}
+  .ix-dexbar i{display:block;height:100%;background:linear-gradient(90deg,#ff8787,#69db7c)}
+
+  .ix-stage{border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.025);padding:12px;display:grid;gap:10px;transition:border-color .3s,background .3s}
+  .ix-stage.ok{border-color:rgba(105,219,124,.55);background:rgba(105,219,124,.05)}
+  .ix-names{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--hub-dim,#8e99ad)}
+  .ix-names b{color:var(--hub-fg,#e7ecf4);font-weight:700}
+  .ix-names span:last-child{text-align:right}
+  .ix-bench{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch}
+  .ix-tray{position:relative;min-height:126px;border-radius:12px;border:1px dashed rgba(255,255,255,.14);background:rgba(0,0,0,.14);padding:8px 8px 36px;cursor:pointer;
+    display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:5px;transition:gap .35s,border-color .3s}
+  .ix-tray:hover{border-color:rgba(255,255,255,.28)}
+  .ix-stage.ok .ix-tray{gap:2px;border-style:solid;border-color:rgba(105,219,124,.35)}
+  .ix-tok{--s:34px;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;font:800 12px/1 Orbit,system-ui,sans-serif;color:#0f141c;border:0;padding:0;cursor:pointer;
+    background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.65),transparent 45%),var(--c);box-shadow:0 2px 6px rgba(0,0,0,.35);animation:ixPop .28s cubic-bezier(.2,1.5,.4,1)}
+  .ix-tok sub{font-size:.65em} .ix-tok sup{font-size:.62em;vertical-align:.7em}
+  .ix-tok.q2{--s:40px} .ix-tok.q3{--s:46px}
+  .ix-tok:hover{filter:brightness(1.1)}
+  .ix-tok.out{animation:ixOut .18s ease forwards}
+  @keyframes ixPop{from{transform:scale(.3)}to{transform:scale(1)}}
+  @keyframes ixOut{to{transform:scale(.2);opacity:0}}
+  .ix-stage.ok .ix-tok{animation:ixSnap .5s ease}
+  @keyframes ixSnap{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .ix-ctl{position:absolute;left:6px;right:6px;bottom:6px;display:flex;justify-content:space-between;align-items:center}
+  .ix-ctl button{width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:inherit;font:700 15px/1 system-ui;cursor:pointer}
+  .ix-ctl button:disabled{opacity:.3;cursor:default}
+  .ix-ctl b{font:700 12.5px system-ui,sans-serif;font-variant-numeric:tabular-nums}
+  .ix-plus{align-self:center;font:700 20px/1 system-ui;color:var(--hub-dim,#8e99ad)}
+  .ix-meter{display:grid;gap:5px}
+  .ix-mtop{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--hub-dim,#8e99ad)}
+  .ix-mtop b{font:800 20px/1 Orbit,system-ui,sans-serif;color:var(--hub-fg,#e7ecf4);font-variant-numeric:tabular-nums}
+  .ix-mtop b.zero{color:#69db7c}
+  .ix-bar{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,#5b9cff 0%,rgba(91,156,255,.15) 44%,rgba(105,219,124,.5) 50%,rgba(255,135,135,.15) 56%,#ff8787 100%)}
+  .ix-bar::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:rgba(255,255,255,.55);border-radius:1px}
+  .ix-needle{position:absolute;top:-5px;width:6px;height:22px;margin-left:-3px;border-radius:3px;background:#fff;box-shadow:0 0 0 2px rgba(15,20,28,.8),0 0 10px rgba(255,255,255,.5);transition:left .45s cubic-bezier(.3,1.6,.5,1)}
+  .ix-mscale{display:flex;justify-content:space-between;font:600 10.5px system-ui;color:var(--hub-dim,#8e99ad)}
+  .ix-msg{font-size:12.5px;color:var(--hub-dim,#8e99ad);text-align:center}
+  .ix-msg.warn{color:#ffd43b}
+  .ix-res{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
+  @media (max-width:520px){ .ix-res{grid-template-columns:1fr;text-align:center} }
+  .ix-f{font:800 34px/1 Orbit,system-ui,sans-serif;color:#fff} .ix-f sub{font-size:.55em}
+  .ix-fn{font-weight:700;margin-top:4px}
+  .ix-new{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:#69db7c;color:#0f141c;font:800 10.5px system-ui;vertical-align:middle}
+  .ix-res .ie-wrap{margin:0}
+  .ix-more{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  @media (max-width:520px){ .ix-more{grid-template-columns:1fr} }
+  .ix-more .ic{margin:0}
+  .ix .idx{margin-top:8px}
+</style>
+<script>
+(function(){
+  if(typeof renderIon !== 'function') return;
+  const _orig = renderIon;
+  const T = { ko: { cat: '양이온', an: '음이온', tapAdd: '빈 곳을 누르면 하나 더, 알갱이를 누르면 하나 빼요', zero: '딸깍! 전하가 0이 됐어요', reduce: '0이긴 한데 더 줄일 수 있어요. 둘 다 같은 수로 나눠 보세요', more: '이온을 더 넣어서 바늘을 가운데로', newOne: '새로 찾음', dex: '이온 결합 도감' },
+              en: { cat: 'Cations', an: 'Anions', tapAdd: 'Tap empty space to add one, tap a bead to remove it', zero: 'Click! The charges cancel', reduce: 'Zero, but it can be simplified. Divide both by the same number', more: 'Add ions until the needle hits the middle', newOne: 'New', dex: 'Ionic compound index' } };
+  const tt = k => (T[ionLang() ? 'en' : 'ko'] || T.ko)[k];
+  const qc = (q, cat) => cat ? ['#ff8787', '#ffa94d', '#ff6b9a'][Math.min(3, q) - 1] : ['#69db7c', '#38d9a9', '#4dabf7'][Math.min(3, Math.abs(q)) - 1];
+  const tok = (x, cat, i) => `<button type="button" class="ix-tok q${Math.abs(x.q)}" style="--c:${qc(Math.abs(x.q), cat)}" data-rm="${cat ? 'a' : 'b'}" aria-label="${x.sym} 빼기"><span>${fsub(x.sym)}<sup>${qLabel(x.q)}</sup></span></button>`;
+  let lastOk = '';
+  renderIon = function(){
+    if(ION.view === 'move') return _orig.apply(this, arguments);
+    ionTextInit(); setFocus(false);
+    const c = CATIONS[ION.ci], a = ANIONS[ION.ai];
+    const sum = c.q * ION.a + a.q * ION.b, reduced = gcd(ION.a, ION.b) === 1, ok = sum === 0 && reduced;
+    const got = ionFound(), key = `${c.sym}-${a.sym}`;
+    let fresh = false;
+    if(ok && !got.has(key)){ got.add(key); ionSave(got); fresh = true; try{ SFX.ok(); }catch(e){} }
+    else if(ok && lastOk !== key + ION.a + ION.b){ try{ rxBell(1320, .35, .05, 0); rxBell(1760, .3, .03, .06); }catch(e){} }
+    lastOk = ok ? key + ION.a + ION.b : '';
+    qHeadEl.querySelector('.hubtabs') || hubHead();
+    const pairGot = (ci, ai) => got.has(`${CATIONS[ci].sym}-${ANIONS[ai].sym}`);
+    const catGot = ci => ANIONS.some((_, ai) => pairGot(ci, ai)), anGot = ai => CATIONS.some((_, ci) => pairGot(ci, ai));
+    const tile = (x, i, cat) => `<button type="button" class="ix-t${(cat ? ION.ci : ION.ai) === i ? ' on' : ''}${(cat ? catGot(i) : anGot(i)) ? ' got' : ''}" style="--c:${qc(Math.abs(x.q), cat)}" data-${cat ? 'c' : 'a'}="${i}" title="${cat ? x.ko : x.ko + ' 이온'}">
+        <span>${fsub(x.sym)}<sup>${qLabel(x.q)}</sup></span><small>${ionLang() ? x.en : x.ko}</small></button>`;
+    const E = ok ? ionElectrons(c, a, ION.a, ION.b) : null;
+    const lim = 9, pct = Math.max(-1, Math.min(1, sum / 6));
+    const seg = `<div class="im-seg" role="tablist">
+      <button type="button" role="tab" class="on" data-v="bond">${rt('imTabBond')}</button>
+      <button type="button" role="tab" data-v="move">${rt('imTabMove')}</button></div>`;
+    const total = CATIONS.length * ANIONS.length;
+    qBodyEl.innerHTML = seg + `<div class="ix">
+      <div class="ix-side">
+        <div class="ix-lab">${tt('cat')}</div>
+        <div class="ix-tiles">${CATIONS.map((x, i) => tile(x, i, true)).join('')}</div>
+        <div class="ix-lab">${tt('an')}</div>
+        <div class="ix-tiles">${ANIONS.map((x, i) => tile(x, i, false)).join('')}</div>
+        <button type="button" class="ix-dexb" id="ionDexBtn" aria-expanded="${ION_DEX}"><span>${tt('dex')} ${ION_DEX ? '▴' : '▾'}</span><b>${got.size} / ${total}</b></button>
+        <div class="ix-dexbar"><i style="width:${got.size / total * 100}%"></i></div>
+      </div>
+      <div class="ix-stage${ok ? ' ok' : ''}">
+        <div class="ix-names"><span><b>${ionLang() ? c.en : c.ko}</b> ${ionHTML(c)}</span><span>${ionHTML(a)} <b>${ionLang() ? a.en : a.ko + ' 이온'}</b></span></div>
+        <div class="ix-bench">
+          <div class="ix-tray" data-add="a" title="${tt('tapAdd')}">${Array.from({ length: ION.a }, (_, i) => tok(c, true, i)).join('')}
+            <div class="ix-ctl"><button type="button" data-s="a-" ${ION.a <= 1 ? 'disabled' : ''}>−</button><b>${c.sym} × ${ION.a}</b><button type="button" data-s="a+" ${ION.a >= lim ? 'disabled' : ''}>+</button></div></div>
+          <div class="ix-plus">+</div>
+          <div class="ix-tray" data-add="b" title="${tt('tapAdd')}">${Array.from({ length: ION.b }, (_, i) => tok(a, false, i)).join('')}
+            <div class="ix-ctl"><button type="button" data-s="b-" ${ION.b <= 1 ? 'disabled' : ''}>−</button><b>${a.sym.replace(/(\d)/g, m => '₀₁₂₃₄₅₆₇₈₉'[m])} × ${ION.b}</b><button type="button" data-s="b+" ${ION.b >= lim ? 'disabled' : ''}>+</button></div></div>
+        </div>
+        <div class="ix-meter">
+          <div class="ix-mtop"><span>${t('ionTotal')}</span><b class="${sum === 0 ? 'zero' : ''}">${sum > 0 ? '+' + sum : sum < 0 ? '−' + Math.abs(sum) : '0'}</b></div>
+          <div class="ix-bar"><span class="ix-needle" style="left:${50 + pct * 50}%"></span></div>
+          <div class="ix-mscale"><span>−</span><span>0</span><span>+</span></div>
+        </div>
+        ${ok ? `<div class="ix-res">
+            <div><div class="ix-f">${ionFormula(c, a, ION.a, ION.b)}</div><div class="ix-fn">${ionName(c, a)}${fresh ? `<span class="ix-new">${tt('newOne')}</span>` : ''}</div></div>
+            <div class="ie-wrap">${E.svg}<button type="button" class="ie-play" id="ionPlay">↻ ${rt('ionPlay')}</button></div>
+          </div>
+          <div class="ie-cap" id="ionCap"><span>${t('ionWhy').replace('{a}', `${ION.a}×${qLabel(c.q)}`).replace('{b}', `${ION.b}×${qLabel(a.q)}`)}</span></div>
+          <div class="ix-more">${ionCard(c, true)}${ionCard(a, false)}</div>
+          ${ionWater(c, a)}`
+        : `<div class="ix-msg${sum === 0 ? ' warn' : ''}">${sum === 0 ? tt('reduce') : tt('more')}</div>
+           <div class="ix-more">${ionCard(c, true)}${ionCard(a, false)}</div>`}
+      </div>
+    </div>
+    ${ION_DEX ? ionDex(got) : ''}`;
+    // 폰: 고른 타일이 보이게 가로 스크롤
+    qBodyEl.querySelectorAll('.ix-t.on').forEach(el => { const box = el.parentElement; if(box.scrollWidth > box.clientWidth) box.scrollLeft = el.offsetLeft - box.clientWidth / 2 + el.offsetWidth / 2; });
+    // 이벤트
+    qBodyEl.querySelectorAll('.im-seg button').forEach(b => b.addEventListener('click', () => { if(b.dataset.v === 'move'){ ION.view = 'move'; SFX.pick(); renderIon(); } }));
+    if(ok){ ionPlay(c, a, ION.a, ION.b, E); document.getElementById('ionPlay').addEventListener('click', () => { lastOk = ''; renderIon(); }); }
+    const set = (k, v) => { const n = Math.max(1, Math.min(lim, v)); if(n === ION[k]) return; ION[k] = n; try{ SFX.pick(); }catch(e){} renderIon(); };
+    qBodyEl.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { ION.ci = +b.dataset.c; ION.a = 1; ION.b = 1; try{ SFX.pick(); }catch(e){} renderIon(); }));
+    qBodyEl.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { ION.ai = +b.dataset.a; ION.a = 1; ION.b = 1; try{ SFX.pick(); }catch(e){} renderIon(); }));
+    qBodyEl.querySelectorAll('.ix-ctl button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); const s = b.dataset.s, k = s[0]; set(k, ION[k] + (s[1] === '+' ? 1 : -1)); }));
+    qBodyEl.querySelectorAll('.ix-tok').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); const k = b.dataset.rm; if(ION[k] <= 1) return; b.classList.add('out'); setTimeout(() => set(k, ION[k] - 1), 140); }));
+    qBodyEl.querySelectorAll('.ix-tray').forEach(t => t.addEventListener('click', e => { if(e.target.closest('button')) return; const k = t.dataset.add; set(k, ION[k] + 1); }));
+    document.getElementById('ionDexBtn').addEventListener('click', () => { ION_DEX = !ION_DEX; renderIon(); });
+    qBodyEl.querySelectorAll('.idc').forEach(b => b.addEventListener('click', () => {
+      ION.ci = +b.dataset.ci; ION.ai = +b.dataset.ai;
+      const ca = CATIONS[ION.ci], an = ANIONS[ION.ai];
+      if(b.classList.contains('have')){ const ans = ionAnswer(ca, an); ION.a = ans.a; ION.b = ans.b; } else { ION.a = 1; ION.b = 1; }
+      try{ SFX.pick(); }catch(e){} ION_DEX = false; renderIon(); qBodyEl.scrollTop = 0;
+    }));
+  };
 })();
 </script>
 </body>
