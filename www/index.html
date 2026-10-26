@@ -6178,6 +6178,7 @@ const CHANGELOG = [
            '고리 탄화수소: 의자 모양 사이클로헥세인, 브로민수를 지우는 사이클로헥센, 억지로 구부린 삼중 결합 사이클로헵타인, 황이 들어간 3,4-다이메틸싸이오펜',
            '몸과 약: 세린, 라이신, 글리코젠(셀룰로스와 같은 재료로 한 번 더), 글리세르알데하이드(젖산과 같은 재료로 한 번 더), 탈리도마이드, 세인트존스워트의 하이퍼포린·하이퍼리신. 그리고 모자이크에 \'겸\'열됨 도장까지 찍힌 코█인',
            '조합 트레이에 이제 원소를 200개까지 담을 수 있어요 (원래 150개)',
+           '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 줄줄이 떠올라 날아가서, 성공하면 결과 분자 모양 자리에 하나씩 앉고 결합 막대가 이어지며 조립돼요. 실패하면 가운데서 부딪쳐 튕겨 나가요. 화면을 누르면 건너뛰어요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요'],
       en: ['22 new entries, for 482 in total',
@@ -6186,6 +6187,7 @@ const CHANGELOG = [
            'Ring hydrocarbons: chair-shaped cyclohexane, cyclohexene, the forcibly bent triple bond of cycloheptyne, and sulfur-ringed 3,4-dimethylthiophene',
            'Body and medicine: serine, lysine, glycogen (combine the cellulose ingredients again), glyceraldehyde (combine the lactic acid ingredients again), thalidomide, hyperforin and hypericin from St John\'s wort. Plus one co█aine, mosaicked and stamped',
            'The mix now holds 200 elements instead of 150',
+           'New combine animation: atoms lift off the mix tray, fly in and, on success, land in their places and snap together with bonds into the actual molecule. Failures bump and bounce away. Tap to skip',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close'],
     },
@@ -31128,6 +31130,286 @@ function rxGaCube(){
     });
   }
   if(typeof openDex === 'function'){ const _o = openDex; openDex = function(){ const r = _o.apply(this, arguments); try{ dex(); setTimeout(dex, 60); }catch(e){} return r; }; }
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════
+   조합 연출 4.0
+   · 원자가 조합 트레이의 칩에서 떠올라 날아간다 (많이 담으면 줄줄이)
+   · 성공하면 날아온 원자들이 결과 분자 모양 자리에 앉고, 결합 막대가 이어지며 조립된다
+   · 실패는 가운데서 부딪쳐 튕겨 나간다 / 폭발·보석은 조립 뒤 기존 섬광으로
+   · 분자를 못 그리는 결과(광물 격자, 거대 분자 등)는 가운데로 모여 반짝
+   ═══════════════════════════════════════════════════ */
+(function(){
+  const T_FLY = 560, T_SET = 210, T_BOND = 270, T_HOLD = 320, T_OUT = 230;
+  const T_FAIL = 820;
+  let F = null, FUSE_FONT = 'system-ui, sans-serif', FUSE_RUNS = null;
+  const ease = t => 1 - Math.pow(1 - t, 3), easeIO = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const hex = c => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : null;
+  const shade = (h, k) => { const v = [1,3,5].map(i => parseInt(h.slice(i, i+2), 16)); return `rgb(${v.map(x => clamp(Math.round(k > 0 ? x + (255 - x) * k : x * (1 + k)), 0, 255)).join(',')})`; };
+
+  function trayPoint(n){
+    try{
+      const c = chipsEl.querySelector(`.chip[data-n="${n}"]`);
+      if(c){ const r = c.getBoundingClientRect(); if(r.width && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) return [r.left + r.width / 2, r.top + r.height / 2]; }
+      const t = document.getElementById('mixBtn'); if(t){ const r = t.getBoundingClientRect(); if(r.width) return [r.left + r.width / 2, r.top]; }
+    }catch(e){}
+    return [innerWidth / 2, innerHeight - 40];
+  }
+
+  function layout(w, h){
+    let m = null;
+    try{ m = (typeof RX !== 'undefined' && RX && RX.views && RX.views.ball) || (typeof RX_M !== 'undefined' ? RX_M : null); }catch(e){}
+    if(!m || !m.atoms || !m.atoms.length || m.atoms.length > 160) return null;
+    const yaw = typeof RX_YAW === 'number' ? RX_YAW : 0, pitch = typeof RX_PITCH === 'number' ? RX_PITCH : 0;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+    const P = m.atoms.map(a => { const x = +a.x || 0, y = +a.y || 0, z = +a.z || 0;
+      const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; });
+    const B = (m.bonds || []).map(b => Array.isArray(b) ? [b[0], b[1], b[2] || 1] : [b.a, b.b, b.o || 1]).filter(b => P[b[0]] && P[b[1]] && b[0] !== b[1]);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    P.forEach(p => { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
+    let bl = 0; B.forEach(b => { bl += Math.hypot(P[b[0]][0] - P[b[1]][0], P[b[0]][1] - P[b[1]][1], P[b[0]][2] - P[b[1]][2]); });
+    bl = B.length ? bl / B.length : 1;
+    const S = Math.min(w, h) * (w < 600 ? 0.62 : 0.46);
+    const sc = Math.min(S / Math.max(1e-6, x1 - x0), S / Math.max(1e-6, y1 - y0), 74 / Math.max(1e-6, bl));
+    const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, cx = w / 2, cy = h / 2 - Math.min(40, h * 0.04);
+    const r = clamp(bl * sc * 0.34, 5, 22);
+    const atoms = m.atoms.map((a, i) => ({ s: a.s, X: cx + (P[i][0] - mx) * sc, Y: cy + (P[i][1] - my) * sc, z: P[i][2], r: a.s === 'H' ? r * 0.72 : r, col: hex(a.col) || hex(rxCpk(a.s)) || (RX_CPK && hex(RX_CPK[a.s])) || '#9aa3b2' }));
+    return { atoms, bonds: B, bw: Math.max(2, r * 0.38) };
+  }
+
+  playFusion = function(nums, ok, cb, boom, gem){
+    fitFuse();
+    const w = innerWidth, h = innerHeight;
+    const L = ok ? layout(w, h) : null;
+    // 날아갈 원자: 담은 순서 그대로, 같은 원소끼리는 칩 한 곳에서 줄줄이
+    const seen = {};
+    const fly = nums.map((n, i) => {
+      const e = byNum[n], k = seen[n] = (seen[n] || 0) + 1;
+      const [sx, sy] = trayPoint(n);
+      return { n, s: e.s, col: cssv(CAT[e.c].v), sx: sx + (Math.random() - .5) * 10, sy, k, delay: 0, tx: w / 2, ty: h / 2, slot: -1,
+        arc: (Math.random() - .5) * Math.min(260, w * 0.35), jit: Math.random() * 6.28 };
+    });
+    // 줄줄이 출발: 전체 출발 구간은 최대 380ms
+    const gap = Math.min(45, 300 / Math.max(1, fly.length));
+    fly.forEach((f, i) => { f.delay = i * gap; });
+    // 분자 자리 짝짓기 (같은 원소끼리, 가까운 순서로)
+    if(L){
+      const free = {};
+      L.atoms.forEach((a, i) => { (free[a.s] = free[a.s] || []).push(i); });
+      fly.forEach(f => { const q = free[f.s]; if(q && q.length){ f.slot = q.shift(); const a = L.atoms[f.slot]; f.tx = a.X; f.ty = a.Y; } });
+      L.atoms.forEach((a, i) => { a.got = fly.some(f => f.slot === i); });
+    } else if(!ok){
+      // 실패: 가운데 근처 둥글게 모였다가 튕겨 나감
+      fly.forEach((f, i) => { const a = i / fly.length * Math.PI * 2; f.tx = w / 2 + Math.cos(a) * 34; f.ty = h / 2 + Math.sin(a) * 34; f.va = a; });
+    }
+    sparks = [];
+    fuseOk = ok; fuseCb = cb; fuseOn = true; fuseBoom = !!boom; fuseGem = !!gem;
+    fuseStart = performance.now();
+    const fm = document.getElementById('mFormula');
+    fuseLabel = fm ? (fm.textContent || '') : '';
+    try{ FUSE_FONT = getComputedStyle(fm).fontFamily || FUSE_FONT; }catch(e){}
+    // 화면의 화학식은 <sub>/<sup> 로 되어 있다: 그 구조 그대로 글자 묶음을 만든다
+    FUSE_RUNS = null;
+    try{
+      if(fm && fm.querySelector('sub,sup')){
+        FUSE_RUNS = [];
+        const walk = (node, k) => node.childNodes.forEach(c => {
+          if(c.nodeType === 3){ const t = c.textContent; if(t) FUSE_RUNS.push({ k, t }); }
+          else if(c.nodeType === 1) walk(c, c.tagName === 'SUB' ? 1 : c.tagName === 'SUP' ? 2 : k);
+        });
+        walk(fm, 0);
+      }
+    }catch(e){ FUSE_RUNS = null; }
+    F = { fly, L, ok, boom: !!boom, gem: !!gem, flyEnd: fly.length ? fly[fly.length - 1].delay + T_FLY : T_FLY, cr: clamp(16 - fly.length / 12, 8, 16) };
+    fuseEl.classList.add('on');
+    requestAnimationFrame(loop2);
+  };
+
+  function ball(x, y, r, col, a){
+    const c = hex(col) || '#9aa3b2';
+    fctx.globalAlpha = a;
+    const g = fctx.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+    g.addColorStop(0, shade(c, .55)); g.addColorStop(.45, c); g.addColorStop(1, shade(c, -.45));
+    fctx.fillStyle = g; fctx.beginPath(); fctx.arc(x, y, r, 0, Math.PI * 2); fctx.fill();
+    fctx.globalAlpha = 1;
+  }
+  function chip(x, y, r, col, sym, a){
+    fctx.globalAlpha = a;
+    const gg = fctx.createRadialGradient(x, y, 0, x, y, r * 2);
+    gg.addColorStop(0, col); gg.addColorStop(1, 'rgba(0,0,0,0)');
+    fctx.globalAlpha = a * .45; fctx.fillStyle = gg; fctx.beginPath(); fctx.arc(x, y, r * 2, 0, Math.PI * 2); fctx.fill();
+    fctx.globalAlpha = a;
+    fctx.beginPath(); fctx.arc(x, y, r, 0, Math.PI * 2); fctx.fillStyle = '#0b0d11'; fctx.fill();
+    fctx.lineWidth = 2; fctx.strokeStyle = col; fctx.stroke();
+    if(r >= 7){ fctx.font = `700 ${Math.round(r * .95)}px Orbit, system-ui, sans-serif`; fctx.fillStyle = col; fctx.textAlign = 'center'; fctx.textBaseline = 'middle'; fctx.fillText(sym, x, y); }
+    fctx.globalAlpha = 1;
+  }
+  // 트레이 → 목표: 위로 볼록한 곡선
+  function flyPos(f, t){
+    const k = easeIO(t);
+    const mx = (f.sx + f.tx) / 2 + f.arc, my = Math.min(f.sy, f.ty) - Math.min(innerHeight * .18, 140);
+    const x = (1 - k) * (1 - k) * f.sx + 2 * (1 - k) * k * mx + k * k * f.tx;
+    const y = (1 - k) * (1 - k) * f.sy + 2 * (1 - k) * k * my + k * k * f.ty;
+    return [x, y];
+  }
+
+  function loop2(now){
+    if(!fuseOn || !F) return;
+    const el = now - fuseStart, w = innerWidth, h = innerHeight;
+    fctx.clearRect(0, 0, w, h);
+    const L = F.L;
+    const tSet = F.flyEnd, tBond = tSet + T_SET, tHold = tBond + (L ? T_BOND : 0), tOut = tHold + T_HOLD, tEnd = tOut + T_OUT;
+    const failEnd = F.flyEnd + T_FAIL;
+
+    // 어둡게 깔기
+    const dim = clamp(el / 300, 0, 1) * (el > (F.ok ? tOut : failEnd - 200) ? 1 - clamp((el - (F.ok ? tOut : failEnd - 200)) / 260, 0, 1) : 1);
+
+    // ── 실패 ──
+    if(!F.ok){
+      F.fly.forEach(f => {
+        const t = clamp((el - f.delay) / T_FLY, 0, 1);
+        if(el < f.delay) return;
+        let [x, y] = flyPos(f, t);
+        if(el > F.flyEnd){
+          const u = (el - F.flyEnd) / T_FAIL;          // 부딪친 뒤 튕겨서 아래로 떨어짐
+          const sp = 260 * ease(clamp(u * 1.4, 0, 1));
+          x = f.tx + Math.cos(f.va) * sp + Math.sin(el / 24 + f.jit) * 3 * (1 - u);
+          y = f.ty + Math.sin(f.va) * sp * .6 + 520 * u * u;
+        }
+        const a = el > F.flyEnd ? 1 - clamp((el - F.flyEnd) / T_FAIL, 0, 1) : 1;
+        chip(x, y, F.cr, f.col, f.s, a);
+      });
+      if(el > F.flyEnd && el < F.flyEnd + 200){   // 부딪친 순간 회색 퍽
+        const u = (el - F.flyEnd) / 200;
+        fctx.strokeStyle = `rgba(160,166,178,${.6 * (1 - u)})`; fctx.lineWidth = 3 * (1 - u);
+        fctx.beginPath(); fctx.arc(w / 2, h / 2, 40 + 80 * u, 0, Math.PI * 2); fctx.stroke();
+      }
+      label(el - F.flyEnd - 120, T_FAIL - 120, w / 2, h / 2 - 90, false);
+      if(el >= failEnd) return done(w, h);
+      requestAnimationFrame(loop2); return;
+    }
+
+    // ── 성공: 날아오기 ──
+    const setK = clamp((el - tSet) / T_SET, 0, 1);   // 칩 → 공으로 바뀌는 정도
+    const fadeAll = 1 - clamp((el - tOut) / T_OUT, 0, 1);
+
+    // 결합 막대 (조립 단계부터)
+    if(L && el > tBond){
+      const bk = clamp((el - tBond) / T_BOND, 0, 1);
+      fctx.lineCap = 'round';
+      L.bonds.forEach(([i, j, o], q) => {
+        const A = L.atoms[i], Bt = L.atoms[j];
+        const kq = ease(clamp(bk * 1.6 - (q / Math.max(1, L.bonds.length)) * .6, 0, 1));
+        if(kq <= 0) return;
+        const mx = (A.X + Bt.X) / 2, my = (A.Y + Bt.Y) / 2;
+        const ax = mx + (A.X - mx) * kq, ay = my + (A.Y - my) * kq, bx = mx + (Bt.X - mx) * kq, by = my + (Bt.Y - my) * kq;
+        const lanes = o >= 3 ? [-1, 0, 1] : o >= 1.5 ? [-.5, .5] : [0];
+        let px = -(Bt.Y - A.Y), py = Bt.X - A.X; const pl = Math.hypot(px, py) || 1; px /= pl; py /= pl;
+        lanes.forEach(ln => {
+          const ox = px * ln * L.bw * 1.5, oy = py * ln * L.bw * 1.5;
+          fctx.globalAlpha = fadeAll;
+          fctx.strokeStyle = '#1a1f29'; fctx.lineWidth = (lanes.length > 1 ? L.bw * .7 : L.bw) + 2;
+          fctx.beginPath(); fctx.moveTo(ax + ox, ay + oy); fctx.lineTo(bx + ox, by + oy); fctx.stroke();
+          fctx.strokeStyle = '#c3cad6'; fctx.lineWidth = lanes.length > 1 ? L.bw * .7 : L.bw;
+          fctx.beginPath(); fctx.moveTo(ax + ox, ay + oy); fctx.lineTo(bx + ox, by + oy); fctx.stroke();
+        });
+      });
+      fctx.globalAlpha = 1;
+    }
+
+    // 분자에 자리가 있는데 날아온 원자가 없는 칸은 조립 때 슬며시 나타남
+    const draw = [];
+    if(L) L.atoms.forEach((a, i) => { if(!a.got && el > tSet) draw.push({ z: a.z, f: () => ball(a.X, a.Y, a.r * ease(setK), a.col, fadeAll * setK) }); });
+    F.fly.forEach(f => {
+      if(el < f.delay) return;
+      const t = clamp((el - f.delay) / T_FLY, 0, 1);
+      const [x, y] = flyPos(f, t);
+      if(f.slot >= 0){
+        const a = L.atoms[f.slot];
+        const r = F.cr + (a.r - F.cr) * ease(t > .7 ? (t - .7) / .3 : 0);
+        draw.push({ z: el > tSet ? a.z : 1e9, f: () => {
+          if(setK < 1) chip(x, y, r, f.col, f.s, (1 - setK) * fadeAll);
+          if(setK > 0){ ball(a.X, a.Y, a.r * (1 + .25 * Math.sin(setK * Math.PI)), a.col, setK * fadeAll); }
+        } });
+      } else {
+        // 분자에 자리가 없는 원자 (모형이 없거나 남는 것): 가운데로 빨려 들어가며 사라짐
+        const a = L ? 1 - clamp((t - .6) / .4, 0, 1) : (t < 1 ? 1 : 1 - setK);
+        draw.push({ z: 1e9, f: () => chip(x, y, F.cr * (L ? 1 - t * .5 : 1 - t * .45), f.col, f.s, a * fadeAll) });
+      }
+    });
+    draw.sort((p, q) => p.z - q.z).forEach(d => d.f());
+
+    // 모형 없이 모인 경우: 가운데 코어가 커짐
+    if(!L){
+      const k = clamp((el - (F.flyEnd - 200)) / 400, 0, 1);
+      if(k > 0){
+        const R = 30 + k * 60, g = fctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, R);
+        g.addColorStop(0, `rgba(255,255,255,${.85 * k * fadeAll})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+        fctx.fillStyle = g; fctx.beginPath(); fctx.arc(w / 2, h / 2, R, 0, Math.PI * 2); fctx.fill();
+      }
+    }
+
+    // 다 맞춰진 순간: 반짝 + 링 (폭발·보석은 더 크게)
+    if(el > tHold){
+      const u = clamp((el - tHold) / (T_HOLD + T_OUT), 0, 1);
+      const rings = F.boom ? 3 : F.gem ? 3 : 1;
+      for(let q = 0; q < rings; q++){
+        const tt = clamp(u * 1.3 - q * .14, 0, 1); if(tt <= 0) continue;
+        const rr = ease(tt) * Math.min(w, h) * (F.boom ? .75 : .42);
+        fctx.beginPath(); fctx.arc(w / 2, h / 2, rr, 0, Math.PI * 2);
+        fctx.strokeStyle = F.boom ? `rgba(255,180,80,${.8 * (1 - tt)})` : F.gem ? `hsla(${(tt * 360) | 0} 95% 70% / ${.85 * (1 - tt)})` : `rgba(255,255,255,${.6 * (1 - tt)})`;
+        fctx.lineWidth = (F.boom ? 5 : 3) * (1 - tt); fctx.stroke();
+      }
+      if(!sparks.length && (F.boom || F.gem)){
+        const N = F.boom ? 140 : 70, BOOMC = ['#ffd43b','#ff922b','#ff6b6b','#fff3bf'];
+        for(let i = 0; i < N; i++){ const a = Math.random() * Math.PI * 2, sp = (F.boom ? 14 : 6) * (.4 + Math.random());
+          sparks.push({ x: w / 2, y: h / 2, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, col: F.gem ? `hsl(${(i * 29) % 360} 90% 65%)` : BOOMC[i % 4], r: 2 + Math.random() * 3 }); }
+      }
+      if(F.boom){ const fl = Math.max(0, .9 - u * 2.2); if(fl > 0){ const g = fctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.min(w, h) * .8);
+        g.addColorStop(0, `rgba(255,255,255,${fl})`); g.addColorStop(.35, `rgba(255,180,70,${fl * .7})`); g.addColorStop(1, 'rgba(255,255,255,0)'); fctx.fillStyle = g; fctx.fillRect(0, 0, w, h); } }
+      sparks.forEach(s2 => { s2.x += s2.vx; s2.y += s2.vy; s2.vy += .05; s2.vx *= .985; s2.vy *= .985;
+        fctx.globalAlpha = Math.max(0, 1 - u); fctx.beginPath(); fctx.arc(s2.x, s2.y, s2.r, 0, Math.PI * 2); fctx.fillStyle = s2.col; fctx.fill(); });
+      fctx.globalAlpha = 1;
+    }
+
+    // 화학식: 조립이 끝나갈 즈음 분자 아래에 떠오름
+    let ly = h / 2 + 40;
+    if(L){ let yb = -Infinity; L.atoms.forEach(a => { yb = Math.max(yb, a.Y + a.r); }); ly = Math.min(h - 40, yb + 46); }
+    label(el - (L ? tBond : tSet - 100), T_BOND + T_HOLD + T_OUT, w / 2, ly, true, fadeAll);
+
+    if(el >= tEnd) return done(w, h);
+    requestAnimationFrame(loop2);
+  }
+
+  function label(t, dur, x, y, ok, fadeAll = 1){
+    if(!fuseLabel || t <= 0) return;
+    const u = t / dur, rise = ease(clamp(u / .35, 0, 1)), a = rise * fadeAll;
+    if(a < .01) return;
+    const size = Math.max(24, Math.min(46, Math.round(Math.min(innerWidth, innerHeight) * .08)));
+    fctx.save(); fctx.globalAlpha = a; fctx.translate(x, y + (1 - rise) * 14);
+    fctx.shadowColor = 'rgba(0,0,0,.6)'; fctx.shadowBlur = 12; fctx.textBaseline = 'alphabetic'; fctx.textAlign = 'left';
+    fctx.fillStyle = ok ? '#ffffff' : 'rgba(255,150,150,.95)';
+    // 아래첨자(₀-₉)·위첨자(⁰-⁹⁺⁻)는 작게 내리고/올려서 그린다
+    const SUB = '₀₁₂₃₄₅₆₇₈₉', SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻';
+    const runs = [];
+    if(FUSE_RUNS) FUSE_RUNS.forEach(r => runs.push({ k: r.k, t: r.t }));
+    else for(const ch of fuseLabel){ const i = SUB.indexOf(ch), j = SUP.indexOf(ch);
+      const kind = i >= 0 ? 1 : j >= 0 ? 2 : 0, c = i >= 0 ? String(i) : j >= 0 ? '0123456789+−'[j] : ch;
+      if(runs.length && runs[runs.length - 1].k === kind) runs[runs.length - 1].t += c; else runs.push({ k: kind, t: c }); }
+    const big = `800 ${size}px ${FUSE_FONT}`, small = `800 ${Math.round(size * .6)}px ${FUSE_FONT}`;
+    let tw = 0; runs.forEach(r => { fctx.font = r.k ? small : big; r.w = fctx.measureText(r.t).width; tw += r.w; });
+    let xx = -tw / 2; const base = size * .34;
+    runs.forEach(r => { fctx.font = r.k ? small : big; fctx.fillText(r.t, xx, base + (r.k === 1 ? size * .22 : r.k === 2 ? -size * .42 : 0)); xx += r.w; });
+    fctx.restore();
+  }
+  function done(w, h){
+    fuseOn = false; F = null;
+    fuseEl.classList.remove('on');
+    fctx.clearRect(0, 0, w, h);
+    if(fuseCb) fuseCb();
+  }
 })();
 </script>
 </body>
