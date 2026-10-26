@@ -24518,7 +24518,9 @@ function rxStickModel(ball){
       let ox = 0, oy = 0;
       if(s.i !== s.j && s.ord > 1){
         // 화면에서 결합에 수직인 방향으로 나란히 비켜 놓는다
-        let px = -(b.Y - a.Y), py = b.X - a.X; const pl = Math.hypot(px, py) || 1; px /= pl; py /= pl;
+        // 방향은 늘 번호 작은 원자 → 큰 원자 기준 (안 그러면 반쪽 막대 두 개가 서로 반대편으로 비켜서 X자로 꼬인다)
+        const lo = s.i < s.j ? a : b, hi = s.i < s.j ? b : a;
+        let px = -(hi.Y - lo.Y), py = hi.X - lo.X; const pl = Math.hypot(px, py) || 1; px /= pl; py /= pl;
         const thin = s.ord >= 3 ? 0.34 : 0.58;
         const gap = w * (s.ord >= 3 ? 0.46 : 0.68);
         ox = px * gap * s.lane; oy = py * gap * s.lane;
