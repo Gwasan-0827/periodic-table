@@ -6189,7 +6189,8 @@ const CHANGELOG = [
            '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
-           '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요'],
+           '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요',
+           '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6207,7 +6208,8 @@ const CHANGELOG = [
            'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
-           'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now'],
+           'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now',
+           'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles'],
     },
   },
   {
@@ -32215,5 +32217,274 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   };
 })();
 </script>
+<style>
+  /* ═══ 4.0 이온 이동 실험 리워크: 왼쪽 스포이트·전압 · 오른쪽 실험판(캔버스) ═══ */
+  .mx{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start;margin-top:10px}
+  @media (max-width:760px){ .mx{grid-template-columns:1fr;gap:10px} }
+  .mx-side{display:grid;gap:8px;align-content:start}
+  .mx-sols{display:grid;gap:5px}
+  @media (max-width:760px){ .mx-sols{grid-template-columns:repeat(3,1fr)} }
+  .mx-s{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;cursor:pointer;text-align:left;font:600 12.5px/1.25 system-ui,sans-serif;transition:background .15s,border-color .15s}
+  .mx-s small{display:block;font:600 10.5px/1.2 system-ui,sans-serif;color:var(--hub-dim,#8e99ad);margin-top:2px}
+  .mx-s:hover{background:rgba(255,255,255,.07)}
+  .mx-s.on{border-color:#ffd43b;background:rgba(255,212,59,.08)}
+  .mx-dr{flex:0 0 auto;width:16px;height:20px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--c);transform:rotate(180deg);box-shadow:inset -3px -3px 0 rgba(255,255,255,.25)}
+  @media (max-width:760px){ .mx-s{flex-direction:column;text-align:center;gap:5px;padding:9px 4px} .mx-s small{display:none} }
+  .mx-v{display:flex;align-items:center;gap:10px}
+  .mx-v input{flex:1;accent-color:#ffd43b}
+  .mx-v b{font:800 15px/1 Orbit,system-ui,sans-serif;min-width:44px;text-align:right;font-variant-numeric:tabular-nums}
+  .mx-seg{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:10px;border:1px solid rgba(255,255,255,.1)}
+  .mx-seg button{padding:6px 0;border:0;border-radius:7px;background:none;color:var(--hub-dim,#8e99ad);font:600 12.5px system-ui,sans-serif;cursor:pointer}
+  .mx-seg button.on{background:var(--hub-fg,#e7ecf4);color:#0f141c}
+  .mx-stage{border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.025);padding:10px;display:grid;gap:10px;min-width:0}
+  .mx-stage.live{border-color:rgba(255,212,59,.45)}
+  .mx-cv{display:block;width:100%;height:230px;border-radius:12px;background:#0d1320;touch-action:manipulation;cursor:crosshair}
+  @media (max-width:520px){ .mx-cv{height:200px} }
+  .mx-ctl{display:grid;grid-template-columns:1fr auto auto;gap:6px}
+  .mx-ctl button{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;font:700 13px system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+  .mx-ctl .mx-pow{font-size:14px}
+  .mx-ctl .mx-pow.on{background:#ffd43b;border-color:#ffd43b;color:#1a1a1a}
+  .mx-read{display:grid;gap:4px;font-size:12.5px;min-height:20px}
+  .mx-read div{display:flex;align-items:center;gap:8px}
+  .mx-read i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .mx-read b{font-variant-numeric:tabular-nums}
+  .mx-read .dim{color:var(--hub-dim,#8e99ad)}
+  .mx-why{font-size:12.5px;color:var(--hub-dim,#8e99ad);line-height:1.55;word-break:keep-all}
+  .mx-why summary{cursor:pointer;color:var(--hub-fg,#e7ecf4);font-weight:600;list-style:none}
+  .mx-why summary::-webkit-details-marker{display:none}
+  .mx-why p{margin:6px 0 0}
+</style>
+<script>
+(() => {
+  const T = {
+    ko: { sol: '스포이트 용액', volt: '전압', view: '보기', eye: '눈으로', ion: '이온으로', pow: '전원 켜기', powOff: '전원 끄기', swap: '⇄ 극 바꾸기', wipe: '↺ 새 종이',
+          tapHint: '종이를 눌러서 한 방울!', tapMore: '종이를 누르면 한 방울 더 (최대 3방울)', toward: '쪽으로', still: '아직 제자리', why: '왜 이렇게 움직여요?',
+          cuF: 'Cu²⁺ + SO₄²⁻', mnF: 'K⁺ + MnO₄⁻', mixF: '네 이온 모두', ghost: '색 없는 K⁺·SO₄²⁻도 같이 움직여요', clamp: '집게를 눌러도 극이 바뀌어요' },
+    en: { sol: 'Dropper solution', volt: 'Voltage', view: 'View', eye: 'By eye', ion: 'As ions', pow: 'Power on', powOff: 'Power off', swap: '⇄ Swap poles', wipe: '↺ New paper',
+          tapHint: 'Tap the paper to drop!', tapMore: 'Tap again for another drop (up to 3)', toward: 'toward', still: 'not moved yet', why: 'Why do they move?',
+          cuF: 'Cu²⁺ + SO₄²⁻', mnF: 'K⁺ + MnO₄⁻', mixF: 'All four ions', ghost: 'Colourless K⁺ and SO₄²⁻ move too', clamp: 'Tap a clamp to swap poles too' } };
+  const tt = k => (T[ionLang() ? 'en' : 'ko'] || T.ko)[k];
+  // 이온 종류: q 부호로 방향, mob = 상대 이동도
+  const SP = {
+    cu: { lab: 'Cu²⁺', q: 2, mob: 1.0, col: [40, 110, 255], eye: true },
+    mn: { lab: 'MnO₄⁻', q: -1, mob: 1.15, col: [150, 40, 200], eye: true },
+    k:  { lab: 'K⁺', q: 1, mob: 1.6, col: [150, 160, 175], eye: false },
+    so: { lab: 'SO₄²⁻', q: -2, mob: 1.4, col: [120, 128, 140], eye: false } };
+  const SOL = { cu: ['cu', 'so'], mn: ['k', 'mn'], mix: ['cu', 'so', 'k', 'mn'] };
+  const MX = { sol: 'mix', V: 9, view: 'eye', on: false, swap: false, drops: [], P: [], raf: 0, last: 0, e: 0, rd: 0 };
+  window.MX = MX;
+  const randn = () => { let u = 0, v = 0; while(!u) u = Math.random(); while(!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const sprite = {};
+  function blob(col){
+    const k = col.join(); if(sprite[k]) return sprite[k];
+    const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+    const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, `rgba(${col},.16)`); gr.addColorStop(.55, `rgba(${col},.07)`); gr.addColorStop(1, `rgba(${col},0)`);
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return (sprite[k] = c);
+  }
+  let fiber = null;
+  function paperTex(w, h){
+    if(fiber && fiber.width === w && fiber.height === h) return fiber;
+    fiber = document.createElement('canvas'); fiber.width = w; fiber.height = h; const g = fiber.getContext('2d');
+    g.fillStyle = '#e4ebf0'; g.fillRect(0, 0, w, h);
+    for(let i = 0; i < w * h / 90; i++){ g.fillStyle = `rgba(${Math.random() < .5 ? '255,255,255' : '150,170,190'},${Math.random() * .18})`; const x = Math.random() * w, y = Math.random() * h; g.fillRect(x, y, 1 + Math.random() * 5, 1); }
+    return fiber;
+  }
+  // 캔버스 안 배치 (CSS px)
+  function geo(cv){
+    const W = cv.clientWidth, H = cv.clientHeight;
+    const xL = 40, xR = W - 40, pt = 62, pb = H - 44;
+    return { W, H, xL, xR, pt, pb, pw: xR - xL, ph: pb - pt, by: 24, cx: W / 2 };
+  }
+  const leftPlus = () => !MX.swap;
+  // 이온이 지나간 자리에 남는 옅은 자국
+  let stc = null;
+  function stain(G){
+    const w = Math.ceil(G.pw), h = Math.ceil(G.ph);
+    if(!stc || stc.width !== w || stc.height !== h){ stc = document.createElement('canvas'); stc.width = w; stc.height = h; }
+    return stc;
+  }
+  function smear(){
+    if(!stc || !MX.on) return;
+    const g = stc.getContext('2d'), now = performance.now(), r = Math.max(8, stc.height * .1);
+    g.globalCompositeOperation = 'destination-out'; g.fillStyle = 'rgba(0,0,0,.006)'; g.fillRect(0, 0, stc.width, stc.height);
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = .05;
+    for(let i = 0; i < MX.P.length; i += 3){ const p = MX.P[i], sp = SP[p.s]; if(!sp.eye || now < p.born) continue; g.drawImage(blob(sp.col), p.x * stc.width - r, p.y * stc.height - r, r * 2, r * 2); }
+    g.globalAlpha = 1;
+  }
+  function addDrop(x, y){
+    if(MX.drops.length >= 3){ const old = MX.drops.shift(); MX.P = MX.P.filter(p => p.d !== old.id); }
+    const id = Math.random();
+    MX.drops.push({ id, x, y, sol: MX.sol, t: performance.now() });
+    SOL[MX.sol].forEach(s => { const n = SP[s].eye ? 34 : 14; for(let i = 0; i < n; i++) MX.P.push({ d: id, s, x0: x, x: x + randn() * .018, y: Math.max(.08, Math.min(.92, y + randn() * .09)), born: performance.now() + 260 }); });
+    try{ rxBell(980, .25, .05, 0); rxBell(1470, .2, .03, .05); }catch(e){ try{ SFX.pick(); }catch(_){} }
+  }
+  function step(dt){
+    const lp = leftPlus(), base = 0.05 * MX.V / 12;
+    for(const p of MX.P){
+      const sp = SP[p.s];
+      if(MX.on){
+        // 양이온은 (−)극으로. 왼쪽이 (+)면 (−)극은 오른쪽
+        const dir = (sp.q > 0 ? 1 : -1) * (lp ? 1 : -1);
+        const edge = dir > 0 ? 1 - p.x : p.x;
+        const slow = Math.max(0, Math.min(1, (edge - .025) / .08));
+        p.x += dir * sp.mob * base * slow * dt;
+      }
+      p.x += randn() * Math.sqrt(dt) * .0045; p.y += randn() * Math.sqrt(dt) * .012;
+      p.x = Math.max(.01, Math.min(.99, p.x)); p.y = Math.max(.06, Math.min(.94, p.y));
+    }
+  }
+  function draw(){
+    const cv = document.getElementById('mxCv'); if(!cv) return false;
+    const dpr = Math.min(2, window.devicePixelRatio || 1), G = geo(cv);
+    if(cv.width !== Math.round(G.W * dpr) || cv.height !== Math.round(G.H * dpr)){ cv.width = Math.round(G.W * dpr); cv.height = Math.round(G.H * dpr); }
+    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, G.W, G.H);
+    const now = performance.now(), lp = leftPlus();
+    // 전선 + 전지
+    const wy = G.by, lx = G.xL - 14, rx = G.xR + 14;
+    g.lineWidth = 2; g.strokeStyle = MX.on ? '#ffd43b' : '#4a5670';
+    if(MX.on){ g.shadowColor = 'rgba(255,212,59,.6)'; g.shadowBlur = 8; }
+    g.beginPath(); g.moveTo(lx, G.pt + 6); g.lineTo(lx, wy); g.lineTo(G.cx - 24, wy); g.moveTo(G.cx + 24, wy); g.lineTo(rx, wy); g.lineTo(rx, G.pt + 6); g.stroke(); g.shadowBlur = 0;
+    g.fillStyle = '#1b2436'; g.strokeStyle = '#56627a'; g.lineWidth = 1; g.beginPath(); g.roundRect(G.cx - 24, wy - 13, 48, 26, 5); g.fill(); g.stroke();
+    const tall = lp ? -6 : 6;   // 긴 판 = (+)
+    g.strokeStyle = '#dfe6f1'; g.lineWidth = 3; g.beginPath(); g.moveTo(G.cx + tall, wy - 8); g.lineTo(G.cx + tall, wy + 8); g.stroke();
+    g.lineWidth = 1.5; g.beginPath(); g.moveTo(G.cx - tall, wy - 4.5); g.lineTo(G.cx - tall, wy + 4.5); g.stroke();
+    g.font = '700 11px system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = MX.on ? '#ffd43b' : '#7d8aa3'; g.fillText(MX.V + ' V', G.cx, wy + 28);
+    // 전자 (전선 따라 (+)극 → 전지 → (−)극)
+    if(MX.on){
+      const seg = [[lx, G.pt + 6, lx, wy], [lx, wy, G.cx - 24, wy], [G.cx + 24, wy, rx, wy], [rx, wy, rx, G.pt + 6]];
+      const lens = seg.map(s => Math.hypot(s[2] - s[0], s[3] - s[1])), tot = lens.reduce((a, b) => a + b, 0);
+      g.fillStyle = '#ffe98a';
+      for(let i = 0; i < 14; i++){
+        let d = ((i / 14 + MX.e * (lp ? 1 : -1)) % 1 + 1) % 1 * tot;
+        for(let k = 0; k < 4; k++){ if(d <= lens[k]){ const s = seg[k], f = d / lens[k]; g.beginPath(); g.arc(s[0] + (s[2] - s[0]) * f, s[1] + (s[3] - s[1]) * f, 2.2, 0, 7); g.fill(); break; } d -= lens[k]; }
+      }
+    }
+    // 거름종이
+    g.save(); g.beginPath(); g.roundRect(G.xL, G.pt, G.pw, G.ph, 6); g.clip();
+    g.drawImage(paperTex(Math.ceil(G.pw), Math.ceil(G.ph)), G.xL, G.pt);
+    g.globalCompositeOperation = 'multiply';
+    const st = stain(G);
+    if(st) g.drawImage(st, G.xL, G.pt, G.pw, G.ph);
+    if(MX.view === 'eye'){
+      const r = Math.max(14, G.ph * .2);
+      for(const p of MX.P){ const sp = SP[p.s]; if(!sp.eye || now < p.born) continue; g.drawImage(blob(sp.col), G.xL + p.x * G.pw - r, G.pt + p.y * G.ph - r, r * 2, r * 2); }
+    } else {
+      for(const p of MX.P){ const sp = SP[p.s]; if(!sp.eye || now < p.born) continue; g.globalAlpha = .25; g.drawImage(blob(sp.col), G.xL + p.x * G.pw - 10, G.pt + p.y * G.ph - 10, 20, 20); }
+      g.globalAlpha = 1;
+    }
+    g.globalCompositeOperation = 'source-over';
+    if(MX.view === 'ion'){
+      g.font = '800 7px system-ui,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      MX.P.forEach((p, i) => {
+        if(now < p.born || (SP[p.s].eye && i % 2)) return;
+        const sp = SP[p.s], x = G.xL + p.x * G.pw, y = G.pt + p.y * G.ph, rr = 3.2 + Math.abs(sp.q) * .9;
+        g.beginPath(); g.arc(x, y, rr, 0, 7);
+        if(sp.eye){ g.fillStyle = `rgb(${sp.col})`; g.fill(); }
+        else { g.fillStyle = 'rgba(255,255,255,.85)'; g.fill(); g.strokeStyle = `rgb(${sp.col})`; g.lineWidth = 1; g.stroke(); }
+        g.fillStyle = sp.eye ? '#fff' : '#3c4656'; g.fillText(sp.q > 0 ? '+' : '−', x, y + .3);
+      });
+      g.textBaseline = 'alphabetic';
+    }
+    // 방울 떨어지는 연출
+    for(const d of MX.drops){
+      const a = (now - d.t) / 260, x = G.xL + d.x * G.pw, y = G.pt + d.y * G.ph;
+      const col = d.sol === 'cu' ? '40,110,255' : d.sol === 'mn' ? '150,40,200' : '95,75,225';
+      if(a < 1){ g.fillStyle = `rgba(${col},.9)`; g.beginPath(); g.ellipse(x, y - (1 - a * a) * 70, 4, 6, 0, 0, 7); g.fill(); }
+      else if(a < 3){ const k = (a - 1) / 2; g.strokeStyle = `rgba(${col},${.55 * (1 - k)})`; g.lineWidth = 2; g.beginPath(); g.ellipse(x, y, 6 + k * 26, (6 + k * 26) * .55, 0, 0, 7); g.stroke(); }
+    }
+    g.restore();
+    g.strokeStyle = 'rgba(160,180,205,.5)'; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.roundRect(G.xL + .5, G.pt + .5, G.pw - 1, G.ph - 1, 6); g.stroke(); g.setLineDash([]);
+    // 눈금자 (가운데 0, 양쪽 50 mm)
+    g.strokeStyle = '#4a5670'; g.fillStyle = '#7d8aa3'; g.font = '600 9.5px system-ui,sans-serif'; g.textAlign = 'center';
+    for(let i = 0; i <= 20; i++){
+      const x = G.xL + G.pw * i / 20, big = i % 5 === 0;
+      g.beginPath(); g.moveTo(x, G.pb + 4); g.lineTo(x, G.pb + (big ? 11 : 7)); g.stroke();
+      if(big) g.fillText(Math.abs(i * 5 - 50) + (i === 20 ? ' mm' : ''), x, G.pb + 22);
+    }
+    // 전극 집게
+    [[G.xL - 20, lp], [G.xR + 6, !lp]].forEach(([x, plus]) => {
+      g.fillStyle = '#8a96a8'; g.beginPath(); g.roundRect(x, G.pt + G.ph / 2 - 22, 14, 44, 4); g.fill();
+      g.fillStyle = '#5d6879'; g.fillRect(x + 3, G.pt + G.ph / 2 - 16, 8, 2); g.fillRect(x + 3, G.pt + G.ph / 2 + 14, 8, 2);
+      g.font = '800 15px ui-monospace,monospace'; g.fillStyle = plus ? '#ff8787' : '#74c0fc'; g.fillText(plus ? '+' : '−', x + 7, G.pt + G.ph / 2 + 5);
+    });
+    if(!MX.drops.length){
+      const pulse = .6 + .4 * Math.sin(now / 300);
+      g.font = '700 14px system-ui,sans-serif'; g.fillStyle = `rgba(40,55,80,${pulse})`; g.fillText(tt('tapHint'), G.cx, G.pt + G.ph / 2 + 5);
+    }
+    return true;
+  }
+  function readout(){
+    const el = document.getElementById('mxRead'); if(!el) return;
+    const lp = leftPlus(), rows = [];
+    ['cu', 'mn'].forEach(s => {
+      const ps = MX.P.filter(p => p.s === s); if(!ps.length) return;
+      const m = ps.reduce((a, p) => a + (p.x - p.x0), 0) / ps.length * 100;
+      const to = m > 0 ? (lp ? '−' : '+') : (lp ? '+' : '−');
+      const sp = SP[s];
+      rows.push(`<div><i style="background:rgb(${sp.col})"></i><b>${sp.lab}</b>${Math.abs(m) < 1.5 ? `<span class="dim">${tt('still')}</span>` : `<span>(${to})${ionLang() ? ' pole ' : '극 '}${tt('toward')} <b>${Math.abs(m).toFixed(0)} mm</b></span>`}</div>`);
+    });
+    if(MX.view === 'ion' && MX.P.some(p => !SP[p.s].eye)) rows.push(`<div class="dim"><i style="background:#fff;border:1px solid #8a96a8"></i>${tt('ghost')}</div>`);
+    if(MX.drops.length && MX.drops.length < 3 && !MX.on) rows.push(`<div class="dim">${tt('tapMore')}</div>`);
+    el.innerHTML = rows.join('');
+  }
+  function loop(now){
+    const dt = Math.min(.05, (now - (MX.last || now)) / 1000); MX.last = now;
+    if(MX.on) MX.e += dt * (.18 + MX.V * .02);
+    step(dt); smear();
+    if(!draw()){ MX.raf = 0; return; }
+    if((MX.rd += dt) > .2){ MX.rd = 0; readout(); }
+    MX.raf = requestAnimationFrame(loop);
+  }
+  const kick = () => { if(!MX.raf){ MX.last = 0; MX.raf = requestAnimationFrame(loop); } };
+
+  renderIonMove = function(){
+    const box = qBodyEl.querySelector('#ionMain'); if(!box) return;
+    const en = ionLang();
+    const sols = [['cu', rt('imCu'), '#2f6eff', tt('cuF')], ['mn', rt('imMn'), '#9628c8', tt('mnF')], ['mix', rt('imMix'), 'linear-gradient(90deg,#2f6eff 50%,#9628c8 50%)', tt('mixF')]];
+    box.innerHTML = `<div class="mx">
+      <div class="mx-side">
+        <div class="ix-lab">${tt('sol')}</div>
+        <div class="mx-sols">${sols.map(([k, l, c, f]) => `<button type="button" class="mx-s${MX.sol === k ? ' on' : ''}" data-sol="${k}"><i class="mx-dr" style="--c:${c}"></i><span>${l}<small>${f}</small></span></button>`).join('')}</div>
+        <div class="ix-lab">${tt('volt')}</div>
+        <div class="mx-v"><input type="range" id="mxV" min="3" max="12" step="1" value="${MX.V}" aria-label="${tt('volt')}"><b id="mxVb">${MX.V} V</b></div>
+        <div class="ix-lab">${tt('view')}</div>
+        <div class="mx-seg"><button type="button" data-view="eye" class="${MX.view === 'eye' ? 'on' : ''}">👁 ${tt('eye')}</button><button type="button" data-view="ion" class="${MX.view === 'ion' ? 'on' : ''}">⊕ ${tt('ion')}</button></div>
+      </div>
+      <div class="mx-stage${MX.on ? ' live' : ''}">
+        <canvas class="mx-cv" id="mxCv" role="img" aria-label="${rt('imPaper')}"></canvas>
+        <div class="mx-ctl">
+          <button type="button" class="mx-pow${MX.on ? ' on' : ''}" id="mxPow">${MX.on ? '⏸ ' + tt('powOff') : '⚡ ' + tt('pow')}</button>
+          <button type="button" id="mxSwap">${tt('swap')}</button>
+          <button type="button" id="mxWipe">${tt('wipe')}</button>
+        </div>
+        <div class="mx-read" id="mxRead"></div>
+        <details class="mx-why"><summary>💡 ${tt('why')}</summary><p><b>${rt('imWhy')}</b></p><p>${rt('imClear')} ${rt('imPaperWhy')}</p><p>${tt('clamp')}</p></details>
+      </div>
+    </div>`;
+    const cv = box.querySelector('#mxCv');
+    const swap = () => { MX.swap = !MX.swap; try{ SFX.pick(); }catch(e){} };
+    cv.addEventListener('pointerdown', e => {
+      const r = cv.getBoundingClientRect(), G = geo(cv), x = e.clientX - r.left, y = e.clientY - r.top;
+      if(y > G.pt - 6 && y < G.pb + 6 && (x < G.xL || x > G.xR)){ swap(); return; }
+      if(x < G.xL || x > G.xR || y < G.pt || y > G.pb) return;
+      addDrop(Math.max(.1, Math.min(.9, (x - G.xL) / G.pw)), Math.max(.15, Math.min(.85, (y - G.pt) / G.ph)));
+      readout();
+    });
+    box.querySelectorAll('[data-sol]').forEach(b => b.addEventListener('click', () => { MX.sol = b.dataset.sol; box.querySelectorAll('[data-sol]').forEach(o => o.classList.toggle('on', o === b)); try{ SFX.pick(); }catch(e){} }));
+    box.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { MX.view = b.dataset.view; box.querySelectorAll('[data-view]').forEach(o => o.classList.toggle('on', o === b)); try{ SFX.pick(); }catch(e){} readout(); }));
+    const vi = box.querySelector('#mxV'); vi.addEventListener('input', () => { MX.V = +vi.value; box.querySelector('#mxVb').textContent = MX.V + ' V'; });
+    box.querySelector('#mxPow').addEventListener('click', e => {
+      MX.on = !MX.on; try{ SFX.pick(); }catch(_){}
+      e.currentTarget.classList.toggle('on', MX.on); e.currentTarget.textContent = MX.on ? '⏸ ' + tt('powOff') : '⚡ ' + tt('pow');
+      box.querySelector('.mx-stage').classList.toggle('live', MX.on); readout();
+    });
+    box.querySelector('#mxSwap').addEventListener('click', swap);
+    box.querySelector('#mxWipe').addEventListener('click', () => { MX.drops = []; MX.P = []; if(stc) stc.getContext('2d').clearRect(0, 0, stc.width, stc.height); MX.on = false; try{ SFX.pick(); }catch(e){} renderIonMove(); });
+    readout(); kick();
+  };
+})();
+</script>
+
 </body>
 </html>
