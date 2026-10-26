@@ -6192,7 +6192,8 @@ const CHANGELOG = [
            '학습의 이온 결합 화면을 새로 만들었어요. 이온은 왼쪽 타일에서 고르고, 오른쪽 접시를 누르면 이온 구슬이 하나씩 늘어나요(구슬을 누르면 빠져요). 전하 바늘이 0에 딱 맞으면 화합물이 완성돼요. 화면 길이도 반쯤으로 줄었어요',
            '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요',
            '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 클로린한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 의인화 캐릭터 나트륨과 클로린이 직접 나와서 표정 연기까지 하고, 전자를 뺏는 순간 클로린은 클로라이드로 이름이 바뀌어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
-           '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요'],
+           '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요',
+           '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6213,7 +6214,8 @@ const CHANGELOG = [
            'The ionic bonding screen in Learn is redesigned: pick ions from tiles, tap a tray to add an ion bead (tap a bead to remove it), and the compound forms when the charge needle hits zero. The screen is about half as long now',
            'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles',
            'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, starring Sodium and Chlorine as characters. The moment she takes it, Chlorine becomes Chloride. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
-           'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later'],
+           'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later',
+           'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience'],
     },
   },
   {
@@ -31051,7 +31053,11 @@ function rxGaCube(){
   if(typeof rxEvt === 'function'){
     const _ev = rxEvt;
     rxEvt = function(){ const r = _ev.apply(this, arguments);
-      try{ if(rxTaskDone()){ const d = get('pt_xpt', []), k = todayKey(); if(!d.includes(k)){ d.push(k); set('pt_xpt', d.slice(-400)); refresh(); } } }catch(e){}
+      try{ const st = get('pt_task', null), k = todayKey();   // 과제 하나에 15씩 (예전 기록은 하루 한 줄)
+        const ids = st && st.day === k && Array.isArray(st.ids) ? st.ids : (rxTaskDone() ? ['*'] : []);
+        const d = get('pt_xpt', []); let ch = false;
+        ids.forEach(id => { const e = id === '*' ? k : k + ':' + id; if(!d.includes(e) && !(id !== '*' && d.includes(k) && ids.length === 1)){ d.push(e); ch = true; } });
+        if(ch){ set('pt_xpt', d.slice(-1200)); refresh(); } }catch(e){}
       return r; };
   }
   paintCells(false); btn();
@@ -31690,7 +31696,7 @@ function rxGaCube(){
     const D = T();
     qBodyEl.innerHTML = `<div class="ap-wrap"><p class="ap-lead">${D.lead}</p><ol class="ap-list">${D.items.map(([k, y, t, d]) =>
       `<li class="ap-it">${SV[k]}<div><div class="ap-y">${y}</div><div class="ap-t">${t}</div><div class="ap-d">${d}</div></div></li>`).join('')}</ol><div class="ap-end">${D.end}</div></div>`;
-    try{ if(!rxEvtHas('atomPhotos')) rxEvt('atomPhotos'); }catch(e){}
+    try{ rxEvt('atomPhotos'); }catch(e){}
   }
   if(typeof hubHead === 'function'){
     const _hh = hubHead;
@@ -31927,7 +31933,7 @@ function rxGaCube(){
     });
     document.getElementById('oxPh').addEventListener('change', e => { S.ph = e.target.checked; sync(); });
     sync();
-    try{ if(!rxEvtHas('orbSlice')) rxEvt('orbSlice'); }catch(e){}
+    try{ rxEvt('orbSlice'); }catch(e){}
   }
   if(typeof hubHead === 'function'){
     const _hh = hubHead;
@@ -32681,7 +32687,7 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
         b.dataset.who = who; st.appendChild(b);
         if(sc === 2) try{ rxBell(660, .3, .06, 0); rxBell(440, .35, .05, .12); }catch(e){}
         if(sc === 3) try{ rxBell(1320, .25, .04, 0); }catch(e){}
-        if(sc === 5) try{ SFX.ok(); }catch(e){}
+        if(sc === 5){ try{ SFX.ok(); }catch(e){} try{ rxEvt('ionMake'); }catch(e){} }
       }
       const k = sc < 2 ? sc : sc < 4 ? 2 : 3;
       document.querySelectorAll('.mk-steps li').forEach((li, i) => li.classList.toggle('on', i === Math.min(3, k)));
@@ -32839,6 +32845,79 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   if(document.readyState === 'complete') check(); else addEventListener('load', check);
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') check(); });
   window.rxUpdTest = st => show(Object.assign({ latest: '9.9' }, st || {}));
+})();
+</script>
+
+<style>
+  /* ═══ 오늘의 연구 과제: 하루 세 개 ═══ */
+  .rtask{max-width:none}
+  .rtask ol{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+  .rtask li{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.4}
+  .rtask li i{flex:0 0 auto;width:16px;height:16px;margin-top:1px;border-radius:5px;border:1.5px solid #56627a;display:grid;place-items:center;font:900 11px/1 system-ui;font-style:normal;color:transparent}
+  .rtask li.ok i{background:#2f9e44;border-color:#2f9e44;color:#fff}
+  .rtask li.ok span{text-decoration:line-through;opacity:.6}
+  .rtask-h b{float:right;font-variant-numeric:tabular-nums;color:#9fc0ef}
+  .rtask.done .rtask-h b{color:#8ce99a}
+</style>
+<script>
+(() => {
+  if(typeof RX_TASKS === 'undefined' || typeof rxEvt !== 'function') return;
+  const PER_DAY = 3;
+  RX_TASKS.push(
+    { id: 'orbSlice', ko: '오비탈 단면 하나 그려 보기', en: 'Draw an orbital cross-section' },
+    { id: 'atomPhotos', ko: '원자 사진 탭 둘러보기', en: 'Look through the Atom photos tab' },
+    { id: 'ionBond', ko: '이온 결합 하나 완성하기', en: 'Complete an ionic compound' },
+    { id: 'ionMove', ko: '이온 이동 실험에서 전원 켜기', en: 'Switch on the power in the ion migration experiment' },
+    { id: 'ionMake', ko: '전자 뺏기는 나트륨 끝까지 보기', en: 'Watch sodium lose its electron to the end' });
+  const L = () => LANG === 'en' ? 'en' : 'ko';
+  // 날짜로 섞어서 앞에서 세 개
+  rxTaskToday = function(){
+    let s = (typeof daySeed === 'function' ? daySeed() : new Date().getDate()) >>> 0;
+    const rnd = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const a = RX_TASKS.slice();
+    for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a.slice(0, PER_DAY);
+  };
+  const doneIds = () => {
+    const d = rxLS.get('pt_task', null), k = todayKey();
+    if(!d || d.day !== k) return [];
+    if(Array.isArray(d.ids)) return d.ids;
+    return d.done === true ? [rxTaskToday()[0].id] : [];   // 예전 저장 방식(하루 한 개)
+  };
+  rxTaskDone = function(){ const ids = doneIds(); return rxTaskToday().every(t => ids.includes(t.id)); };
+  const _ev = rxEvt;
+  rxEvt = function(name){
+    const list = rxTaskToday(), tk = list.find(t => t.id === name), ids = doneIds();
+    if(tk && !ids.includes(tk.id)){
+      ids.push(tk.id); rxLS.set('pt_task', { day: todayKey(), ids, done: list.every(t => ids.includes(t.id)) });
+      const n = list.filter(t => ids.includes(t.id)).length;
+      setTimeout(() => rxToast(`${rt('taskGot')} ${n}/${list.length}`, tk[L()], n === list.length ? rt('taskFlavor') : ''), 300);
+      try{ if(document.querySelector('.rtask')) renderToday(); }catch(e){}
+    }
+    return _ev.apply(this, arguments);
+  };
+  const FL = { ko: '오늘 할당량: 궁금해하기 세 번.', en: 'Today’s quota: be curious three times.' };
+  try{ RXT.ko.taskFlavor = FL.ko; RXT.en.taskFlavor = FL.en; }catch(e){}
+  if(typeof renderToday === 'function'){
+    const _rt = renderToday;
+    renderToday = function(){
+      _rt.apply(this, arguments);
+      const old = document.querySelector('.todaywrap .rtask'); if(!old) return;
+      const list = rxTaskToday(), ids = doneIds(), n = list.filter(t => ids.includes(t.id)).length, all = n === list.length;
+      old.outerHTML = `<div class="rtask${all ? ' done' : ''}">
+        <div class="rtask-h">${rt('task')}${all ? ` <span>✓ ${rt('taskDone')}</span>` : ''}<b>${n} / ${list.length}</b></div>
+        <ol>${list.map(t => `<li class="${ids.includes(t.id) ? 'ok' : ''}"><i>✓</i><span>${t[L()]}</span></li>`).join('')}</ol>
+        <div class="rtask-f">${L() === 'en' ? FL.en : FL.ko}</div></div>`;
+    };
+  }
+  // 이온 탭 과제
+  const _ri = renderIon;
+  renderIon = function(){
+    const r = _ri.apply(this, arguments);
+    try{ if(document.querySelector('.ix-stage.ok')) rxEvt('ionBond'); }catch(e){}
+    return r;
+  };
+  document.addEventListener('click', e => { if(e.target.closest && e.target.closest('#mxPow')) setTimeout(() => { try{ if(window.MX && MX.on) rxEvt('ionMove'); }catch(_){} }, 0); }, true);
 })();
 </script>
 
