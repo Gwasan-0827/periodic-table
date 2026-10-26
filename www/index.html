@@ -24459,7 +24459,7 @@ function rxStickModel(ball){
           l1.setAttribute('stroke', `url(#${ag.id})`); l2.setAttribute('stroke', `url(#${gid})`);
           l0.setAttribute('stroke-opacity', '.85');
           g.append(l0, l1, l2); G.appendChild(g);
-          segs.push({ i, j, g, l0, l1, l2, lg: sh, ag, z: 0, ord: ord || 1, lane: lane || 0, joint: false });
+          segs.push({ i, j, g, l0, l1, l2, lg: sh, ag, z: 0, ord: ord || 1, lane: lane || 0, joint: false, ring: ringMap.get(i + '_' + j) || null });
           return;
         }
         g.append(l0, l1); G.appendChild(g);
@@ -24467,6 +24467,26 @@ function rxStickModel(ball){
       };
       // 겹결합: 막대를 2개(이중) · 3개(삼중)로 나란히. 방향족(1.5)은 굵은 막대 + 가는 막대
       const multi = model.atoms.map(() => false);
+      // 고리 안의 겹결합: 고리 중심이 어느 쪽인지 알아야 가는 막대를 안쪽에 둔다
+      const adj = model.atoms.map(() => []);
+      model.sbonds.forEach(([i, j]) => { adj[i].push(j); adj[j].push(i); });
+      const ringOf = (i, j) => {
+        const prev = new Map([[i, -1]]); let q = [i];
+        for(let d = 0; d < 7 && q.length; d++){
+          const nq = [];
+          for(const u of q) for(const v of adj[u]){
+            if(u === i && v === j) continue;
+            if(prev.has(v)) continue;
+            prev.set(v, u);
+            if(v === j){ const r = [j]; let k = u; while(k !== -1){ r.push(k); k = prev.get(k); } return r; }
+            nq.push(v);
+          }
+          q = nq;
+        }
+        return null;
+      };
+      const ringMap = new Map();
+      model.sbonds.forEach(([i, j, o]) => { if((o || 1) > 1 && (o || 1) < 3){ const r = ringOf(i, j); if(r && r.length <= 8) ringMap.set(i + '_' + j, r).set(j + '_' + i, r); } });
       model.sbonds.forEach(([i, j, o]) => {
         const lanes = o >= 3 ? [-1, 0, 1] : o >= 1.5 ? [-0.5, 0.5] : [0];
         if(lanes.length > 1){ multi[i] = multi[j] = true; }
@@ -24525,7 +24545,17 @@ function rxStickModel(ball){
         const gap = w * (s.ord >= 3 ? 0.46 : 0.68);
         ox = px * gap * s.lane; oy = py * gap * s.lane;
         ww = w * thin;
-        if(s.ord === 1.5 && s.lane > 0) ww = w * 0.36;   // 방향족: 한쪽은 가늘게
+        // 고리면 고리 중심 쪽(side)을 구해서, 방향족은 가는 막대를 안쪽에 / 굵은 막대를 바깥에
+        let inner = s.lane > 0;
+        if(s.ring){
+          let rx = 0, ry = 0; s.ring.forEach(k => { rx += P[k].X; ry += P[k].Y; }); rx /= s.ring.length; ry /= s.ring.length;
+          const side = (rx - (lo.X + hi.X) / 2) * px + (ry - (lo.Y + hi.Y) / 2) * py;
+          inner = s.lane * side > 0;
+        }
+        if(s.ord === 1.5){
+          if(inner) ww = w * 0.36;   // 방향족: 안쪽은 가늘게
+          else ww = w * 0.66;        //        바깥은 굵게
+        }
       }
       set(s.l0, ox, oy, ww + 1.2); set(s.l1, ox, oy, ww); if(s.l2) set(s.l2, ox, oy, ww);
       if(s.ag){
