@@ -6193,7 +6193,8 @@ const CHANGELOG = [
            '이온 이동 실험도 새로 만들었어요. 거름종이 아무 데나 눌러서 용액을 한 방울씩(최대 세 방울) 떨어뜨리고, 전압을 3~12 V로 바꿔 가며 이온이 얼마나 빨리 가는지 볼 수 있어요. 전원을 켜면 전선에 전자가 흐르고, 눈금자로 몇 mm 갔는지 바로 나와요. "이온으로" 보기로 바꾸면 색이 없어서 안 보이던 K⁺·SO₄²⁻까지 알갱이로 보여요. 집게를 눌러도 극이 바뀌어요',
            '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 클로린한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 의인화 캐릭터 나트륨과 클로린이 직접 나와서 표정 연기까지 하고, 전자를 뺏는 순간 클로린은 클로라이드로 이름이 바뀌어요. 마그네슘 → 산소 짝에는 마그네슘과 옥시젠도 나와요. 옥시젠은 전자 두 개를 뺏고 옥사이드가 되고, 마그네슘은 진짜처럼 눈부신 흰빛을 내며 타요. 보어 모형과 전자 구름 중에 골라 볼 수 있고, 진짜 전자가 어떻게 퍼져 있는지 오비탈 단면으로 바로 넘어갈 수도 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
            '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요',
-           '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요'],
+           '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
+           '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6215,7 +6216,8 @@ const CHANGELOG = [
            'The ion migration experiment is redesigned too: tap anywhere on the filter paper to add up to three drops, set the voltage from 3 to 12 V, watch electrons flow through the wire and read how many mm each ion has moved. Switch to the ion view to see the colourless K⁺ and SO₄²⁻ as well. Tapping a clamp also swaps the poles',
            'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, starring Sodium and Chlorine as characters. The moment she takes it, Chlorine becomes Chloride. Magnesium and Oxygen join in too: Oxygen takes two electrons and becomes Oxide, and Magnesium burns with a dazzling white flash, just like the real thing. Switch between a Bohr model and an electron cloud, or jump straight to orbital slices to see how real electrons spread out. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
            'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later',
-           'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience'],
+           'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
+           'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin'],
     },
   },
   {
@@ -32962,6 +32964,107 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     return r;
   };
   document.addEventListener('click', e => { if(e.target.closest && e.target.closest('#mxPow')) setTimeout(() => { try{ if(window.MX && MX.on) rxEvt('ionMove'); }catch(_){} }, 0); }, true);
+})();
+</script>
+
+<script>
+/* ═══ 막대 모형 점선 결합: 방향족(1.5) 안쪽 · 배위 결합(금속–N/O/P/S) · 분자 안 수소 결합 ═══ */
+(function(){
+  if(typeof rxMount !== 'function' || typeof rxDraw !== 'function') return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const Z = { Mg: 12 };
+  'Sc Ti V Cr Mn Fe Co Ni Cu Zn Y Zr Nb Mo Tc Ru Rh Pd Ag Cd La Hf Ta W Re Os Ir Pt Au Hg'.split(' ').forEach(s => Z[s] = 1);
+  const DONOR = new Set(['N', 'O', 'P', 'S']);
+  const isCoord = (m, i, j) => { const a = m.atoms[i].s, b = m.atoms[j].s; return (Z[a] && DONOR.has(b)) || (Z[b] && DONOR.has(a)); };
+  // 분자 안 수소 결합 찾기: O–H / N–H 의 H 가 다른 O·N 과 1.5~2.5Å 쯤, 각도 120° 이상, 결합 4개 이상 떨어진 곳
+  function findHB(m){
+    const n = m.atoms.length, adj = m.atoms.map(() => []);
+    m.sbonds.forEach(([i, j]) => { adj[i].push(j); adj[j].push(i); });
+    const out = [];
+    const d3 = (p, q) => Math.hypot(p.x - q.x, p.y - q.y, p.z - q.z);
+    for(let h = 0; h < n && out.length < 24; h++){
+      if(m.atoms[h].s !== 'H' || adj[h].length !== 1) continue;
+      const D = adj[h][0], ds = m.atoms[D].s;
+      if(ds !== 'O' && ds !== 'N') continue;
+      const dh = d3(m.atoms[D], m.atoms[h]); if(!dh) continue;
+      // 결합 거리(BFS, 5칸까지)
+      const dist = new Map([[h, 0]]); let q = [h];
+      for(let k = 1; k <= 4 && q.length; k++){ const nq = []; q.forEach(u => adj[u].forEach(v => { if(!dist.has(v)){ dist.set(v, k); nq.push(v); } })); q = nq; }
+      let best = -1, bd = 1e9;
+      for(let a = 0; a < n; a++){
+        const as = m.atoms[a].s;
+        if((as !== 'O' && as !== 'N') || a === D) continue;
+        if(dist.has(a) && dist.get(a) < 4) continue;
+        const r = d3(m.atoms[h], m.atoms[a]) / dh;
+        if(r < 1.5 || r > 2.6) continue;
+        const v1 = [m.atoms[D].x - m.atoms[h].x, m.atoms[D].y - m.atoms[h].y, m.atoms[D].z - m.atoms[h].z];
+        const v2 = [m.atoms[a].x - m.atoms[h].x, m.atoms[a].y - m.atoms[h].y, m.atoms[a].z - m.atoms[h].z];
+        const cos = (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (Math.hypot(...v1) * Math.hypot(...v2) || 1);
+        if(cos > -0.5) continue;   // 120° 이상 펴져 있어야
+        if(r < bd){ bd = r; best = a; }
+      }
+      if(best >= 0) out.push([h, best]);
+    }
+    return out;
+  }
+  const _mt = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _mt.apply(this, arguments);
+    try{
+      if(model && model.stick && model.stickG && !model.hbG){
+        model.coordSeg = model.segs.map(s => s.i !== s.j && !s.joint && (s.ord || 1) === 1 && isCoord(model, s.i, s.j));
+        model.hb = findHB(model);
+        if(model.hb.length){
+          const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'hb-g'); g.style.pointerEvents = 'none';
+          model.hbL = model.hb.map(() => { const l = document.createElementNS(NS, 'line'); l.setAttribute('stroke', '#8fd3ff'); l.setAttribute('stroke-linecap', 'round'); l.setAttribute('opacity', '.9'); g.appendChild(l); return l; });
+          model.stickG.parentNode.insertBefore(g, model.stickG.nextSibling);
+          model.hbG = g;
+        }
+      }
+    }catch(e){}
+    return r;
+  };
+  const dash = (s, ww) => {
+    const on = ww > 0;
+    [s.l0, s.l1, s.l2].forEach(l => { if(!l) return;
+      if(on){ l.setAttribute('stroke-dasharray', `${(ww * 0.9).toFixed(2)} ${(ww * 1.9).toFixed(2)}`); l.setAttribute('stroke-linecap', 'round'); }
+      else if(l.hasAttribute('stroke-dasharray')) l.removeAttribute('stroke-dasharray'); });
+  };
+  const _dr = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _dr.apply(this, arguments);
+    const m = mm || RX_M;
+    if(!m || !m.stick || !m.segs) return r;
+    try{
+      // 방향족: 같은 결합의 두 막대 중 가는 쪽(안쪽)을 점선으로
+      const pair = new Map();
+      m.segs.forEach((s, k) => {
+        if(s.ord === 1.5 && s.i !== s.j){ const key = s.i + '_' + s.j; (pair.get(key) || pair.set(key, []).get(key)).push(s); }
+        else if(m.coordSeg && m.coordSeg[k]) dash(s, +s.l1.getAttribute('stroke-width') * 0.8);
+      });
+      pair.forEach(ss => {
+        const w = ss.map(s => +s.l1.getAttribute('stroke-width'));
+        const lo = Math.min(...w);
+        ss.forEach((s, i) => dash(s, w[i] === lo && w[i] < Math.max(...w) ? w[i] : 0));
+      });
+      // 수소 결합: 화면에 다시 투영해서 얇은 점선
+      if(m.hbL){
+        const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
+        const pr = a => { const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY; const y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+          return [m.cx + x1 * m.sc * f, m.cy + y1 * m.sc * f, f]; };
+        m.hb.forEach(([h, a], k) => {
+          const p = pr(m.atoms[h]), q = pr(m.atoms[a]), l = m.hbL[k];
+          const w = Math.max(1, RX_STICK_R * 0.55 * m.sc * (p[2] + q[2]) / 2);
+          // 원자 공에 묻히지 않게 양 끝을 조금 줄인다
+          const sx = (q[0] - p[0]) * 0.12, sy = (q[1] - p[1]) * 0.12;
+          l.setAttribute('x1', (p[0] + sx).toFixed(1)); l.setAttribute('y1', (p[1] + sy).toFixed(1));
+          l.setAttribute('x2', (q[0] - sx).toFixed(1)); l.setAttribute('y2', (q[1] - sy).toFixed(1));
+          l.setAttribute('stroke-width', w.toFixed(2)); l.setAttribute('stroke-dasharray', `${(w * 0.6).toFixed(2)} ${(w * 2.2).toFixed(2)}`);
+        });
+      }
+    }catch(e){}
+    return r;
+  };
 })();
 </script>
 
