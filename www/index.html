@@ -6197,7 +6197,7 @@ const CHANGELOG = [
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
-           '시작 화면을 새로 만들었어요. 벤젠 육각형·원자 궤도·원자핵이 박자에 맞춰 쿵쿵 조립되고, 원소 기호들이 해독되듯 바뀌다가 페리오딕//테이블 로고로 맞춰지고, "//"가 빛나면서 화면이 그 사선을 따라 베여 갈라져요. 가끔 칼날이 튕겨 나가면… 나이트로글리세린은 여전히 있어요',
+           '시작 화면을 새로 만들었어요. 페리윙클빛 모션 그래픽이에요. 카메라가 확 빠지면서 날카로운 조각들이 박자에 맞춰 날아와 박히고, 아래로는 웨이브가 흘러요. 원소 기호들이 해독되듯 페리오딕//테이블 로고로 맞춰지면, "//"를 따라 화면이 베여 갈라져요. 가끔 칼날이 튕겨 나가면… 나이트로글리세린은 여전히 있어요',
            '설정에 화면 모드가 생겼어요. 라이트 모드는 지원하지 않아요(사유: 유저들 눈 보호). 그래도 누르면… 마그네슘이 튀어나와서 타 버려요',
            '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
@@ -6229,7 +6229,7 @@ const CHANGELOG = [
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
-           'New start screen: a benzene hexagon, electron orbits and a nucleus snap together on the beat, then element symbols scramble and lock into the 페리오딕//테이블 logo, the "//" lights up, and the screen is sliced in two along it. Sometimes the blade bounces off… the nitroglycerin is still there',
+           'New start screen: periwinkle motion graphics. The camera whips back as sharp shards fly in on the beat over flowing waves, element symbols lock into the 페리오딕//테이블 logo, and the screen is sliced in two along the "//". Sometimes the blade bounces off… the nitroglycerin is still there',
            'Settings now has a theme option. Light mode is not supported (reason: protecting your eyes). Press it anyway if you dare',
            'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
@@ -33824,117 +33824,77 @@ function rxFlashbang(soft){
 
 
 <style>
-  /* ═══ 시작 화면: 페리오딕//테이블. 원소 기호가 해독되듯 로고가 맞춰지고, "//" 사선으로 화면이 베여 갈라진다 ═══ */
-  #rxIntro.cut{background:transparent;overflow:hidden}
-  .ct-half{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#1a1a1a 0%,#0a0a0a 60%,#030303 100%);
-    transition:transform .75s cubic-bezier(.7,0,.2,1),filter .75s}
-  .ct-half.a{clip-path:polygon(0 0,57% 0,43% 100%,0 100%)}
-  .ct-half.b{clip-path:polygon(57% 0,100% 0,100% 100%,43% 100%)}
-  .ct-grid{position:absolute;inset:-20%;background-image:linear-gradient(rgba(120,160,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(120,160,255,.06) 1px,transparent 1px);background-size:44px 44px;
-    transform:perspective(600px) rotateX(58deg) translateY(30%);transform-origin:50% 100%;animation:ctGrid 6s linear infinite;mask-image:linear-gradient(transparent,#000 60%)}
-  @keyframes ctGrid{to{background-position:0 44px,0 0}}
-  .ct-logo{position:absolute;left:0;right:0;top:40%;transform:translateY(-50%);text-align:center;white-space:nowrap;
-    font:400 clamp(34px,7.6vw,104px)/1 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;color:#eef2f7;letter-spacing:.02em}
-  .ct-logo span{display:inline-block;min-width:.6em;transition:color .2s,text-shadow .2s}
-  .ct-logo span.scr{color:#5ee6ff;text-shadow:0 0 14px rgba(94,230,255,.7);font-size:.62em;vertical-align:.25em}
-  .ct-logo span.set{animation:ctSet .35s ease-out}
-  @keyframes ctSet{0%{color:#fff;text-shadow:0 0 22px #fff}100%{text-shadow:0 0 0 transparent}}
-  .ct-logo span.sl{min-width:0;margin:0 -.04em}
-  .ct-logo .sl{color:#ff5c8a;text-shadow:0 0 18px rgba(255,92,138,.75)}
-  #rxIntro.cut.charge .ct-logo .sl{animation:ctCharge .45s ease-in forwards}
-  @keyframes ctCharge{to{color:#fff;text-shadow:0 0 10px #fff,0 0 40px #ff5c8a,0 0 90px #ff5c8a}}
-  .ct-sub{position:absolute;left:0;right:0;top:calc(40% + clamp(34px,7.6vw,104px) * .75);text-align:center;font:600 clamp(11px,1.4vw,14px)/1.4 system-ui,sans-serif;letter-spacing:.32em;color:#7d8aa3;opacity:0;transition:opacity .6s}
-  #rxIntro.cut.ready .ct-sub{opacity:1}
-
-  /* ── 모션 그래픽: 필름 노이즈 · 집중선 · 궤도 링 · 기울어진 프레임 ── */
-  .ct-grain{position:absolute;inset:-50px;background:var(--ctn) 0 0/160px 160px;opacity:.13;animation:ctGrain .4s steps(4) infinite;pointer-events:none;z-index:5;mix-blend-mode:screen}
-  @keyframes ctGrain{25%{background-position:-37px 52px}50%{background-position:61px -18px}75%{background-position:-12px -71px}100%{background-position:44px 29px}}
-  .ct-rays{position:absolute;left:50%;top:40%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;border-radius:50%;
-    background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.07) 0 .25deg,transparent .25deg 4.3deg,rgba(255,255,255,.035) 4.3deg 4.45deg,transparent 4.45deg 7deg);
-    -webkit-mask:radial-gradient(circle,transparent 9%,#000 30%);mask:radial-gradient(circle,transparent 9%,#000 30%);animation:ctSpin 40s linear infinite,ctIn .6s ease-out both}
-  @keyframes ctSpin{to{transform:rotate(360deg)}}
-  @keyframes ctIn{from{opacity:0}}
-  .ct-pt{position:absolute;left:50%;top:40%;width:min(94vw,1300px);aspect-ratio:18/7;transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(18,1fr);grid-template-rows:repeat(7,1fr);gap:.5%;opacity:.5;
-    -webkit-mask:radial-gradient(ellipse 60% 70% at 50% 50%,transparent 25%,#000 70%);mask:radial-gradient(ellipse 60% 70% at 50% 50%,transparent 25%,#000 70%)}
-  .ct-pt i{border:1px solid rgba(255,255,255,.2);border-radius:3px;opacity:0;animation:ctCell 1.6s ease-out forwards}
-  @keyframes ctCell{0%{opacity:0}8%{opacity:1;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.7)}40%{background:transparent}100%{opacity:1}}
-  .ct-geo{position:absolute;left:50%;top:40%;width:min(88vmin,640px);height:min(88vmin,640px);transform:translate(-50%,-50%);
-    transition:transform .45s cubic-bezier(.6,-.4,.3,1.4),opacity .4s;pointer-events:none}
-  .ct-geo svg{width:100%;height:100%;overflow:visible}
-  .ct-geo *{transform-box:view-box;transform-origin:0 0}
-  .ct-geo .w{fill:none;stroke:#f2f2f2;stroke-linecap:round}
-  .ct-geo .dr{stroke-dasharray:1 1;stroke-dashoffset:1;animation:ctDraw .55s cubic-bezier(.7,0,.2,1) forwards}
-  .ct-geo .sp{animation:ctSpin var(--d,12s) linear infinite}
-  .ct-geo .rv{animation-direction:reverse}
-  .ct-geo .tilt{animation:ctTilt var(--d,9s) linear infinite}
-  @keyframes ctTilt{from{transform:rotate(0) scale(1,.42)}to{transform:rotate(360deg) scale(1,.42)}}
-  .ct-geo .pop{opacity:0;animation:ctPop .5s cubic-bezier(.3,1.8,.5,1) forwards}
-  @keyframes ctPop{0%{opacity:0;transform:scale(.2) rotate(-40deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-  .ct-geo .fade{opacity:0;animation:ctFadeIn .4s ease-out forwards}
-  @keyframes ctFadeIn{to{opacity:1}}
-  .ct-geo .star{filter:drop-shadow(0 0 10px #fff) drop-shadow(0 0 30px rgba(255,255,255,.6))}
-  .ct-geo .beat{animation:ctBeat .5s cubic-bezier(.2,.9,.3,1) infinite}
-  @keyframes ctBeat{0%{transform:scale(1.08)}60%,100%{transform:scale(1)}}
-  #rxIntro.cut.lg .ct-geo{opacity:.55}
-  #rxIntro.cut.charge .ct-geo{transform:translate(-50%,-50%) scale(.72) rotate(-12deg);opacity:.85}
-  #rxIntro.cut.slice .ct-geo{transform:translate(-50%,-50%) scale(1.9) rotate(8deg);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .5s}
-  #rxIntro.cut.stuck .ct-geo{transform:translate(-50%,-50%) scale(1);opacity:.3}
-  .ct-logo{opacity:0;transition:opacity .25s}
-  #rxIntro.cut.lg .ct-logo{opacity:1}
-  .ct-hud{position:absolute;font:600 11px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.18em;color:rgba(255,255,255,.45);text-transform:uppercase;opacity:0;animation:ctFadeIn .5s .2s forwards}
-  .ct-hud.tl{left:22px;top:18px}.ct-hud.tr{right:22px;top:18px;text-align:right}
-  .ct-hud b{color:#fff;font-weight:700}
-  /* 베는 빛 */
-  .ct-slash{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-  .ct-slash{opacity:0}
-  #rxIntro.cut.slice .ct-slash{opacity:1}
-  .ct-slash line{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 18px #ff5c8a);stroke-dasharray:1 1;stroke-dashoffset:1}
-  #rxIntro.cut.slice .ct-slash line{animation:ctDraw .22s cubic-bezier(.6,0,.2,1) forwards}
-  @keyframes ctDraw{to{stroke-dashoffset:0}}
-  #rxIntro.cut.open .ct-slash{opacity:0;transition:opacity .4s .2s}
-  .ct-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4}
-  #rxIntro.cut.open .ct-flash{animation:ctFlash .5s ease-out}
-  @keyframes ctFlash{0%{opacity:.75}100%{opacity:0}}
-  #rxIntro.cut.open .ct-half.a{transform:translate(-14vw,7vh) rotate(-1.5deg);filter:brightness(.6)}
-  #rxIntro.cut.open .ct-half.b{transform:translate(14vw,-7vh) rotate(1.5deg);filter:brightness(.6)}
-  #rxIntro.cut.open.far .ct-half.a{transform:translate(-75vw,38vh) rotate(-4deg)}
-  #rxIntro.cut.open.far .ct-half.b{transform:translate(75vw,-38vh) rotate(4deg)}
-  #rxIntro.cut.open.far .ct-half{transition-duration:.6s}
-  #rxIntro.cut .in-foot{z-index:2}
-  #rxIntro.cut.open .in-foot{opacity:0;transition:opacity .2s}
-  /* 안 베일 때 */
-  #rxIntro.cut.stuck .ct-half{animation:ctJam .09s linear 5}
-  @keyframes ctJam{50%{transform:translate(3px,-2px)}}
-  #rxIntro.cut.stuck .ct-slash line{stroke:#ff922b;filter:drop-shadow(0 0 6px #ff922b)}
-  #rxIntro.cut .ct-zone.aim ~ .ct-half{filter:brightness(1.3)}
-  .ct-zone{position:absolute;left:20%;right:20%;top:20%;bottom:30%;z-index:1}
-  #rxIntro.cut.boom{animation:inShake .5s ease-out}
-  #rxIntro.cut.boom .ct-flash{background:#ffe8a3}
-  @media (prefers-reduced-motion:reduce){ .ct-grid,.ct-rays,.ct-pt i,.ct-grain,.ct-geo .sp,.ct-geo .tilt,.ct-geo .beat{animation:none!important} .ct-geo .tilt{transform:scale(1,.42)} .ct-half{transition:opacity .4s} #rxIntro.cut.open .ct-half{transform:none!important;opacity:0} }
+  /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
+  #rxIntro.pw{background:#0a0b1a;overflow:hidden}
+  #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .pw-half{position:absolute;inset:0;transition:transform .75s cubic-bezier(.7,0,.2,1),filter .75s;will-change:transform}
+  .pw-half canvas{position:absolute;inset:0;width:100%;height:100%}
+  #rxIntro.pw.split{background:transparent}
+  #rxIntro.pw.split .pw-main{display:none}
+  #rxIntro.pw.open .pw-half.a{transform:translate(-14vw,7vh) rotate(-1.5deg);filter:brightness(.7)}
+  #rxIntro.pw.open .pw-half.b{transform:translate(14vw,-7vh) rotate(1.5deg);filter:brightness(.7)}
+  #rxIntro.pw.open.far .pw-half.a{transform:translate(-80vw,40vh) rotate(-5deg)}
+  #rxIntro.pw.open.far .pw-half.b{transform:translate(80vw,-40vh) rotate(5deg)}
+  #rxIntro.pw.open.far .pw-half{transition-duration:.6s}
+  .pw-slash{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;opacity:0}
+  #rxIntro.pw.slice .pw-slash{opacity:1}
+  .pw-slash line{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 20px #8c9eff);stroke-dasharray:1 1;stroke-dashoffset:1}
+  #rxIntro.pw.slice .pw-slash line{animation:pwDraw .2s cubic-bezier(.6,0,.2,1) forwards}
+  @keyframes pwDraw{to{stroke-dashoffset:0}}
+  #rxIntro.pw.open .pw-slash{opacity:0;transition:opacity .4s .2s}
+  .pw-flash{position:absolute;inset:0;background:#e6e9ff;opacity:0;pointer-events:none;z-index:4}
+  #rxIntro.pw.open .pw-flash{animation:pwFlash .5s ease-out}
+  @keyframes pwFlash{0%{opacity:.7}100%{opacity:0}}
+  #rxIntro.pw .in-foot{z-index:2}
+  #rxIntro.pw .in-bar i{background:linear-gradient(90deg,#8c9eff,#c5cbff)}
+  #rxIntro.pw.open .in-foot{opacity:0;transition:opacity .2s}
+  #rxIntro.pw.open .pw-hud{animation:none;opacity:0;transition:opacity .2s}
+  #rxIntro.pw.stuck .pw-slash line{stroke:#ffb36b;filter:drop-shadow(0 0 6px #ff922b)}
+  .pw-zone{position:absolute;left:18%;right:18%;top:22%;bottom:32%;z-index:1}
+  #rxIntro.pw.boom{animation:inShake .5s ease-out}
+  #rxIntro.pw.boom .pw-flash{background:#fff1c9}
+  .pw-hud{position:absolute;z-index:2;font:600 11px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.18em;color:rgba(197,203,255,.55);text-transform:uppercase;pointer-events:none;opacity:0;animation:pwHud .5s .3s forwards}
+  .pw-hud.tl{left:22px;top:18px}.pw-hud.tr{right:22px;top:18px;text-align:right}
+  .pw-hud b{color:#e6e9ff}
+  @keyframes pwHud{to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){ .pw-half{transition:opacity .4s} #rxIntro.pw.open .pw-half{transform:none!important;opacity:0} }
 </style>
 <script>
 (function(){
   if(typeof rxIntro !== 'function') return;
-  const T = { ko: { load: '원소 해독 중', open: '//', fail: '칼날이 튕겨 나감', hint: '나이트로글리세린을 로고에 살살 끌어다 놓으세요', boom: '물리적 해결 완료' },
-              en: { load: 'Decoding elements', open: '//', fail: 'The blade bounced off', hint: 'Gently drag the nitroglycerin onto the logo', boom: 'Solved it physically' } };
+  const T = { ko: { load: '원소 정렬 중', fail: '칼날이 튕겨 나감', hint: '나이트로글리세린을 로고에 살살 끌어다 놓으세요', boom: '물리적 해결 완료' },
+              en: { load: 'Aligning elements', fail: 'The blade bounced off', hint: 'Gently drag the nitroglycerin onto the logo', boom: 'Solved it physically' } };
   const tt = k => T[LANG === 'en' ? 'en' : 'ko'][k];
   const SYMS = EL.map(e => e.s);
-  // 소리: 쉬익(바람) → 챙(베기) → 둥(저음)
+  const PW = '#8c9eff', PW_L = '#c5cbff', PW_D = '#5c6bc0';
+  const pw = a => `rgba(140,158,255,${a})`, pwl = a => `rgba(197,203,255,${a})`;
+  // ── 가감속 ──
+  const cl = x => x < 0 ? 0 : x > 1 ? 1 : x;
+  const seg = (t, a, b) => cl((t - a) / (b - a));
+  const oExpo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+  const iCub = x => x * x * x;
+  const ioCub = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const oBack = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+  const lerp = (a, b, x) => a + (b - a) * x;
+  const BEAT = 300, BUILD = BEAT * 4, LOGO_AT = 1050, LOGO_DUR = 1150, READY = LOGO_AT + LOGO_DUR + 200;
+  // ── 소리 ──
   function snd(kind){
     if(typeof sndOn !== 'undefined' && !sndOn) return;
     const a = ac(); if(!a) return; const t = a.currentTime;
     const nb = (sec, f) => { const n = Math.floor(a.sampleRate * sec), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0); for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * f(i / n); const s = a.createBufferSource(); s.buffer = b; return s; };
+    const out = (node, v) => { const g = a.createGain(); g.gain.value = v; node.connect(g); g.connect(a.destination); return g; };
+    if(kind === 'whoosh'){ const s = nb(.9, x => Math.sin(Math.PI * Math.min(1, x * 1.6)) * (1 - x)), f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.4; f.frequency.setValueAtTime(3500, t); f.frequency.exponentialRampToValueAtTime(260, t + .85); s.connect(f); out(f, .45); s.start(t); return; }
     if(kind === 'kick' || kind === 'kick2'){
-      const o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(kind === 'kick2' ? 140 : 120, t); o.frequency.exponentialRampToValueAtTime(42, t + .18);
-      g.gain.setValueAtTime(kind === 'kick2' ? .55 : .4, t); g.gain.exponentialRampToValueAtTime(.0001, t + .32); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .34);
-      const s = nb(.05, x => 1 - x), f = a.createBiquadFilter(), gg = a.createGain(); f.type = 'highpass'; f.frequency.value = 3000; gg.gain.value = .12; s.connect(f); f.connect(gg); gg.connect(a.destination); s.start(t);
-      if(kind === 'kick2'){ const r = a.createOscillator(), rg = a.createGain(); r.type = 'triangle'; r.frequency.value = 1760; rg.gain.setValueAtTime(.05, t); rg.gain.exponentialRampToValueAtTime(.0001, t + .6); r.connect(rg); rg.connect(a.destination); r.start(t); r.stop(t + .65); }
+      const o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(kind === 'kick2' ? 150 : 125, t); o.frequency.exponentialRampToValueAtTime(40, t + .2);
+      g.gain.setValueAtTime(kind === 'kick2' ? .55 : .42, t); g.gain.exponentialRampToValueAtTime(.0001, t + .34); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .36);
+      const s = nb(.04, x => 1 - x), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3500; s.connect(f); out(f, .14); s.start(t);
+      if(kind === 'kick2') [1318, 1975].forEach((fr, i) => { const r = a.createOscillator(), rg = a.createGain(); r.type = 'triangle'; r.frequency.value = fr; rg.gain.setValueAtTime(.05 / (i + 1), t); rg.gain.exponentialRampToValueAtTime(.0001, t + .7); r.connect(rg); rg.connect(a.destination); r.start(t); r.stop(t + .75); });
       return;
     }
-    if(kind === 'tick'){ const o = a.createOscillator(), g = a.createGain(); o.type = 'square'; o.frequency.value = 1800 + Math.random() * 900; g.gain.setValueAtTime(.012, t); g.gain.exponentialRampToValueAtTime(.0001, t + .03); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .04); return; }
-    if(kind === 'charge'){ const s = nb(.45, x => x * x), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(5000, t + .45); g.gain.value = .35; s.connect(f); f.connect(g); g.connect(a.destination); s.start(t); return; }
+    if(kind === 'tick'){ const o = a.createOscillator(), g = a.createGain(); o.type = 'square'; o.frequency.value = 1800 + Math.random() * 900; g.gain.setValueAtTime(.01, t); g.gain.exponentialRampToValueAtTime(.0001, t + .03); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .04); return; }
+    if(kind === 'charge'){ const s = nb(.45, x => x * x), f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(5200, t + .45); s.connect(f); out(f, .35); s.start(t); return; }
     if(kind === 'slice'){
-      const s = nb(.12, x => Math.pow(1 - x, 2)), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'highpass'; f.frequency.value = 2500; g.gain.value = .5; s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+      const s = nb(.12, x => Math.pow(1 - x, 2)), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2500; s.connect(f); out(f, .5); s.start(t);
       [2200, 3310, 4870].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.frequency.value = fr; gg.gain.setValueAtTime(.06 / (i + 1), t); gg.gain.exponentialRampToValueAtTime(.0001, t + .9); o.connect(gg); gg.connect(a.destination); o.start(t); o.stop(t + 1); });
       const o = a.createOscillator(), gg = a.createGain(); o.frequency.setValueAtTime(90, t + .05); o.frequency.exponentialRampToValueAtTime(38, t + .6); gg.gain.setValueAtTime(.4, t + .05); gg.gain.exponentialRampToValueAtTime(.0001, t + .7); o.connect(gg); gg.connect(a.destination); o.start(t + .05); o.stop(t + .75);
       return;
@@ -33942,52 +33902,18 @@ function rxFlashbang(soft){
     if(kind === 'clang'){ [900, 1350, 2100].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.type = 'triangle'; o.frequency.value = fr; gg.gain.setValueAtTime(.08 / (i + 1), t); gg.gain.exponentialRampToValueAtTime(.0001, t + .5); o.connect(gg); gg.connect(a.destination); o.start(t); o.stop(t + .55); }); }
   }
 
-  // 기하학 도형: 박자(0.275초)마다 하나씩 조립된다
-  const BEAT = 275;
-  const d = n => `animation-delay:${n * BEAT}ms`;
-  // 우리 거 도형: 육각형(벤젠 고리) · 원자 궤도 셋 · 원자핵 · 원소 기호 고리
-  const hex = (r, rot = 0) => Array.from({length: 6}, (_, i) => { const a = (i * 60 + rot) * Math.PI / 180; return (Math.cos(a) * r).toFixed(1) + ' ' + (Math.sin(a) * r).toFixed(1); }).join(' L');
-  const orbit = (deg, dur, delay) => `<g transform="rotate(${deg})"><g class="fade" style="${d(delay)}">
-      <ellipse class="w" rx="248" ry="86" stroke-width="1.8"/>
-      ${RX_REDUCED ? '' : `<circle r="7" fill="#5ee6ff" style="filter:drop-shadow(0 0 8px #5ee6ff)"><animateMotion dur="${dur}s" repeatCount="indefinite" path="M248 0 A248 86 0 1 1 -248 0 A248 86 0 1 1 248 0"/></circle>`}
-    </g></g>`;
-  const NUC = [[0, 0, 1], [-17, -10, 0], [17, -10, 1], [0, 19, 0], [-17, 12, 1], [17, 12, 0], [0, -22, 1]];
-  const geo = k => `<svg viewBox="-320 -320 640 640" aria-hidden="true">
-    <defs><path id="ctRing${k}" d="M0 -296 A296 296 0 1 1 -0.1 -296"/></defs>
-    <g class="sp" style="--d:60s"><text class="fade" style="${d(0)};font:600 11px ui-monospace,Menlo,monospace;letter-spacing:2px" fill="rgba(255,255,255,.55)"><textPath href="#ctRing${k}">${SYMS.slice(0, 60).join(' · ')}</textPath></text></g>
-    <g class="sp rv" style="--d:24s"><path class="w dr" d="M${hex(176, 30)}Z" stroke-width="5" pathLength="1" style="${d(0)}"/></g>
-    <g class="sp" style="--d:18s"><path class="w dr" d="M${hex(196, 0)}Z" stroke-width="1.2" stroke-dasharray="4 7" pathLength="1" style="${d(0.5)}"/></g>
-    ${orbit(0, 1.6, 1)}${orbit(60, 1.9, 1.33)}${orbit(120, 2.2, 1.66)}
-    <g class="sp" style="--d:14s"><g class="pop" style="${d(2)}">
-      ${Array.from({length: 6}, (_, i) => { const a = (i * 60 + 30) * Math.PI / 180, x = Math.cos(a) * 176, y = Math.sin(a) * 176; return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#0a0a0a" stroke="#f2f2f2" stroke-width="2.5"/>`; }).join('')}
-    </g></g>
-    <g class="pop" style="${d(3)}"><g class="beat">
-      <circle r="44" fill="none" stroke="rgba(255,92,138,.5)" stroke-width="1.5" stroke-dasharray="2 5"/>
-      ${NUC.map(([x, y, pr]) => `<circle cx="${x}" cy="${y}" r="13" fill="${pr ? '#ff5c8a' : '#f2f2f2'}" stroke="#0a0a0a" stroke-width="2"/>`).join('')}
-    </g></g>
-  </svg>`;
-  // 배경: 희미한 주기율표 실루엣, 칸이 하나씩 깜빡이며 켜진다
-  const ptBg = () => `<div class="ct-pt">${EL.filter(e => e.g).map(e => `<i style="grid-column:${e.g};grid-row:${e.p};animation-delay:${(Math.random() * 1100) | 0}ms"></i>`).join('')}</div>`;
-  // 필름 노이즈 한 장
-  if(!document.documentElement.style.getPropertyValue('--ctn')){
-    try{ const c = document.createElement('canvas'); c.width = c.height = 160; const x = c.getContext('2d'), im = x.createImageData(160, 160);
-      for(let i = 0; i < im.data.length; i += 4){ const v = Math.random() * 255 | 0; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
-      x.putImageData(im, 0, 0); document.documentElement.style.setProperty('--ctn', `url(${c.toDataURL()})`); }catch(e){}
-  }
   const TITLE = '페리오딕//테이블'.split('');
-  const logoHTML = () => TITLE.map((c, i) => `<span data-i="${i}" class="${c === '/' ? 'sl' : 'scr'}">${c === '/' ? '/' : SYMS[(Math.random() * 118) | 0]}</span>`).join('');
+  const SLANT = .3; // "/" 기울기 (가로/세로)
 
   rxIntro = function(force, forceFail){
     const prev = document.getElementById('rxIntro'); if(prev) prev.remove();
     if(!force && !rxIntroOn()){ rxTutMaybe(); return; }
     const box = document.createElement('div');
-    box.id = 'rxIntro'; box.className = 'cut';
-    const half = k => `<div class="ct-half ${k}">${ptBg()}<div class="ct-geo">${geo(k)}</div><i class="ct-grain"></i><div class="ct-logo">${logoHTML()}</div><div class="ct-sub">${t('sub')}</div></div>`;
-    box.innerHTML = `${half('a')}${half('b')}<i class="ct-zone" id="inScene"></i>
-      <svg class="ct-slash" aria-hidden="true"><line pathLength="1"/></svg>
-      <i class="ct-flash"></i>
-      <div class="ct-hud tl">PERIODIC <b>//</b> TABLE<br>SEQ 118 · ${LANG === 'en' ? 'ASSEMBLING' : '조립 중'}</div>
-      <div class="ct-hud tr">β V.4.0<br>Z = <b>118</b></div>
+    box.id = 'rxIntro'; box.className = 'pw';
+    box.innerHTML = `<canvas class="pw-main"></canvas><i class="pw-zone" id="inScene"></i>
+      <svg class="pw-slash" aria-hidden="true"><line pathLength="1"/></svg><i class="pw-flash"></i>
+      <div class="pw-hud tl">PERIODIC <b>//</b> TABLE<br>${LANG === 'en' ? 'ALIGNING' : '정렬 중'} · <b id="pwZ">001</b> / 118</div>
+      <div class="pw-hud tr">β V.4.0<br>${new Date().getFullYear()}</div>
       <div class="in-foot"><div class="in-msg" id="inMsg">${tt('load')}</div><div class="in-bar"><i id="inBar"></i></div></div>
       <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린"><svg></svg>
         <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
@@ -33995,72 +33921,206 @@ function rxFlashbang(soft){
       </div>`;
     document.body.appendChild(box);
     document.body.classList.add('rx-intro-on');
-    // 베는 선을 로고의 "//" 한가운데로, 글자 기울기와 같은 각도로
-    const aim = () => {
-      const W = innerWidth, H = innerHeight, sl = box.querySelectorAll('.ct-half.a .sl');
-      let cx = W / 2, cy = H * .4;
-      if(sl.length === 2){ const r1 = sl[0].getBoundingClientRect(), r2 = sl[1].getBoundingClientRect(); cx = (r1.left + r2.right) / 2; cy = (r1.top + r1.bottom) / 2; }
-      const k = .3, xt = cx + cy * k, xb = cx - (H - cy) * k;
-      box.querySelector('.ct-half.a').style.clipPath = `polygon(-50px -50px,${xt}px -50px,${xb}px ${H + 50}px,-50px ${H + 50}px)`;
-      box.querySelector('.ct-half.b').style.clipPath = `polygon(${xt}px -50px,${W + 50}px -50px,${W + 50}px ${H + 50}px,${xb}px ${H + 50}px)`;
-      const ln = box.querySelector('.ct-slash line'); box.querySelector('.ct-slash').setAttribute('viewBox', `0 0 ${W} ${H}`);
-      ln.setAttribute('x1', xt + 20 * k); ln.setAttribute('y1', -20); ln.setAttribute('x2', xb - 20 * k); ln.setAttribute('y2', H + 20);
-    };
-    aim(); addEventListener('resize', aim);
-    const bar = document.getElementById('inBar');
-    const spans = i => box.querySelectorAll(`.ct-logo span[data-i="${i}"]`);
+    const cv = box.querySelector('.pw-main'), x = cv.getContext('2d');
+    const bar = document.getElementById('inBar'), zEl = document.getElementById('pwZ');
+    let W = 0, H = 0, DPR = 1, U = 1;
+    const fit = () => { DPR = Math.min(1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W, H * 1.4) / 1000; };
+    fit(); addEventListener('resize', fit);
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    // 날카로운 조각들: 화면 밖에서 회전하며 날아와 로고 둘레에 박힌다
+    const shards = Array.from({length: 16}, (_, i) => {
+      const th = (i / 16) * Math.PI * 2 + rnd(-.12, .12), rx = rnd(470, 680), ry = rnd(230, 360);
+      const tx = Math.cos(th) * rx, ty = Math.sin(th) * ry, out = rnd(900, 1500);
+      const radial = Math.random() < .55, dir = radial ? th : Math.atan2(1, SLANT) * (Math.random() < .5 ? 1 : -1);
+      return { tx, ty, sx: tx + Math.cos(th) * out, sy: ty + Math.sin(th) * out, rot0: rnd(-2.4, 2.4), dir, L: rnd(50, 190), w: rnd(6, 30),
+        at: 120 + (i % 8) * 90 + rnd(0, 60), fill: Math.random() < .7, a: rnd(.35, .95), ph: rnd(0, 6.28), k: rnd(.15, .5), light: Math.random() < .35 };
+    });
+    const streaks = [];
+    const fontPx = () => Math.max(32, Math.min(W * .074, 100));
     const order = TITLE.map((c, i) => i).filter(i => TITLE[i] !== '/');
-    const GEO_MS = RX_REDUCED ? 0 : BEAT * 4, t0 = performance.now() + GEO_MS, dur = RX_REDUCED ? 500 : 1300;
-    let kicked = 0;
-    let lastTick = 0, locked = 0;
-    const step = now => {
-      if(!document.body.contains(box)) return;
-      const k = Math.floor((now - t0 + GEO_MS) / BEAT);
-      while(kicked <= Math.min(k, 3) && !RX_REDUCED){ snd(kicked === 3 ? 'kick2' : 'kick'); kicked++; }
-      bar.style.width = Math.min(100, (now - t0 + GEO_MS) / (GEO_MS + dur) * 100).toFixed(1) + '%';
-      if(now < t0) return requestAnimationFrame(step);
-      box.classList.add('lg');
-      const p = Math.min(1, (now - t0) / dur);
-      const want = Math.floor(p * 1.15 * order.length);
-      while(locked < Math.min(order.length, want)){ const i = order[locked++]; spans(i).forEach(s => { s.textContent = TITLE[i]; s.className = 'set'; }); }
-      if(now - lastTick > 55){
-        lastTick = now;
-        order.slice(locked).forEach(i => { const sy = SYMS[(Math.random() * 118) | 0]; spans(i).forEach(s => s.textContent = sy); });
-        if(locked < order.length) snd('tick');
+    const glyph = TITLE.slice();
+    let locked = 0, lastTick = 0, kicked = 0, charge = 0, chargeAt = 0, state = 'run', slashPt = null;
+    const t0 = performance.now();
+    const fontsReady = (document.fonts && document.fonts.load) ? document.fonts.load(`400 40px Orbit`).catch(() => {}) : Promise.resolve();
+
+    // 카메라: 처음엔 확 들어가 있다가 감속하며 빠지고, 박자마다 펀치
+    function camAt(t){
+      const pull = oExpo(seg(t, 0, 1150));
+      let z = lerp(2.9, 1, pull), r = lerp(-.32, .035, pull), cx = lerp(160, 0, pull), cy = lerp(-90, 0, pull);
+      const drift = seg(t, 1150, 3200); z += .05 * ioCub(drift); r += -.035 * ioCub(drift);
+      for(let b = 1; b <= 4; b++){ const bt = t - b * BEAT - 200; if(bt > 0 && bt < 260){ const k = Math.exp(-bt / 70); z += .035 * k; cx += Math.sin(bt * .09) * 6 * k; } }
+      if(charge){ const c = iCub(seg(performance.now(), chargeAt, chargeAt + 450)); z += .28 * c; r += -.07 * c; }
+      if(RX_REDUCED){ z = 1; r = 0; cx = 0; cy = 0; }
+      return { z, r, cx, cy };
+    }
+    const origin = () => [W / 2, H * .42];
+
+    function drawWaves(t, cam){
+      const rise = RX_REDUCED ? 1 : oExpo(seg(t, 100, 1400));
+      const par = -cam.cx * .25;
+      for(let k = 0; k < 4; k++){
+        const base = H * (.66 + k * .075) + (1 - rise) * H * .5, amp = (14 + k * 9) * (H / 900), len = W / (1.1 + k * .35), sp = (t * (.00045 + k * .00018)) * (k % 2 ? -1 : 1);
+        x.beginPath(); x.moveTo(0, H);
+        for(let px = 0; px <= W + 8; px += 8){ const yy = base + Math.sin((px + par) / len * 6.283 + sp * 6.283 + k) * amp + Math.sin((px + par) / (len * .37) * 6.283 - sp * 9) * amp * .25; x.lineTo(px, yy); }
+        x.lineTo(W, H); x.closePath();
+        const g = x.createLinearGradient(0, base - amp, 0, H); g.addColorStop(0, pw(.1 + k * .045)); g.addColorStop(1, 'rgba(92,107,192,.02)');
+        x.fillStyle = g; x.fill();
+        x.beginPath();
+        for(let px = 0; px <= W + 8; px += 8){ const yy = base + Math.sin((px + par) / len * 6.283 + sp * 6.283 + k) * amp + Math.sin((px + par) / (len * .37) * 6.283 - sp * 9) * amp * .25; px ? x.lineTo(px, yy) : x.moveTo(px, yy); }
+        x.strokeStyle = pwl(.18 + k * .06); x.lineWidth = 1.2; x.stroke();
       }
-      if(p < 1) return requestAnimationFrame(step);
-      order.forEach(i => spans(i).forEach(s => { s.textContent = TITLE[i]; s.className = 'set'; }));
-      box.classList.add('ready'); aim();
-      const fail = forceFail || (Math.random() < RX_INTRO_FAIL && !RX_REDUCED);
-      setTimeout(() => fail ? ctStuck() : ctOpen(), 350);
+    }
+    function tri(r, rot, prog, lw, col){
+      const pts = [0, 1, 2].map(i => { const a = rot + i * 2.0944 - Math.PI / 2; return [Math.cos(a) * r, Math.sin(a) * r]; });
+      x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
+      const tot = prog * 3;
+      for(let i = 0; i < 3; i++){ const f = cl(tot - i); if(f <= 0) break; const p = pts[i], q = pts[(i + 1) % 3]; x.lineTo(lerp(p[0], q[0], f), lerp(p[1], q[1], f)); }
+      x.strokeStyle = col; x.lineWidth = lw; x.lineJoin = 'miter'; x.stroke();
+    }
+    function band(off, from, prog, w){
+      // "//"를 크게 키운 사선 띠
+      const len = 1500, dx = SLANT, n = Math.hypot(dx, 1), ux = dx / n, uy = -1 / n, shift = (1 - prog) * 1700 * from;
+      const cx = off + ux * shift, cy = uy * shift, hx = ux * len / 2, hy = uy * len / 2, wx = w / 2;
+      x.beginPath(); x.moveTo(cx - hx - wx, cy - hy); x.lineTo(cx + hx - wx, cy + hy); x.lineTo(cx + hx + wx, cy + hy); x.lineTo(cx - hx + wx, cy - hy); x.closePath();
+      x.fillStyle = pw(.13); x.fill(); x.strokeStyle = pw(.5); x.lineWidth = 1.5 / U; x.stroke();
+    }
+    function drawLogo(t, cam){
+      const vis = seg(t, LOGO_AT, LOGO_AT + 380); if(vis <= 0) return null;
+      const F = fontPx() / U, sc = RX_REDUCED ? 1 : lerp(1.35, 1, oExpo(vis));
+      x.save(); x.scale(sc, sc); x.globalAlpha = cl(vis * 1.6);
+      x.font = `400 ${F}px Orbit, 'IBM Plex Sans KR', system-ui, sans-serif`; x.textBaseline = 'middle';
+      const ws = TITLE.map(c => x.measureText(c).width * (c === '/' ? .62 : 1.02)), total = ws.reduce((a, b) => a + b, 0);
+      let px = -total / 2, sl = [];
+      TITLE.forEach((c, i) => {
+        const w = ws[i], mid = px + w / 2;
+        if(c === '/'){
+          sl.push(mid);
+          x.save(); x.shadowColor = charge ? '#fff' : PW; x.shadowBlur = (charge ? 40 : 22) * (DPR); x.fillStyle = charge ? '#fff' : PW_L; x.textAlign = 'center'; x.fillText('/', mid, 0); x.restore();
+        } else if(glyph[i] === c){
+          x.fillStyle = '#f2f3ff'; x.textAlign = 'center'; x.fillText(c, mid, 0);
+        } else {
+          x.save(); x.font = `600 ${F * .5}px ui-monospace, Menlo, monospace`; x.fillStyle = PW; x.shadowColor = PW; x.shadowBlur = 12 * DPR; x.textAlign = 'center'; x.fillText(glyph[i], mid, 0); x.restore();
+        }
+        px += w;
+      });
+      // 로고 양옆으로 뻗는 기준선 + 눈금
+      const ext = oExpo(seg(t, LOGO_AT + 150, LOGO_AT + 900)) * 520, gx = total / 2 + 40;
+      x.strokeStyle = pwl(.6); x.lineWidth = 1.3 / U;
+      [-1, 1].forEach(sg => { x.beginPath(); x.moveTo(sg * gx, 0); x.lineTo(sg * (gx + ext), 0); x.stroke();
+        for(let k = 1; k <= 6; k++){ const p = gx + k * 80; if(p > gx + ext) break; x.beginPath(); x.moveTo(sg * p, -(k % 3 ? 6 : 14)); x.lineTo(sg * p, k % 3 ? 6 : 14); x.stroke(); } });
+      // 슬로건
+      const sv = seg(t, LOGO_AT + LOGO_DUR - 200, LOGO_AT + LOGO_DUR + 300);
+      if(sv > 0){ x.globalAlpha = sv; x.font = `600 ${Math.max(11, Math.min(W * .013, 14)) / U}px system-ui, sans-serif`; try{ x.letterSpacing = `${.3 * 14 / U}px`; }catch(e){} x.fillStyle = pwl(.75); x.textAlign = 'center'; x.fillText(t_sub, 0, F * .85); try{ x.letterSpacing = '0px'; }catch(e){} }
+      x.restore();
+      return sl.length === 2 ? [(sl[0] + sl[1]) / 2 * sc, 0] : null;
+    }
+    const t_sub = t('sub');
+
+    function frame(now){
+      if(!document.body.contains(box)) return;
+      if(state === 'split'){ return; }
+      const t = now - t0;
+      // 박자
+      const k = Math.floor((t + 1) / BEAT);
+      if(!RX_REDUCED) while(kicked <= Math.min(k, 4)){ if(kicked === 0) snd('whoosh'); else { snd(kicked === 4 ? 'kick2' : 'kick'); for(let s = 0; s < (kicked === 4 ? 9 : 5); s++) streaks.push({ at: now, off: rnd(-900, 900), y: rnd(-500, 500), len: rnd(200, 600), sp: rnd(.9, 1.6) * (Math.random() < .5 ? 1 : -1) }); } kicked++; }
+      // 로고 해독
+      const lp = seg(t, LOGO_AT, LOGO_AT + LOGO_DUR);
+      const want = Math.floor(lp * 1.12 * order.length);
+      while(locked < Math.min(order.length, want)){ const i = order[locked++]; glyph[i] = TITLE[i]; }
+      if(t > LOGO_AT && now - lastTick > 55 && locked < order.length){ lastTick = now; order.slice(locked).forEach(i => glyph[i] = SYMS[(Math.random() * 118) | 0]); snd('tick'); }
+      bar.style.width = (cl(t / READY) * 100).toFixed(1) + '%';
+      zEl.textContent = String(Math.max(1, Math.round(cl(t / READY) * 118))).padStart(3, '0');
+
+      const cam = camAt(t), [ox, oy] = origin();
+      x.setTransform(DPR, 0, 0, DPR, 0, 0);
+      const bg = x.createRadialGradient(ox, oy, 0, ox, oy, Math.max(W, H) * .75); bg.addColorStop(0, '#1d2150'); bg.addColorStop(.55, '#10122b'); bg.addColorStop(1, '#07081a');
+      x.fillStyle = bg; x.fillRect(0, 0, W, H);
+      drawWaves(t, cam);
+      // 월드
+      x.save(); x.translate(ox, oy); x.scale(cam.z * U, cam.z * U); x.rotate(cam.r); x.translate(-cam.cx, -cam.cy);
+      // 큰 삼각형 둘
+      tri(400, t * .00012, ioCub(seg(t, 0, 700)), 3 / U, pw(.75));
+      tri(300, -t * .0002 + .5, ioCub(seg(t, BEAT, BEAT + 700)), 1.2 / U, pwl(.5));
+      // 사선 띠 "//"
+      band(-70, 1, oExpo(seg(t, BEAT * 2 + 200, BEAT * 2 + 900)), 46);
+      band(70, -1, oExpo(seg(t, BEAT * 2 + 330, BEAT * 2 + 1030)), 46);
+      // 스트릭
+      for(let s = streaks.length - 1; s >= 0; s--){ const st = streaks[s], age = (now - st.at) / 380; if(age > 1){ streaks.splice(s, 1); continue; }
+        const n = Math.hypot(SLANT, 1), ux = SLANT / n, uy = -1 / n, d = (age - .5) * 2400 * st.sp, cx0 = st.off + ux * d, cy0 = st.y + uy * d;
+        x.beginPath(); x.moveTo(cx0 - ux * st.len / 2, cy0 - uy * st.len / 2); x.lineTo(cx0 + ux * st.len / 2, cy0 + uy * st.len / 2); x.strokeStyle = pwl(.7 * (1 - age)); x.lineWidth = 2 / U; x.stroke(); }
+      // 조각
+      const pullIn = charge ? iCub(seg(now, chargeAt, chargeAt + 450)) : 0;
+      shards.forEach(s => {
+        const p = RX_REDUCED ? 1 : oExpo(seg(t, s.at, s.at + 750)); if(p <= 0) return;
+        const fl = Math.sin(t * .0015 + s.ph) * 6;
+        let px = lerp(s.sx, s.tx, p), py = lerp(s.sy, s.ty, p) + fl * p;
+        px = lerp(px, px * .55, pullIn); py = lerp(py, py * .55, pullIn);
+        const rot = s.dir + s.rot0 * (1 - p) + Math.sin(t * .001 + s.ph) * .04;
+        x.save(); x.translate(px, py); x.rotate(rot);
+        x.beginPath(); x.moveTo(s.L / 2, 0); x.lineTo(-s.L / 2, -s.w / 2); x.lineTo(-s.L / 2 + s.L * s.k, s.w * .18); x.closePath();
+        if(s.fill){ const g = x.createLinearGradient(-s.L / 2, 0, s.L / 2, 0); g.addColorStop(0, s.light ? pwl(s.a * .3) : pw(s.a * .25)); g.addColorStop(1, s.light ? `rgba(240,242,255,${s.a})` : pw(s.a)); x.fillStyle = g; x.fill(); }
+        else { x.strokeStyle = pwl(s.a); x.lineWidth = 1.4 / U; x.stroke(); }
+        x.restore();
+      });
+      const sp = drawLogo(t, cam);
+      x.restore();
+      if(sp){ // "//" 화면 좌표
+        const c = Math.cos(cam.r), s = Math.sin(cam.r), wx = (sp[0] - cam.cx) * cam.z * U, wy = (sp[1] - cam.cy) * cam.z * U;
+        slashPt = [ox + wx * c - wy * s, oy + wx * s + wy * c];
+      }
+      if(state === 'run' && t >= READY){
+        state = 'wait';
+        const fail = forceFail || (Math.random() < RX_INTRO_FAIL && !RX_REDUCED);
+        setTimeout(() => fail ? pwStuck() : pwOpen(), 250);
+      }
+      requestAnimationFrame(frame);
+    }
+    fontsReady.then(() => requestAnimationFrame(frame));
+
+    box._pw = {
+      charge(){ charge = 1; chargeAt = performance.now(); },
+      split(){
+        // 지금 화면을 두 장으로 떠서 "//" 사선으로 자른다
+        const pt = slashPt || [W / 2, H * .42], xt = pt[0] + pt[1] * SLANT, xb = pt[0] - (H - pt[1]) * SLANT;
+        const ln = box.querySelector('.pw-slash line'); box.querySelector('.pw-slash').setAttribute('viewBox', `0 0 ${W} ${H}`);
+        ln.setAttribute('x1', xt + 20 * SLANT); ln.setAttribute('y1', -20); ln.setAttribute('x2', xb - 20 * SLANT); ln.setAttribute('y2', H + 20);
+        return () => {
+          ['a', 'b'].forEach(k => {
+            const h = document.createElement('div'); h.className = 'pw-half ' + k;
+            h.style.clipPath = k === 'a' ? `polygon(-60px -60px,${xt}px -60px,${xb}px ${H + 60}px,-60px ${H + 60}px)` : `polygon(${xt}px -60px,${W + 60}px -60px,${W + 60}px ${H + 60}px,${xb}px ${H + 60}px)`;
+            const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; c2.getContext('2d').drawImage(cv, 0, 0);
+            h.appendChild(c2); box.insertBefore(h, cv.nextSibling);
+          });
+          state = 'split'; box.classList.add('split');
+        };
+      }
     };
-    requestAnimationFrame(step);
   };
 
-  function ctOpen(broke){
-    const box = document.getElementById('rxIntro'); if(!box || box.classList.contains('open')) return;
-    if(broke){ box.classList.add('slice', 'open', 'far'); fin(box, 900); return; }
-    box.classList.add('charge'); snd('charge');
+  function pwOpen(broke){
+    const box = document.getElementById('rxIntro'); if(!box || !box._pw || box.classList.contains('open')) return;
+    if(broke){ const go = box._pw.split(); go(); box.classList.add('slice', 'open', 'far'); fin(box, 900); return; }
+    box._pw.charge(); snd('charge');
     setTimeout(() => {
-      box.classList.add('slice'); snd('slice');
-      setTimeout(() => { box.classList.add('open'); setTimeout(() => box.classList.add('far'), 420); fin(box, 950); }, 200);
+      const go = box._pw.split(); box.classList.add('slice'); snd('slice');
+      setTimeout(() => { go(); requestAnimationFrame(() => { box.classList.add('open'); setTimeout(() => box.classList.add('far'), 420); }); fin(box, 1000); }, 190);
     }, RX_REDUCED ? 100 : 450);
   }
   function fin(box, ms){
     setTimeout(() => { box.classList.add('gone'); setTimeout(() => { box.remove(); document.body.classList.remove('rx-intro-on'); rxTutMaybe(); }, 450); }, ms);
   }
-  function ctStuck(){
-    const box = document.getElementById('rxIntro'), msg = document.getElementById('inMsg'); if(!box) return;
-    box.classList.add('charge'); snd('charge');
+  function pwStuck(){
+    const box = document.getElementById('rxIntro'), msg = document.getElementById('inMsg'); if(!box || !box._pw) return;
+    box._pw.charge(); snd('charge');
     setTimeout(() => {
-      box.classList.add('slice', 'stuck'); snd('clang'); msg.textContent = tt('fail');
+      box._pw.split(); box.classList.add('slice', 'stuck'); snd('clang'); msg.textContent = tt('fail');
       setTimeout(() => {
         const tnt = document.getElementById('inTnt'); const ng = rxNgSvg(); if(ng) tnt.querySelector('svg').outerHTML = ng;
         tnt.hidden = false; msg.textContent = tt('hint'); rxIntroTnt(tnt);
       }, 600);
     }, 450);
   }
-  rxIntroOpen = function(broke){ if(broke) return ctOpen(true); };
+  rxIntroOpen = function(broke){ if(broke) return pwOpen(true); };
   rxIntroStuck = function(){};
   rxIntroBoom = function(tnt){
     const box = document.getElementById('rxIntro'); if(!box || box.classList.contains('boom')) return;
@@ -34070,10 +34130,10 @@ function rxFlashbang(soft){
     try{ if(navigator.vibrate) navigator.vibrate([140, 50, 220]); }catch(e){}
     document.getElementById('inScene').classList.remove('aim');
     try{ rxEvt('door'); }catch(e){}
-    ctOpen(true);
+    pwOpen(true);
   };
   const cur = document.getElementById('rxIntro');
-  if(cur && !cur.classList.contains('cut')){ cur.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
+  if(cur && !cur.classList.contains('pw')){ cur.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
 })();
 </script>
 </body>
