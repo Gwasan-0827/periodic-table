@@ -33236,7 +33236,13 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
     transition:background .2s,color .2s,box-shadow .2s;white-space:nowrap}
   #mtabs .mbtn svg{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   #mtabs .mbtn:hover{color:var(--text);background:rgba(255,255,255,.05)}
-  #mtabs .mbtn.on{background:var(--text);color:#0b0d11;box-shadow:0 2px 10px -2px rgba(255,255,255,.25)}
+  #mtabs{position:relative}
+  #mtabs .mbtn{position:relative;z-index:1}
+  #mtabs .mbtn.on{background:none;color:#0b0d11;transition:color .25s .08s}
+  #mtabs .mbtn.on:hover{background:none}
+  #mtabs .mind{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:9px;background:var(--text);box-shadow:0 2px 10px -2px rgba(255,255,255,.25);z-index:0;pointer-events:none;
+    transition:transform .38s cubic-bezier(.3,1.25,.45,1),width .38s cubic-bezier(.3,1.25,.45,1)}
+  #mtabs .mind.snap{transition:none}
   @media (max-width:700px){ #mtabs{width:100%;overflow-x:auto;scrollbar-width:none} #mtabs::-webkit-scrollbar{display:none} #mtabs .mbtn{padding:6px 10px;font-size:12px;flex:1 0 auto;justify-content:center} }
 
   /* 분류 칩 */
@@ -33291,6 +33297,8 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
   const yrOf = e => { const p = PROPS[e.s]; return p && p.yr != null ? p.yr : 0; };
   const Y0 = 1650, Y1 = 2010;
   const H = { y: Y1, timer: 0, prev: new Set() };
+  const MIND = { x: 0, w: 0 };
+  addEventListener('resize', () => { const on = document.querySelector('#mtabs .mbtn.on'), ind = document.querySelector('#mtabs .mind'); if(on && ind){ ind.classList.add('snap'); ind.style.transform = `translateX(${on.offsetLeft}px)`; ind.style.width = on.offsetWidth + 'px'; MIND.x = on.offsetLeft; MIND.w = on.offsetWidth; } });
   window.RX_HIST = H;
 
   function tabs(){
@@ -33304,6 +33312,18 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
       renderModeBar(); paint();
     }));
     const on = box.querySelector('.on'); if(on && box.scrollWidth > box.clientWidth) box.scrollLeft = on.offsetLeft - 20;
+    // 흰 바: 이전 탭 자리에서 새 탭 자리로 미끄러진다
+    const ind = document.createElement('span'); ind.className = 'mind snap'; box.prepend(ind);
+    const put = (x, w) => { ind.style.transform = `translateX(${x}px)`; ind.style.width = w + 'px'; };
+    if(MIND.w) put(MIND.x, MIND.w);
+    if(on){
+      void ind.offsetWidth;
+      if(MIND.w) ind.classList.remove('snap');
+      put(on.offsetLeft, on.offsetWidth);
+      MIND.x = on.offsetLeft; MIND.w = on.offsetWidth;
+      if(!MIND.w) requestAnimationFrame(() => { put(on.offsetLeft, on.offsetWidth); MIND.x = on.offsetLeft; MIND.w = on.offsetWidth; });
+      setTimeout(() => ind.classList.remove('snap'), 30);
+    }
   }
   function cats(){
     const opt = document.getElementById('mopt');
