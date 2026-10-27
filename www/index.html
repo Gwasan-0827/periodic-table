@@ -6197,7 +6197,7 @@ const CHANGELOG = [
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
-           '시작 화면을 새로 만들었어요. 궤도 링·기울어진 프레임·별빛이 박자에 맞춰 쿵쿵 조립되고, 원소 기호들이 해독되듯 바뀌다가 페리오딕//테이블 로고로 맞춰지고, "//"가 빛나면서 화면이 그 사선을 따라 베여 갈라져요. 가끔 칼날이 튕겨 나가면… 나이트로글리세린은 여전히 있어요',
+           '시작 화면을 새로 만들었어요. 벤젠 육각형·원자 궤도·원자핵이 박자에 맞춰 쿵쿵 조립되고, 원소 기호들이 해독되듯 바뀌다가 페리오딕//테이블 로고로 맞춰지고, "//"가 빛나면서 화면이 그 사선을 따라 베여 갈라져요. 가끔 칼날이 튕겨 나가면… 나이트로글리세린은 여전히 있어요',
            '설정에 화면 모드가 생겼어요. 라이트 모드는 지원하지 않아요(사유: 유저들 눈 보호). 그래도 누르면… 마그네슘이 튀어나와서 타 버려요',
            '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
@@ -6229,7 +6229,7 @@ const CHANGELOG = [
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
-           'New start screen: orbit rings, a tilted frame and a star snap together on the beat, then element symbols scramble and lock into the 페리오딕//테이블 logo, the "//" lights up, and the screen is sliced in two along it. Sometimes the blade bounces off… the nitroglycerin is still there',
+           'New start screen: a benzene hexagon, electron orbits and a nucleus snap together on the beat, then element symbols scramble and lock into the 페리오딕//테이블 logo, the "//" lights up, and the screen is sliced in two along it. Sometimes the blade bounces off… the nitroglycerin is still there',
            'Settings now has a theme option. Light mode is not supported (reason: protecting your eyes). Press it anyway if you dare',
            'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
@@ -33854,6 +33854,10 @@ function rxFlashbang(soft){
     -webkit-mask:radial-gradient(circle,transparent 9%,#000 30%);mask:radial-gradient(circle,transparent 9%,#000 30%);animation:ctSpin 40s linear infinite,ctIn .6s ease-out both}
   @keyframes ctSpin{to{transform:rotate(360deg)}}
   @keyframes ctIn{from{opacity:0}}
+  .ct-pt{position:absolute;left:50%;top:40%;width:min(94vw,1300px);aspect-ratio:18/7;transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(18,1fr);grid-template-rows:repeat(7,1fr);gap:.5%;opacity:.5;
+    -webkit-mask:radial-gradient(ellipse 60% 70% at 50% 50%,transparent 25%,#000 70%);mask:radial-gradient(ellipse 60% 70% at 50% 50%,transparent 25%,#000 70%)}
+  .ct-pt i{border:1px solid rgba(255,255,255,.2);border-radius:3px;opacity:0;animation:ctCell 1.6s ease-out forwards}
+  @keyframes ctCell{0%{opacity:0}8%{opacity:1;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.7)}40%{background:transparent}100%{opacity:1}}
   .ct-geo{position:absolute;left:50%;top:40%;width:min(88vmin,640px);height:min(88vmin,640px);transform:translate(-50%,-50%);
     transition:transform .45s cubic-bezier(.6,-.4,.3,1.4),opacity .4s;pointer-events:none}
   .ct-geo svg{width:100%;height:100%;overflow:visible}
@@ -33906,7 +33910,7 @@ function rxFlashbang(soft){
   .ct-zone{position:absolute;left:20%;right:20%;top:20%;bottom:30%;z-index:1}
   #rxIntro.cut.boom{animation:inShake .5s ease-out}
   #rxIntro.cut.boom .ct-flash{background:#ffe8a3}
-  @media (prefers-reduced-motion:reduce){ .ct-grid,.ct-rays,.ct-grain,.ct-geo .sp,.ct-geo .tilt,.ct-geo .beat{animation:none!important} .ct-geo .tilt{transform:scale(1,.42)} .ct-half{transition:opacity .4s} #rxIntro.cut.open .ct-half{transform:none!important;opacity:0} }
+  @media (prefers-reduced-motion:reduce){ .ct-grid,.ct-rays,.ct-pt i,.ct-grain,.ct-geo .sp,.ct-geo .tilt,.ct-geo .beat{animation:none!important} .ct-geo .tilt{transform:scale(1,.42)} .ct-half{transition:opacity .4s} #rxIntro.cut.open .ct-half{transform:none!important;opacity:0} }
 </style>
 <script>
 (function(){
@@ -33941,24 +33945,29 @@ function rxFlashbang(soft){
   // 기하학 도형: 박자(0.275초)마다 하나씩 조립된다
   const BEAT = 275;
   const d = n => `animation-delay:${n * BEAT}ms`;
-  const GEO = `<svg viewBox="-320 -320 640 640" aria-hidden="true">
-    <g class="sp" style="--d:22s"><circle class="w dr" r="282" stroke-width="3.2" pathLength="1" style="${d(0)}"/></g>
-    <g class="sp rv fade" style="--d:30s;${d(0)}"><circle class="w" r="266" stroke-width="2" stroke-dasharray="1.5 11"/></g>
-    <g class="tilt" style="--d:7s"><ellipse class="w dr" rx="300" ry="300" stroke-width="2.6" pathLength="1" style="${d(1)}"/></g>
-    <g class="sp" style="--d:16s"><g class="fade" style="${d(1)}"><path class="w" d="M-250 -60 A258 258 0 0 1 60 -250" stroke-width="1.4"/><path class="w" d="M250 60 A258 258 0 0 1 -60 250" stroke-width="1.4"/></g></g>
-    <g class="pop" style="${d(2)}"><g transform="rotate(14) skewX(-8)">
-      <rect class="w" x="-178" y="-150" width="356" height="300" stroke-width="7"/>
-      <rect class="w" x="-196" y="-168" width="392" height="336" stroke-width="1.6"/>
+  // 우리 거 도형: 육각형(벤젠 고리) · 원자 궤도 셋 · 원자핵 · 원소 기호 고리
+  const hex = (r, rot = 0) => Array.from({length: 6}, (_, i) => { const a = (i * 60 + rot) * Math.PI / 180; return (Math.cos(a) * r).toFixed(1) + ' ' + (Math.sin(a) * r).toFixed(1); }).join(' L');
+  const orbit = (deg, dur, delay) => `<g transform="rotate(${deg})"><g class="fade" style="${d(delay)}">
+      <ellipse class="w" rx="248" ry="86" stroke-width="1.8"/>
+      ${RX_REDUCED ? '' : `<circle r="7" fill="#5ee6ff" style="filter:drop-shadow(0 0 8px #5ee6ff)"><animateMotion dur="${dur}s" repeatCount="indefinite" path="M248 0 A248 86 0 1 1 -248 0 A248 86 0 1 1 248 0"/></circle>`}
+    </g></g>`;
+  const NUC = [[0, 0, 1], [-17, -10, 0], [17, -10, 1], [0, 19, 0], [-17, 12, 1], [17, 12, 0], [0, -22, 1]];
+  const geo = k => `<svg viewBox="-320 -320 640 640" aria-hidden="true">
+    <defs><path id="ctRing${k}" d="M0 -296 A296 296 0 1 1 -0.1 -296"/></defs>
+    <g class="sp" style="--d:60s"><text class="fade" style="${d(0)};font:600 11px ui-monospace,Menlo,monospace;letter-spacing:2px" fill="rgba(255,255,255,.55)"><textPath href="#ctRing${k}">${SYMS.slice(0, 60).join(' · ')}</textPath></text></g>
+    <g class="sp rv" style="--d:24s"><path class="w dr" d="M${hex(176, 30)}Z" stroke-width="5" pathLength="1" style="${d(0)}"/></g>
+    <g class="sp" style="--d:18s"><path class="w dr" d="M${hex(196, 0)}Z" stroke-width="1.2" stroke-dasharray="4 7" pathLength="1" style="${d(0.5)}"/></g>
+    ${orbit(0, 1.6, 1)}${orbit(60, 1.9, 1.33)}${orbit(120, 2.2, 1.66)}
+    <g class="sp" style="--d:14s"><g class="pop" style="${d(2)}">
+      ${Array.from({length: 6}, (_, i) => { const a = (i * 60 + 30) * Math.PI / 180, x = Math.cos(a) * 176, y = Math.sin(a) * 176; return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#0a0a0a" stroke="#f2f2f2" stroke-width="2.5"/>`; }).join('')}
     </g></g>
-    <g class="sp rv" style="--d:9s"><g class="pop" style="${d(2.5)}">
-      <circle cx="0" cy="-232" r="10" fill="#f2f2f2"/><path d="M232 -11 L245 11 H219Z" fill="#f2f2f2"/>
-      <path class="w" d="M-232 -10 V10 M-242 0 H-222" stroke-width="3"/><rect x="-8" y="224" width="16" height="16" fill="none" stroke="#f2f2f2" stroke-width="2.4" transform="rotate(45 0 232)"/>
+    <g class="pop" style="${d(3)}"><g class="beat">
+      <circle r="44" fill="none" stroke="rgba(255,92,138,.5)" stroke-width="1.5" stroke-dasharray="2 5"/>
+      ${NUC.map(([x, y, pr]) => `<circle cx="${x}" cy="${y}" r="13" fill="${pr ? '#ff5c8a' : '#f2f2f2'}" stroke="#0a0a0a" stroke-width="2"/>`).join('')}
     </g></g>
-    <g class="pop" style="${d(3)}"><g class="beat"><g class="sp" style="--d:6s">
-      <path class="star" d="M0 -78 C6 -14 14 -6 78 0 C14 6 6 14 0 78 C-6 14 -14 6 -78 0 C-14 -6 -6 -14 0 -78Z" fill="#fff"/>
-    </g></g></g>
-    <g class="fade" style="${d(3)}">${Array.from({length: 24}, (_, i) => { const a = i * 15 * Math.PI / 180, r1 = i % 6 ? 302 : 294, r2 = 312; return `<line class="w" x1="${(Math.cos(a) * r1).toFixed(1)}" y1="${(Math.sin(a) * r1).toFixed(1)}" x2="${(Math.cos(a) * r2).toFixed(1)}" y2="${(Math.sin(a) * r2).toFixed(1)}" stroke-width="${i % 6 ? 1.2 : 2.6}"/>`; }).join('')}</g>
   </svg>`;
+  // 배경: 희미한 주기율표 실루엣, 칸이 하나씩 깜빡이며 켜진다
+  const ptBg = () => `<div class="ct-pt">${EL.filter(e => e.g).map(e => `<i style="grid-column:${e.g};grid-row:${e.p};animation-delay:${(Math.random() * 1100) | 0}ms"></i>`).join('')}</div>`;
   // 필름 노이즈 한 장
   if(!document.documentElement.style.getPropertyValue('--ctn')){
     try{ const c = document.createElement('canvas'); c.width = c.height = 160; const x = c.getContext('2d'), im = x.createImageData(160, 160);
@@ -33973,12 +33982,12 @@ function rxFlashbang(soft){
     if(!force && !rxIntroOn()){ rxTutMaybe(); return; }
     const box = document.createElement('div');
     box.id = 'rxIntro'; box.className = 'cut';
-    const half = k => `<div class="ct-half ${k}"><i class="ct-rays"></i><div class="ct-geo">${GEO}</div><i class="ct-grain"></i><div class="ct-logo">${logoHTML()}</div><div class="ct-sub">${t('sub')}</div></div>`;
+    const half = k => `<div class="ct-half ${k}">${ptBg()}<div class="ct-geo">${geo(k)}</div><i class="ct-grain"></i><div class="ct-logo">${logoHTML()}</div><div class="ct-sub">${t('sub')}</div></div>`;
     box.innerHTML = `${half('a')}${half('b')}<i class="ct-zone" id="inScene"></i>
       <svg class="ct-slash" aria-hidden="true"><line pathLength="1"/></svg>
       <i class="ct-flash"></i>
       <div class="ct-hud tl">PERIODIC <b>//</b> TABLE<br>SEQ 118 · ${LANG === 'en' ? 'ASSEMBLING' : '조립 중'}</div>
-      <div class="ct-hud tr">β V.4.0<br><b id="ctBpm">218</b> BPM</div>
+      <div class="ct-hud tr">β V.4.0<br>Z = <b>118</b></div>
       <div class="in-foot"><div class="in-msg" id="inMsg">${tt('load')}</div><div class="in-bar"><i id="inBar"></i></div></div>
       <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린"><svg></svg>
         <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
