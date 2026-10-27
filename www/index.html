@@ -20697,7 +20697,16 @@ function rxRelicOpen(){
   // 먼저 화면에 띄운 뒤에 불러온다 (크기가 0인 채로 열리면 옛 원자 모형이 못 그린다)
   box.classList.add('on');
   const bytes = Uint8Array.from(atob(RX_RELIC_B64), c => c.charCodeAt(0));
-  box.querySelector('#relicFrame').srcdoc = new TextDecoder('utf-8').decode(bytes);
+  // 빽도한 악티늄족 칸에 개발 일지 말풍선 (유물 HTML 끝에 살짝 끼워 넣는다)
+  const tipMsg = LANG === 'en' ? 'Back then the actinides sat one cell too far left, heh. Fixed in the current version!' : '이때는 악티늄족이 한 칸 빽도해 있었어요 ㅎ 지금 버전에선 고쳤어요!';
+  const tipJs = `<style>.rl-tip{position:fixed;z-index:99;max-width:230px;padding:7px 11px;border-radius:10px;background:#ffd43b;color:#1a1a1a;font:700 12px/1.45 system-ui,sans-serif;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.45);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}.rl-tip.on{opacity:1;transform:none}.rl-tip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#ffd43b}</style>` +
+    `<script>(function(){var tip=document.createElement('div');tip.className='rl-tip';tip.textContent=${JSON.stringify(tipMsg)};document.body.appendChild(tip);var h=0;
+function show(c){clearTimeout(h);var r=c.getBoundingClientRect(),W=document.documentElement.clientWidth;tip.classList.add('on');var tw=tip.offsetWidth,th=tip.offsetHeight;var x=Math.max(6,Math.min(W-tw-6,r.left+r.width/2-tw/2));tip.style.left=x+'px';tip.style.top=Math.max(6,r.top-th-10)+'px';tip.style.setProperty('--ax',(r.left+r.width/2-x)+'px');}
+function hide(){h=setTimeout(function(){tip.classList.remove('on');},80);}
+function bind(){document.querySelectorAll('.cell').forEach(function(c){var n=+c.dataset.n;if(n<89||n>103||c._rl)return;c._rl=1;c.addEventListener('mouseenter',function(){show(c);});c.addEventListener('mouseleave',hide);c.addEventListener('touchstart',function(){show(c);clearTimeout(h);h=setTimeout(function(){tip.classList.remove('on');},2200);},{passive:true});});}
+bind();setTimeout(bind,500);})();<\/script>`;
+  const relicHtml = new TextDecoder('utf-8').decode(bytes);
+  box.querySelector('#relicFrame').srcdoc = relicHtml.includes('</body>') ? relicHtml.replace('</body>', tipJs + '</body>') : relicHtml + tipJs;
   rxToast('', rt('relicToast'), rt('relicSub'));
   try{ SFX.gem(); }catch(err){}
   try{ rxEvt('relic'); }catch(err){}
