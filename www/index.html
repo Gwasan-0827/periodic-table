@@ -33846,6 +33846,26 @@ function rxFlashbang(soft){
   #rxIntro.pw.open .pw-flash{animation:pwFlash .5s ease-out}
   @keyframes pwFlash{0%{opacity:.7}100%{opacity:0}}
   #rxIntro.pw .in-foot{z-index:2}
+  /* ── 로딩바: 사선 세그먼트 + 퍼센트 + 바뀌는 문구 ── */
+  #rxIntro.pw .pw-load{width:min(460px,82vw)}
+  .pw-lmsg{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:9px;font:600 12.5px/1.3 ui-monospace,Menlo,'IBM Plex Sans KR',monospace;letter-spacing:.04em}
+  .pw-lmsg .in-msg{margin:0;color:#c5cbff;min-height:1.3em;text-align:left;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .pw-lmsg .in-msg::after{content:'▍';margin-left:2px;color:#8c9eff;animation:pwBlink .7s steps(1) infinite}
+  @keyframes pwBlink{50%{opacity:0}}
+  .pw-lmsg .in-msg.sw{animation:pwMsg .22s ease-out}
+  @keyframes pwMsg{0%{opacity:0;transform:translateY(6px);filter:blur(2px)}100%{opacity:1;transform:none;filter:none}}
+  .pw-lmsg b{color:#fff;font-size:15px;font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(140,158,255,.8)}
+  .pw-lmsg b small{font-size:10px;color:#8c9eff;margin-left:1px}
+  .pw-lbar{position:relative;display:flex;align-items:center;gap:8px;font:700 15px/1 ui-monospace,monospace;color:#8c9eff}
+  .pw-segs{flex:1;display:grid;grid-template-columns:repeat(28,1fr);gap:3px;height:13px;transform:skewX(-24deg)}
+  .pw-segs i{background:rgba(140,158,255,.12);border-radius:1px;transition:background .12s,box-shadow .12s}
+  .pw-segs i.on{background:linear-gradient(180deg,#c5cbff,#7f8ff0);box-shadow:0 0 8px rgba(140,158,255,.75)}
+  .pw-segs i.head{background:#fff;box-shadow:0 0 12px #fff,0 0 22px #8c9eff}
+  .pw-segs.full i.on{animation:pwFull .5s ease-out}
+  @keyframes pwFull{0%{background:#fff;box-shadow:0 0 16px #fff}100%{}}
+  .pw-lsub{display:flex;justify-content:space-between;margin-top:7px;font:600 9.5px/1 ui-monospace,monospace;letter-spacing:.2em;color:rgba(197,203,255,.45)}
+  #rxIntro.pw.stuck .pw-segs i.on{background:linear-gradient(180deg,#ffd8a8,#ff922b);box-shadow:0 0 8px rgba(255,146,43,.7)}
+  #rxIntro.pw.stuck .pw-lmsg .in-msg{color:#ffb36b}
   #rxIntro.pw .in-bar i{background:linear-gradient(90deg,#8c9eff,#c5cbff)}
   #rxIntro.pw.open .in-foot{opacity:0;transition:opacity .2s}
   #rxIntro.pw.open .pw-hud{animation:none;opacity:0;transition:opacity .2s}
@@ -33973,6 +33993,14 @@ function rxFlashbang(soft){
   }
 
   window.__pwSnd = snd;
+  const LOAD_KO = ['전자 껍질 채우는 중', '양성자 세는 중 (1, 2, 3…)', '오비탈 다림질 중', '비활성 기체 깨우는 중 (안 일어남)', '할로젠한테 전자 뺏기는 중', '나트륨 물에서 건지는 중', '마그네슘 불 끄는 중', '세슘 진정시키는 중', '헬륨 풍선 붙잡는 중',
+    '우라늄 반감기 기다리는 중… 농담이에요', '탄소 넷이 손 잡게 하는 중', '금 반짝반짝 닦는 중', '오가네손 사라지기 전에 찍는 중', '란타넘족 아랫줄로 보내는 중', '악티늄 빽도 방지 중', '아보가드로 수만큼 세는 중', '118칸 줄 맞추는 중',
+    '멘델레예프한테 허락받는 중', '분자 모형 공 끼우는 중', '이온 전하 맞추는 중', '실험실 불 켜는 중', '아스리엘 깨우는 중', '과학적으로 정확한 헛소리 장전 중', '전자 구름 뭉치는 중', '플루오린 달래는 중 (반응 그만해)', '비스무트 계단 쌓는 중',
+    '네온사인 켜는 중', '수은 온도계 흔드는 중', '원자량 소수점 맞추는 중', '프랑슘 22분 안에 데려오는 중', '클로린한테 사과문 쓰는 중', '페리윙클 색 칠하는 중', '"//" 날 세우는 중'];
+  const LOAD_EN = ['Filling electron shells', 'Counting protons (1, 2, 3…)', 'Ironing the orbitals', 'Waking the noble gases (they won\'t)', 'Getting robbed by a halogen', 'Fishing sodium out of the water', 'Putting out the magnesium', 'Calming down caesium', 'Holding on to the helium balloon',
+    'Waiting for uranium\'s half-life… kidding', 'Making four carbons hold hands', 'Polishing the gold', 'Snapping oganesson before it vanishes', 'Moving the lanthanides downstairs', 'Keeping actinium in its seat', 'Counting to Avogadro\'s number', 'Lining up 118 cells',
+    'Asking Mendeleev for permission', 'Snapping molecule balls together', 'Balancing ion charges', 'Turning on the lab lights', 'Waking up Asriel', 'Loading scientifically accurate nonsense', 'Fluffing the electron cloud', 'Calming fluorine down (stop reacting)', 'Stacking bismuth stairs',
+    'Switching on the neon signs', 'Shaking the mercury thermometer', 'Rounding atomic masses', 'Fetching francium within 22 minutes', 'Writing an apology to chlorine', 'Painting it periwinkle', 'Sharpening the "//"'];
   const TITLE = '페리오딕//테이블'.split('');
   const SLANT = .3; // "/" 기울기 (가로/세로)
 
@@ -33985,7 +34013,9 @@ function rxFlashbang(soft){
       <svg class="pw-slash" aria-hidden="true"><line class="rc" pathLength="1"/><line class="rm" pathLength="1"/><line class="core" pathLength="1"/></svg><canvas class="pw-fx"></canvas><i class="pw-flash"></i>
       <div class="pw-hud tl">PERIODIC <b>//</b> TABLE<br>${LANG === 'en' ? 'ALIGNING' : '정렬 중'} · <b id="pwZ">001</b> / 118</div>
       <div class="pw-hud tr">β V.4.0<br>${new Date().getFullYear()}</div>
-      <div class="in-foot"><div class="in-msg" id="inMsg">${tt('load')}</div><div class="in-bar"><i id="inBar"></i></div></div>
+      <div class="in-foot pw-load"><div class="pw-lmsg"><div class="in-msg" id="inMsg">${tt('load')}</div><b id="pwPct">0<small>%</small></b></div>
+        <div class="pw-lbar">[<div class="pw-segs" id="pwSegs">${'<i></i>'.repeat(28)}</div>]</div>
+        <div class="pw-lsub"><span id="pwEl">H · 001</span><span>${LANG === 'en' ? 'LOADING' : '로딩 중'} //</span></div><i id="inBar" hidden></i></div>
       <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린"><svg></svg>
         <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
         <i class="ng-note">${LANG === 'en' ? '← Dynamite shaped like nitroglycerin' : '← 나이트로글리세린 모양의 다이너마이트임'}<small>${LANG === 'en' ? '(It\'s Asriel\'s dynamite!)' : '(아스리엘 거임!)'}</small></i>
@@ -33994,6 +34024,9 @@ function rxFlashbang(soft){
     document.body.classList.add('rx-intro-on');
     const cv = box.querySelector('.pw-main'), x = cv.getContext('2d');
     const bar = document.getElementById('inBar'), zEl = document.getElementById('pwZ');
+    const segs = [...box.querySelectorAll('#pwSegs i')], pctEl = document.getElementById('pwPct'), elEl = document.getElementById('pwEl'), msgEl = document.getElementById('inMsg');
+    const MSGS = (LANG === 'en' ? LOAD_EN : LOAD_KO).slice().sort(() => Math.random() - .5);
+    let msgI = 0, msgAt = 0, lastSeg = -1;
     let W = 0, H = 0, DPR = 1, U = 1;
     const fit = () => { DPR = Math.min(1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W * .001, H * .0009); };
     fit(); addEventListener('resize', fit);
@@ -34219,7 +34252,13 @@ function rxFlashbang(soft){
       while(locked < Math.min(order.length, want)){ const i = order[locked++]; glyph[i] = TITLE[i]; }
       if(t > LOGO_AT && now - lastTick > 55 && locked < order.length){ lastTick = now; order.slice(locked).forEach(i => glyph[i] = SYMS[(Math.random() * 118) | 0]); if(Math.random() < .6) snd('blip'); }
       if(locked >= order.length && !lockedSnd){ lockedSnd = true; snd('lock'); }
-      bar.style.width = (cl(t / READY) * 100).toFixed(1) + '%';
+      // 로딩바: 계단식으로 들쑥날쑥 차오르다 마지막에 꽉
+      { const raw = cl(t / READY), pr = raw < 1 ? Math.min(.99, Math.floor((raw + Math.sin(raw * 23) * .025) * 40) / 40) : 1;
+        const on = Math.round(pr * segs.length);
+        if(on !== lastSeg){ segs.forEach((sg, q) => { sg.className = q < on ? (q === on - 1 && pr < 1 ? 'on head' : 'on') : ''; }); if(pr >= 1) segs[0].parentNode.classList.add('full'); lastSeg = on; }
+        pctEl.firstChild.nodeValue = String(Math.round(pr * 100));
+        const zz = Math.max(1, Math.round(raw * 118)); elEl.textContent = `${SYMS[zz - 1]} · ${String(zz).padStart(3, '0')}`;
+        if(state === 'run' && now - msgAt > 390){ msgAt = now; msgEl.textContent = MSGS[msgI++ % MSGS.length]; msgEl.classList.remove('sw'); void msgEl.offsetWidth; msgEl.classList.add('sw'); } }
       zEl.textContent = String(Math.max(1, Math.round(cl(t / READY) * 118))).padStart(3, '0');
 
       const cam = camAt(t), [ox, oy] = origin();
