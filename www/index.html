@@ -34043,6 +34043,22 @@ function rxFlashbang(soft){
       x.beginPath(); x.moveTo(xx, y0); x.lineTo(xx, ye); x.stroke();
       for(let y = y0, i = 0; y <= ye; y += 28, i++){ const L = i % 5 ? 10 : 24; x.beginPath(); x.moveTo(xx, y); x.lineTo(xx + L, y); x.stroke(); }
     }
+    // 입체 네 꼭지 별 (왼쪽 위에서 빛을 받은 면)
+    function sparkle(cx, cy, Rr, sx, alpha){
+      if(Rr <= 0 || alpha <= 0) return;
+      x.save(); x.translate(cx, cy); x.scale(sx, 1); x.globalAlpha = alpha;
+      const k = Rr * .07, T = [0, -Rr], Rt = [Rr, 0], B = [0, Rr], L = [-Rr, 0];
+      const facet = (p, q, c, g) => { x.beginPath(); x.moveTo(0, 0); x.lineTo(p[0], p[1]); x.quadraticCurveTo(c[0], c[1], q[0], q[1]); x.closePath(); x.fillStyle = g; x.fill(); };
+      let g = x.createLinearGradient(0, 0, -Rr * .5, -Rr * .5); g.addColorStop(0, '#f4f5ff'); g.addColorStop(1, '#ffffff');
+      facet(L, T, [-k, -k], g);
+      g = x.createLinearGradient(0, 0, Rr * .55, 0); g.addColorStop(0, '#000'); g.addColorStop(.25, '#14151f'); g.addColorStop(1, '#4b4f68');
+      facet(T, Rt, [k, -k], g);
+      g = x.createLinearGradient(-Rr * .6, 0, Rr * .6, Rr * .3); g.addColorStop(0, '#d9dbea'); g.addColorStop(1, '#8a8ea8');
+      facet(L, B, [-k, k], g);
+      g = x.createLinearGradient(0, 0, Rr * .6, Rr * .3); g.addColorStop(0, '#9fa3bd'); g.addColorStop(1, '#5e627e');
+      facet(B, Rt, [k, k], g);
+      x.restore();
+    }
     function band(off, from, prog, w){
       // "//"를 크게 키운 사선 띠
       const len = 1500, dx = SLANT, n = Math.hypot(dx, 1), ux = dx / n, uy = -1 / n, shift = (1 - prog) * 1700 * from;
@@ -34118,6 +34134,12 @@ function rxFlashbang(soft){
       // 노란 포인트 선
       { const yp = oExpo(seg(t, BEAT * 3 + 200, BEAT * 3 + 900)); if(yp > 0){ x.fillStyle = YEL(.85); x.fillRect(-900, 395, 640 * yp, 5); x.fillRect(900 - 300 * yp, -420, 300 * yp, 3); x.strokeStyle = YEL(.55); x.lineWidth = 1.2 / U; x.beginPath(); x.moveTo(-760, -430); x.lineTo(-760, -430 + 300 * yp); x.stroke(); } }
       frameRect(seg(t, BEAT * 2, BEAT * 2 + 520), t);
+      // 별: 가운데에서 크게 튀어나왔다가, 로고가 들어오면 왼쪽 위 모서리로 비켜난다 (빙글 뒤집히며)
+      { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520));
+        const flip = Math.cos(t * .0021), sx = (Math.abs(flip) < .08 ? .08 : Math.abs(flip)) * (flip < 0 ? -1 : 1);
+        sparkle(lerp(0, -470, mv), lerp(0, -330, mv), lerp(250, 95, mv) * pop, mv < 1 ? lerp(1, sx, mv) : sx, cl(pop * 1.5));
+        const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600)), f2 = Math.cos(t * .0017 + 2);
+        sparkle(520, 330, 60 * p2, (Math.abs(f2) < .08 ? .08 : Math.abs(f2)) * (f2 < 0 ? -1 : 1), cl(p2 * 1.5)); }
       // 사선 띠 "//"
       band(-70, 1, oExpo(seg(t, BEAT * 2 + 200, BEAT * 2 + 900)), 46);
       band(70, -1, oExpo(seg(t, BEAT * 2 + 330, BEAT * 2 + 1030)), 46);
