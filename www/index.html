@@ -33568,5 +33568,34 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
 })();
 </script>
 
+<style>
+  /* ═══ 렉 줄이기: 물결·방울은 한 겹만, 그리고 GPU로 미는 transform 으로만 움직인다 ═══ */
+  .hq::after, .cell[data-ts="liquid"] .tq::after{display:none!important}
+  .hq::before, .cell[data-ts="liquid"] .tq::before{width:calc(100% + 22px);right:auto;-webkit-mask-position:0 0!important;mask-position:0 0!important;
+    animation:wvSlide 2.4s linear infinite!important;will-change:transform}
+  @keyframes wvSlide{from{transform:translateX(-22px)}to{transform:translateX(0)}}
+  .cell[data-ts="gas"] .tq{background:linear-gradient(180deg,#7a3326,#4b231f)!important;animation:none!important}
+  .cell[data-ts="gas"] .tq::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(100% + 15px);
+    background:radial-gradient(circle,rgba(255,190,170,.3) 1.5px,transparent 2.1px) 0 0/13px 15px;animation:gasUp 2.6s linear infinite;will-change:transform}
+  @keyframes gasUp{to{transform:translateY(-15px)}}
+  body.heat-liq #grid .cell, body.temp-fx #grid .cell{contain:paint}
+  /* 탭이 안 보이면 멈춤 */
+  html.pt-hidden .hq::before, html.pt-hidden .tq::before{animation-play-state:paused!important}
+  @media (prefers-reduced-motion:reduce){ .hq::before,.tq::before{animation:none!important} }
+</style>
+<script>document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('pt-hidden',document.hidden));</script>
+<style>
+  body.liq-calm .hq::before, body.liq-calm .tq::before{animation-play-state:paused!important}
+  body.liq-calm #grid .cell:hover .hq::before, body.liq-calm #grid .cell:hover .tq::before{animation-play-state:running!important}
+</style>
+<script>
+(function(){
+  // 물결은 바꾼 뒤 6초만 출렁이고 잔잔해진다 (마우스를 올린 칸은 계속 출렁)
+  let tm = 0;
+  const wake = () => { document.body.classList.remove('liq-calm'); clearTimeout(tm); tm = setTimeout(() => document.body.classList.add('liq-calm'), 6000); };
+  const _p = paint;
+  paint = function(){ const r = _p.apply(this, arguments); if(document.body.classList.contains('heat-liq') || document.body.classList.contains('temp-fx')) wake(); return r; };
+})();
+</script>
 </body>
 </html>
