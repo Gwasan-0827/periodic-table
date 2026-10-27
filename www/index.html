@@ -33597,5 +33597,27 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
   paint = function(){ const r = _p.apply(this, arguments); if(document.body.classList.contains('heat-liq') || document.body.classList.contains('temp-fx')) wake(); return r; };
 })();
 </script>
+<style>
+  /* ═══ 물결 모양: 뾰족한 톱니 → 길고 완만한 물결 + 뒤에 옅은 물결 한 겹 ═══ */
+  .cell[data-ts="liquid"] .tq{--lq:#1f7fb6}
+  .hq::before, .cell[data-ts="liquid"] .tq::before,
+  .hq::after, .cell[data-ts="liquid"] .tq::after{content:"";display:block!important;position:absolute;left:0;right:auto;width:calc(100% + 64px);height:10px;
+    -webkit-mask:var(--wv2) repeat-x 0 0/64px 10px!important;mask:var(--wv2) repeat-x 0 0/64px 10px!important;will-change:transform}
+  .hq::before, .cell[data-ts="liquid"] .tq::before{top:-9px;background:var(--lq);z-index:1;animation:wvLong 4.2s linear infinite!important}
+  .hq::after, .cell[data-ts="liquid"] .tq::after{top:-13px;background:color-mix(in srgb,var(--lq) 72%,#fff);opacity:.6;z-index:0;animation:wvLongB 6.5s linear infinite!important}
+  .cell[data-ts="liquid"] .tq::before{top:calc(30% - 9px)} .cell[data-ts="liquid"] .tq::after{top:calc(30% - 13px)}
+  @keyframes wvLong{from{transform:translateX(-64px)}to{transform:translateX(0)}}
+  @keyframes wvLongB{from{transform:translateX(0)}to{transform:translateX(-64px)}}
+  body.liq-calm .hq::after, body.liq-calm .tq::after, html.pt-hidden .hq::after, html.pt-hidden .tq::after{animation-play-state:paused!important}
+  body.liq-calm #grid .cell:hover .hq::after, body.liq-calm #grid .cell:hover .tq::after{animation-play-state:running!important}
+  @media (prefers-reduced-motion:reduce){ .hq::after,.tq::after{animation:none!important} }
+</style>
+<script>document.documentElement.style.setProperty('--wv2', `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 10" preserveAspectRatio="none"><path d="M0 5 C10.7 0.8 21.3 0.8 32 5 S53.3 9.2 64 5 V10 H0Z" fill="#000"/></svg>')}")`);</script>
+<style>
+  .hq::after, .cell[data-ts="liquid"] .tq::after{height:14px!important;
+    -webkit-mask:var(--wv2) repeat-x 0 0/64px 10px, linear-gradient(#000,#000) 0 9px/100% 100% no-repeat!important;
+    mask:var(--wv2) repeat-x 0 0/64px 10px, linear-gradient(#000,#000) 0 9px/100% 100% no-repeat!important}
+</style>
+<style>.hq{background-image:linear-gradient(180deg,rgba(255,255,255,0) 55%,rgba(0,0,0,.14))!important}</style>
 </body>
 </html>
