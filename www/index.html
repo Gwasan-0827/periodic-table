@@ -33944,15 +33944,30 @@ function rxFlashbang(soft){
     const fontsReady = (document.fonts && document.fonts.load) ? document.fonts.load(`400 40px Orbit`).catch(() => {}) : Promise.resolve();
 
     // 카메라: 처음엔 확 들어가 있다가 감속하며 빠지고, 박자마다 펀치
+    // 카메라 키프레임: 구간마다 다른 가감속 (빠지기 → 휩 팬 좌우 → 안착 → 펀치 아웃 → 천천히 밀기)
+    const CAM = [
+      { t: 0,    z: 3.2,  r: -.36, x: 230,  y: -130 },
+      { t: 1000, z: 1.28, r: .07,  x: -70,  y: 25,  e: oExpo },
+      { t: 1320, z: 1.42, r: -.1,  x: 190,  y: -55, e: oBack },
+      { t: 1660, z: 1.24, r: .085, x: -150, y: 40,  e: oBack },
+      { t: 2050, z: 1.1,  r: -.015, x: 0,   y: 0,   e: ioCub },
+      { t: 2330, z: .94,  r: .01,  x: 0,    y: 0,   e: oBack },
+      { t: 3600, z: 1.03, r: -.03, x: 20,   y: -6,  e: ioCub }
+    ];
     function camAt(t){
-      const pull = oExpo(seg(t, 0, 1150));
-      let z = lerp(2.9, 1, pull), r = lerp(-.32, .035, pull), cx = lerp(160, 0, pull), cy = lerp(-90, 0, pull);
-      const drift = seg(t, 1150, 3200); z += .05 * ioCub(drift); r += -.035 * ioCub(drift);
-      for(let b = 1; b <= 4; b++){ const bt = t - b * BEAT - 200; if(bt > 0 && bt < 260){ const k = Math.exp(-bt / 70); z += .035 * k; cx += Math.sin(bt * .09) * 6 * k; } }
-      if(charge){ const c = iCub(seg(performance.now(), chargeAt, chargeAt + 450)); z += .28 * c; r += -.07 * c; }
+      let k = 0; while(k < CAM.length - 2 && t >= CAM[k + 1].t) k++;
+      const A = CAM[k], B = CAM[k + 1], e = (B.e || ioCub)(seg(t, A.t, B.t));
+      let z = lerp(A.z, B.z, e), r = lerp(A.r, B.r, e), cx = lerp(A.x, B.x, e), cy = lerp(A.y, B.y, e);
+      // 손떨림 (아주 약하게)
+      cx += Math.sin(t * .0021) * 5 + Math.sin(t * .0057) * 2.5; cy += Math.cos(t * .0017) * 4; r += Math.sin(t * .0013) * .006;
+      // 박자 펀치
+      for(let b = 1; b <= 4; b++){ const bt = t - b * BEAT - 200; if(bt > 0 && bt < 260){ const kk = Math.exp(-bt / 70); z += .045 * kk; cx += Math.sin(bt * .09) * 8 * kk; } }
+      if(charge){ const c = iCub(seg(performance.now(), chargeAt, chargeAt + 450)); z += .32 * c; r += -.09 * c; cx *= 1 - c; cy *= 1 - c; }
       if(RX_REDUCED){ z = 1; r = 0; cx = 0; cy = 0; }
       return { z, r, cx, cy };
     }
+    // 레이어별 카메라 (f < 1 이면 뒤쪽: 덜 움직인다 → 시차)
+    function applyCam(cam, ox, oy, f){ const Z = (1 + (cam.z - 1) * f) * U; x.translate(ox, oy); x.scale(Z, Z); x.rotate(cam.r * f); x.translate(-cam.cx * f, -cam.cy * f); }
     const origin = () => [W / 2, H * .42];
 
     // 떠다니는 먼지 파티클: 크기·흐림·깊이가 제각각, 카메라가 빠질 때 깊이감 있게 퍼진다
@@ -34140,7 +34155,7 @@ function rxFlashbang(soft){
       drawDust(t, cam, ox, oy);
       drawWaves(t, cam);
       // 월드
-      x.save(); x.translate(ox, oy); x.scale(cam.z * U, cam.z * U); x.rotate(cam.r); x.translate(-cam.cx, -cam.cy);
+      x.save(); applyCam(cam, ox, oy, .6);
       // 큰 삼각형 둘
       tri(400, t * .00012, ioCub(seg(t, 0, 700)), 3 / U, pw(.75));
       tri(300, -t * .0002 + .5, ioCub(seg(t, BEAT, BEAT + 700)), 1.2 / U, pwl(.5));
@@ -34154,6 +34169,7 @@ function rxFlashbang(soft){
       glyphGrid(640, -380, 5, 4, 64, seg(t, BEAT * 4, BEAT * 4 + 900), t);
       // 노란 포인트 선
       { const yp = oExpo(seg(t, BEAT * 3 + 200, BEAT * 3 + 900)); if(yp > 0){ x.fillStyle = YEL(.85); x.fillRect(-900, 395, 640 * yp, 5); x.fillRect(900 - 300 * yp, -420, 300 * yp, 3); x.strokeStyle = YEL(.55); x.lineWidth = 1.2 / U; x.beginPath(); x.moveTo(-760, -430); x.lineTo(-760, -430 + 300 * yp); x.stroke(); } }
+      x.restore(); x.save(); applyCam(cam, ox, oy, 1);
       frameRect(seg(t, BEAT * 2, BEAT * 2 + 520), t);
       // 사선 띠 "//"
       band(-70, 1, oExpo(seg(t, BEAT * 2 + 200, BEAT * 2 + 900)), 46);
@@ -34176,15 +34192,14 @@ function rxFlashbang(soft){
         else { x.strokeStyle = pwl(s.a); x.lineWidth = 1.4 / U; x.stroke(); }
         x.restore();
       });
-      // 별: 가운데에서 크게 튀어나왔다가, 로고가 들어오면 왼쪽 위 모서리로 비켜난다 (빙글 뒤집히며)
-      { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520));
-        const ROT = 75 * Math.PI / 180;
-        const sw = (fx, fy) => [(W * fx - ox) / (U * cam.z) + cam.cx, (H * fy - oy) / (U * cam.z) + cam.cy], P1 = sw(W < 700 ? .78 : .85, .82), P2 = sw(W < 700 ? .18 : .15, W < 700 ? .14 : .2);
-        sparkle(lerp(0, P1[0], mv), lerp(0, P1[1], mv), lerp(250, 95, mv) * pop, ROT, cl(pop * 1.5));
-        const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600));
-        sparkle(P2[0], P2[1], 60 * p2, ROT, cl(p2 * 1.5)); }
       const sp = drawLogo(t, cam);
       x.restore();
+      // 별은 화면에 고정 (카메라가 돌아도 구석에 붙어 있게)
+      { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520)), ROT = 75 * Math.PI / 180, S = U * cam.z;
+        const P1 = [W * (W < 700 ? .78 : .85), H * .82], P2 = [W * (W < 700 ? .18 : .15), H * (W < 700 ? .14 : .2)];
+        x.save(); x.translate(lerp(ox, P1[0], mv), lerp(oy, P1[1], mv)); x.scale(S, S); sparkle(0, 0, lerp(250, 95, mv) * pop, ROT, cl(pop * 1.5)); x.restore();
+        const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600));
+        x.save(); x.translate(P2[0], P2[1]); x.scale(S, S); sparkle(0, 0, 60 * p2, ROT, cl(p2 * 1.5)); x.restore(); }
       if(sp){ // "//" 화면 좌표
         const c = Math.cos(cam.r), s = Math.sin(cam.r), wx = (sp[0] - cam.cx) * cam.z * U, wy = (sp[1] - cam.cy) * cam.z * U;
         slashPt = [ox + wx * c - wy * s, oy + wx * s + wy * c];
