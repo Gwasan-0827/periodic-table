@@ -33745,9 +33745,12 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
     w.innerHTML = '<i class="glow"></i><img class="mgf" alt="">';
     document.body.appendChild(w);
     const img = w.querySelector('img'), g = w.querySelector('.glow');
-    const s = Math.min(innerHeight * 1.55 / 629, innerWidth * 0.98 / 429);
+    // 세로 화면(폰): 화면 폭보다 크게 키우고 허리 아래는 화면 밖으로 → 네비게이션 바 뒤에서 쏘옥 올라오는 느낌
+    const PORT = innerWidth / innerHeight < .8;
+    const s = PORT ? innerWidth * 1.35 / 429 : Math.min(innerHeight * 1.55 / 629, innerWidth * 0.98 / 429);
     const set = k => { img.src = F[k]; img.style.height = (SZ[k][1] * s * K[k]) + 'px'; };
     set('f0');
+    if(PORT){ const h0 = 629 * s, top = Math.max(innerHeight * .1, innerHeight - h0 * .6); img.style.top = top + 'px'; g.style.top = (top + h0 * .2) + 'px'; }
     requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add('up')));
     if(opt.shades){
       const sh = document.createElement('div'); sh.className = 'mg-shades';
