@@ -6197,6 +6197,7 @@ const CHANGELOG = [
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
+           '시작 화면을 새로 만들었어요. 문 대신 매번 다른 원소의 원자가 떠 있다가, 핵이 터지면서 전자들이 주기율표 칸으로 날아가 자리를 잡아요. 가끔 핵이 너무 안정해서 안 터지면… 나이트로글리세린은 여전히 있어요',
            '설정에 화면 모드가 생겼어요. 라이트 모드는 지원하지 않아요(사유: 유저들 눈 보호). 그래도 누르면… 마그네슘이 튀어나와서 타 버려요',
            '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
@@ -6228,6 +6229,7 @@ const CHANGELOG = [
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
+           'New start screen: instead of the door, a random element\'s atom hovers, then its nucleus bursts and the electrons fly into the table\'s cells. If the nucleus is too stable to split… the nitroglycerin is still there',
            'Settings now has a theme option. Light mode is not supported (reason: protecting your eyes). Press it anyway if you dare',
            'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
@@ -33819,5 +33821,173 @@ function rxFlashbang(soft){
   o2.connect(g5); g5.connect(a.destination); o2.start(t + 0.05); lfo.start(t + 0.05); o2.stop(t + 3.3); lfo.stop(t + 3.3);
 }
 </script>
+<style>
+  /* ═══ 시작 화면 리워크: 문 → 원자 폭발. 원자가 터지면서 전자들이 주기율표 칸으로 날아가 자리잡는다 ═══ */
+  #rxIntro.ai{background:radial-gradient(ellipse at 50% 42%,#0f1724 0%,#06080c 70%);overflow:hidden}
+  .ai-stage{--w:min(58vmin,460px);position:absolute;left:0;right:0;margin:0 auto;top:calc(42% - var(--w) / 2);width:var(--w);height:var(--w);transition:transform .6s cubic-bezier(.5,0,.75,0),opacity .4s}
+  .ai-stage svg{width:100%;height:100%;overflow:visible}
+  .ai-ring{fill:none;stroke:rgba(127,220,255,.28);stroke-width:1.2}
+  .ai-orb{transform-origin:0 0;animation:aiSpin var(--sp) linear infinite}
+  @keyframes aiSpin{to{transform:rotate(360deg)}}
+  .ai-e{fill:#9fe7ff;filter:drop-shadow(0 0 5px #5ee6ff)}
+  .ai-nuc{transform-origin:0 0;animation:aiPulse 1.6s ease-in-out infinite}
+  @keyframes aiPulse{50%{transform:scale(1.06)}}
+  .ai-p{fill:#ff6b6b}.ai-n{fill:#adb5bd}
+  .ai-nuc circle{stroke:rgba(0,0,0,.35);stroke-width:.6}
+  .ai-label{position:absolute;left:50%;top:calc(42% + min(29vmin,230px) + 4px);transform:translateX(-50%);text-align:center;color:#c9d2e2;font:600 13px system-ui,sans-serif;letter-spacing:.06em;opacity:.8}
+  .ai-label b{font:800 22px Orbit,system-ui,sans-serif;color:#fff;margin-right:8px;letter-spacing:0}
+  /* 터질 때 */
+  #rxIntro.ai.open .ai-nuc{animation:aiCrit .55s ease-in forwards}
+  @keyframes aiCrit{0%{transform:scale(1)}60%{transform:scale(1.25)}100%{transform:scale(.2);opacity:0}}
+  #rxIntro.ai.open .ai-ring{animation:aiRing .7s .35s ease-out forwards}
+  @keyframes aiRing{to{transform:scale(3.2);opacity:0}}
+  #rxIntro.ai.open .ai-e{opacity:0;transition:opacity .1s .4s}
+  .ai-flash{position:absolute;left:50%;top:42%;width:10px;height:10px;margin:-5px;border-radius:50%;background:radial-gradient(circle,#fff,#bff0ff 40%,rgba(127,220,255,0) 70%);opacity:0;pointer-events:none}
+  #rxIntro.ai.open .ai-flash{animation:aiFlash .8s .4s ease-out forwards}
+  @keyframes aiFlash{0%{opacity:0;transform:scale(1)}20%{opacity:.95;transform:scale(60)}100%{opacity:0;transform:scale(260)}}
+  #rxIntro.ai.open{background-color:transparent;transition:background .5s .7s}
+  #rxIntro.ai.open .in-foot,#rxIntro.ai.open .ai-label{opacity:0;transition:opacity .3s}
+  /* 칸으로 날아가는 조각 */
+  .ai-bit{position:fixed;z-index:91;border-radius:50%;background:#9fe7ff;box-shadow:0 0 10px #5ee6ff;pointer-events:none;
+    transition:left .7s cubic-bezier(.3,.9,.4,1),top .7s cubic-bezier(.3,.9,.4,1),width .7s,height .7s,border-radius .7s,opacity .35s,background .7s}
+  .ai-bit.land{border-radius:5px;opacity:0;transition-delay:0s,0s,0s,0s,0s,.62s,0s}
+  /* 안 터질 때 */
+  #rxIntro.ai.stuck .ai-label{opacity:0;transition:opacity .3s}
+  #rxIntro.ai.stuck .ai-nuc{animation:aiShake .12s linear 6}
+  @keyframes aiShake{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+  #rxIntro.ai .ai-stage.aim .ai-nuc{filter:drop-shadow(0 0 12px #ffd43b)}
+  #rxIntro.ai.boom .ai-stage{animation:inShake .5s ease-out}
+  #rxIntro.ai.boom .ai-flash{background:radial-gradient(circle,#fff,#ffe8a3 40%,rgba(255,146,43,0) 70%)}
+  @media (prefers-reduced-motion:reduce){ .ai-orb,.ai-nuc{animation:none} .ai-bit{transition:opacity .3s} }
+</style>
+<script>
+(function(){
+  if(typeof rxIntro !== 'function') return;
+  const AI = { live: false };
+  const T = { ko: { open: '원자 붕괴 중', fail: '핵이 너무 안정해서 안 터짐', hint: '나이트로글리세린을 원자핵에 살살 끌어다 놓으세요', boom: '핵분열 (아님)' },
+              en: { open: 'Splitting the atom', fail: 'The nucleus is too stable to split', hint: 'Gently drag the nitroglycerin onto the nucleus', boom: 'Nuclear fission (not really)' } };
+  const tt = k => T[LANG === 'en' ? 'en' : 'ko'][k];
+
+  function atomSVG(e){
+    // 원자핵: 양성자·중성자 덩어리 (최대 30개만 그림)
+    const Z = e.n, N = Math.round((e.m || Z * 2) - Z), tot = Math.min(30, Z + N);
+    const pz = Math.max(1, Math.round(tot * Z / (Z + N)));
+    let nuc = '', R = 3.2 + Math.sqrt(tot) * 1.15;
+    const pts = [];
+    for(let i = 0; i < tot; i++){
+      const a = i * 2.39996, r = R * Math.sqrt((i + .5) / tot) * .82;
+      pts.push([Math.cos(a) * r, Math.sin(a) * r, i % Math.max(1, Math.round(tot / pz)) === 0]);
+    }
+    pts.sort((p, q) => p[1] - q[1]).forEach(([x, y, p]) => { nuc += `<circle class="${p ? 'ai-p' : 'ai-n'}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4"/>`; });
+    // 전자껍질
+    const sh = (e.sh || [Math.min(Z, 2)]).slice(0, 5);
+    let rings = '';
+    sh.forEach((n, k) => {
+      const rr = 18 + k * 7.5, show = Math.min(n, 10);
+      let es = '';
+      for(let j = 0; j < show; j++){ const a = j / show * Math.PI * 2; es += `<circle class="ai-e" cx="${(Math.cos(a) * rr).toFixed(1)}" cy="${(Math.sin(a) * rr).toFixed(1)}" r="1.6"/>`; }
+      rings += `<circle class="ai-ring" r="${rr}"/><g class="ai-orb" style="--sp:${5 + k * 3}s;${k % 2 ? 'animation-direction:reverse' : ''}">${es}</g>`;
+    });
+    return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${rings}<g class="ai-nuc">${nuc}</g></svg>`;
+  }
+
+  rxIntro = function(force, forceFail){
+    const prev = document.getElementById('rxIntro'); if(prev) prev.remove();
+    if(!force && !rxIntroOn()){ rxTutMaybe(); return; }
+    const e = EL[Math.floor(Math.random() * 118)];
+    const box = document.createElement('div');
+    box.id = 'rxIntro'; box.className = 'ai';
+    box.innerHTML = `
+      <div class="ai-stage" id="inScene">${atomSVG(e)}</div>
+      <i class="ai-flash"></i>
+      <div class="ai-label"><b>${e.s}</b>${elName(e)} · ${e.n}</div>
+      <div class="in-foot">
+        <div class="in-slogan">${t('sub')}</div>
+        <div class="in-slogan2">${t('sub2')}</div>
+        <div class="in-msg" id="inMsg">${rt('introLoad')}</div>
+        <div class="in-bar"><i id="inBar"></i></div>
+      </div>
+      <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린"><svg></svg>
+        <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
+        <i class="ng-note">${LANG === 'en' ? '← Dynamite shaped like nitroglycerin' : '← 나이트로글리세린 모양의 다이너마이트임'}<small>${LANG === 'en' ? '(It\'s Asriel\'s dynamite!)' : '(아스리엘 거임!)'}</small></i>
+      </div>`;
+    document.body.appendChild(box);
+    document.body.classList.add('rx-intro-on');
+    AI.live = true;
+    const bar = document.getElementById('inBar'), msg = document.getElementById('inMsg');
+    const t0 = performance.now(), dur = RX_REDUCED ? 500 : 1500;
+    const step = now => {
+      if(!document.body.contains(box)) return;
+      const p = Math.min(1, (now - t0) / dur);
+      bar.style.width = (p * 100).toFixed(1) + '%';
+      if(p < 1) return requestAnimationFrame(step);
+      const fail = forceFail || (Math.random() < RX_INTRO_FAIL && !RX_REDUCED);
+      if(fail) aiStuck(); else { msg.textContent = tt('open'); aiOpen(); }
+    };
+    requestAnimationFrame(step);
+  };
+
+  function bits(box){
+    // 전자 → 주기율표 칸
+    const cells = [...document.querySelectorAll('#grid .cell')].filter(c => c.getBoundingClientRect().width > 0);
+    if(!cells.length || RX_REDUCED) return;
+    const pick = cells.sort(() => Math.random() - .5).slice(0, 36);
+    const sr = box.querySelector('.ai-stage').getBoundingClientRect(), cx = sr.left + sr.width / 2, cy = sr.top + sr.height / 2;
+    pick.forEach((c, i) => {
+      const b = document.createElement('i'); b.className = 'ai-bit';
+      const a = Math.random() * Math.PI * 2, r = sr.width * (.18 + Math.random() * .2);
+      b.style.left = (cx + Math.cos(a) * r - 3) + 'px'; b.style.top = (cy + Math.sin(a) * r - 3) + 'px'; b.style.width = b.style.height = '6px';
+      document.body.appendChild(b);
+      const cr = c.getBoundingClientRect(), col = getComputedStyle(c).getPropertyValue('--cc') || '#9fe7ff';
+      setTimeout(() => {
+        b.style.left = cr.left + 'px'; b.style.top = cr.top + 'px'; b.style.width = cr.width + 'px'; b.style.height = cr.height + 'px';
+        b.style.background = col.trim() || '#9fe7ff'; b.classList.add('land');
+      }, 420 + i * 12);
+      setTimeout(() => b.remove(), 1500 + i * 12);
+    });
+  }
+  function aiOpen(broke){
+    const box = document.getElementById('rxIntro'); if(!box || box.classList.contains('open')) return;
+    box.classList.add('open');
+    try{ if(!broke) SFX.gem(); }catch(e){}
+    bits(box);
+    setTimeout(() => {
+      box.classList.add('gone');
+      setTimeout(() => { box.remove(); document.body.classList.remove('rx-intro-on'); AI.live = false; rxTutMaybe(); }, 500);
+    }, broke ? 1100 : 1000);
+  }
+  function aiStuck(){
+    const box = document.getElementById('rxIntro'), msg = document.getElementById('inMsg');
+    if(!box) return;
+    msg.textContent = tt('fail'); box.classList.add('stuck');
+    try{ SFX.fail(); }catch(e){}
+    setTimeout(() => {
+      const tnt = document.getElementById('inTnt');
+      const ng = rxNgSvg(); if(ng) tnt.querySelector('svg').outerHTML = ng;
+      tnt.hidden = false; msg.textContent = tt('hint');
+      rxIntroTnt(tnt);
+    }, 700);
+  }
+  // 예전 함수 이름으로 불려도 새 연출로
+  // (페이지를 열 때 먼저 시작된 옛 문 화면의 타이머가 부르는 건 무시)
+  rxIntroOpen = function(broke){ if(broke) return aiOpen(true); };
+  rxIntroStuck = function(){};
+  rxIntroBoom = function(tnt){
+    const box = document.getElementById('rxIntro');
+    if(!box || box.classList.contains('boom')) return;
+    box.classList.add('boom'); tnt.remove();
+    document.getElementById('inMsg').textContent = tt('boom');
+    try{ SFX.boom(1.6); }catch(e){}
+    try{ if(navigator.vibrate) navigator.vibrate([140, 50, 220]); }catch(e){}
+    document.getElementById('inScene').classList.remove('aim');
+    try{ rxEvt('door'); }catch(e){}
+    aiOpen(true);
+  };
+  // 이미 문 화면이 떠 있으면 원자로 바꿔 띄운다
+  const old = document.getElementById('rxIntro');
+  if(old && !old.classList.contains('ai')){ old.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
+})();
+</script>
+
 </body>
 </html>
