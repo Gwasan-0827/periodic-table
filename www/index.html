@@ -31608,9 +31608,9 @@ function rxGaCube(){
   EXACT["Co1+F2+Fe1"] = ["CoFFe", "커피", "화학식으로 탄 커피. 마시면 안 됨"];
   REC_EN["커피"] = ["CoFFe", "Coffee, brewed from the periodic table. Do not drink"];
   RX_SMILES["커피"] = "[Co](F)F[Fe]";
-  RX_TMI["커피"] = "코발트(Co) + 플루오린(F) + 플루오린(F) + 철(Fe)을 이어 쓰면 CoFFe, 커피예요. 물론 이런 분자는 없고, 진짜 커피에 든 건 탄소·수소·질소·산소로 된 카페인(C₈H₁₀N₄O₂)이에요. 진짜 커피 향은 분자 수백 가지가 섞여서 나요.";
+  RX_TMI["커피"] = "코발트(Co) + 플루오린(F) + 플루오린(F) + 철(Fe)을 이어 쓰면 CoFFe, 커피예요. 물론 이런 분자는 없고, 진짜 커피에 든 건 탄소·수소·질소·산소로 된 카페인(C₈H₁₀N₄O₂)이에요. 진짜 커피 향은 분자 수백 가지가 섞여서 나요. 그리고 소리 내어 읽으면 '코페'… 어딘가의 완벽주의 바리스타가 떠오르는 이름이에요.";
   try{ RX_TAGSET.food && RX_TAGSET.food.add("커피"); }catch(e){}
-  try{ RX_DEX_ALIAS["커피"] = "coffee coffe 코피"; }catch(e){}
+  try{ RX_DEX_ALIAS["커피"] = "coffee coffe 코피 코페"; }catch(e){}
   if(typeof ACH !== 'undefined'){
     const i = ACH.findIndex(a => a.id === 'master');
     const a = { id: 'coffe', secret: true, need: () => found.has('커피'),
