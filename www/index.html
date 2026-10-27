@@ -33831,11 +33831,11 @@ function rxFlashbang(soft){
   .pw-half canvas{position:absolute;inset:0;width:100%;height:100%}
   #rxIntro.pw.split{background:transparent}
   #rxIntro.pw.split .pw-main{display:none}
-  #rxIntro.pw.open .pw-half.a{transform:translate(-14vw,7vh) rotate(-1.5deg);filter:brightness(.7)}
-  #rxIntro.pw.open .pw-half.b{transform:translate(14vw,-7vh) rotate(1.5deg);filter:brightness(.7)}
-  #rxIntro.pw.open.far .pw-half.a{transform:translate(-80vw,40vh) rotate(-5deg)}
-  #rxIntro.pw.open.far .pw-half.b{transform:translate(80vw,-40vh) rotate(5deg)}
-  #rxIntro.pw.open.far .pw-half{transition-duration:.6s}
+  #rxIntro.pw.hit .pw-main{filter:invert(1) hue-rotate(180deg) contrast(1.3)}
+  .pw-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+  .pw-slash line.rc{stroke:#7df9ff;opacity:.75;transform:translateX(-4px);filter:none;stroke-width:2}
+  .pw-slash line.rm{stroke:#ff6ec7;opacity:.75;transform:translateX(4px);filter:none;stroke-width:2}
+  #rxIntro.pw.open .pw-slash line.core{stroke-width:16;transition:stroke-width .25s ease-out}
   .pw-slash{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;opacity:0}
   #rxIntro.pw.slice .pw-slash{opacity:1}
   .pw-slash line{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 20px #8c9eff);stroke-dasharray:1 1;stroke-dashoffset:1}
@@ -33911,7 +33911,7 @@ function rxFlashbang(soft){
     const box = document.createElement('div');
     box.id = 'rxIntro'; box.className = 'pw';
     box.innerHTML = `<canvas class="pw-main"></canvas><i class="pw-zone" id="inScene"></i>
-      <svg class="pw-slash" aria-hidden="true"><line pathLength="1"/></svg><i class="pw-flash"></i>
+      <svg class="pw-slash" aria-hidden="true"><line class="rc" pathLength="1"/><line class="rm" pathLength="1"/><line class="core" pathLength="1"/></svg><canvas class="pw-fx"></canvas><i class="pw-flash"></i>
       <div class="pw-hud tl">PERIODIC <b>//</b> TABLE<br>${LANG === 'en' ? 'ALIGNING' : '정렬 중'} · <b id="pwZ">001</b> / 118</div>
       <div class="pw-hud tr">β V.4.0<br>${new Date().getFullYear()}</div>
       <div class="in-foot"><div class="in-msg" id="inMsg">${tt('load')}</div><div class="in-bar"><i id="inBar"></i></div></div>
@@ -34120,6 +34120,7 @@ function rxFlashbang(soft){
     function frame(now){
       if(!document.body.contains(box)) return;
       if(state === 'split'){ return; }
+      if(state === 'freeze'){ requestAnimationFrame(frame); return; }
       const t = now - t0;
       // 박자
       const k = Math.floor((t + 1) / BEAT);
@@ -34199,16 +34200,24 @@ function rxFlashbang(soft){
 
     box._pw = {
       charge(){ charge = 1; chargeAt = performance.now(); },
+      freeze(){ if(state !== 'split') state = 'freeze'; },
       split(){
         // 지금 화면을 두 장으로 떠서 "//" 사선으로 자른다
         const pt = slashPt || [W / 2, H * .42], xt = pt[0] + pt[1] * SLANT, xb = pt[0] - (H - pt[1]) * SLANT;
-        const ln = box.querySelector('.pw-slash line'); box.querySelector('.pw-slash').setAttribute('viewBox', `0 0 ${W} ${H}`);
-        ln.setAttribute('x1', xt + 20 * SLANT); ln.setAttribute('y1', -20); ln.setAttribute('x2', xb - 20 * SLANT); ln.setAttribute('y2', H + 20);
+        box.querySelector('.pw-slash').setAttribute('viewBox', `0 0 ${W} ${H}`);
+        box.querySelectorAll('.pw-slash line').forEach(ln => { ln.setAttribute('x1', xt + 20 * SLANT); ln.setAttribute('y1', -20); ln.setAttribute('x2', xb - 20 * SLANT); ln.setAttribute('y2', H + 20); });
+        const L = Math.hypot(xb - xt, H), u = [(xb - xt) / L, H / L], n = [u[1], -u[0]];
+        box._geo = { xt, xb, pt, u, n, W, H, DPR };
         return () => {
           ['a', 'b'].forEach(k => {
             const h = document.createElement('div'); h.className = 'pw-half ' + k;
             h.style.clipPath = k === 'a' ? `polygon(-60px -60px,${xt}px -60px,${xb}px ${H + 60}px,-60px ${H + 60}px)` : `polygon(${xt}px -60px,${W + 60}px -60px,${W + 60}px ${H + 60}px,${xb}px ${H + 60}px)`;
-            const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; c2.getContext('2d').drawImage(cv, 0, 0);
+            const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const g2 = c2.getContext('2d'); g2.drawImage(cv, 0, 0);
+            // 잘린 단면이 빛나게
+            g2.setTransform(DPR, 0, 0, DPR, 0, 0); g2.lineCap = 'round';
+            g2.beginPath(); g2.moveTo(xt, -20); g2.lineTo(xb, H + 20);
+            g2.shadowColor = PW; g2.shadowBlur = 24 * DPR; g2.strokeStyle = pw(.9); g2.lineWidth = 6; g2.stroke();
+            g2.shadowBlur = 0; g2.strokeStyle = '#fff'; g2.lineWidth = 2; g2.stroke();
             h.appendChild(c2); box.insertBefore(h, cv.nextSibling);
           });
           state = 'split'; box.classList.add('split');
@@ -34217,13 +34226,54 @@ function rxFlashbang(soft){
     };
   };
 
+  // 베기 이펙트: 불꽃 + 충격파 (별도 캔버스)
+  function slashFx(box){
+    const G = box._geo, c = box.querySelector('.pw-fx'); if(!G || !c || RX_REDUCED) return;
+    c.width = G.W * G.DPR; c.height = G.H * G.DPR; const g = c.getContext('2d'), t0 = performance.now();
+    const sparks = Array.from({length: 90}, () => { const s = Math.random(), px = G.xt + (G.xb - G.xt) * s, py = -20 + (G.H + 40) * s, side = Math.random() < .5 ? 1 : -1, sp = 4 + Math.random() * 14, al = (Math.random() - .5) * 8;
+      return { x: px, y: py, vx: G.n[0] * sp * side + G.u[0] * al, vy: G.n[1] * sp * side + G.u[1] * al, life: 380 + Math.random() * 600, d: Math.random() * 120, w: Math.random() < .3 }; });
+    const step = now => {
+      if(!document.body.contains(c)) return;
+      const t = now - t0; g.setTransform(G.DPR, 0, 0, G.DPR, 0, 0); g.clearRect(0, 0, G.W, G.H);
+      // 충격파 고리 두 겹
+      [[0, 1], [90, .6]].forEach(([dl, a]) => { const p = Math.min(1, Math.max(0, (t - dl) / 650)); if(p <= 0 || p >= 1) return; const e = 1 - Math.pow(1 - p, 3);
+        g.beginPath(); g.ellipse(G.pt[0], G.pt[1], e * Math.max(G.W, G.H) * .75, e * Math.max(G.W, G.H) * .75 * .55, Math.atan2(G.u[1], G.u[0]) + Math.PI / 2, 0, 6.283);
+        g.strokeStyle = `rgba(197,203,255,${(1 - p) * a})`; g.lineWidth = 2 + (1 - p) * 6; g.stroke(); });
+      let alive = 0;
+      sparks.forEach(p => { const tt = t - p.d; if(tt < 0){ alive++; return; } if(tt > p.life) return; alive++;
+        const k = tt / 16, x = p.x + p.vx * k * (1 - tt / p.life * .5), y = p.y + p.vy * k * (1 - tt / p.life * .5) + .002 * tt * tt * .3, a = 1 - tt / p.life;
+        g.beginPath(); g.moveTo(x, y); g.lineTo(x - p.vx * 2.2, y - p.vy * 2.2); g.strokeStyle = p.w ? `rgba(255,255,255,${a})` : `rgba(160,175,255,${a})`; g.lineWidth = p.w ? 2 : 1.4; g.stroke(); });
+      if(alive || t < 800) requestAnimationFrame(step); else g.clearRect(0, 0, G.W, G.H);
+    };
+    requestAnimationFrame(step);
+  }
+  // 두 조각: 칼자국을 따라 미끄러졌다가(감속) → 바깥으로 날아간다(가속)
+  function flyHalves(box, quick){
+    const G = box._geo; if(!G) return;
+    const [ux, uy] = G.u, [nx, ny] = G.n, far = Math.max(G.W, G.H) * 1.1;
+    box.querySelectorAll('.pw-half').forEach(h => {
+      const sg = h.classList.contains('a') ? 1 : -1, tf = (a, b, r) => `translate(${a.toFixed(1)}px,${b.toFixed(1)}px) rotate(${r}deg)`;
+      if(RX_REDUCED){ h.animate([{opacity: 1}, {opacity: 0}], {duration: 400, fill: 'forwards'}); return; }
+      const slide = quick ? 0 : 46;
+      h.animate([
+        { transform: tf(0, 0, 0), filter: 'brightness(1)', offset: 0, easing: 'cubic-bezier(.16,1,.3,1)' },
+        { transform: tf(ux * slide * sg - nx * 8 * sg, uy * slide * sg - ny * 8 * sg, 0), filter: 'brightness(1.15)', offset: quick ? .01 : .32, easing: 'cubic-bezier(.7,0,.84,0)' },
+        { transform: tf(-nx * far * sg + ux * far * .35 * sg, -ny * far * sg + uy * far * .35 * sg, -7 * sg), filter: 'brightness(.6)', offset: 1 }
+      ], { duration: quick ? 800 : 1150, fill: 'forwards' });
+    });
+  }
   function pwOpen(broke){
     const box = document.getElementById('rxIntro'); if(!box || !box._pw || box.classList.contains('open')) return;
-    if(broke){ const go = box._pw.split(); go(); box.classList.add('slice', 'open', 'far'); fin(box, 900); return; }
+    if(broke){ const go = box._pw.split(); go(); box.classList.add('slice', 'open'); slashFx(box); flyHalves(box, true); fin(box, 850); return; }
     box._pw.charge(); snd('charge');
     setTimeout(() => {
-      const go = box._pw.split(); box.classList.add('slice'); snd('slice');
-      setTimeout(() => { go(); requestAnimationFrame(() => { box.classList.add('open'); setTimeout(() => box.classList.add('far'), 420); }); fin(box, 1000); }, 190);
+      // 히트스톱: 한순간 멈추고 반전 번쩍
+      box._pw.freeze(); box.classList.add('hit');
+      setTimeout(() => box.classList.remove('hit'), 70);
+      setTimeout(() => {
+        const go = box._pw.split(); box.classList.add('slice'); snd('slice'); slashFx(box);
+        setTimeout(() => { go(); box.classList.add('open'); flyHalves(box); fin(box, 1150); }, 210);
+      }, RX_REDUCED ? 0 : 120);
     }, RX_REDUCED ? 100 : 450);
   }
   function fin(box, ms){
