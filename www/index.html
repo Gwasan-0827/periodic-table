@@ -6185,7 +6185,7 @@ const CHANGELOG = [
            '학습에 "원자 사진" 탭이 생겼어요. 1955년 처음 원자를 본 순간부터 원자로 쓴 글씨, 수소의 전자 구름 사진, 평범한 카메라로 찍은 원자 하나, 지금까지 가장 선명한 원자 사진까지 어떻게 찍었는지 정리했어요',
            '특수 발견에 나노카가 생겼어요. 풀러렌 바퀴 네 개로 굴러가는 분자 자동차예요. 진짜는 원자가 716개라 그대로는 못 담으니, 탄소·수소·산소를 진짜 나노카와 같은 비율로 섞어 보세요',
            '학습에 "오비탈 단면" 탭이 생겼어요. 주양자수·부양자수·자기양자수와 평면(xy·yz·zx)을 고르면 수소 원자의 전자 확률을 공식으로 바로 계산해서 단면을 칠해 줘요. 면마디를 고르면 까맣게 나오는 것까지 진짜예요',
-           '숨은 조합 하나: 코발트, 플루오린 둘, 철을 섞어 보세요. 화학식을 소리 내어 읽어 보면 알아요',
+           '숨은 조합 하나: 코발트, 플루오린, 철을 하나씩 섞어 보세요. 화학식을 소리 내어 읽어 보면 알아요',
            '조합 연출을 새로 만들었어요. 원자들이 조합 트레이에서 떠올라 곡선을 그리며 날아가 실제 분자 구조의 제자리에 톡 앉아요. 양쪽 원자가 다 도착하면 결합이 하나씩 반짝 소리와 함께 이어지고, 다 이어지면 분자에 은은한 빛이 돌면서 결과 창으로 스르륵 넘어가요. 원자가 많으면 여럿이 같이 움직이고, 같은 조합을 다시 하면 더 빨라져요. 화면을 누르면 완성된 모습으로 바로 넘어가요. 광물은 결정 구조의 원자들이 차곡차곡 자라나고, 큐브·진주 같은 3D 모형은 원자들이 모형 표면에 모인 뒤 모형이 드러나요',
            '도감 검색이 다른 이름도 알아들어요. "비타민 A", "비타민 C", "니코틴산", "수크로스", "글리콜", "코카인" 같은 걸로도 찾을 수 있어요',
            '폰에서 결과 창의 긴 안내가 결과물을 가리던 걸 얇은 한 줄로 줄였어요. 누르면 바로 닫혀요',
@@ -6209,7 +6209,7 @@ const CHANGELOG = [
            'New Learn tab, "Atom photos": how people first saw atoms in 1955, wrote with them, photographed hydrogen\'s electron cloud, caught a single atom on an ordinary camera, and took the sharpest atom picture yet',
            'New special discovery: the nanocar, a molecule that rolls on four fullerene wheels. The real one has 716 atoms, too many to hold, so mix carbon, hydrogen and oxygen in the same ratio',
            'New Learn tab, "Orbital slices": pick n, l, m and a plane (xy, yz, zx) and the hydrogen electron probability is calculated from the formula and painted instantly. Pick a nodal plane and it really is black',
-           'One hidden combination: try cobalt, two fluorines and iron, then read the formula out loud',
+           'One hidden combination: try one cobalt, one fluorine and one iron, then read the formula out loud',
            'New combine animation: atoms lift off the mix tray, curve in and settle into their real positions in the molecule. Once both ends have landed, each bond connects with a small spark and tick, then the whole molecule glows softly and glides into the result window. Big molecules move in parallel, repeat combinations play faster, and tapping jumps straight to the finished molecule. Minerals grow their crystal lattice, and 3D objects like cubes and pearls gather atoms on their surface before the object appears',
            'Codex search understands other names too, like "vitamin A", "vitamin C", "sucrose" or "glycol"',
            'On phones, long hints in the result window are now a thin one-line strip that no longer covers the model. Tap to close',
@@ -31601,20 +31601,20 @@ function rxGaCube(){
 })();
 </script>
 <script>
-/* ── 4.0 이스터에그: Co + F + F + Fe = CoFFe (커피) ── */
+/* ── 4.0 이스터에그: Co + F + Fe = CoFFe (커피). Fe 의 F 까지 해서 F 가 둘 ── */
 (function(){
   // 원자 넷을 C·o·F·F·e 글자 순서대로 지그재그로 (Co–F–F–Fe)
-  RX_SMILES_PRE["[Co](F)F[Fe]"] = { a: [["Co", -96, 14, 0, 18], ["F", -33, -14, 0, 14], ["F", 33, 14, 0, 14], ["Fe", 96, -14, 0, 18]], b: [[0, 1, 1], [1, 2, 1], [2, 3, 1]] };
-  EXACT["Co1+F2+Fe1"] = ["CoFFe", "커피", "화학식으로 탄 커피. 마시면 안 됨"];
+  RX_SMILES_PRE["[Co]F[Fe]"] = { a: [["Co", -66, 14, 0, 18], ["F", 0, -14, 0, 14], ["Fe", 66, 14, 0, 18]], b: [[0, 1, 1], [1, 2, 1]] };
+  EXACT["Co1+F1+Fe1"] = ["CoFFe", "커피", "화학식으로 탄 커피. 마시면 안 됨"];
   REC_EN["커피"] = ["CoFFe", "Coffee, brewed from the periodic table. Do not drink"];
-  RX_SMILES["커피"] = "[Co](F)F[Fe]";
-  RX_TMI["커피"] = "코발트(Co) + 플루오린(F) + 플루오린(F) + 철(Fe)을 이어 쓰면 CoFFe, 커피예요. 물론 이런 분자는 없고, 진짜 커피에 든 건 탄소·수소·질소·산소로 된 카페인(C₈H₁₀N₄O₂)이에요. 진짜 커피 향은 분자 수백 가지가 섞여서 나요. 그리고 소리 내어 읽으면 '코페'… 어딘가의 완벽주의 바리스타가 떠오르는 이름이에요.";
+  RX_SMILES["커피"] = "[Co]F[Fe]";
+  RX_TMI["커피"] = "코발트(Co) + 플루오린(F) + 철(Fe)을 이어 쓰면 CoFFe, 커피예요. F가 둘인 건 철(Fe)의 F까지 쳐서예요. 물론 이런 분자는 없고, 진짜 커피에 든 건 탄소·수소·질소·산소로 된 카페인(C₈H₁₀N₄O₂)이에요. 진짜 커피 향은 분자 수백 가지가 섞여서 나요. 그리고 소리 내어 읽으면 '코페'… 어딘가의 완벽주의 바리스타가 떠오르는 이름이에요.";
   try{ RX_TAGSET.food && RX_TAGSET.food.add("커피"); }catch(e){}
   try{ RX_DEX_ALIAS["커피"] = "coffee coffe 코피 코페"; }catch(e){}
   if(typeof ACH !== 'undefined'){
     const i = ACH.findIndex(a => a.id === 'master');
     const a = { id: 'coffe', secret: true, need: () => found.has('커피'),
-      ko: ['아아 한 잔', '코발트·플루오린·플루오린·철로 커피를 탔다'], en: ['One iced CoFFe', 'Brewed coffee from cobalt, fluorine, fluorine and iron'] };
+      ko: ['아아 한 잔', '코발트·플루오린·철로 커피를 탔다'], en: ['One iced CoFFe', 'Brewed coffee from cobalt, fluorine and iron'] };
     if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
   }
   try{ RX_ACH_IC.coffe = '☕'; }catch(e){}
