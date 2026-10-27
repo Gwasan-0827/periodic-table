@@ -6197,6 +6197,7 @@ const CHANGELOG = [
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
+           '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
            '새 보기 "발견의 역사": 연도 슬라이더를 움직이거나 ▶를 누르면 원소가 발견된 순서대로 주기율표가 채워져요. 멘델레예프가 주기율표를 만든 1869년에는 딱 63칸만 차 있어요',
            '검열 시리즈(코█인, 카█, THC)는 이제 이름뿐 아니라 분자 모형까지 모자이크되고, 큼지막한 \'겸\'열됨!! 도장이 찍혀요',
@@ -6226,6 +6227,7 @@ const CHANGELOG = [
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
+           'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
            'New view "Discovery": drag the year slider or press ▶ and the table fills in the order the elements were found. In 1869, when Mendeleev made his table, only 63 cells are lit',
            'The censored series (cocaine, cathine, THC) now has its molecule model pixelated too, with a big \'CENSROED\'!! stamp',
@@ -33479,6 +33481,87 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
         requestAnimationFrame(() => { q.style.height = h; });
       } else { q.style.transitionDelay = '0ms'; q.style.height = h; }
     });
+    return r;
+  };
+  try{ paint(); }catch(e){}
+})();
+</script>
+
+<style>
+  /* ═══ 온도 보기 리워크: 고체는 결정 격자 · 액체는 출렁이는 물 · 기체는 피어오르는 방울 ═══ */
+  body.temp-fx #grid .cell{overflow:hidden}
+  body.temp-fx #grid .cell > *:not(.tq){position:relative;z-index:1}
+  body.temp-fx #grid .cell .sym, body.temp-fx #grid .cell .st{text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .tq{position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .4s}
+  body:not(.temp-fx) .tq{display:none}
+  /* 고체: 촘촘한 원자 격자 */
+  .cell[data-ts="solid"] .tq{background:radial-gradient(circle,rgba(200,215,235,.18) 1.2px,transparent 1.8px) 0 0/7px 7px,linear-gradient(180deg,#3b4558,#2b3342)}
+  /* 액체: 아래 3/4 물 + 물결 */
+  .cell[data-ts="liquid"] .tq{background:linear-gradient(180deg,transparent 30%,#1f7fb6 30%,#155a86)}
+  .cell[data-ts="liquid"] .tq::before,.cell[data-ts="liquid"] .tq::after{content:"";position:absolute;left:0;right:0;top:calc(30% - 6px);height:7px;background:#1f7fb6;
+    -webkit-mask:var(--wv) repeat-x 0 0/22px 7px;mask:var(--wv) repeat-x 0 0/22px 7px;animation:hqWave 1.6s linear infinite}
+  .cell[data-ts="liquid"] .tq::after{opacity:.5;top:calc(30% - 8px);animation-duration:2.4s;animation-direction:reverse}
+  /* 기체: 붉은 기운 + 피어오르는 방울 */
+  .cell[data-ts="gas"] .tq{background:
+      radial-gradient(circle,rgba(255,190,170,.32) 1.5px,transparent 2.2px) 0 0/13px 15px,
+      radial-gradient(circle,rgba(255,190,170,.2) 1.1px,transparent 1.8px) 6px 7px/11px 13px,
+      linear-gradient(180deg,#7a3326,#4b231f);animation:tqRise 2.2s linear infinite}
+  @keyframes tqRise{to{background-position:0 -15px,6px -6px,0 0}}
+  /* 자료 없음 */
+  .cell[data-ts="none"] .tq{background:repeating-linear-gradient(135deg,#1a2029 0 6px,#151a22 6px 12px)}
+  body.temp-fx #grid .cell[data-ts="none"]{color:#6b7686!important}
+  /* 상태가 바뀌는 순간 반짝 */
+  body.temp-fx #grid .cell.tchg{animation:tqChg .6s ease}
+  @keyframes tqChg{0%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}35%{box-shadow:0 0 16px 3px rgba(255,240,200,.75)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  @media (prefers-reduced-motion:reduce){ .tq,.tq::before,.tq::after{animation:none!important} }
+
+  /* 온도 막대 */
+  #mopt .trow{display:flex;align-items:center;gap:14px;flex:1;min-width:240px}
+  #mopt #tSlider{-webkit-appearance:none;appearance:none;flex:1;height:12px;border-radius:999px;cursor:pointer;
+    background:linear-gradient(90deg,#4dabf7 0%,#74c0fc 5%,#69db7c 9%,#ffd43b 25%,#ff922b 45%,#fa5252 75%,#fff3bf 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+  #mopt #tSlider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid #0b0d11;box-shadow:0 0 0 2px #fff,0 3px 10px rgba(0,0,0,.5)}
+  #mopt #tSlider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #0b0d11;box-shadow:0 0 0 2px #fff}
+  #mopt .treadout{min-width:120px;font-variant-numeric:tabular-nums}
+  #mopt .treadout b{display:block;font:800 22px/1 Orbit,system-ui,sans-serif;color:var(--text)}
+  #mopt .treadout em{font-style:normal;font-size:12px;color:var(--dim)}
+  .tt-chips{display:flex;gap:6px;flex-wrap:wrap}
+  .tt-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--dim)}
+  .tt-chip i{width:12px;height:12px;border-radius:3px;background:var(--c)}
+  .tt-chip b{color:var(--text);font-variant-numeric:tabular-nums}
+  @media (max-width:700px){ #mopt .trow{min-width:0;width:100%} #mopt .treadout b{font-size:18px} }
+</style>
+<script>
+(function(){
+  if(typeof paint !== 'function' || typeof stateAt !== 'function') return;
+  if(!document.documentElement.style.getPropertyValue('--wv')){
+    document.documentElement.style.setProperty('--wv', `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 7"><path d="M0 4 Q5.5 0 11 4 T22 4 V7 H0Z" fill="#000"/></svg>')}")`);
+  }
+  const prev = new Map();
+  const _p = paint;
+  paint = function(){
+    const r = _p.apply(this, arguments);
+    const on = VIEW === 'temp';
+    document.body.classList.toggle('temp-fx', on);
+    if(!on){ prev.clear(); return r; }
+    const tally = { solid: 0, liquid: 0, gas: 0, none: 0 };
+    document.querySelectorAll('#grid .cell').forEach(c => {
+      const e = byNum[+c.dataset.n]; if(!e) return;
+      let q = c.querySelector('.tq');
+      if(!q){ q = document.createElement('i'); q.className = 'tq'; c.prepend(q); }
+      const s = stateAt(e, TEMPK) || 'none';
+      tally[s]++;
+      const was = prev.get(e.n);
+      if(was && was !== s){ c.classList.remove('tchg'); void c.offsetWidth; c.classList.add('tchg'); }
+      prev.set(e.n, s);
+      c.dataset.ts = s;
+      c.style.background = 'transparent'; c.style.color = s === 'none' ? '' : '#eef2f7';
+    });
+    const el = document.getElementById('tTally');
+    if(el){
+      const en = LANG === 'en';
+      const chip = (k, col, lbl) => `<span class="tt-chip" style="--c:${col}"><i></i>${lbl} <b>${tally[k]}</b></span>`;
+      el.innerHTML = `<div class="tt-chips">${chip('solid', '#3b4558', stateFull('solid'))}${chip('liquid', '#1f7fb6', stateFull('liquid'))}${chip('gas', '#7a3326', stateFull('gas'))}${chip('none', '#232a36', en ? 'No data' : '자료 없음')}</div>`;
+    }
     return r;
   };
   try{ paint(); }catch(e){}
