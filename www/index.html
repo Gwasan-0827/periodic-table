@@ -33930,44 +33930,39 @@ function rxFlashbang(soft){
     const bell = (m, at, v, wet = .5, pan = 0) => { const car = a.createOscillator(), mod = a.createOscillator(), mg = a.createGain(), g = a.createGain(); car.frequency.value = mtof(m); mod.frequency.value = mtof(m) * 2; mg.gain.setValueAtTime(mtof(m) * 1.5, at); mg.gain.exponentialRampToValueAtTime(1, at + .4);
       mod.connect(mg); mg.connect(car.frequency); car.connect(g); env(g, at, v, .7); to(g, 1, wet, pan); car.start(at); mod.start(at); car.stop(at + .75); mod.stop(at + .75); };
 
+    const thump = (at, v) => { const os = a.createOscillator(), g = a.createGain(); os.frequency.setValueAtTime(140, at); os.frequency.exponentialRampToValueAtTime(45, at + .12); env(g, at, v, .28); os.connect(g); to(g, 1); os.start(at); os.stop(at + .3);
+      const c = nb(.008, x => 1 - x), hf = a.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 2500; c.connect(hf); to(hf, v * .5); c.start(at); };
+    const pop = (at, f0, v, pan = 0) => { const os = a.createOscillator(), g = a.createGain(); os.type = 'sine'; os.frequency.setValueAtTime(f0, at); os.frequency.exponentialRampToValueAtTime(f0 * .5, at + .06); env(g, at, v, .08); os.connect(g); to(g, 1, .15, pan); os.start(at); os.stop(at + .1); };
+    const tick = (at, v, pan = 0) => { const c = nb(.006, x => 1 - x), bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 4500 + Math.random() * 2500; bp.Q.value = 4; c.connect(bp); to(bp, v, 0, pan); c.start(at); };
     switch(kind){
-      case 'intro': { // 하이퍼팝 스터터 → 피치가 쭉 떨어지는 코드 (카메라가 빠지는 동안)
-        for(let k = 0; k < 6; k++){ const at = t + k * k * .009; chop(84 - k, at, .09 * (1 - k * .1), (k % 2 ? .5 : -.5), .045); }
-        const at = t + .3 * 0 + .26;
-        supersaw([65, 69, 72, 76], at, .75, .55, 9000, 500, .5, (p, a0, v) => { p.setValueAtTime(0, a0); p.linearRampToValueAtTime(v, a0 + .01); p.exponentialRampToValueAtTime(.0001, a0 + .75); }, 12);
-        sub(at, 160, 38, .8, .45); swish(at, .7, 6000, 250, .35, .6, -.6);
+      case 'intro': // 카메라가 빠지는 바람 + 낮게 떨어지는 쿵
+        swish(t, .9, 5500, 260, .45, .5, -.5);
+        { const sN = nb(1, x => Math.pow(1 - x, 2) * .6), lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(1800, t); lp.frequency.exponentialRampToValueAtTime(200, t + 1); sN.connect(lp); to(lp, .25, .3); sN.start(t); }
+        sub(t, 110, 36, .9, .4); thump(t, .45);
+        break;
+      case 'beat': { // 도형이 박힐 때: 쿵 + 톡 + 틱
+        const n = o.n; thump(t, n === 4 ? .6 : .45); pop(t, 1400 + n * 180, .07, (n % 2 ? -.3 : .3)); tick(t + .15, .06, (n % 2 ? .4 : -.4));
+        if(n === 4) swish(t, .35, 2000, 8000, .22, -.6, .6);
         break; }
-      case 'beat': { // 킥 + 펌핑 슈퍼쏘 코드 + 베이스 + 클랩(2·4박) + 하이햇
-        const n = o.n, c = CH[(n - 1) % 4]; kick(t, n === 4 ? .75 : .62);
-        supersaw(c.map(m => m + 12), t, .3, .5, 6500, 1800, .3, (p, a0, v) => pump(p, a0, v, .3));
-        { const os = a.createOscillator(), g = a.createGain(), f = a.createBiquadFilter(); os.type = 'square'; os.frequency.value = mtof(c[0] - 12); f.type = 'lowpass'; f.frequency.value = 500; pump(g.gain, t, .14, .3); os.connect(f); f.connect(g); to(g, 1); os.start(t); os.stop(t + .32); }
-        if(n % 2 === 0) clap(t + .005, .3);
-        hat(t + .15, .08, .35);
-        chop(PENTA[(n * 3) % PENTA.length], t + .15, .05, -.3, .09);
-        break; }
-      case 'whip': swish(t, .26, 900, 5200, .5, -o.dir, o.dir); { const os = a.createOscillator(), g = a.createGain(); os.type = 'triangle'; os.frequency.setValueAtTime(600, t); os.frequency.exponentialRampToValueAtTime(2400, t + .18); env(g, t, .05, .2); os.connect(g); to(g, 1, .2, o.dir * .6); os.start(t); os.stop(t + .22); } break;
-      case 'blip': chop(PENTA[(Math.random() * PENTA.length) | 0], t, .04, Math.random() * 1.2 - .6, .07); break;
-      case 'chime': [0, 4, 7, 12].forEach((d, k) => bell((o.hi ? 91 : 84) + d, t + k * .035, .045, .6, (k - 1.5) * .45)); break;
-      case 'lock': { // 드롭: 스쿱 + 16분음표로 썰리는 슈퍼쏘 + 킥·서브·클랩 + 반짝이
-        kick(t, .8); sub(t, 70, 40, .9, .45); clap(t + .005, .35, .5);
-        const step = .075;
-        supersaw(DROP, t, 1.25, .75, 9000, 1400, .45, (p, a0, v) => { p.setValueAtTime(0, a0); for(let k = 0; k < 16; k++){ const at = a0 + k * step, lv = v * (1 - k / 22); p.setValueAtTime(k % 4 === 3 ? lv * .15 : lv, at); p.setValueAtTime(lv * .08, at + step * .72); } p.linearRampToValueAtTime(.0001, a0 + 1.25); }, -2);
-        [0, .15, .3, .45].forEach((d, k) => chop([84, 88, 91, 96][k], t + d, .06, (k - 1.5) * .4, .1));
-        [96, 100, 103].forEach((m, k) => bell(m, t + .05 * k, .03, .8, (k - 1) * .6));
-        break; }
-      case 'riser': { // 빌드업: 빨라지는 스네어 롤 + 올라가는 노이즈 + 피치 업
-        for(let k = 0; k < 10; k++){ const at = t + .45 * (1 - Math.pow(1 - k / 10, 1.6)); clap(at, .08 + k * .022, .1); }
-        const sN = nb(.45, x => x * x), bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2; bp.frequency.setValueAtTime(600, t); bp.frequency.exponentialRampToValueAtTime(9000, t + .45); sN.connect(bp); to(bp, .45); sN.start(t);
-        supersaw([69, 76], t, .45, .25, 1200, 9000, .2, (p, a0, v) => { p.setValueAtTime(.0001, a0); p.exponentialRampToValueAtTime(v, a0 + .44); p.setValueAtTime(0, a0 + .45); }, -12);
+      case 'whip': swish(t, .26, 900, 5200, .5, -o.dir, o.dir); swish(t + .04, .2, 3500, 900, .18, -o.dir * .5, o.dir * .5); break;
+      case 'blip': tick(t, .035, Math.random() * 1.2 - .6); break;
+      case 'chime': [0, 7].forEach((d, k) => bell((o.hi ? 93 : 88) + d, t + k * .04, .03, .55, (k - .5) * .6)); break;
+      case 'lock': // 로고 완성: 묵직한 쿵 + 공기 터지는 소리 + 높은 반짝임
+        thump(t, .7); sub(t, 80, 38, .8, .45);
+        { const sN = nb(.3, x => Math.pow(1 - x, 3)), bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(3000, t); bp.frequency.exponentialRampToValueAtTime(600, t + .3); bp.Q.value = .8; sN.connect(bp); to(bp, .3, .5); sN.start(t); }
+        [96, 103].forEach((m, k) => bell(m, t + .05 * k, .025, .8, (k - .5) * .7));
+        break;
+      case 'riser': { // 베기 전 차오르는 바람
+        const sN = nb(.45, x => x * x), bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2.2; bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(8500, t + .45); sN.connect(bp); to(bp, .55, .15); sN.start(t);
+        const os = a.createOscillator(), g = a.createGain(); os.frequency.setValueAtTime(300, t); os.frequency.exponentialRampToValueAtTime(2400, t + .45); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.04, t + .44); g.gain.setValueAtTime(0, t + .45); os.connect(g); to(g, 1); os.start(t); os.stop(t + .46);
         break; }
       case 'cut':
         B.master.gain.cancelScheduledValues(t); B.master.gain.setValueAtTime(B.master.gain.value, t); B.master.gain.linearRampToValueAtTime(0, t + .01); B.master.gain.setValueAtTime(0, t + (o.ms || 120) / 1000); B.master.gain.linearRampToValueAtTime(1, t + (o.ms || 120) / 1000 + .004);
         break;
       case 'slice': { // 임팩트: 킥·서브·클랩 + 칼날 쨍 + 긴 잔향 코드
-        kick(t, .9); sub(t, 120, 32, 1.1, .6); clap(t, .4, .7);
+        thump(t, .8); sub(t, 120, 32, 1.1, .6); { const sN = nb(.5, x => Math.pow(1 - x, 4)), lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1200; sN.connect(lp); to(lp, .35, .6); sN.start(t); }
         const sN = nb(.14, x => Math.pow(1 - x, 2.5)), hf = a.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 3500; sN.connect(hf); to(hf, .5, .5); sN.start(t);
         [2310, 3740, 5120, 7930].forEach((fr, k) => { const os = a.createOscillator(), g = a.createGain(); os.frequency.setValueAtTime(fr * 1.05, t); os.frequency.exponentialRampToValueAtTime(fr, t + .08); env(g, t, .04 / (k * .6 + 1), 1.1); os.connect(g); to(g, 1, .6, k % 2 ? .3 : -.3); os.start(t); os.stop(t + 1.15); });
-        supersaw(DROP.map(m => m + 12), t, 1.6, .35, 8000, 600, .8, (p, a0, v) => { p.setValueAtTime(0, a0); p.linearRampToValueAtTime(v, a0 + .01); p.exponentialRampToValueAtTime(.0001, a0 + 1.6); });
         break; }
       case 'fly': swish(t, .7, 5000, 300, .4, -.8, -1); swish(t, .7, 4500, 280, .4, .8, 1); break;
       case 'clang':
