@@ -34165,9 +34165,10 @@ function rxFlashbang(soft){
       // 별: 가운데에서 크게 튀어나왔다가, 로고가 들어오면 왼쪽 위 모서리로 비켜난다 (빙글 뒤집히며)
       { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520));
         const flip = Math.cos(t * .0021), sx = (Math.abs(flip) < .08 ? .08 : Math.abs(flip)) * (flip < 0 ? -1 : 1);
-        sparkle(lerp(0, -470, mv), lerp(0, -330, mv), lerp(250, 95, mv) * pop, mv < 1 ? lerp(1, sx, mv) : sx, cl(pop * 1.5));
+        const sw = (fx, fy) => [(W * fx - ox) / (U * cam.z) + cam.cx, (H * fy - oy) / (U * cam.z) + cam.cy], P1 = sw(W < 700 ? .78 : .85, .82), P2 = sw(W < 700 ? .18 : .15, W < 700 ? .14 : .2);
+        sparkle(lerp(0, P1[0], mv), lerp(0, P1[1], mv), lerp(250, 95, mv) * pop, mv < 1 ? lerp(1, sx, mv) : sx, cl(pop * 1.5));
         const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600)), f2 = Math.cos(t * .0017 + 2);
-        sparkle(520, 330, 60 * p2, (Math.abs(f2) < .08 ? .08 : Math.abs(f2)) * (f2 < 0 ? -1 : 1), cl(p2 * 1.5)); }
+        sparkle(P2[0], P2[1], 60 * p2, (Math.abs(f2) < .08 ? .08 : Math.abs(f2)) * (f2 < 0 ? -1 : 1), cl(p2 * 1.5)); }
       const sp = drawLogo(t, cam);
       x.restore();
       if(sp){ // "//" 화면 좌표
