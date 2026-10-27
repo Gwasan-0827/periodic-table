@@ -6197,7 +6197,7 @@ const CHANGELOG = [
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
-           '시작 화면을 새로 만들었어요. 문 대신 매번 다른 원소의 원자가 떠 있다가, 핵이 터지면서 전자들이 주기율표 칸으로 날아가 자리를 잡아요. 가끔 핵이 너무 안정해서 안 터지면… 나이트로글리세린은 여전히 있어요',
+           '시작 화면을 새로 만들었어요. 문 대신 원자를 직접 들여다보는 주사 터널링 현미경(STM) 화면이에요. 탐침이 한 줄씩 훑으며 원자 표면을 찍고, 초점이 맞으면 원자들이 주기율표 칸으로 날아가 자리를 잡아요. 가끔 탐침이 시료에 박히면… 나이트로글리세린은 여전히 있어요',
            '설정에 화면 모드가 생겼어요. 라이트 모드는 지원하지 않아요(사유: 유저들 눈 보호). 그래도 누르면… 마그네슘이 튀어나와서 타 버려요',
            '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
@@ -6229,7 +6229,7 @@ const CHANGELOG = [
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
-           'New start screen: instead of the door, a random element\'s atom hovers, then its nucleus bursts and the electrons fly into the table\'s cells. If the nucleus is too stable to split… the nitroglycerin is still there',
+           'New start screen: a scanning tunnelling microscope. The tip scans the surface line by line, the atoms come into focus, then fly into the table\'s cells. If the tip crashes into the sample… the nitroglycerin is still there',
            'Settings now has a theme option. Light mode is not supported (reason: protecting your eyes). Press it anyway if you dare',
            'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
@@ -33986,6 +33986,191 @@ function rxFlashbang(soft){
   // 이미 문 화면이 떠 있으면 원자로 바꿔 띄운다
   const old = document.getElementById('rxIntro');
   if(old && !old.classList.contains('ai')){ old.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
+})();
+</script>
+
+<style>
+  /* ═══ 시작 화면: 주사 터널링 현미경(STM). 탐침이 한 줄씩 훑으며 원자를 찍고, 초점이 맞으면 원자들이 주기율표 칸으로 날아간다 ═══ */
+  #rxIntro.stm{background:#040507;overflow:hidden}
+  .sm-wrap{position:absolute;left:0;right:0;margin:0 auto;top:calc(43% - var(--h) / 2);--w:min(86vw,760px);--h:min(56vh,calc(var(--w) * .62));width:var(--w);height:var(--h)}
+  .sm-view{position:absolute;inset:0;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 0 0 1px #1d2430,0 0 60px -10px rgba(255,150,40,.25)}
+  .sm-view canvas{width:100%;height:100%;display:block}
+  .sm-scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffd08a 20%,#fff 50%,#ffd08a 80%,transparent);box-shadow:0 0 12px #ffb347;top:0;opacity:.9}
+  .sm-hud{position:absolute;font:600 11px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#8fd3ff;letter-spacing:.04em;text-shadow:0 0 6px rgba(80,180,255,.5);pointer-events:none;white-space:nowrap}
+  .sm-hud.tl{left:10px;top:8px}.sm-hud.tr{right:10px;top:8px;text-align:right}.sm-hud.bl{left:10px;bottom:8px}.sm-hud.br{right:10px;bottom:8px;text-align:right}
+  .sm-hud b{color:#fff}
+  .sm-rec{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff4d4f;margin-right:5px;animation:smBlink 1s steps(2) infinite}
+  @keyframes smBlink{50%{opacity:.2}}
+  .sm-corner{position:absolute;width:18px;height:18px;border:2px solid rgba(143,211,255,.6);pointer-events:none}
+  .sm-corner.a{left:-6px;top:-6px;border-right:0;border-bottom:0}.sm-corner.b{right:-6px;top:-6px;border-left:0;border-bottom:0}
+  .sm-corner.c{left:-6px;bottom:-6px;border-right:0;border-top:0}.sm-corner.d{right:-6px;bottom:-6px;border-left:0;border-top:0}
+  .sm-cross{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px;pointer-events:none;opacity:.55}
+  .sm-cross::before,.sm-cross::after{content:"";position:absolute;background:#8fd3ff}
+  .sm-cross::before{left:12px;top:0;width:2px;height:26px}.sm-cross::after{top:12px;left:0;width:26px;height:2px}
+  .sm-scale{position:absolute;right:10px;bottom:26px;height:3px;width:60px;background:#fff;box-shadow:0 0 4px #000}
+  .sm-scale::after{content:attr(data-t);position:absolute;right:0;bottom:6px;font:600 10px ui-monospace,monospace;color:#fff}
+  #rxIntro.stm.open .sm-view{transition:opacity .35s .55s;opacity:0}
+  #rxIntro.stm.open .sm-hud,#rxIntro.stm.open .sm-corner,#rxIntro.stm.open .sm-cross,#rxIntro.stm.open .in-foot{opacity:0;transition:opacity .25s}
+  #rxIntro.stm.open{background:transparent;transition:background .5s .5s}
+  .sm-bit{position:fixed;z-index:91;pointer-events:none;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#fff,#ffd08a 45%,#ff8a1f 75%,rgba(255,120,20,0));
+    transition:left .7s cubic-bezier(.3,.9,.4,1),top .7s cubic-bezier(.3,.9,.4,1),width .7s,height .7s,border-radius .7s,opacity .3s}
+  .sm-bit.land{border-radius:5px;opacity:0;transition-delay:0s,0s,0s,0s,0s,.6s}
+  #rxIntro.stm.stuck .sm-view{animation:smGlitch .35s steps(3) 3}
+  @keyframes smGlitch{33%{transform:translate(3px,-2px);filter:hue-rotate(60deg)}66%{transform:translate(-3px,2px);filter:invert(.2)}}
+  #rxIntro.stm .sm-wrap.aim .sm-view{box-shadow:0 0 0 2px #ffd43b,0 0 40px #ffd43b}
+  #rxIntro.stm.boom .sm-wrap{animation:inShake .5s ease-out}
+  #rxIntro.stm .ai-flash{position:absolute;left:50%;top:43%;width:10px;height:10px;margin:-5px;border-radius:50%;background:radial-gradient(circle,#fff,#ffe8a3 40%,rgba(255,146,43,0) 70%);opacity:0;pointer-events:none}
+  #rxIntro.stm.boom .ai-flash{animation:aiFlash .8s ease-out forwards}
+  @media (max-width:600px){ .sm-hud{font-size:9.5px} }
+</style>
+<script>
+(function(){
+  if(typeof rxIntro !== 'function') return;
+  const T = { ko: { load: '탐침 접근 중', scan: '표면 스캔 중', focus: '초점 맞추는 중', open: '원자 확인 완료', fail: '탐침이 시료에 박힘', hint: '나이트로글리세린을 현미경 화면에 살살 끌어다 놓으세요', boom: '시료 증발 (연구비도 증발)', sample: '시료' },
+              en: { load: 'Approaching tip', scan: 'Scanning surface', focus: 'Focusing', open: 'Atoms resolved', fail: 'The tip crashed into the sample', hint: 'Gently drag the nitroglycerin onto the microscope screen', boom: 'Sample vaporised (so was the budget)', sample: 'Sample' } };
+  const tt = k => T[LANG === 'en' ? 'en' : 'ko'][k];
+  // STM 색: 검정 → 갈색 → 주황 → 노랑 → 흰색
+  const LUT = (() => { const st = [[0, [0, 0, 0]], [.3, [70, 25, 5]], [.55, [200, 90, 20]], [.8, [255, 200, 90]], [1, [255, 252, 240]]]; const out = new Uint8ClampedArray(256 * 3);
+    for(let i = 0; i < 256; i++){ const v = i / 255; let k = 0; while(k < st.length - 2 && v > st[k + 1][0]) k++; const [a, A] = st[k], [b, B] = st[k + 1], w = (v - a) / (b - a); for(let c = 0; c < 3; c++) out[i * 3 + c] = A[c] + (B[c] - A[c]) * w; } return out; })();
+  let S = null;
+  function build(cv){
+    const W = cv.width, H = cv.height;
+    const sp = Math.max(22, Math.min(W, H) / 7.5), r = sp * .34;
+    const atoms = [];
+    for(let j = -1; j * sp * .866 < H + sp; j++) for(let i = -1; i * sp < W + sp; i++){
+      const x = i * sp + (j % 2 ? sp / 2 : 0) + sp * .3, y = j * sp * .866 + sp * .4;
+      if(Math.random() < .03) continue;   // 빈자리 결함
+      atoms.push([x + (Math.random() - .5) * 1.5, y + (Math.random() - .5) * 1.5, .85 + Math.random() * .2]);
+    }
+    const h = new Float32Array(W * H);
+    atoms.forEach(([x, y, a]) => {
+      const R = Math.ceil(r * 2.6);
+      for(let yy = Math.max(0, (y - R) | 0); yy < Math.min(H, y + R); yy++) for(let xx = Math.max(0, (x - R) | 0); xx < Math.min(W, x + R); xx++){
+        const d2 = ((xx - x) ** 2 + (yy - y) ** 2) / (r * r); h[yy * W + xx] += a * Math.exp(-d2);
+      }
+    });
+    return { W, H, h, atoms, img: cv.getContext('2d').createImageData(W, H), row: 0 };
+  }
+  function paintRows(cv, upto, blur){
+    upto = Math.floor(upto);
+    const { W, H, h, img } = S, d = img.data;
+    for(let y = S.row; y < Math.min(H, upto); y++){
+      const drift = Math.sin(y * .05) * .04;
+      for(let x = 0; x < W; x++){
+        let v = h[y * W + x] * .9 + .06 + drift + (Math.random() - .5) * (blur ? .35 : .12);
+        v = Math.max(0, Math.min(1, v)); const k = (v * 255) | 0, o = (y * W + x) * 4;
+        d[o] = LUT[k * 3]; d[o + 1] = LUT[k * 3 + 1]; d[o + 2] = LUT[k * 3 + 2]; d[o + 3] = 255;
+      }
+    }
+    S.row = Math.max(S.row, Math.min(H, upto));
+    cv.getContext('2d').putImageData(img, 0, 0);
+  }
+
+  rxIntro = function(force, forceFail){
+    const prev = document.getElementById('rxIntro'); if(prev) prev.remove();
+    if(!force && !rxIntroOn()){ rxTutMaybe(); return; }
+    const e = EL[Math.floor(Math.random() * 92)];
+    const mag = ['×12,000,000', '×20,000,000', '×35,000,000'][Math.floor(Math.random() * 3)];
+    const box = document.createElement('div');
+    box.id = 'rxIntro'; box.className = 'stm';
+    box.innerHTML = `
+      <div class="sm-wrap" id="inScene">
+        <div class="sm-view"><canvas id="smCv"></canvas><i class="sm-scan" id="smScan"></i><i class="sm-cross"></i><i class="sm-scale" data-t="1 nm"></i>
+          <div class="sm-hud tl"><span class="sm-rec"></span>PT-STM <b>LIVE</b></div>
+          <div class="sm-hud tr">${tt('sample')}: <b>${e.s}</b> ${elName(e)}</div>
+          <div class="sm-hud bl" id="smState">${tt('load')}</div>
+          <div class="sm-hud br">${mag} · V<sub>bias</sub> 0.1 V</div>
+        </div>
+        <i class="sm-corner a"></i><i class="sm-corner b"></i><i class="sm-corner c"></i><i class="sm-corner d"></i>
+      </div>
+      <i class="ai-flash"></i>
+      <div class="in-foot">
+        <div class="in-slogan">${t('sub')}</div>
+        <div class="in-slogan2">${t('sub2')}</div>
+        <div class="in-msg" id="inMsg">${rt('introLoad')}</div>
+        <div class="in-bar"><i id="inBar"></i></div>
+      </div>
+      <div class="in-tnt" id="inTnt" hidden aria-label="나이트로글리세린"><svg></svg>
+        <b>나이트로글리세린</b><span>C₃H₅N₃O₉</span>
+        <i class="ng-note">${LANG === 'en' ? '← Dynamite shaped like nitroglycerin' : '← 나이트로글리세린 모양의 다이너마이트임'}<small>${LANG === 'en' ? '(It\'s Asriel\'s dynamite!)' : '(아스리엘 거임!)'}</small></i>
+      </div>`;
+    document.body.appendChild(box);
+    document.body.classList.add('rx-intro-on');
+    const cv = document.getElementById('smCv'), vr = cv.getBoundingClientRect(), q = Math.min(1.5, devicePixelRatio || 1) * .5;
+    cv.width = Math.max(120, Math.round(vr.width * q)); cv.height = Math.max(80, Math.round(vr.height * q));
+    S = build(cv);
+    const scan = document.getElementById('smScan'), st = document.getElementById('smState');
+    const bar = document.getElementById('inBar'), msg = document.getElementById('inMsg');
+    const t0 = performance.now(), dur = RX_REDUCED ? 600 : 1700;
+    let phase = 0;
+    const step = now => {
+      if(!document.body.contains(box)) return;
+      const p = Math.min(1, (now - t0) / dur);
+      bar.style.width = (p * 100).toFixed(1) + '%';
+      if(p > .12){
+        if(phase === 0){ phase = 1; st.textContent = tt('scan'); }
+        const sp = Math.min(1, (p - .12) / .7);
+        paintRows(cv, sp * S.H, true);
+        scan.style.top = (sp * 100) + '%';
+      }
+      if(p > .85 && phase === 1){ phase = 2; st.textContent = tt('focus'); scan.style.opacity = 0; S.row = 0; paintRows(cv, S.H, false); }
+      if(p < 1) return requestAnimationFrame(step);
+      const fail = forceFail || (Math.random() < RX_INTRO_FAIL && !RX_REDUCED);
+      if(fail) smStuck(); else { st.textContent = tt('open'); msg.textContent = tt('open'); smOpen(); }
+    };
+    requestAnimationFrame(step);
+  };
+
+  function flyBits(box){
+    const cells = [...document.querySelectorAll('#grid .cell')].filter(c => c.getBoundingClientRect().width > 0);
+    if(!cells.length || RX_REDUCED || !S) return;
+    const vr = document.getElementById('smCv').getBoundingClientRect(), k = vr.width / S.W;
+    const inView = S.atoms.filter(([x, y]) => x > 4 && y > 4 && x < S.W - 4 && y < S.H - 4).sort(() => Math.random() - .5).slice(0, 48);
+    const pick = cells.sort(() => Math.random() - .5);
+    inView.forEach(([x, y], i) => {
+      const c = pick[i % pick.length], b = document.createElement('i'); b.className = 'sm-bit';
+      const d = Math.max(10, S.W / 7.5 * .68 * k);
+      b.style.left = (vr.left + x * k - d / 2) + 'px'; b.style.top = (vr.top + y * k - d / 2) + 'px'; b.style.width = b.style.height = d + 'px';
+      document.body.appendChild(b);
+      const cr = c.getBoundingClientRect();
+      setTimeout(() => { b.style.left = cr.left + 'px'; b.style.top = cr.top + 'px'; b.style.width = cr.width + 'px'; b.style.height = cr.height + 'px'; b.classList.add('land'); }, 250 + i * 10);
+      setTimeout(() => b.remove(), 1400 + i * 10);
+    });
+  }
+  function smOpen(broke){
+    const box = document.getElementById('rxIntro'); if(!box || box.classList.contains('open')) return;
+    box.classList.add('open');
+    try{ if(!broke) SFX.gem(); }catch(e){}
+    flyBits(box);
+    setTimeout(() => {
+      box.classList.add('gone');
+      setTimeout(() => { box.remove(); document.body.classList.remove('rx-intro-on'); rxTutMaybe(); }, 500);
+    }, broke ? 1100 : 1000);
+  }
+  function smStuck(){
+    const box = document.getElementById('rxIntro'), msg = document.getElementById('inMsg'); if(!box) return;
+    msg.textContent = tt('fail'); document.getElementById('smState').textContent = 'ERR: TIP CRASH'; box.classList.add('stuck');
+    try{ SFX.fail(); }catch(e){}
+    setTimeout(() => {
+      const tnt = document.getElementById('inTnt'); const ng = rxNgSvg(); if(ng) tnt.querySelector('svg').outerHTML = ng;
+      tnt.hidden = false; msg.textContent = tt('hint'); rxIntroTnt(tnt);
+    }, 700);
+  }
+  rxIntroOpen = function(broke){ if(broke) return smOpen(true); };
+  rxIntroStuck = function(){};
+  rxIntroBoom = function(tnt){
+    const box = document.getElementById('rxIntro'); if(!box || box.classList.contains('boom')) return;
+    box.classList.add('boom'); tnt.remove();
+    document.getElementById('inMsg').textContent = tt('boom');
+    try{ SFX.boom(1.6); }catch(e){}
+    try{ if(navigator.vibrate) navigator.vibrate([140, 50, 220]); }catch(e){}
+    document.getElementById('inScene').classList.remove('aim');
+    try{ rxEvt('door'); }catch(e){}
+    smOpen(true);
+  };
+  const cur = document.getElementById('rxIntro');
+  if(cur && !cur.classList.contains('stm')){ cur.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
 })();
 </script>
 
