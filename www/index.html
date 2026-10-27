@@ -6194,7 +6194,8 @@ const CHANGELOG = [
            '이온 탭에 "이온은 어떻게 만들어지나요?"가 생겼어요. 클로린한테 전자를 뺏기는 나트륨을 애니메이션으로 보여 줘요. 의인화 캐릭터 나트륨과 클로린이 직접 나와서 표정 연기까지 하고, 전자를 뺏는 순간 클로린은 클로라이드로 이름이 바뀌어요. 마그네슘 → 산소 짝에는 마그네슘과 옥시젠도 나와요. 옥시젠은 전자 두 개를 뺏고 옥사이드가 되고, 마그네슘은 진짜처럼 눈부신 흰빛을 내며 타요. 보어 모형과 전자 구름 중에 골라 볼 수 있고, 진짜 전자가 어떻게 퍼져 있는지 오비탈 단면으로 바로 넘어갈 수도 있어요. 마그네슘 → 산소(전자 2개), 리튬 → 플루오린도 골라 볼 수 있고, 화면을 누르면 다음 장면으로 넘어가요',
            '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요',
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
-           '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요'],
+           '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
+           '숨은 조합 21개 추가: 원소 기호로 단어 쓰기. CoFFe 옆에 BaNaNa, BaCoN, NaCHOS, HoNeY, CHOCOLaTe 같은 메뉴판이 생겼고, CuTe나 GeNiUS, NoNoNo, CHNOPS 같은 것도 숨어 있어요. 도감 숫자엔 안 들어가고 따로 모으는 업적이 있어요'],
       en: ['60 new entries (one of them hidden), for 520 in total',
            '★ The Weirdos: 13 compounds with odd names or shapes. Manxane, Fartox, mispickel, sialic acid (a \'nonose\'), Ladderane, bowtiediene, magic acid, piranha solution, vomitoxin, gossypol, DEAD, polonium monoxide (PoO) and furfuryl furfurate. Collect five for an achievement',
            '7 more: xanthine, tryptamine, higenamine, phenylhydroxylamine, the HIV drug etravirine, the prescription sleeping pill zolpidem, and one censored ca█hine',
@@ -6217,7 +6218,8 @@ const CHANGELOG = [
            'New in the Ions tab: "How are ions made?", an animation of chlorine stealing an electron from sodium, starring Sodium and Chlorine as characters. The moment she takes it, Chlorine becomes Chloride. Magnesium and Oxygen join in too: Oxygen takes two electrons and becomes Oxide, and Magnesium burns with a dazzling white flash, just like the real thing. Switch between a Bohr model and an electron cloud, or jump straight to orbital slices to see how real electrons spread out. Magnesium to oxygen (two electrons) and lithium to fluorine are there too, and tapping skips to the next scene',
            'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later',
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
-           'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin'],
+           'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
+           '21 new hidden combos that spell words in element symbols: next to CoFFe there is now a menu of BaNaNa, BaCoN, NaCHOS, HoNeY and CHOCOLaTe, plus CuTe, GeNiUS, NoNoNo, CHNOPS and more. They do not count toward the index but have their own achievements'],
     },
   },
   {
@@ -33065,6 +33067,66 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
     }catch(e){}
     return r;
   };
+})();
+</script>
+
+<script>
+/* ── 4.0 화학식 말장난: 원소 기호로 철자가 되는 단어들 (CoFFe 친구들). 도감 숫자엔 안 넣고 업적으로 모은다 ── */
+(function(){
+  const PUNS = [["BaNaNa", "바나나", "칼륨 많기로 유명한 과일인데 정작 K가 없음", "Banana", "Famous for potassium, yet not a single K", "바나나는 칼륨(K)이 많은 과일로 유명한데, 원소 기호로 쓴 BaNaNa에는 칼륨이 하나도 없어요. 대신 들어간 바륨은 독성이 있고 나트륨은 물에 닿으면 터져요. 진짜 바나나 향은 아세트산 아이소아밀이라는 분자 덕분이에요.", 1, "Ba1+Na2", "[Ba][Na][Na]", {"a": [["Ba", -62.0, 14, 0, 18], ["Na", 0.0, -14, 0, 18], ["Na", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["BaCoN", "베이컨", "바륨·코발트·질소… 먹으면 안 됨", "Bacon", "Barium, cobalt, nitrogen… do not eat", "진짜 베이컨의 짭짤한 맛은 소금(NaCl), 분홍빛은 아질산나트륨(NaNO₂)이 고기 속 단백질과 만나서 생겨요. 원소 기호 베이컨에도 질소(N)는 들어 있으니 아주 조금은 닮았네요.", 1, "Ba1+Co1+N1", "[Ba][Co][N]", {"a": [["Ba", -62.0, 14, 0, 18], ["Co", 0.0, -14, 0, 18], ["N", 62.0, 14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1]]}], ["NaCHOS", "나초", "소금(Na)은 진짜 들어 있음", "Nachos", "The salt (Na) is genuinely in there", "칩에 뿌린 소금의 나트륨(Na), 옥수수 녹말의 탄소·수소·산소(C·H·O)는 진짜 나초에도 들어 있어요. 황(S)도 옥수수 단백질 속에 조금 있어서, 이 말장난은 거의 진짜예요.", 1, "C1+H1+Na1+O1+S1", "[Na][C][H][O][S]", {"a": [["Na", -124.0, 14, 0, 18], ["C", -62.0, -14, 0, 15], ["H", 0.0, 14, 0, 15], ["O", 62.0, -14, 0, 15], ["S", 124.0, 14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1]]}], ["HoNeY", "꿀", "네온이 들어가서 빛남", "Honey", "Has neon in it, so it glows", "홀뮴, 네온, 이트륨으로 쓴 꿀이에요. 진짜 꿀은 대부분 과당과 포도당이고 물이 17%쯤 섞여 있어요. 꿀이 잘 안 상하는 건 당이 너무 진해서 세균이 물을 빼앗기기 때문이에요.", 1, "Ho1+Ne1+Y1", "[Ho][Ne][Y]", {"a": [["Ho", -62.0, 14, 0, 18], ["Ne", 0.0, -14, 0, 18], ["Y", 62.0, 14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1]]}], ["CHOCOLaTe", "초콜릿", "일곱 글자 풀코스", "Chocolate", "A seven-letter full course", "탄소·수소·산소에 란타넘(La)과 텔루륨(Te)까지 들어간 초콜릿이에요. 진짜 초콜릿의 기분 좋은 쓴맛은 카페인 친척인 테오브로민(C₇H₈N₄O₂) 덕분이에요. 개는 테오브로민을 잘 분해하지 못해서 개한테 초콜릿은 위험해요.", 1, "C2+H1+La1+O2+Te1", "[C][H][O][C][O][La][Te]", {"a": [["C", -186.0, 14, 0, 15], ["H", -124.0, -14, 0, 15], ["O", -62.0, 14, 0, 15], ["C", 0.0, -14, 0, 15], ["O", 62.0, 14, 0, 15], ["La", 124.0, -14, 0, 18], ["Te", 186.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1], [4, 5, 1], [5, 6, 1]]}], ["FrIEs", "감자튀김", "튀기기도 전에 붕괴함", "Fries", "Decays before it is even fried", "프랑슘(Fr)은 지구 전체를 통틀어도 한순간에 몇십 그램밖에 없을 만큼 드물고, 제일 오래 버티는 것도 반감기가 22분이라 다 튀기기 전에 사라져요. 아인슈타이늄(Es)은 실험실에서만 만들 수 있어요.", 1, "Es1+Fr1+I1", "[Fr][I][Es]", {"a": [["Fr", -62.0, 14, 0, 18], ["I", 0.0, -14, 0, 15], ["Es", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["SPAm", "스팸", "아메리슘 들어간 통조림", "Spam", "A tin with americium inside", "아메리슘(Am)은 집 천장 화재 감지기 속에 아주 조금 들어 있는 방사성 원소예요. 쓸데없는 광고 메일을 스팸이라고 부르는 건 영국 코미디 '몬티 파이선'의 스팸 노래에서 왔어요.", 1, "Am1+P1+S1", "[S][P][Am]", {"a": [["S", -62.0, 14, 0, 15], ["P", 0.0, -14, 0, 15], ["Am", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["CaFe", "카페", "CoFFe 마시는 곳", "Cafe", "Where you drink your CoFFe", "칼슘(Ca)은 뼈에, 철(Fe)은 피 속 헤모글로빈에 들어가는, 둘 다 꼭 필요한 미네랄이에요. 그런데 커피는 철분 흡수를 방해해서 철분제를 커피랑 같이 먹으면 손해예요.", 1, "Ca1+Fe1", "[Ca][Fe]", {"a": [["Ca", -31.0, 14, 0, 18], ["Fe", 31.0, -14, 0, 18]], "b": [[0, 1, 1]]}], ["CuTe", "귀여움", "구리 + 텔루륨 = 귀여움", "Cute", "Copper + tellurium = cute", "구리와 텔루륨을 붙이면 CuTe, 귀여워요. 그런데 말장난만이 아니에요. 구리와 텔루륨은 진짜로 CuTe라는 화합물(벌카나이트라는 광물)을 만들어요. 귀여운 게 실존해요.", 0, "Cu1+Te1", "[Cu][Te]", {"a": [["Cu", -31.0, 14, 0, 18], ["Te", 31.0, -14, 0, 18]], "b": [[0, 1, 1]]}], ["GeNiUS", "천재", "천재인데 방사능 있음", "Genius", "A genius, but radioactive", "저마늄은 반도체, 니켈은 동전, 황은 성냥… 그리고 우라늄(U). 천재는 원래 좀 위험하다는 뜻일까요. 참고로 아인슈타인 이름을 딴 원소 아인슈타이늄(Es)도 있어요.", 0, "Ge1+Ni1+S1+U1", "[Ge][Ni][U][S]", {"a": [["Ge", -93.0, 14, 0, 18], ["Ni", -31.0, -14, 0, 18], ["U", 31.0, 14, 0, 15], ["S", 93.0, -14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1]]}], ["LiON", "사자", "리튬 이온 배터리로 달리는 사자", "Lion", "A lion that runs on a lithium-ion battery", "리튬(Li), 산소(O), 질소(N)로 쓴 사자예요. 소리 내어 읽으면 Li-ON, 리튬 이온(Li-ion) 배터리랑 거의 같아요.", 0, "Li1+N1+O1", "[Li][O][N]", {"a": [["Li", -62.0, 14, 0, 18], ["O", 0.0, -14, 0, 15], ["N", 62.0, 14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1]]}], ["AmErICa", "미국", "아메리슘은 진짜 아메리카에서 따온 이름", "America", "Americium really is named after America", "아메리슘(Am)은 실제로 아메리카 대륙 이름을 따서 지었어요. 주기율표에서 바로 위 칸의 유로퓸(Eu)이 유럽 이름을 땄으니 짝을 맞춘 거예요.", 0, "Am1+Ca1+Er1+I1", "[Am][Er][I][Ca]", {"a": [["Am", -93.0, 14, 0, 18], ["Er", -31.0, -14, 0, 18], ["I", 31.0, 14, 0, 15], ["Ca", 93.0, -14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1]]}], ["NoSe", "코", "노벨륨 + 셀레늄", "Nose", "Nobelium + selenium", "노벨륨(No)은 다이너마이트를 만든 노벨의 이름에서 왔어요. 셀레늄(Se) 화합물은 마늘 냄새를 몇 배로 독하게 만든 듯한 지독한 냄새가 나는 게 많아서, 코한테는 최악의 조합이에요.", 0, "No1+Se1", "[No][Se]", {"a": [["No", -31.0, 14, 0, 18], ["Se", 31.0, -14, 0, 18]], "b": [[0, 1, 1]]}], ["CArBON", "카본", "탄소(carbon)인데 탄소는 하나뿐", "Carbon", "Spells carbon, contains one carbon", "영어로 탄소는 carbon인데, 원소 기호로 CArBON을 쓰면 탄소는 맨 앞 C 하나뿐이고 나머지는 아르곤, 붕소, 산소, 질소예요. 진짜 탄소는 그냥 C 한 글자예요.", 0, "Ar1+B1+C1+N1+O1", "[C][Ar][B][O][N]", {"a": [["C", -124.0, 14, 0, 15], ["Ar", -62.0, -14, 0, 18], ["B", 0.0, 14, 0, 15], ["O", 62.0, -14, 0, 15], ["N", 124.0, 14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1]]}], ["NoNoNo", "노노노", "노벨륨 셋. 거절의 화학식", "No No No", "Three nobeliums. The formula of refusal", "노벨륨(No)은 한 번에 원자 몇 개씩만 만들 수 있고, 제일 오래 버티는 것도 반감기가 한 시간쯤이에요. 세 개를 한자리에 모으는 건 진짜로 노노노예요.", 0, "No3", "[No][No][No]", {"a": [["No", -62.0, 14, 0, 18], ["No", 0.0, -14, 0, 18], ["No", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["MoUSe", "마우스", "몰리브데넘 + 우라늄 + 셀레늄", "Mouse", "Molybdenum + uranium + selenium", "컴퓨터 마우스 속에도 금속은 들어 있지만 우라늄은 없어요. 몰리브데넘(Mo)은 아주 단단한 금속이라 공구나 강철을 튼튼하게 만드는 데 써요.", 0, "Mo1+Se1+U1", "[Mo][U][Se]", {"a": [["Mo", -62.0, 14, 0, 18], ["U", 0.0, -14, 0, 15], ["Se", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["HoPEs", "희망", "희망엔 아인슈타이늄이 필요함", "Hopes", "Hope needs einsteinium", "HoPE는 E가 원소 기호가 아니라서 못 만들어요. 대신 아인슈타이늄(Es)을 붙이면 HoPEs가 돼요. 희망을 쓰려면 아인슈타인이 필요한 셈이에요.", 0, "Es1+Ho1+P1", "[Ho][P][Es]", {"a": [["Ho", -62.0, 14, 0, 18], ["P", 0.0, -14, 0, 15], ["Es", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["NeVEr", "네버", "네온은 절대 결합 안 함", "Never", "Neon never bonds", "네온(Ne)은 다른 원소와 결합하지 않는 비활성 기체예요. 지금까지 네온이 든 안정한 중성 화합물은 하나도 만들어진 적이 없어서, never라는 말이 딱 어울려요.", 0, "Er1+Ne1+V1", "[Ne][V][Er]", {"a": [["Ne", -62.0, 14, 0, 18], ["V", 0.0, -14, 0, 15], ["Er", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["FIRe", "불", "플루오린 + 아이오딘 + 레늄", "Fire", "Fluorine + iodine + rhenium", "플루오린(F)은 물이나 유리까지 공격하는 원소라 불(fire)이라는 이름이 잘 어울려요. 레늄(Re)은 녹는점이 3000°C가 넘어서 제트 엔진이나 로켓 노즐 같은 뜨거운 곳에 써요.", 0, "F1+I1+Re1", "[F][I][Re]", {"a": [["F", -62.0, 14, 0, 15], ["I", 0.0, -14, 0, 15], ["Re", 62.0, 14, 0, 18]], "b": [[0, 1, 1], [1, 2, 1]]}], ["FISH", "물고기", "플루오린·아이오딘·황·수소", "Fish", "Fluorine, iodine, sulfur, hydrogen", "아이오딘(I)은 실제로 바다 생선과 미역에 많이 들어 있어요. 플루오린(F)도 뼈째 먹는 생선에 들어 있어서, 이 말장난은 반쯤 맞아요.", 0, "F1+H1+I1+S1", "[F][I][S][H]", {"a": [["F", -93.0, 14, 0, 15], ["I", -31.0, -14, 0, 15], ["S", 31.0, 14, 0, 15], ["H", 93.0, -14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1]]}], ["CHNOPS", "생명의 6원소", "말장난이 아니라 진짜 생명의 재료", "CHNOPS", "Not a pun: the actual ingredients of life", "탄소·수소·질소·산소·인·황. 생물 몸무게의 95% 넘게 이 여섯 원소로 되어 있고, 단백질·DNA·지방·탄수화물이 다 이걸로 만들어져요. 생물 시간에 외우는 그 단어예요.", 0, "C1+H1+N1+O1+P1+S1", "[C][H][N][O][P][S]", {"a": [["C", -155.0, 14, 0, 15], ["H", -93.0, -14, 0, 15], ["N", -31.0, 14, 0, 15], ["O", 31.0, -14, 0, 15], ["P", 93.0, 14, 0, 15], ["S", 155.0, -14, 0, 15]], "b": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1], [4, 5, 1]]}]];
+  const NAMES = new Set(PUNS.map(p => p[1]));
+  PUNS.forEach(([w, ko, sub, en, esub, tmi, food, key, smi, pre]) => {
+    if(EXACT[key]) return;
+    RX_SMILES_PRE[smi] = pre;
+    EXACT[key] = [w, ko, sub];
+    REC_EN[ko] = [en, esub];
+    RX_SMILES[ko] = smi;
+    RX_TMI[ko] = tmi;
+    if(food) try{ RX_TAGSET.food && RX_TAGSET.food.add(ko); }catch(e){}
+  });
+  // 도감(520)에는 안 들어가게
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => !NAMES.has(x.name)); };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    if(NAMES.has(name)){
+      const p = PUNS.find(x => x[1] === name);
+      const mix = p[7].split('+').map(t => { const m = t.match(/^([A-Z][a-z]?)(\d+)$/); return [m[1], +m[2]]; });
+      return { name, formula: p[0], sub: p[2], key: p[7], exact: true, mix };
+    }
+    return _en.apply(this, arguments);
+  };
+  const FOOD = PUNS.filter(p => p[6]).map(p => p[1]).concat('커피');
+  const ALL = PUNS.map(p => p[1]).concat('커피');
+  const cnt = L => L.filter(n => found.has(n)).length;
+  window.RX_PUNS = ALL;
+  // 결과 창: '도감 등록!' 대신 말장난 수집 칸
+  const _rd = rxDex;
+  rxDex = function(){
+    const r = _rd.apply(this, arguments);
+    try{
+      if(typeof RX !== 'undefined' && RX && NAMES.has(RX.raw)){
+        const en = LANG === 'en';
+        const gh = document.getElementById('mGH'); if(gh) gh.textContent = en ? 'Pun found!' : '말장난 발견!';
+        const box = document.getElementById('mDex');
+        if(box){ const s = box.querySelector('.pun-c') || box.appendChild(document.createElement('div')); s.className = 'pun-c'; s.style.cssText = 'margin-top:6px;font-size:12.5px;color:#ffd43b;font-weight:700';
+          s.textContent = (en ? '🔤 Puns ' : '🔤 말장난 ') + (cnt(ALL) + (found.has(RX.raw) ? 0 : 1)) + ' / ' + ALL.length + (en ? ' (not counted in the index)' : ' (도감 숫자엔 안 들어가요)'); }
+      }
+    }catch(e){}
+    return r;
+  };
+  if(typeof ACH !== 'undefined'){
+    const i = ACH.findIndex(a => a.id === 'master');
+    const add = [
+      { id: 'pun1', secret: true, need: () => cnt(PUNS.map(p => p[1])) >= 1,
+        ko: ['철자 장인', '원소 기호로 단어를 썼다'], en: ['Spelling master', 'Spelled a word in element symbols'] },
+      { id: 'punfood', secret: true, need: () => cnt(FOOD) >= FOOD.length, prog: () => [cnt(FOOD), FOOD.length],
+        ko: ['화학식 셰프', '원소 기호 메뉴판을 전부 차렸다'], en: ['Formula chef', 'Served the whole element-symbol menu'] },
+      { id: 'punall', secret: true, need: () => cnt(ALL) >= ALL.length, prog: () => [cnt(ALL), ALL.length],
+        ko: ['말장난 수집가', '원소 기호 말장난을 전부 모았다'], en: ['Pun collector', 'Collected every element-symbol pun'] } ];
+    if(i >= 0) ACH.splice(i, 0, ...add); else ACH.push(...add);
+  }
+  try{ RX_ACH_IC.pun1 = '🔤'; RX_ACH_IC.punfood = '🍽'; RX_ACH_IC.punall = '🧩'; }catch(e){}
 })();
 </script>
 
