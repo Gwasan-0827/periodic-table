@@ -6196,6 +6196,8 @@ const CHANGELOG = [
            '새 버전이 나오면 "[ 새 버전이 발견되었습니다!! ]" 창이 떠요. 무엇이 바뀌었는지 보고 바로 업데이트하거나 나중에 할 수 있어요',
            '오늘의 연구 과제가 하루 세 개로 늘었어요. 과제 종류도 오비탈 단면, 원자 사진, 이온 결합·이온 이동·전자 뺏기 같은 새 과제 다섯 개가 더해졌어요. 앱에서는 과제 하나마다 경험치를 받아요',
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
+           '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
+           '새 보기 "발견의 역사": 연도 슬라이더를 움직이거나 ▶를 누르면 원소가 발견된 순서대로 주기율표가 채워져요. 멘델레예프가 주기율표를 만든 1869년에는 딱 63칸만 차 있어요',
            '검열 시리즈(코█인, 카█, THC)는 이제 이름뿐 아니라 분자 모형까지 모자이크되고, 큼지막한 \'겸\'열됨!! 도장이 찍혀요',
            '숨은 조합 21개 추가: 원소 기호로 단어 쓰기. CoFFe 옆에 BaNaNa, BaCoN, NaCHOS, HoNeY, CHOCOLaTe 같은 메뉴판이 생겼고, CuTe나 GeNiUS, NoNoNo, CHNOPS 같은 것도 숨어 있어요. 도감 숫자엔 안 들어가고 따로 모으는 업적이 있어요'],
       en: ['80 new entries (one of them hidden), for 540 in total',
@@ -6222,6 +6224,8 @@ const CHANGELOG = [
            'When a new version comes out, a "[ A new version has been found!! ]" window pops up with what changed, so you can update right away or later',
            'Three research tasks a day instead of one, with five new kinds (orbital slices, atom photos and the ion tabs). In the app, each task gives experience',
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
+           'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
+           'New view "Discovery": drag the year slider or press ▶ and the table fills in the order the elements were found. In 1869, when Mendeleev made his table, only 63 cells are lit',
            'The censored series (cocaine, cathine, THC) now has its molecule model pixelated too, with a big \'CENSROED\'!! stamp',
            '21 new hidden combos that spell words in element symbols: next to CoFFe there is now a menu of BaNaNa, BaCoN, NaCHOS, HoNeY and CHOCOLaTe, plus CuTe, GeNiUS, NoNoNo, CHNOPS and more. They do not count toward the index but have their own achievements'],
     },
@@ -33221,6 +33225,166 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
   }
   new MutationObserver(sync).observe(nm, { childList: true, subtree: true, characterData: true });
   new MutationObserver(() => { if(st.classList.contains('rx-censor')) sync(); }).observe(sub, { childList: true, characterData: true, subtree: true });
+})();
+</script>
+
+<style>
+  /* ═══ 4.0 보기 줄 리워크: 큰 탭 · 분류 필터(떠오르기) · 발견의 역사 ═══ */
+  #modebar{gap:12px 16px;padding:10px 18px}
+  #mtabs{gap:3px;padding:4px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+  #mtabs .mbtn{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--dim);background:none;
+    transition:background .2s,color .2s,box-shadow .2s;white-space:nowrap}
+  #mtabs .mbtn svg{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #mtabs .mbtn:hover{color:var(--text);background:rgba(255,255,255,.05)}
+  #mtabs .mbtn.on{background:var(--text);color:#0b0d11;box-shadow:0 2px 10px -2px rgba(255,255,255,.25)}
+  @media (max-width:700px){ #mtabs{width:100%;overflow-x:auto;scrollbar-width:none} #mtabs::-webkit-scrollbar{display:none} #mtabs .mbtn{padding:6px 10px;font-size:12px;flex:1 0 auto;justify-content:center} }
+
+  /* 분류 칩 */
+  .mcats{display:flex;gap:5px;flex-wrap:wrap}
+  @media (max-width:700px){ .mcats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px} .mcats::-webkit-scrollbar{display:none} }
+  .mcat{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--dim);
+    font:600 11.5px/1 inherit;font-family:inherit;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s,background .2s,transform .2s}
+  .mcat i{width:9px;height:9px;border-radius:3px;background:var(--cc)}
+  .mcat b{font-weight:600;opacity:.6;font-variant-numeric:tabular-nums}
+  .mcat:hover{color:var(--text);border-color:var(--cc)}
+  .mcat.on{color:var(--text);border-color:var(--cc);background:color-mix(in srgb,var(--cc) 18%,transparent);transform:translateY(-1px)}
+  .mcat.all{padding-left:10px}
+
+  /* 칸: 흐려지기 / 떠오르기 */
+  #grid .cell{transition:opacity .35s ease,transform .32s cubic-bezier(.3,1.5,.5,1),box-shadow .3s ease,filter .35s ease,background .2s,border-color .2s}
+  #grid .cell.dim{filter:saturate(.3)}
+  #grid .cell.catlift{transform:translateY(-4px) scale(1.06);z-index:3;border-color:var(--cc);
+    box-shadow:0 10px 18px -8px var(--cc),0 0 0 1px var(--cc);background:color-mix(in srgb,var(--cc) 14%,#151a22)}
+  @media (prefers-reduced-motion:reduce){ #grid .cell.catlift{transform:none} }
+
+  /* 발견의 역사 */
+  .hx{display:flex;align-items:center;gap:12px;flex:1;min-width:0;flex-wrap:wrap}
+  .hx-year{font:800 26px/1 Orbit,system-ui,sans-serif;color:var(--text);font-variant-numeric:tabular-nums;min-width:86px}
+  .hx-year small{display:block;font:600 11px/1.2 system-ui,sans-serif;color:var(--dim);margin-top:4px}
+  .hx-play{width:36px;height:36px;border-radius:50%;border:0;background:var(--text);color:#0b0d11;font:800 14px/1 system-ui;cursor:pointer;flex:0 0 auto}
+  .hx-mid{flex:1;min-width:220px;display:grid;gap:6px}
+  @media (max-width:700px){ .hx{display:grid;grid-template-columns:auto 1fr;gap:10px} .hx-mid{grid-column:1/-1;min-width:0} .hx-marks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .hx-marks button{flex:0 0 auto} }
+  .hx-mid input{width:100%;accent-color:#c3a6ff}
+  .hx-marks{display:flex;gap:5px;flex-wrap:wrap}
+  .hx-marks button{padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--dim);font:600 11px/1.3 inherit;font-family:inherit;cursor:pointer}
+  .hx-marks button:hover{color:var(--text);border-color:var(--line2)}
+  .hx-new{font-size:12px;color:var(--dim);min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .hx-new b{color:#ffd43b;font-weight:700}
+  #grid .cell.unborn{opacity:.06;transform:scale(.86);filter:grayscale(1)}
+  #grid .cell.born{animation:hxBorn .7s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes hxBorn{0%{transform:scale(.6);box-shadow:0 0 0 0 var(--cc)}50%{transform:scale(1.14);box-shadow:0 0 22px 4px var(--cc)}100%{transform:scale(1)}}
+</style>
+<script>
+(function(){
+  if(typeof renderModeBar !== 'function' || typeof paint !== 'function') return;
+  const T = {
+    ko: { std: '표준', heat: '히트맵', temp: '온도', hist: '발견의 역사', all: '전체', ancient: '고대', count: '{n} / 118 원소', newIn: '{y}년 발견: ', play: '재생', pause: '멈춤',
+          marks: [[1650, '고대'], [1800, '1800'], [1869, '멘델레예프 주기율표'], [1900, '1900'], [1945, '2차 대전 끝'], [2010, '118개 완성']] },
+    en: { std: 'Standard', heat: 'Heatmap', temp: 'Temperature', hist: 'Discovery', all: 'All', ancient: 'Ancient', count: '{n} / 118 elements', newIn: 'Found in {y}: ', play: 'Play', pause: 'Pause',
+          marks: [[1650, 'Ancient'], [1800, '1800'], [1869, 'Mendeleev’s table'], [1900, '1900'], [1945, 'End of WWII'], [2010, 'All 118']] } };
+  const tt = k => (T[LANG === 'en' ? 'en' : 'ko'])[k];
+  const IC = {
+    none: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+    heat: '<svg viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="5" y="11" width="3" height="9"/><rect x="10.5" y="6" width="3" height="14"/><rect x="16" y="13" width="3" height="7"/></svg>',
+    temp: '<svg viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7"/></svg>',
+    hist: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' };
+  const yrOf = e => { const p = PROPS[e.s]; return p && p.yr != null ? p.yr : 0; };
+  const Y0 = 1650, Y1 = 2010;
+  const H = { y: Y1, timer: 0, prev: new Set() };
+  window.RX_HIST = H;
+
+  function tabs(){
+    const box = document.getElementById('mtabs');
+    box.innerHTML = [['none', 'std'], ['heat', 'heat'], ['temp', 'temp'], ['hist', 'hist']].map(([k, l]) =>
+      `<button class="mbtn${VIEW === k ? ' on' : ''}" data-m="${k}">${IC[k]}<span>${tt(l)}</span></button>`).join('');
+    box.querySelectorAll('.mbtn').forEach(b => b.addEventListener('click', () => {
+      if(VIEW === b.dataset.m) return;
+      VIEW = b.dataset.m; stop(); try{ SFX.pick(); }catch(e){}
+      if(VIEW === 'hist' && catFilter.size){ catFilter.clear(); try{ buildLegend(); }catch(e){} }   // 역사 보기는 분류 필터 없이
+      renderModeBar(); paint();
+    }));
+    const on = box.querySelector('.on'); if(on && box.scrollWidth > box.clientWidth) box.scrollLeft = on.offsetLeft - 20;
+  }
+  function cats(){
+    const opt = document.getElementById('mopt');
+    const cnt = k => EL.filter(e => e.c === k).length;
+    opt.innerHTML = `<div class="mcats"><button class="mcat all${catFilter.size ? '' : ' on'}" data-k="">${tt('all')}</button>${Object.entries(CAT).map(([k, v]) =>
+      `<button class="mcat${catFilter.has(k) ? ' on' : ''}" data-k="${k}" style="--cc:${cssv(v.v)}"><i></i>${catName(k)} <b>${cnt(k)}</b></button>`).join('')}</div>`;
+    opt.querySelectorAll('.mcat').forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.k;
+      if(!k) catFilter.clear(); else if(catFilter.has(k)) catFilter.delete(k); else catFilter.add(k);
+      try{ SFX.pick(); }catch(e){}
+      try{ buildLegend(); }catch(e){}
+      paint();
+    }));
+  }
+  function syncCats(){
+    document.querySelectorAll('#mopt .mcat').forEach(b => b.classList.toggle('on', b.dataset.k ? catFilter.has(b.dataset.k) : !catFilter.size));
+  }
+  function hist(){
+    const opt = document.getElementById('mopt');
+    opt.innerHTML = `<div class="hx">
+      <button type="button" class="hx-play" id="hxPlay" aria-label="${tt('play')}">${H.timer ? '❚❚' : '▶'}</button>
+      <div class="hx-year" id="hxYear"></div>
+      <div class="hx-mid">
+        <input type="range" id="hxR" min="${Y0}" max="${Y1}" step="1" value="${H.y}" aria-label="${tt('hist')}">
+        <div class="hx-marks">${tt('marks').map(([y, l]) => `<button type="button" data-y="${y}">${l}</button>`).join('')}</div>
+        <div class="hx-new" id="hxNew"></div>
+      </div></div>`;
+    const r = document.getElementById('hxR');
+    r.addEventListener('input', () => { stop(); setY(+r.value); });
+    opt.querySelectorAll('.hx-marks button').forEach(b => b.addEventListener('click', () => { stop(); setY(+b.dataset.y); try{ SFX.pick(); }catch(e){} }));
+    document.getElementById('hxPlay').addEventListener('click', () => { if(H.timer) stop(); else play(); });
+    readout();
+  }
+  function readout(){
+    const yEl = document.getElementById('hxYear'); if(!yEl) return;
+    const shown = EL.filter(e => yrOf(e) <= H.y).length;
+    yEl.innerHTML = `${H.y <= Y0 ? tt('ancient') : H.y}<small>${tt('count').replace('{n}', shown)}</small>`;
+    // 이 해까지 중 가장 최근에 발견된 원소들
+    let ly = 0; EL.forEach(e => { const y = yrOf(e); if(y <= H.y && y > ly) ly = y; });
+    const nw = EL.filter(e => yrOf(e) === ly && ly > 0);
+    document.getElementById('hxNew').innerHTML = nw.length ? tt('newIn').replace('{y}', ly) + nw.map(e => `<b>${e.s}</b> ${LANG === 'en' ? e.en : e.ko}`).join(', ') : '';
+    const r = document.getElementById('hxR'); if(r && +r.value !== H.y) r.value = H.y;
+  }
+  function setY(y){ H.y = Math.max(Y0, Math.min(Y1, y)); readout(); paint(); }
+  function play(){
+    if(H.y >= Y1) H.y = Y0;
+    const b = document.getElementById('hxPlay'); if(b) b.textContent = '❚❚';
+    H.timer = setInterval(() => {
+      if(H.y >= Y1 || VIEW !== 'hist'){ stop(); return; }
+      setY(H.y + 2);
+    }, 110);
+  }
+  function stop(){ if(H.timer){ clearInterval(H.timer); H.timer = 0; } const b = document.getElementById('hxPlay'); if(b) b.textContent = '▶'; }
+
+  const _rmb = renderModeBar;
+  renderModeBar = function(){
+    if(VIEW === 'hist'){ VIEW = 'none'; _rmb.apply(this, arguments); VIEW = 'hist'; }
+    else _rmb.apply(this, arguments);
+    tabs();
+    if(VIEW === 'none') cats();
+    else if(VIEW === 'hist') hist();
+  };
+  const _paint = paint;
+  paint = function(){
+    const r = _paint.apply(this, arguments);
+    const histOn = VIEW === 'hist';
+    const nowShown = new Set();
+    document.querySelectorAll('#grid .cell').forEach(c => {
+      const e = byNum[+c.dataset.n]; if(!e) return;
+      c.classList.toggle('catlift', !histOn && !!catFilter.size && catFilter.has(e.c) && !c.classList.contains('dim'));
+      if(histOn){
+        const born = yrOf(e) <= H.y;
+        c.classList.toggle('unborn', !born);
+        if(born){ nowShown.add(e.n); if(!H.prev.has(e.n) && H.prev.size){ c.classList.remove('born'); void c.offsetWidth; c.classList.add('born'); } }
+      } else c.classList.remove('unborn', 'born');
+    });
+    H.prev = histOn ? nowShown : new Set();
+    syncCats();
+    return r;
+  };
+  try{ renderModeBar(); paint(); }catch(e){}
 })();
 </script>
 
