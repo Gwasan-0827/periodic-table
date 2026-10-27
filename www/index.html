@@ -33878,30 +33878,89 @@ function rxFlashbang(soft){
   const lerp = (a, b, x) => a + (b - a) * x;
   const BEAT = 300, BUILD = BEAT * 4, LOGO_AT = 1050, LOGO_DUR = 1150, READY = LOGO_AT + LOGO_DUR + 200;
   // ── 소리 ──
-  function snd(kind){
+  // ── 사운드: 화면 타이밍에 맞춘 짧은 Y2K 신스 시퀀스 ──
+  // 버스: 소리 → 마스터(덕킹용) → 컴프 → 출력, 잔향은 센드로
+  function bus(a){
+    if(a._pwBus && a._pwBus.a === a) return a._pwBus;
+    const master = a.createGain(), comp = a.createDynamicsCompressor(), post = a.createGain();
+    comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .2; post.gain.value = .8;
+    master.connect(comp); comp.connect(post); post.connect(a.destination);
+    const rev = a.createConvolver(), len = Math.floor(a.sampleRate * 2.4), ir = a.createBuffer(2, len, a.sampleRate);
+    for(let c = 0; c < 2; c++){ const d = ir.getChannelData(c); for(let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2); }
+    rev.buffer = ir; const rg = a.createGain(); rg.gain.value = .55; rev.connect(rg); rg.connect(master);
+    return (a._pwBus = { a, master, rev });
+  }
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  // 코드: Dm9 → Dm9 → B♭maj9 → C6/9 → (로고) Fmaj9
+  const CH = [[50, 57, 60, 64, 65], [50, 57, 60, 64, 69], [46, 53, 57, 60, 62], [48, 55, 57, 62, 64]];
+  const LOCK = [41, 53, 57, 60, 64, 67, 72];
+  const SCALE = [74, 76, 77, 79, 81, 84, 86, 88];
+  function snd(kind, o = {}){
     if(typeof sndOn !== 'undefined' && !sndOn) return;
-    const a = ac(); if(!a) return; const t = a.currentTime;
+    const a = ac(); if(!a) return; const t = a.currentTime + .005, B = bus(a);
     const nb = (sec, f) => { const n = Math.floor(a.sampleRate * sec), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0); for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * f(i / n); const s = a.createBufferSource(); s.buffer = b; return s; };
-    const out = (node, v) => { const g = a.createGain(); g.gain.value = v; node.connect(g); g.connect(a.destination); return g; };
-    if(kind === 'whoosh'){ const s = nb(.9, x => Math.sin(Math.PI * Math.min(1, x * 1.6)) * (1 - x)), f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.4; f.frequency.setValueAtTime(3500, t); f.frequency.exponentialRampToValueAtTime(260, t + .85); s.connect(f); out(f, .45); s.start(t); return; }
-    if(kind === 'kick' || kind === 'kick2'){
-      const o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(kind === 'kick2' ? 150 : 125, t); o.frequency.exponentialRampToValueAtTime(40, t + .2);
-      g.gain.setValueAtTime(kind === 'kick2' ? .55 : .42, t); g.gain.exponentialRampToValueAtTime(.0001, t + .34); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .36);
-      const s = nb(.04, x => 1 - x), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3500; s.connect(f); out(f, .14); s.start(t);
-      if(kind === 'kick2') [1318, 1975].forEach((fr, i) => { const r = a.createOscillator(), rg = a.createGain(); r.type = 'triangle'; r.frequency.value = fr; rg.gain.setValueAtTime(.05 / (i + 1), t); rg.gain.exponentialRampToValueAtTime(.0001, t + .7); r.connect(rg); rg.connect(a.destination); r.start(t); r.stop(t + .75); });
-      return;
+    const to = (node, v, wet = 0, pan = 0) => { const g = a.createGain(); g.gain.value = v; node.connect(g); let tail = g; if(pan && a.createStereoPanner){ const p = a.createStereoPanner(); p.pan.value = pan; g.connect(p); tail = p; } tail.connect(B.master); if(wet){ const w = a.createGain(); w.gain.value = wet; tail.connect(w); w.connect(B.rev); } return g; };
+    const env = (g, at, peak, dec) => { g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(peak, at + .006); g.gain.exponentialRampToValueAtTime(.0001, at + dec); };
+    // 디튠 톱니 3겹 + 필터가 닫히는 신스 한 음
+    const voice = (m, at, dur, vol, cut0, cut1, wet, pan = 0, type = 'sawtooth') => {
+      const f = a.createBiquadFilter(), g = a.createGain(); f.type = 'lowpass'; f.Q.value = 6; f.frequency.setValueAtTime(cut0, at); f.frequency.exponentialRampToValueAtTime(cut1, at + dur * .6);
+      [-9, 0, 8].forEach(dt => { const o = a.createOscillator(); o.type = type; o.frequency.value = mtof(m); o.detune.value = dt; o.connect(f); o.start(at); o.stop(at + dur + .05); });
+      f.connect(g); env(g, at, vol, dur); to(g, 1, wet, pan);
+    };
+    const kick = (at, v) => { const o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(170, at); o.frequency.exponentialRampToValueAtTime(44, at + .16); env(g, at, v, .38); o.connect(g); to(g, 1); o.start(at); o.stop(at + .4);
+      const c = nb(.012, x => 1 - x), hf = a.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 2500; c.connect(hf); to(hf, .35); c.start(at); };
+    const swish = (at, dur, f0, f1, v, p0, p1) => { const s = nb(dur, x => Math.sin(Math.PI * x) ** 1.5), f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(f0, at); f.frequency.exponentialRampToValueAtTime(f1, at + dur);
+      const g = a.createGain(); g.gain.value = v; s.connect(f); f.connect(g);
+      if(a.createStereoPanner){ const p = a.createStereoPanner(); p.pan.setValueAtTime(p0, at); p.pan.linearRampToValueAtTime(p1, at + dur); g.connect(p); p.connect(B.master); } else g.connect(B.master);
+      s.start(at); };
+    const bell = (m, at, v, wet = .5, pan = 0) => { const car = a.createOscillator(), mod = a.createOscillator(), mg = a.createGain(), g = a.createGain(); car.frequency.value = mtof(m); mod.frequency.value = mtof(m) * 3.01; mg.gain.setValueAtTime(mtof(m) * 2.2, at); mg.gain.exponentialRampToValueAtTime(1, at + .5);
+      mod.connect(mg); mg.connect(car.frequency); car.connect(g); env(g, at, v, .9); to(g, 1, wet, pan); car.start(at); mod.start(at); car.stop(at + 1); mod.stop(at + 1); };
+    const sub = (at, f0, f1, dur, v) => { const o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f1, at + dur); env(g, at, v, dur); o.connect(g); to(g, 1); o.start(at); o.stop(at + dur + .05); };
+
+    switch(kind){
+      case 'intro': // 빨려 들어오는 역방향 스웰 → 카메라가 빠지며 낮게 깔리는 바람
+        swish(t, .9, 300, 6000, .5, 0, 0);
+        { const s = nb(1.1, x => Math.pow(x, 3)), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3000; s.connect(f); to(f, .18, .4); s.start(t); }
+        sub(t, 90, 40, 1.1, .25); voice(38, t, 1.4, .07, 400, 120, .3); break;
+      case 'beat': { // 킥 + 코드 스탭 + 하이햇
+        const n = o.n; kick(t, n === 4 ? .6 : .48);
+        CH[(n - 1) % 4].forEach((m, k) => voice(m + 12, t, .32, .045, 4200, 500, .35, (k - 2) * .25));
+        voice(CH[(n - 1) % 4][0] - 12, t, .3, .1, 900, 120, 0, 0, 'square');
+        [0, .5].forEach(off => { const h = nb(.03, x => 1 - x), hf = a.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 7500; h.connect(hf); to(hf, off ? .06 : .1, 0, off ? .4 : -.4); h.start(t + off * .3); });
+        if(n === 4) swish(t, .35, 2000, 9000, .25, -.6, .6);
+        break; }
+      case 'whip': swish(t, .28, 900, 4500, .55, -o.dir, o.dir); swish(t + .05, .2, 3000, 800, .2, -o.dir * .5, o.dir * .5); break;
+      case 'blip': bell(SCALE[(Math.random() * SCALE.length) | 0], t, .025, .25, Math.random() * 1.2 - .6); break;
+      case 'chime': [0, 7, 12].forEach((d, k) => bell((o.hi ? 88 : 81) + d, t + k * .04, .05, .7, (k - 1) * .5)); break;
+      case 'lock': // 로고 완성: 큰 코드 + 반짝이는 잔향 + 서브
+        kick(t, .55); sub(t, 60, 42, .9, .35);
+        LOCK.forEach((m, k) => voice(m + (k ? 0 : 12), t, 1.6, k ? .04 : .07, 5200, 700, .55, (k - 3) * .18));
+        [84, 88, 91, 96].forEach((m, k) => bell(m, t + .06 * k, .035, .8, (k - 1.5) * .4));
+        break;
+      case 'riser': { // 베기 전 차오름
+        const o2 = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain(); o2.type = 'sawtooth'; o2.frequency.setValueAtTime(180, t); o2.frequency.exponentialRampToValueAtTime(1400, t + .45);
+        f.type = 'lowpass'; f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(7000, t + .45); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.17, t + .44); g.gain.setValueAtTime(0, t + .45);
+        o2.connect(f); f.connect(g); to(g, 1, .2); o2.start(t); o2.stop(t + .46);
+        const s = nb(.45, x => x * x), bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2.5; bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(8000, t + .45); s.connect(bp); to(bp, .5); s.start(t);
+        break; }
+      case 'cut': // 히트스톱: 모든 소리를 순간 꺼 버린다
+        B.master.gain.cancelScheduledValues(t); B.master.gain.setValueAtTime(B.master.gain.value, t); B.master.gain.linearRampToValueAtTime(0, t + .012); B.master.gain.setValueAtTime(0, t + (o.ms || 120) / 1000); B.master.gain.linearRampToValueAtTime(1, t + (o.ms || 120) / 1000 + .004);
+        break;
+      case 'slice': { // 쨍! 금속 + 공기 찢는 소리 + 서브 붐 + 긴 잔향
+        const s = nb(.16, x => Math.pow(1 - x, 2.5)), hf = a.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 3000; s.connect(hf); to(hf, .55, .5); s.start(t);
+        [2310, 3740, 5120, 7930, 10400].forEach((fr, k) => { const o3 = a.createOscillator(), g = a.createGain(); o3.frequency.setValueAtTime(fr * 1.04, t); o3.frequency.exponentialRampToValueAtTime(fr, t + .1); env(g, t, .05 / (k * .6 + 1), 1.3); o3.connect(g); to(g, 1, .6, (k % 2 ? .3 : -.3)); o3.start(t); o3.stop(t + 1.35); });
+        sub(t + .02, 110, 34, .9, .55); kick(t + .02, .5);
+        LOCK.slice(1).forEach((m, k) => voice(m + 12, t + .03, 1.2, .025, 7000, 900, .7, (k - 3) * .2));
+        break; }
+      case 'fly': swish(t, .7, 5000, 300, .45, -.8, -1); swish(t, .7, 4500, 280, .45, .8, 1); break;
+      case 'clang': // 칼날이 튕겨 나감: 둔탁한 쇳소리 + 내려가는 고장음
+        [880, 1320, 2093, 2790].forEach((fr, k) => { const o3 = a.createOscillator(), g = a.createGain(); o3.type = 'triangle'; o3.frequency.value = fr; env(g, t, .09 / (k + 1), .6); o3.connect(g); to(g, 1, .3); o3.start(t); o3.stop(t + .65); });
+        { const o3 = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain(); o3.type = 'square'; o3.frequency.setValueAtTime(440, t + .12); o3.frequency.exponentialRampToValueAtTime(55, t + .7); f.type = 'lowpass'; f.frequency.value = 1500; env(g, t + .12, .06, .6); o3.connect(f); f.connect(g); to(g, 1); o3.start(t + .12); o3.stop(t + .75); }
+        break;
     }
-    if(kind === 'tick'){ const o = a.createOscillator(), g = a.createGain(); o.type = 'square'; o.frequency.value = 1800 + Math.random() * 900; g.gain.setValueAtTime(.01, t); g.gain.exponentialRampToValueAtTime(.0001, t + .03); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .04); return; }
-    if(kind === 'charge'){ const s = nb(.45, x => x * x), f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(5200, t + .45); s.connect(f); out(f, .35); s.start(t); return; }
-    if(kind === 'slice'){
-      const s = nb(.12, x => Math.pow(1 - x, 2)), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2500; s.connect(f); out(f, .5); s.start(t);
-      [2200, 3310, 4870].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.frequency.value = fr; gg.gain.setValueAtTime(.06 / (i + 1), t); gg.gain.exponentialRampToValueAtTime(.0001, t + .9); o.connect(gg); gg.connect(a.destination); o.start(t); o.stop(t + 1); });
-      const o = a.createOscillator(), gg = a.createGain(); o.frequency.setValueAtTime(90, t + .05); o.frequency.exponentialRampToValueAtTime(38, t + .6); gg.gain.setValueAtTime(.4, t + .05); gg.gain.exponentialRampToValueAtTime(.0001, t + .7); o.connect(gg); gg.connect(a.destination); o.start(t + .05); o.stop(t + .75);
-      return;
-    }
-    if(kind === 'clang'){ [900, 1350, 2100].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.type = 'triangle'; o.frequency.value = fr; gg.gain.setValueAtTime(.08 / (i + 1), t); gg.gain.exponentialRampToValueAtTime(.0001, t + .5); o.connect(gg); gg.connect(a.destination); o.start(t); o.stop(t + .55); }); }
   }
 
+  window.__pwSnd = snd;
   const TITLE = '페리오딕//테이블'.split('');
   const SLANT = .3; // "/" 기울기 (가로/세로)
 
@@ -33939,7 +33998,7 @@ function rxFlashbang(soft){
     const fontPx = () => Math.max(32, Math.min(W * .074, 100));
     const order = TITLE.map((c, i) => i).filter(i => TITLE[i] !== '/');
     const glyph = TITLE.slice();
-    let locked = 0, lastTick = 0, kicked = 0, charge = 0, chargeAt = 0, state = 'run', slashPt = null;
+    let fired = 0, lockedSnd = false, locked = 0, lastTick = 0, kicked = 0, charge = 0, chargeAt = 0, state = 'run', slashPt = null;
     const t0 = performance.now();
     const fontsReady = (document.fonts && document.fonts.load) ? document.fonts.load(`400 40px Orbit`).catch(() => {}) : Promise.resolve();
 
@@ -34139,12 +34198,15 @@ function rxFlashbang(soft){
       const t = now - t0;
       // 박자
       const k = Math.floor((t + 1) / BEAT);
-      if(!RX_REDUCED) while(kicked <= Math.min(k, 4)){ if(kicked === 0) snd('whoosh'); else { snd(kicked === 4 ? 'kick2' : 'kick'); for(let s = 0; s < (kicked === 4 ? 9 : 5); s++) streaks.push({ at: now, off: rnd(-900, 900), y: rnd(-500, 500), len: rnd(200, 600), sp: rnd(.9, 1.6) * (Math.random() < .5 ? 1 : -1) }); } kicked++; }
+      if(!RX_REDUCED) while(kicked <= Math.min(k, 4)){ if(kicked === 0) snd('intro'); else { snd('beat', { n: kicked }); for(let s = 0; s < (kicked === 4 ? 9 : 5); s++) streaks.push({ at: now, off: rnd(-900, 900), y: rnd(-500, 500), len: rnd(200, 600), sp: rnd(.9, 1.6) * (Math.random() < .5 ? 1 : -1) }); } kicked++; }
+      // 휩 팬 · 별 등장 소리
+      if(!RX_REDUCED) [[1000, 'whip', { dir: 1 }], [1320, 'whip', { dir: -1 }], [1660, 'whip', { dir: 1 }], [BEAT * 3, 'chime', {}], [BEAT * 4 + 150, 'chime', { hi: 1 }]].forEach(([at, kd, op], q) => { if(t >= at && !(fired & (1 << q))){ fired |= 1 << q; snd(kd, op); } });
       // 로고 해독
       const lp = seg(t, LOGO_AT, LOGO_AT + LOGO_DUR);
       const want = Math.floor(lp * 1.12 * order.length);
       while(locked < Math.min(order.length, want)){ const i = order[locked++]; glyph[i] = TITLE[i]; }
-      if(t > LOGO_AT && now - lastTick > 55 && locked < order.length){ lastTick = now; order.slice(locked).forEach(i => glyph[i] = SYMS[(Math.random() * 118) | 0]); snd('tick'); }
+      if(t > LOGO_AT && now - lastTick > 55 && locked < order.length){ lastTick = now; order.slice(locked).forEach(i => glyph[i] = SYMS[(Math.random() * 118) | 0]); if(Math.random() < .6) snd('blip'); }
+      if(locked >= order.length && !lockedSnd){ lockedSnd = true; snd('lock'); }
       bar.style.width = (cl(t / READY) * 100).toFixed(1) + '%';
       zEl.textContent = String(Math.max(1, Math.round(cl(t / READY) * 118))).padStart(3, '0');
 
@@ -34279,15 +34341,15 @@ function rxFlashbang(soft){
   }
   function pwOpen(broke){
     const box = document.getElementById('rxIntro'); if(!box || !box._pw || box.classList.contains('open')) return;
-    if(broke){ const go = box._pw.split(); go(); box.classList.add('slice', 'open'); slashFx(box); flyHalves(box, true); fin(box, 850); return; }
-    box._pw.charge(); snd('charge');
+    if(broke){ const go = box._pw.split(); go(); box.classList.add('slice', 'open'); slashFx(box); flyHalves(box, true); snd('fly'); fin(box, 850); return; }
+    box._pw.charge(); snd('riser');
     setTimeout(() => {
       // 히트스톱: 한순간 멈추고 반전 번쩍
-      box._pw.freeze(); box.classList.add('hit');
+      box._pw.freeze(); box.classList.add('hit'); snd('cut', { ms: RX_REDUCED ? 10 : 120 });
       setTimeout(() => box.classList.remove('hit'), 70);
       setTimeout(() => {
         const go = box._pw.split(); box.classList.add('slice'); snd('slice'); slashFx(box);
-        setTimeout(() => { go(); box.classList.add('open'); flyHalves(box); fin(box, 1150); }, 210);
+        setTimeout(() => { go(); box.classList.add('open'); flyHalves(box); snd('fly'); fin(box, 1150); }, 210);
       }, RX_REDUCED ? 0 : 120);
     }, RX_REDUCED ? 100 : 450);
   }
@@ -34296,7 +34358,7 @@ function rxFlashbang(soft){
   }
   function pwStuck(){
     const box = document.getElementById('rxIntro'), msg = document.getElementById('inMsg'); if(!box || !box._pw) return;
-    box._pw.charge(); snd('charge');
+    box._pw.charge(); snd('riser');
     setTimeout(() => {
       box._pw.split(); box.classList.add('slice', 'stuck'); snd('clang'); msg.textContent = tt('fail');
       setTimeout(() => {
