@@ -33955,6 +33955,18 @@ function rxFlashbang(soft){
     }
     const origin = () => [W / 2, H * .42];
 
+    // 떠다니는 먼지 파티클: 크기·흐림·깊이가 제각각, 카메라가 빠질 때 깊이감 있게 퍼진다
+    const DUST = Array.from({length: 230}, () => { const d = Math.random(); return { fx: Math.random(), fy: Math.random(), d, r: d < .08 ? rnd(3, 5.5) : d < .4 ? rnd(1.6, 2.6) : rnd(.8, 1.5), blur: d < .08, a: rnd(.55, 1), vx: rnd(-.004, .004), vy: rnd(-.012, -.003), tw: rnd(0, 6.28), tws: rnd(.001, .004) }; });
+    function drawDust(t, cam, ox, oy){
+      const zz = 1 + (cam.z - 1) * .6;
+      DUST.forEach(p => {
+        let px = ((p.fx + p.vx * t * .05) % 1 + 1) % 1 * W, py = ((p.fy + p.vy * t * .05 * (.4 + p.d)) % 1 + 1) % 1 * H;
+        const depth = .3 + p.d; px = ox + (px - ox) * (1 + (zz - 1) * depth) - cam.cx * U * depth * .3; py = oy + (py - oy) * (1 + (zz - 1) * depth);
+        const tw = .7 + .3 * Math.sin(t * p.tws + p.tw), a = p.a * tw * (p.blur ? .55 : 1);
+        if(p.blur){ const g = x.createRadialGradient(px, py, 0, px, py, p.r * 2.4); g.addColorStop(0, `rgba(222,226,255,${a})`); g.addColorStop(1, 'rgba(222,226,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(px, py, p.r * 2.4, 0, 6.283); x.fill(); }
+        else { x.fillStyle = `rgba(230,233,255,${a})`; x.beginPath(); x.arc(px, py, p.r, 0, 6.283); x.fill(); }
+      });
+    }
     function drawWaves(t, cam){
       const rise = RX_REDUCED ? 1 : oExpo(seg(t, 100, 1400));
       const par = -cam.cx * .25;
@@ -34046,12 +34058,12 @@ function rxFlashbang(soft){
     // 입체 네 꼭지 별 (왼쪽 위에서 빛을 받은 면)
     function sparkle(cx, cy, Rr, sx, alpha){
       if(Rr <= 0 || alpha <= 0) return;
-      x.save(); x.translate(cx, cy); x.scale(sx, 1); x.globalAlpha = alpha;
+      x.save(); x.translate(cx, cy); x.rotate(sx); x.globalAlpha = alpha;
       const k = Rr * .07, T = [0, -Rr], Rt = [Rr, 0], B = [0, Rr], L = [-Rr, 0];
       if(x.createConicGradient){
         // 원뿔 그라데이션: 꼭대기에서만 흰↔검이 딱 갈리고, 한 바퀴 돌며 부드럽게 이어진다
         const g = x.createConicGradient(-Math.PI / 2, 0, 0);
-        g.addColorStop(0, '#000'); g.addColorStop(.06, '#0d0e16'); g.addColorStop(.25, '#4a4e66'); g.addColorStop(.5, '#9094ad'); g.addColorStop(.75, '#d3d5e4'); g.addColorStop(.94, '#f6f7ff'); g.addColorStop(1, '#fff');
+        g.addColorStop(0, '#0b0d2a'); g.addColorStop(.06, '#1a1f55'); g.addColorStop(.25, '#4f5bb8'); g.addColorStop(.5, '#7f8ff0'); g.addColorStop(.75, '#b3bdff'); g.addColorStop(.94, '#e6e9ff'); g.addColorStop(1, '#f4f5ff');
         x.beginPath(); x.moveTo(T[0], T[1]); x.quadraticCurveTo(k, -k, Rt[0], Rt[1]); x.quadraticCurveTo(k, k, B[0], B[1]); x.quadraticCurveTo(-k, k, L[0], L[1]); x.quadraticCurveTo(-k, -k, T[0], T[1]); x.closePath();
         x.fillStyle = g; x.fill(); x.restore(); return;
       }
@@ -34124,6 +34136,7 @@ function rxFlashbang(soft){
       x.setTransform(DPR, 0, 0, DPR, 0, 0);
       const bg = x.createRadialGradient(ox, oy, 0, ox, oy, Math.max(W, H) * .75); bg.addColorStop(0, '#1d2150'); bg.addColorStop(.55, '#10122b'); bg.addColorStop(1, '#07081a');
       x.fillStyle = bg; x.fillRect(0, 0, W, H);
+      drawDust(t, cam, ox, oy);
       drawWaves(t, cam);
       // 월드
       x.save(); x.translate(ox, oy); x.scale(cam.z * U, cam.z * U); x.rotate(cam.r); x.translate(-cam.cx, -cam.cy);
@@ -34164,11 +34177,11 @@ function rxFlashbang(soft){
       });
       // 별: 가운데에서 크게 튀어나왔다가, 로고가 들어오면 왼쪽 위 모서리로 비켜난다 (빙글 뒤집히며)
       { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520));
-        const flip = Math.cos(t * .0021), sx = (Math.abs(flip) < .08 ? .08 : Math.abs(flip)) * (flip < 0 ? -1 : 1);
+        const ROT = 75 * Math.PI / 180;
         const sw = (fx, fy) => [(W * fx - ox) / (U * cam.z) + cam.cx, (H * fy - oy) / (U * cam.z) + cam.cy], P1 = sw(W < 700 ? .78 : .85, .82), P2 = sw(W < 700 ? .18 : .15, W < 700 ? .14 : .2);
-        sparkle(lerp(0, P1[0], mv), lerp(0, P1[1], mv), lerp(250, 95, mv) * pop, mv < 1 ? lerp(1, sx, mv) : sx, cl(pop * 1.5));
-        const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600)), f2 = Math.cos(t * .0017 + 2);
-        sparkle(P2[0], P2[1], 60 * p2, (Math.abs(f2) < .08 ? .08 : Math.abs(f2)) * (f2 < 0 ? -1 : 1), cl(p2 * 1.5)); }
+        sparkle(lerp(0, P1[0], mv), lerp(0, P1[1], mv), lerp(250, 95, mv) * pop, ROT, cl(pop * 1.5));
+        const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600));
+        sparkle(P2[0], P2[1], 60 * p2, ROT, cl(p2 * 1.5)); }
       const sp = drawLogo(t, cam);
       x.restore();
       if(sp){ // "//" 화면 좌표
