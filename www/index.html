@@ -33754,11 +33754,39 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
       setTimeout(() => sh.classList.add('on'), 900);
     }
     setTimeout(() => { set('f1'); if(!opt.shades){ img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } }, 650);
-    setTimeout(() => { set('f2'); img.classList.add('burn'); g.classList.add('go'); try{ SFX.boom(); }catch(e){} }, 1250);
+    setTimeout(() => { set('f2'); img.classList.add('burn'); g.classList.add('go'); try{ rxFlashbang(!!opt.shades); }catch(e){} }, 1250);
     setTimeout(() => { w.classList.add('down'); }, 2250);
     setTimeout(() => { w.remove(); done && done(); }, 2750);
   };
 })();
+</script>
+<script>
+/* 섬광탄 소리: 날카로운 '팡!' + 귀 먹먹한 삐— 이명 */
+function rxFlashbang(soft){
+  if(typeof sndOn !== 'undefined' && !sndOn) return;
+  const a = ac(); if(!a) return;
+  const t = a.currentTime, V = soft ? 0.35 : 1;
+  const out = a.createGain(); out.gain.value = V; out.connect(a.destination);
+  // 1) 팡: 아주 짧고 밝은 잡음 (고역을 살린다)
+  const n = Math.floor(a.sampleRate * 0.35), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+  for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 6);
+  const src = a.createBufferSource(); src.buffer = buf;
+  const hp = a.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 700;
+  const g1 = a.createGain(); g1.gain.setValueAtTime(0.55, t);
+  src.connect(hp); hp.connect(g1); g1.connect(out); src.start(t);
+  // 2) 쿵: 짧은 저음 펀치
+  const o1 = a.createOscillator(), g2 = a.createGain(); o1.type = 'sine';
+  o1.frequency.setValueAtTime(140, t); o1.frequency.exponentialRampToValueAtTime(45, t + 0.18);
+  g2.gain.setValueAtTime(0.35, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+  o1.connect(g2); g2.connect(out); o1.start(t); o1.stop(t + 0.3);
+  // 3) 삐———: 귀가 울리는 이명 (살짝 흔들리며 천천히 사라짐)
+  const o2 = a.createOscillator(), g3 = a.createGain(), lfo = a.createOscillator(), lg = a.createGain();
+  o2.type = 'sine'; o2.frequency.value = 3600; lfo.frequency.value = 5; lg.gain.value = 9;
+  lfo.connect(lg); lg.connect(o2.frequency);
+  g3.gain.setValueAtTime(0, t + 0.05); g3.gain.linearRampToValueAtTime(0.06, t + 0.25);
+  g3.gain.setValueAtTime(0.06, t + 1.2); g3.gain.exponentialRampToValueAtTime(0.0001, t + 3.2);
+  o2.connect(g3); g3.connect(out); o2.start(t + 0.05); lfo.start(t + 0.05); o2.stop(t + 3.3); lfo.stop(t + 3.3);
+}
 </script>
 </body>
 </html>
