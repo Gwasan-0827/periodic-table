@@ -33532,7 +33532,7 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
   .tt-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--dim)}
   .tt-chip i{width:12px;height:12px;border-radius:3px;background:var(--c)}
   .tt-chip b{color:var(--text);font-variant-numeric:tabular-nums}
-  @media (max-width:700px){ #mopt .trow{min-width:0;width:100%} #mopt .treadout b{font-size:18px} }
+  @media (max-width:700px){ #mopt .trow{min-width:0;width:100%;flex:1 1 100%} #mopt .trow + .mchips{flex:1 1 100%;min-width:0} #mopt .treadout b{font-size:18px} }
 </style>
 <script>
 (function(){
