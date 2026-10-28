@@ -35704,6 +35704,22 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
 })();
 </script>
 <style>
+  /* 퀴즈: "AI 쓰지마세요 ;)" */
+  .rx-noai{margin-top:14px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.02em;color:#ff4d5e;text-shadow:0 0 10px rgba(255,77,94,.35);user-select:none}
+</style>
+<script>
+(function(){
+  const add = () => { try{
+    if(!qBodyEl || qBodyEl.querySelector('.rx-noai')) return;
+    const d = document.createElement('div'); d.className = 'rx-noai';
+    d.textContent = LANG === 'en' ? 'No AI, please ;)' : 'AI 쓰지마세요 ;)';
+    qBodyEl.appendChild(d);
+  }catch(e){} };
+  const wrap = n => { const f = window[n]; if(typeof f !== 'function') return; window[n] = function(){ const r = f.apply(this, arguments); add(); return r; }; };
+  ['renderQ', 'qHome'].forEach(wrap);
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
