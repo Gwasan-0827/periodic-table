@@ -3185,6 +3185,8 @@
   window.RX_LOWPOW = LOW;
   if(!LOW) return;
   document.documentElement.classList.add('lowpow');
+  // 캔버스가 읽는 화면 밀도를 1.5배까지만 (폰은 2.6~3배라 픽셀을 3~4배 더 그리고 있었다). 글자·화면 자체 선명도는 그대로
+  try{ const real = window.devicePixelRatio || 1; if(real > 1.5) Object.defineProperty(window, 'devicePixelRatio', { get: () => 1.5, configurable: true }); }catch(e){}
   const _raf = window.requestAnimationFrame.bind(window);
   let q = [], ids = new Set(), next = 1, tick = 0, pending = false, lastIn = performance.now(), idle = false;
   const wake = () => { lastIn = performance.now(); if(idle){ idle = false; document.documentElement.classList.remove('idle'); } };
@@ -17735,9 +17737,24 @@ function rxCloudFog(c, w, h, pts, view, o){
   const upto = o.upto == null ? Infinity : o.upto;
   const rad = Math.max(7, scale * 0.075) * (o.fogSize || 1);
   const a0 = Math.min(0.2, 0.062 * Math.pow(2600 / Math.max(300, pts.length), 0.55)) * (o.fogAlpha || 1);
+  // 발열 줄이기: 흐린 빛 수천 개를 절반 해상도 캔버스에 그린 뒤 한 번에 키워 붙인다 (어차피 흐릿해서 차이가 안 보임)
+  const tc = c.getTransform ? c.getTransform() : null, HS = .5;
+  let dst = c, off = null;
+  if(tc && c.canvas && c.canvas.width > 64){
+    off = rxCloudFog._off || (rxCloudFog._off = document.createElement('canvas'));
+    const ow = Math.max(1, Math.round(c.canvas.width * HS)), oh = Math.max(1, Math.round(c.canvas.height * HS));
+    if(off.width !== ow || off.height !== oh){ off.width = ow; off.height = oh; }
+    dst = off.getContext('2d'); dst.setTransform(1, 0, 0, 1, 0, 0); dst.clearRect(0, 0, ow, oh);
+    dst.setTransform(tc.a * HS, tc.b * HS, tc.c * HS, tc.d * HS, tc.e * HS, tc.f * HS);
+  }
+  const c0 = c; c = dst;
   c.save();
   c.globalCompositeOperation = 'lighter';
+  // 폰(저전력): 점을 하나 걸러 그리고 대신 조금 더 밝게 → 그리는 양 절반, 보이는 구름은 거의 같다
+  const LOWF = window.RX_LOWPOW && pts.length > 600, kk = LOWF ? 2 : 1;
+  let qi = 0;
   for(const p of pts){
+    if(LOWF && (qi++ & 1)) continue;
     if(p.e >= upto) continue;
     const x1 = p.x * cY + p.z * sY, z1 = -p.x * sY + p.z * cY;
     const y1 = p.y * cX - z1 * sX, z2 = p.y * sX + z1 * cX;
@@ -17745,10 +17762,12 @@ function rxCloudFog(c, w, h, pts, view, o){
     const col = o.phase && p.sg < 0 ? RX_FOG_PINK : (RX_SUB_COL[p.l] || RX_SUB_COL.s);
     const r = rad * (0.8 + depth * 0.4);
     if(o.skip && p.k === o.skip) continue;
-    c.globalAlpha = Math.min(1, a0 * (0.55 + depth * 0.45) * (o.gain || 1));
+    c.globalAlpha = Math.min(1, a0 * kk * (0.55 + depth * 0.45) * (o.gain || 1));
     c.drawImage(rxFogSprite(col), cx + x1 * scale - r, cy + y1 * scale - r, r * 2, r * 2);
   }
   c.restore();
+  c = c0;
+  if(off){ c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter'; c.imageSmoothingEnabled = true; c.drawImage(off, 0, 0, c.canvas.width, c.canvas.height); c.restore(); }
   if(o.noNuc) return;
   const [R0, G0, B0] = o.nuc || [255, 255, 255];
   c.beginPath();
@@ -34190,7 +34209,7 @@ function rxFlashbang(soft){
     const MSGS = (LANG === 'en' ? LOAD_EN : LOAD_KO).slice().sort(() => Math.random() - .5);
     let msgI = 0, msgAt = 0, lastSeg = -1;
     let W = 0, H = 0, DPR = 1, U = 1;
-    const fit = () => { DPR = Math.min(1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W * .001, H * .0009); };
+    const fit = () => { DPR = Math.min(window.RX_LOWPOW ? 1.25 : 1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W * .001, H * .0009); };
     fit(); addEventListener('resize', fit);
     const rnd = (a, b) => a + Math.random() * (b - a);
     // 날카로운 조각들: 화면 밖에서 회전하며 날아와 로고 둘레에 박힌다
