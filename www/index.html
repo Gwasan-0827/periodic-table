@@ -34691,7 +34691,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     // 넣는 순간 퍼지는 고리
     if(S.burst > 0){ c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(${r},${gg},${b},${S.burst * .6})`; c.lineWidth = 3 * S.burst; const rr = (1 - S.burst) * fh * .9 + 10; c.beginPath(); c.ellipse(cx, base - fh * .42, rr, rr * .55, 0, 0, 7); c.stroke(); c.restore(); }
   }
-  // ── 방전관: 양 끝 둥근 전구 + 가는 유리관 + 전극 + 고전압 전원 ──
+  // ── 방전관: 과학실 스펙트럼관 전원 장치 (아래 전원 상자 + 세운 판 + 위아래 금속 집게 + 세로 유리관) ──
   function drawTube(c, dt, red){
     const W = S.W, H = S.H, t = S.t, [r, g, b] = flameRGB();
     // 켜질 때 네온사인처럼 틱… 틱틱… 파앗
@@ -34701,80 +34701,86 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     const hum = red ? 1 : 1 + Math.sin(t * 2 * Math.PI * 7.3) * .04 + (Math.random() - .5) * .05;
     const G = S.lit * fk * hum * (.35 + .65 * S.volt);
     S.glow = G;
-    // 배경: 어두운 실험대
+    // 배경 + 실험대
     c.fillStyle = '#05070a'; c.fillRect(0, 0, W, H);
-    const bench = H * .86; c.fillStyle = '#0b0f16'; c.fillRect(0, bench, W, H - bench); c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(0, bench, W, 1);
-    const cy = H * .4, xL = W * .2, xR = W * .8, R0 = Math.min(H * .13, W * .075), cap = Math.max(4, R0 * .34);
-    // 빛무리 (방 안에 번지는 빛)
+    const bench = H * .9; c.fillStyle = '#0b0f16'; c.fillRect(0, bench, W, H - bench); c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(0, bench, W, 1);
+    // 치수
+    const cx = W * .5, boxH = Math.min(52, H * .14), boxW = Math.min(190, W * .46), boxTop = bench - boxH;
+    const top = H * .06, tTop = top + 16, tBot = boxTop - 16, L = tBot - tTop;
+    const endR = Math.max(7, Math.min(13, L * .045)), endLen = L * .15, cap = Math.max(2.6, endR * .34);
+    const plateW = endR * 5.2;
+    // 세운 판 (장치 뒤판)
+    const pg = c.createLinearGradient(cx - plateW / 2, 0, cx + plateW / 2, 0); pg.addColorStop(0, '#141922'); pg.addColorStop(.5, '#1d2430'); pg.addColorStop(1, '#11151d');
+    c.fillStyle = pg; c.fillRect(cx - plateW / 2, top - 6, plateW, boxTop - top + 6);
+    c.strokeStyle = 'rgba(255,255,255,.06)'; c.strokeRect(cx - plateW / 2 + .5, top - 5.5, plateW - 1, boxTop - top + 5);
+    // 빛 (방 안에 번지는 빛 · 판에 비친 빛 · 실험대 반사)
     c.save(); c.globalCompositeOperation = 'lighter';
     if(G > .01){
-      const halo = c.createRadialGradient(W / 2, cy, 4, W / 2, cy, W * .55); halo.addColorStop(0, `rgba(${r},${g},${b},${.22 * G})`); halo.addColorStop(1, `rgba(${r},${g},${b},0)`);
-      c.fillStyle = halo; c.fillRect(0, 0, W, H);
-      // 실험대에 비친 빛
-      c.save(); c.translate(W / 2, bench); c.scale(((xR - xL) / 2) / 30, 1);
-      const rf = c.createRadialGradient(0, 0, 0, 0, 0, 30); rf.addColorStop(0, `rgba(${r},${g},${b},${.2 * G})`); rf.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.save(); c.translate(cx, (tTop + tBot) / 2); c.scale(1, (L / 2 + 60) / 120);
+      const hg = c.createRadialGradient(0, 0, 0, 0, 0, 120); hg.addColorStop(0, `rgba(${r},${g},${b},${.26 * G})`); hg.addColorStop(.5, `rgba(${r},${g},${b},${.1 * G})`); hg.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = hg; c.beginPath(); c.arc(0, 0, 120, 0, 7); c.fill(); c.restore();
+      const wide = c.createRadialGradient(cx, (tTop + tBot) / 2, 4, cx, (tTop + tBot) / 2, Math.max(W, H) * .7); wide.addColorStop(0, `rgba(${r},${g},${b},${.12 * G})`); wide.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = wide; c.fillRect(0, 0, W, H);
+      c.save(); c.translate(cx, bench); c.scale(boxW / 60, 1); const rf = c.createRadialGradient(0, 0, 0, 0, 0, 30); rf.addColorStop(0, `rgba(${r},${g},${b},${.22 * G})`); rf.addColorStop(1, `rgba(${r},${g},${b},0)`);
       c.fillStyle = rf; c.beginPath(); c.arc(0, 0, 30, 0, Math.PI); c.fill(); c.restore();
     }
-    // 가는 관 속 플라스마: 바깥 번짐 → 색 → 하얀 심지, 그리고 흐르는 줄무늬
-    const x0 = xL + R0 * .9, x1 = xR - R0 * .9;
+    // 가는 관 속 플라스마 (세로)
+    const y0 = tTop + endLen, y1 = tBot - endLen;
     if(G > .01){
-      const half = (x1 - x0) / 2;
-      [[cap * 6, .16], [cap * 2.8, .3]].forEach(([w, a]) => {
-        c.save(); c.translate(W / 2, cy); c.scale((half + w * .6) / w, 1);
-        const eg = c.createRadialGradient(0, 0, 0, 0, 0, w); eg.addColorStop(0, `rgba(${r},${g},${b},${a * G})`); eg.addColorStop(.6, `rgba(${r},${g},${b},${a * .45 * G})`); eg.addColorStop(1, `rgba(${r},${g},${b},0)`);
-        c.fillStyle = eg; c.beginPath(); c.arc(0, 0, w, 0, 7); c.fill(); c.restore();
-      });
-      for(const [w, a, mix] of [[cap * 1.1, .85, .55], [cap * .45, 1, .9]]){
-        const gr = c.createLinearGradient(0, cy - w, 0, cy + w);
+      for(const [w, a, mix] of [[cap * 3.2, .3, .05], [cap * 1.15, .9, .5], [cap * .45, 1, .9]]){
+        const gr = c.createLinearGradient(cx - w, 0, cx + w, 0);
         const R2 = Math.round(r + (255 - r) * mix), G2 = Math.round(g + (255 - g) * mix), B2 = Math.round(b + (255 - b) * mix);
         gr.addColorStop(0, `rgba(${R2},${G2},${B2},0)`); gr.addColorStop(.5, `rgba(${R2},${G2},${B2},${a * G})`); gr.addColorStop(1, `rgba(${R2},${G2},${B2},0)`);
-        c.fillStyle = gr; c.fillRect(x0, cy - w, x1 - x0, w * 2);
+        c.fillStyle = gr; c.fillRect(cx - w, y0 - 4, w * 2, y1 - y0 + 8);
       }
-      // 줄무늬 (플라스마가 층져서 흐르는 것)
-      if(!red){ const n = 26; for(let i = 0; i < n; i++){ const u = ((i / n + t * .08) % 1), x = x0 + u * (x1 - x0), a = (.12 + .1 * Math.sin(i * 1.7 + t * 3)) * G;
-        const sg = c.createRadialGradient(x, cy, 0, x, cy, cap * 1.6); sg.addColorStop(0, `rgba(255,255,255,${a})`); sg.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sg; c.fillRect(x - cap * 1.6, cy - cap * 1.6, cap * 3.2, cap * 3.2); } }
-      // 전구 속: 은은하게 (전극 바로 앞은 어두운 틈)
-      [[xL, -1], [xR, 1]].forEach(([bx, sd]) => {
-        const bg = c.createRadialGradient(bx + sd * R0 * .2, cy, 0, bx, cy, R0); bg.addColorStop(0, `rgba(${r},${g},${b},${.55 * G})`); bg.addColorStop(.7, `rgba(${r},${g},${b},${.22 * G})`); bg.addColorStop(1, `rgba(${r},${g},${b},0)`);
-        c.fillStyle = bg; c.beginPath(); c.arc(bx, cy, R0 * .95, 0, 7); c.fill();
+      if(!red){ const n = 22; for(let i = 0; i < n; i++){ const u = ((i / n + t * .07) % 1), y = y1 - u * (y1 - y0), a = (.14 + .1 * Math.sin(i * 1.9 + t * 3)) * G;
+        const sg = c.createRadialGradient(cx, y, 0, cx, y, cap * 1.8); sg.addColorStop(0, `rgba(255,255,255,${a})`); sg.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sg; c.fillRect(cx - cap * 1.8, y - cap * 1.8, cap * 3.6, cap * 3.6); } }
+      // 양 끝 굵은 부분: 은은하게
+      [[tTop, tTop + endLen], [tBot - endLen, tBot]].forEach(([a0, a1]) => {
+        const eg = c.createLinearGradient(cx - endR, 0, cx + endR, 0); eg.addColorStop(0, `rgba(${r},${g},${b},0)`); eg.addColorStop(.5, `rgba(${r},${g},${b},${.5 * G})`); eg.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = eg; c.fillRect(cx - endR, a0 + 6, endR * 2, a1 - a0 - 6);
       });
     }
     c.restore();
-    // 유리: 전구 두 개 + 가는 관 (윤곽 + 반사광)
-    c.lineWidth = 1.6; c.strokeStyle = 'rgba(205,220,240,.42)';
-    c.beginPath(); c.arc(xL, cy, R0, 0, 7); c.stroke(); c.beginPath(); c.arc(xR, cy, R0, 0, 7); c.stroke();
-    c.fillStyle = '#05070a'; // 전구와 관이 겹치는 안쪽 윤곽 지우기
-    c.strokeStyle = 'rgba(205,220,240,.42)';
-    c.beginPath(); c.moveTo(xL + Math.sqrt(R0 * R0 - cap * cap), cy - cap); c.lineTo(xR - Math.sqrt(R0 * R0 - cap * cap), cy - cap); c.moveTo(xL + Math.sqrt(R0 * R0 - cap * cap), cy + cap); c.lineTo(xR - Math.sqrt(R0 * R0 - cap * cap), cy + cap); c.stroke();
-    c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1.2;
-    c.beginPath(); c.moveTo(xL + R0, cy - cap * .55); c.lineTo(xR - R0, cy - cap * .55); c.stroke();
-    [xL, xR].forEach(bx => { c.beginPath(); c.arc(bx, cy, R0 * .78, Math.PI * 1.15, Math.PI * 1.55); c.stroke(); });
-    // 전극 (금속 캡 + 안으로 들어간 핀)
-    [[xL, -1], [xR, 1]].forEach(([bx, sd]) => {
-      const ex = bx + sd * R0;
-      const mg = c.createLinearGradient(0, cy - R0 * .45, 0, cy + R0 * .45); mg.addColorStop(0, '#9aa3b0'); mg.addColorStop(.5, '#e6ebf2'); mg.addColorStop(1, '#5d6673');
-      c.fillStyle = mg; c.fillRect(sd < 0 ? ex - R0 * .55 : ex, cy - R0 * .42, R0 * .55, R0 * .84);
-      c.strokeStyle = '#8b95a3'; c.lineWidth = 2; c.beginPath(); c.moveTo(ex, cy); c.lineTo(ex - sd * R0 * .55, cy); c.stroke();
-      // 전선 → 전원 상자
-      c.strokeStyle = sd < 0 ? '#c0392b' : '#2c3e50'; c.lineWidth = 2.4; c.beginPath();
-      const px = sd < 0 ? ex - R0 * .55 : ex + R0 * .55;
-      c.moveTo(px, cy); c.bezierCurveTo(px + sd * 30, cy, px + sd * 20, bench - 8, W / 2 + sd * 34, bench - 8); c.stroke();
+    // 유리관 윤곽: 굵은 끝 → 어깨 → 가는 관 → 어깨 → 굵은 끝
+    const sh = endR * 1.1;   // 어깨 길이
+    c.strokeStyle = 'rgba(205,220,240,.45)'; c.lineWidth = 1.5;
+    [-1, 1].forEach(sd => { c.beginPath();
+      c.moveTo(cx + sd * endR, tTop + 6); c.lineTo(cx + sd * endR, tTop + endLen - sh); c.quadraticCurveTo(cx + sd * endR, tTop + endLen, cx + sd * cap, tTop + endLen + sh * .4);
+      c.lineTo(cx + sd * cap, tBot - endLen - sh * .4); c.quadraticCurveTo(cx + sd * endR, tBot - endLen, cx + sd * endR, tBot - endLen + sh); c.lineTo(cx + sd * endR, tBot - 6); c.stroke(); });
+    c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = 1.1;
+    c.beginPath(); c.moveTo(cx - cap * .45, y0 + sh); c.lineTo(cx - cap * .45, y1 - sh); c.stroke();
+    c.beginPath(); c.moveTo(cx - endR * .6, tTop + 10); c.lineTo(cx - endR * .6, tTop + endLen - sh); c.moveTo(cx - endR * .6, tBot - endLen + sh); c.lineTo(cx - endR * .6, tBot - 10); c.stroke();
+    // 전극 핀 (끝 안쪽으로 들어간 금속)
+    c.strokeStyle = '#8b95a3'; c.lineWidth = 2; c.beginPath(); c.moveTo(cx, tTop + 4); c.lineTo(cx, tTop + endLen * .55); c.moveTo(cx, tBot - 4); c.lineTo(cx, tBot - endLen * .55); c.stroke();
+    // 위아래 금속 집게 (스프링 단자)
+    [[tTop, 1], [tBot, -1]].forEach(([y, sd]) => {
+      const mg = c.createLinearGradient(cx - endR * 1.7, 0, cx + endR * 1.7, 0); mg.addColorStop(0, '#6b7482'); mg.addColorStop(.45, '#e6ebf2'); mg.addColorStop(1, '#58616e');
+      c.fillStyle = mg; c.fillRect(cx - endR * 1.5, y - (sd > 0 ? 14 : -2), endR * 3, 12);
+      c.fillStyle = '#3a414d'; c.fillRect(cx - endR * 1.7, y - (sd > 0 ? 16 : -12), endR * 3.4, 4);
+      c.fillStyle = '#c9d0da'; c.beginPath(); c.arc(cx + endR * 1.1, y - (sd > 0 ? 8 : -8), 2, 0, 7); c.fill();
     });
-    // 전원 상자 (다이얼 + 불빛)
-    const bw = Math.min(150, W * .3), bh = Math.min(46, H * .12), bx0 = W / 2 - bw / 2, by0 = bench - bh;
-    c.fillStyle = '#1c222c'; c.fillRect(bx0, by0, bw, bh); c.strokeStyle = 'rgba(255,255,255,.12)'; c.strokeRect(bx0 + .5, by0 + .5, bw - 1, bh - 1);
+    // 위 집게에서 전원 상자로 내려가는 고압선 (판 뒤쪽 옆으로)
+    c.strokeStyle = '#c0392b'; c.lineWidth = 2.2; c.beginPath(); c.moveTo(cx + endR * 1.5, tTop - 8); c.lineTo(cx + plateW / 2 - 4, tTop - 8); c.lineTo(cx + plateW / 2 - 4, boxTop); c.stroke();
+    // 전원 상자
+    const bx0 = cx - boxW / 2, by0 = boxTop, bh = boxH;
+    const bxg = c.createLinearGradient(0, by0, 0, by0 + bh); bxg.addColorStop(0, '#252c38'); bxg.addColorStop(1, '#161b23');
+    c.fillStyle = bxg; c.fillRect(bx0, by0, boxW, bh); c.strokeStyle = 'rgba(255,255,255,.12)'; c.strokeRect(bx0 + .5, by0 + .5, boxW - 1, bh - 1);
     c.fillStyle = '#ffd43b'; c.textAlign = 'left'; c.textBaseline = 'middle';
-    { let fs = Math.max(8, bh * .24); c.font = `700 ${fs}px system-ui,sans-serif`; const room = bw - bh * 1.1 - 12; while(fs > 7 && c.measureText('⚡ HIGH VOLTAGE').width > room){ fs -= .5; c.font = `700 ${fs}px system-ui,sans-serif`; } }
-    c.fillText('⚡ HIGH VOLTAGE', bx0 + 8, by0 + bh * .3);
-    c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `600 ${Math.max(9, bh * .22)}px ui-monospace,monospace`; c.fillText(S.tgt ? (1.5 + S.volt * 3).toFixed(1) + ' kV' : '0.0 kV', bx0 + 8, by0 + bh * .72);
-    const kx = bx0 + bw - bh * .55, ky = by0 + bh / 2, kr = bh * .32;
+    { let fs = Math.max(8, bh * .22); c.font = `700 ${fs}px system-ui,sans-serif`; const room = boxW - bh * 1.2 - 14; while(fs > 7 && c.measureText('⚡ HIGH VOLTAGE').width > room){ fs -= .5; c.font = `700 ${fs}px system-ui,sans-serif`; } }
+    c.fillText('⚡ HIGH VOLTAGE', bx0 + 9, by0 + bh * .3);
+    c.fillStyle = 'rgba(255,255,255,.62)'; c.font = `600 ${Math.max(9, bh * .22)}px ui-monospace,monospace`; c.fillText(S.tgt ? (1.5 + S.volt * 3).toFixed(1) + ' kV' : '0.0 kV', bx0 + 9, by0 + bh * .72);
+    const kx = bx0 + boxW - bh * .55, ky = by0 + bh / 2, kr = bh * .3;
     c.fillStyle = '#3a4250'; c.beginPath(); c.arc(kx, ky, kr, 0, 7); c.fill(); c.strokeStyle = '#8b95a3'; c.lineWidth = 2;
     const ang = Math.PI * .75 + S.volt * Math.PI * 1.5; c.beginPath(); c.moveTo(kx, ky); c.lineTo(kx + Math.cos(ang) * kr * .9, ky + Math.sin(ang) * kr * .9); c.stroke();
-    const led = S.tgt ? (fk ? '#ff3b30' : '#5a1a16') : '#3a1512'; c.fillStyle = led; c.beginPath(); c.arc(kx - kr - 10, by0 + 9, 3.5, 0, 7); c.fill();
-    if(S.tgt && fk){ c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .6; c.drawImage(sprite(255, 60, 48), kx - kr - 20, by0 - 1, 20, 20); c.restore(); }
-    // 원소 이름표
-    c.fillStyle = 'rgba(255,255,255,.75)'; c.font = '700 14px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
-    c.fillText(`${S.e.s} · ${nm(S.e)}`, W / 2, cy - R0 - 12);
+    const lx = kx - kr - 11, ly = by0 + 10;
+    c.fillStyle = S.tgt ? (fk ? '#ff3b30' : '#5a1a16') : '#3a1512'; c.beginPath(); c.arc(lx, ly, 3.5, 0, 7); c.fill();
+    if(S.tgt && fk){ c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .6; c.drawImage(sprite(255, 60, 48), lx - 10, ly - 10, 20, 20); c.restore(); }
+    // 원소 이름표 (판 옆 작은 라벨)
+    const tx = cx + plateW / 2 + 12, ty = (tTop + tBot) / 2;
+    c.fillStyle = 'rgba(255,255,255,.85)'; c.font = '800 22px Kanit,system-ui,sans-serif'; c.textAlign = 'left'; c.textBaseline = 'alphabetic'; c.fillText(S.e.s, tx, ty);
+    c.fillStyle = 'rgba(255,255,255,.5)'; c.font = '600 12px system-ui,sans-serif'; c.textBaseline = 'top'; c.fillText(nm(S.e), tx, ty + 4);
+    c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = 1; c.beginPath(); c.moveTo(cx + endR + 4, ty - 7); c.lineTo(tx - 4, ty - 7); c.stroke();
   }
   function drawFw(c, dt, red){
     const W = S.W, H = S.H;
