@@ -34213,6 +34213,10 @@ function rxFlashbang(soft){
   #fl2Ctl button.on{background:rgba(255,255,255,.12);border-color:var(--text)}
   #fl2Ctl button.go{border-color:#ff8787;color:#ffc9c9}
   #fl2Ctl button[hidden]{display:none}
+  #fl2Volt{display:flex;align-items:center;gap:10px;padding:10px 12px 0;font-size:12.5px;font-weight:700;color:var(--dim)}
+  #fl2Volt[hidden]{display:none}
+  #fl2Volt input{flex:1;accent-color:#ffd43b}
+  #fl2Volt b{min-width:52px;text-align:right;color:#ffd43b;font-variant-numeric:tabular-nums}
   #fl2Info{padding:10px 14px 14px;font-size:13px;line-height:1.55;color:var(--dim);word-break:keep-all}
   #fl2Info .col{display:flex;align-items:center;gap:8px;font-size:13.5px;margin-bottom:6px}
   #fl2Info .col i{width:14px;height:14px;border-radius:50%;box-shadow:0 0 10px currentColor;flex-shrink:0}
@@ -34255,6 +34259,7 @@ function rxFlashbang(soft){
     <div id="fl2Stage"><canvas id="fl2Cv"></canvas><div id="fl2Tip"></div></div>
     <canvas id="fl2Spec"></canvas>
     <div id="fl2Ctl"><button type="button" id="fl2Go" class="go"></button><button type="button" id="fl2Na"></button><button type="button" id="fl2Co"></button><button type="button" id="fl2Auto" hidden></button></div>
+    <div id="fl2Volt" hidden><span>⚡</span><span class="vl"></span><input type="range" id="fl2V" min="0" max="100" value="75"><b id="fl2Vt">3.8 kV</b></div>
     <div id="fl2Info"></div>
     <div id="fl2Quiz" hidden></div>
   </div>
@@ -34289,7 +34294,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
   const bySym = s => EL.find(e => e.s === s);
   const nm = e => (EN() ? e.en : e.ko) || e.s;
   const S = { on: false, mode: 'lab', e: null, d: null, tube: false, lit: 0, tgt: 0, na: false, co: false, naK: 0, t: 0, last: 0, raf: 0,
-              wire: { x: 0, y: 0, hx: 0, hy: 0, drag: false, init: false }, P: [], sparks: [], burst: 0, fw: [], fwSel: 'Sr', auto: false, autoT: 0, quiz: null, W: 0, H: 0, dpr: 1 };
+              wire: { x: 0, y: 0, hx: 0, hy: 0, drag: false, init: false }, P: [], sparks: [], burst: 0, fw: [], fwSel: 'Sr', auto: false, volt: .75, tOn: -9, hum: null, autoT: 0, quiz: null, W: 0, H: 0, dpr: 1 };
   // ── 소리 ──
   function snd(kind, o){
     if(typeof sndOn !== 'undefined' && !sndOn) return;
@@ -34412,6 +34417,19 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     if(kind === 'no'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.setValueAtTime(220, t); os.frequency.exponentialRampToValueAtTime(110, t + .25); g.gain.setValueAtTime(.04, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3); os.connect(g); out(g, 1); os.start(t); os.stop(t + .32); }
     if(kind === 'zap'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.value = 120; g.gain.setValueAtTime(.03, t); g.gain.exponentialRampToValueAtTime(.0001, t + .25); os.connect(g); out(g, 1); os.start(t); os.stop(t + .27); }
   }
+  // 고전압 웅— (켜져 있는 동안 계속)
+  function humSet(on){
+    if(typeof sndOn !== 'undefined' && !sndOn) on = false;
+    const a = on ? ac() : null;
+    if(on && a && !S.hum){
+      const o1 = a.createOscillator(), o2 = a.createOscillator(), lp = a.createBiquadFilter(), g = a.createGain();
+      o1.type = 'sawtooth'; o1.frequency.value = 120; o2.type = 'square'; o2.frequency.value = 60.5; lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 3;
+      g.gain.value = 0; o1.connect(lp); o2.connect(lp); lp.connect(g); g.connect(a.destination); o1.start(); o2.start();
+      S.hum = { o1, o2, g, lp, a };
+    }
+    if(S.hum){ const a2 = S.hum.a, t = a2.currentTime; S.hum.g.gain.cancelScheduledValues(t); S.hum.g.gain.setTargetAtTime(on ? .012 + .03 * S.volt : 0, t, .08); S.hum.lp.frequency.setTargetAtTime(400 + 900 * S.volt, t, .1);
+      if(!on){ const h = S.hum; S.hum = null; setTimeout(() => { try{ h.o1.stop(); h.o2.stop(); }catch(e){} }, 400); } }
+  }
   // ── 색 ──
   const hex = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
   function flameRGB(){
@@ -34433,7 +34451,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
   // ── 열기 / 닫기 ──
   function setEl(e){
     S.e = e; S.d = typeof rxFlData === 'function' ? rxFlData(e) : RX_FL_D[e.s];
-    S.tube = !!(S.d && S.d.m === 't'); S.tgt = 0; S.na = false; S.co = false; S.burst = 0;
+    humSet(false); S.tube = !!(S.d && S.d.m === 't'); S.tgt = 0; S.na = false; S.co = false; S.burst = 0;
     if(S.wire.init) placeWireOut();
     sync();
   }
@@ -34444,7 +34462,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     setMode('lab', true); setEl(e); fit();
     cancelAnimationFrame(S.raf); S.raf = requestAnimationFrame(loop);
   }
-  function close(){ S.on = false; cancelAnimationFrame(S.raf); $('fl2').classList.remove('on'); $('fl2').setAttribute('aria-hidden', 'true'); }
+  function close(){ humSet(false); S.on = false; cancelAnimationFrame(S.raf); $('fl2').classList.remove('on'); $('fl2').setAttribute('aria-hidden', 'true'); }
   function fit(){
     const cv = $('fl2Cv'), sp = $('fl2Spec'), r = cv.getBoundingClientRect(), rs = sp.getBoundingClientRect();
     S.dpr = Math.min(2, devicePixelRatio || 1); S.W = r.width; S.H = r.height;
@@ -34458,7 +34476,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
   function wireIn(){ const g = geo(), dx = Math.abs(S.wire.x - g.cx), dy = g.base - S.wire.y; return dx < 26 + dy * .08 && dy > 24 && dy < g.fh * .85; }
   // ── 모드 ──
   function setMode(m, quiet){
-    S.mode = m;
+    S.mode = m; humSet(false);
     document.querySelectorAll('#fl2Tabs button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
     $('fl2Ctl').hidden = m === 'quiz'; $('fl2Info').hidden = m === 'quiz'; $('fl2Quiz').hidden = m !== 'quiz';
     $('fl2Chips').hidden = m === 'quiz';
@@ -34483,6 +34501,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     $('fl2Go').hidden = !lab || !!(d && d.gone); $('fl2Go').textContent = S.tgt ? (S.tube ? T.offT : T.off) : (S.tube ? T.goT : T.go); $('fl2Go').classList.toggle('go', !S.tgt);
     $('fl2Na').hidden = !lab || S.tube || !!(d && d.gone); $('fl2Na').textContent = T.na; $('fl2Na').classList.toggle('on', S.na);
     $('fl2Co').hidden = !lab || S.tube || !!(d && d.gone); $('fl2Co').textContent = T.co; $('fl2Co').classList.toggle('on', S.co);
+    $('fl2Volt').hidden = !(lab && S.tube); $('fl2Volt').querySelector('.vl').textContent = EN() ? 'Voltage' : '전압';
     $('fl2Auto').hidden = S.mode !== 'fw'; $('fl2Auto').textContent = T.auto; $('fl2Auto').classList.toggle('on', S.auto);
     $('fl2Tip').textContent = S.mode === 'fw' ? T.tipFw : S.tube ? T.tipTube : T.tipLab;
     $('fl2Tip').style.opacity = (S.mode === 'lab' && S.tgt) ? 0 : 1; $('fl2Tip').hidden = S.mode === 'quiz';
@@ -34508,7 +34527,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
   // ── 조작 ──
   function goToggle(){
     if(S.d && S.d.gone) return;
-    if(S.tube){ S.tgt = S.tgt ? 0 : 1; snd('zap'); }
+    if(S.tube){ S.tgt = S.tgt ? 0 : 1; snd('zap'); if(S.tgt){ S.tOn = S.t; humSet(true); } else humSet(false); }
     else { if(S.tgt){ placeWireOut(); } else { const g = geo(); S.wire.x = g.cx + 6; S.wire.y = g.base - g.fh * .42; } }
     sync();
   }
@@ -34545,6 +34564,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
   });
   $('fl2Tabs').addEventListener('click', ev => { const b = ev.target.closest('button[data-m]'); if(b && b.dataset.m !== S.mode) setMode(b.dataset.m); });
   $('fl2Go').addEventListener('click', goToggle);
+  $('fl2V').addEventListener('input', () => { S.volt = $('fl2V').value / 100; $('fl2Vt').textContent = (1.5 + S.volt * 3).toFixed(1) + ' kV'; if(S.tgt) humSet(true); });
   $('fl2Na').addEventListener('click', () => { S.na = !S.na; if(S.na && !S.tgt){ const g = geo(); S.wire.x = g.cx + 6; S.wire.y = g.base - g.fh * .42; } sync(); });
   $('fl2Co').addEventListener('click', () => { S.co = !S.co; sync(); });
   $('fl2Auto').addEventListener('click', () => { S.auto = !S.auto; S.autoT = 0; sync(); });
@@ -34604,8 +34624,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     const cv = $('fl2Cv'), c = cv.getContext('2d');
     c.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
     if(S.mode === 'fw') drawFw(c, dt, red);
-    else if(S.tube){ c.fillStyle = '#05070a'; c.fillRect(0, 0, S.W, S.H); c.save(); const k = Math.min(S.W / 800, S.H / 400); c.translate((S.W - 800 * k) / 2, (S.H - 400 * k) / 2); c.scale(k, k);
-      RX_FL.t = S.t; RX_FL.e = S.e; try{ rxFlTube(c, 800, flameRGB(), S.lit, red ? 0 : 1); }catch(err){} c.restore(); }
+    else if(S.tube) drawTube(c, dt, red);
     else drawFlame(c, dt, red);
     drawSpec();
     if(S.mode === 'fw' && S.auto){ S.autoT -= dt; if(S.autoT <= 0){ S.autoT = .6 + Math.random() * .9; const keep = S.fwSel; S.fwSel = FW_CHIPS[Math.floor(Math.random() * FW_CHIPS.length)]; launch(S.W * (.15 + Math.random() * .7), S.H * (.15 + Math.random() * .35)); S.fwSel = keep; } }
@@ -34672,6 +34691,91 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     // 넣는 순간 퍼지는 고리
     if(S.burst > 0){ c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(${r},${gg},${b},${S.burst * .6})`; c.lineWidth = 3 * S.burst; const rr = (1 - S.burst) * fh * .9 + 10; c.beginPath(); c.ellipse(cx, base - fh * .42, rr, rr * .55, 0, 0, 7); c.stroke(); c.restore(); }
   }
+  // ── 방전관: 양 끝 둥근 전구 + 가는 유리관 + 전극 + 고전압 전원 ──
+  function drawTube(c, dt, red){
+    const W = S.W, H = S.H, t = S.t, [r, g, b] = flameRGB();
+    // 켜질 때 네온사인처럼 틱… 틱틱… 파앗
+    const since = S.t - S.tOn;
+    let fk = 1;
+    if(S.tgt && since < .75 && !red){ const k = Math.floor(since * 22); fk = [0, 1, 0, 0, .4, 0, 1, 1, 0, .7, 1, 0, 1, 1, .5, 1][k % 16] ?? 1; if(fk && Math.random() < .3) snd('zap'); }
+    const hum = red ? 1 : 1 + Math.sin(t * 2 * Math.PI * 7.3) * .04 + (Math.random() - .5) * .05;
+    const G = S.lit * fk * hum * (.35 + .65 * S.volt);
+    S.glow = G;
+    // 배경: 어두운 실험대
+    c.fillStyle = '#05070a'; c.fillRect(0, 0, W, H);
+    const bench = H * .86; c.fillStyle = '#0b0f16'; c.fillRect(0, bench, W, H - bench); c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(0, bench, W, 1);
+    const cy = H * .4, xL = W * .2, xR = W * .8, R0 = Math.min(H * .13, W * .075), cap = Math.max(4, R0 * .34);
+    // 빛무리 (방 안에 번지는 빛)
+    c.save(); c.globalCompositeOperation = 'lighter';
+    if(G > .01){
+      const halo = c.createRadialGradient(W / 2, cy, 4, W / 2, cy, W * .55); halo.addColorStop(0, `rgba(${r},${g},${b},${.22 * G})`); halo.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = halo; c.fillRect(0, 0, W, H);
+      // 실험대에 비친 빛
+      c.save(); c.translate(W / 2, bench); c.scale(((xR - xL) / 2) / 30, 1);
+      const rf = c.createRadialGradient(0, 0, 0, 0, 0, 30); rf.addColorStop(0, `rgba(${r},${g},${b},${.2 * G})`); rf.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = rf; c.beginPath(); c.arc(0, 0, 30, 0, Math.PI); c.fill(); c.restore();
+    }
+    // 가는 관 속 플라스마: 바깥 번짐 → 색 → 하얀 심지, 그리고 흐르는 줄무늬
+    const x0 = xL + R0 * .9, x1 = xR - R0 * .9;
+    if(G > .01){
+      const half = (x1 - x0) / 2;
+      [[cap * 6, .16], [cap * 2.8, .3]].forEach(([w, a]) => {
+        c.save(); c.translate(W / 2, cy); c.scale((half + w * .6) / w, 1);
+        const eg = c.createRadialGradient(0, 0, 0, 0, 0, w); eg.addColorStop(0, `rgba(${r},${g},${b},${a * G})`); eg.addColorStop(.6, `rgba(${r},${g},${b},${a * .45 * G})`); eg.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = eg; c.beginPath(); c.arc(0, 0, w, 0, 7); c.fill(); c.restore();
+      });
+      for(const [w, a, mix] of [[cap * 1.1, .85, .55], [cap * .45, 1, .9]]){
+        const gr = c.createLinearGradient(0, cy - w, 0, cy + w);
+        const R2 = Math.round(r + (255 - r) * mix), G2 = Math.round(g + (255 - g) * mix), B2 = Math.round(b + (255 - b) * mix);
+        gr.addColorStop(0, `rgba(${R2},${G2},${B2},0)`); gr.addColorStop(.5, `rgba(${R2},${G2},${B2},${a * G})`); gr.addColorStop(1, `rgba(${R2},${G2},${B2},0)`);
+        c.fillStyle = gr; c.fillRect(x0, cy - w, x1 - x0, w * 2);
+      }
+      // 줄무늬 (플라스마가 층져서 흐르는 것)
+      if(!red){ const n = 26; for(let i = 0; i < n; i++){ const u = ((i / n + t * .08) % 1), x = x0 + u * (x1 - x0), a = (.12 + .1 * Math.sin(i * 1.7 + t * 3)) * G;
+        const sg = c.createRadialGradient(x, cy, 0, x, cy, cap * 1.6); sg.addColorStop(0, `rgba(255,255,255,${a})`); sg.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sg; c.fillRect(x - cap * 1.6, cy - cap * 1.6, cap * 3.2, cap * 3.2); } }
+      // 전구 속: 은은하게 (전극 바로 앞은 어두운 틈)
+      [[xL, -1], [xR, 1]].forEach(([bx, sd]) => {
+        const bg = c.createRadialGradient(bx + sd * R0 * .2, cy, 0, bx, cy, R0); bg.addColorStop(0, `rgba(${r},${g},${b},${.55 * G})`); bg.addColorStop(.7, `rgba(${r},${g},${b},${.22 * G})`); bg.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = bg; c.beginPath(); c.arc(bx, cy, R0 * .95, 0, 7); c.fill();
+      });
+    }
+    c.restore();
+    // 유리: 전구 두 개 + 가는 관 (윤곽 + 반사광)
+    c.lineWidth = 1.6; c.strokeStyle = 'rgba(205,220,240,.42)';
+    c.beginPath(); c.arc(xL, cy, R0, 0, 7); c.stroke(); c.beginPath(); c.arc(xR, cy, R0, 0, 7); c.stroke();
+    c.fillStyle = '#05070a'; // 전구와 관이 겹치는 안쪽 윤곽 지우기
+    c.strokeStyle = 'rgba(205,220,240,.42)';
+    c.beginPath(); c.moveTo(xL + Math.sqrt(R0 * R0 - cap * cap), cy - cap); c.lineTo(xR - Math.sqrt(R0 * R0 - cap * cap), cy - cap); c.moveTo(xL + Math.sqrt(R0 * R0 - cap * cap), cy + cap); c.lineTo(xR - Math.sqrt(R0 * R0 - cap * cap), cy + cap); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(xL + R0, cy - cap * .55); c.lineTo(xR - R0, cy - cap * .55); c.stroke();
+    [xL, xR].forEach(bx => { c.beginPath(); c.arc(bx, cy, R0 * .78, Math.PI * 1.15, Math.PI * 1.55); c.stroke(); });
+    // 전극 (금속 캡 + 안으로 들어간 핀)
+    [[xL, -1], [xR, 1]].forEach(([bx, sd]) => {
+      const ex = bx + sd * R0;
+      const mg = c.createLinearGradient(0, cy - R0 * .45, 0, cy + R0 * .45); mg.addColorStop(0, '#9aa3b0'); mg.addColorStop(.5, '#e6ebf2'); mg.addColorStop(1, '#5d6673');
+      c.fillStyle = mg; c.fillRect(sd < 0 ? ex - R0 * .55 : ex, cy - R0 * .42, R0 * .55, R0 * .84);
+      c.strokeStyle = '#8b95a3'; c.lineWidth = 2; c.beginPath(); c.moveTo(ex, cy); c.lineTo(ex - sd * R0 * .55, cy); c.stroke();
+      // 전선 → 전원 상자
+      c.strokeStyle = sd < 0 ? '#c0392b' : '#2c3e50'; c.lineWidth = 2.4; c.beginPath();
+      const px = sd < 0 ? ex - R0 * .55 : ex + R0 * .55;
+      c.moveTo(px, cy); c.bezierCurveTo(px + sd * 30, cy, px + sd * 20, bench - 8, W / 2 + sd * 34, bench - 8); c.stroke();
+    });
+    // 전원 상자 (다이얼 + 불빛)
+    const bw = Math.min(150, W * .3), bh = Math.min(46, H * .12), bx0 = W / 2 - bw / 2, by0 = bench - bh;
+    c.fillStyle = '#1c222c'; c.fillRect(bx0, by0, bw, bh); c.strokeStyle = 'rgba(255,255,255,.12)'; c.strokeRect(bx0 + .5, by0 + .5, bw - 1, bh - 1);
+    c.fillStyle = '#ffd43b'; c.textAlign = 'left'; c.textBaseline = 'middle';
+    { let fs = Math.max(8, bh * .24); c.font = `700 ${fs}px system-ui,sans-serif`; const room = bw - bh * 1.1 - 12; while(fs > 7 && c.measureText('⚡ HIGH VOLTAGE').width > room){ fs -= .5; c.font = `700 ${fs}px system-ui,sans-serif`; } }
+    c.fillText('⚡ HIGH VOLTAGE', bx0 + 8, by0 + bh * .3);
+    c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `600 ${Math.max(9, bh * .22)}px ui-monospace,monospace`; c.fillText(S.tgt ? (1.5 + S.volt * 3).toFixed(1) + ' kV' : '0.0 kV', bx0 + 8, by0 + bh * .72);
+    const kx = bx0 + bw - bh * .55, ky = by0 + bh / 2, kr = bh * .32;
+    c.fillStyle = '#3a4250'; c.beginPath(); c.arc(kx, ky, kr, 0, 7); c.fill(); c.strokeStyle = '#8b95a3'; c.lineWidth = 2;
+    const ang = Math.PI * .75 + S.volt * Math.PI * 1.5; c.beginPath(); c.moveTo(kx, ky); c.lineTo(kx + Math.cos(ang) * kr * .9, ky + Math.sin(ang) * kr * .9); c.stroke();
+    const led = S.tgt ? (fk ? '#ff3b30' : '#5a1a16') : '#3a1512'; c.fillStyle = led; c.beginPath(); c.arc(kx - kr - 10, by0 + 9, 3.5, 0, 7); c.fill();
+    if(S.tgt && fk){ c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .6; c.drawImage(sprite(255, 60, 48), kx - kr - 20, by0 - 1, 20, 20); c.restore(); }
+    // 원소 이름표
+    c.fillStyle = 'rgba(255,255,255,.75)'; c.font = '700 14px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+    c.fillText(`${S.e.s} · ${nm(S.e)}`, W / 2, cy - R0 - 12);
+  }
   function drawFw(c, dt, red){
     const W = S.W, H = S.H;
     // 밤하늘 + 잔상
@@ -34721,7 +34825,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     // 지금 선
     RX_FL.d = S.d; RX_FL.e = S.e; RX_FL.na = S.na; RX_FL.co = S.co; RX_FL.naK = S.naK; RX_FL.mode = S.tube ? 't' : 'f';
     let lines = []; try{ lines = rxFlLines(); }catch(err){}
-    const L = S.mode === 'fw' ? 1 : S.lit;
+    const L = S.mode === 'fw' ? 1 : S.tube ? S.glow || 0 : S.lit;
     c.save(); c.beginPath(); c.rect(x0, y0, x1 - x0, y1 - y0); c.clip(); c.globalCompositeOperation = 'lighter';
     const lab = [];
     lines.forEach(([w, i, w2]) => {
@@ -34741,7 +34845,7 @@ const RX_FW_BOOM = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
     c.fillText(EN() ? 'Infrared' : '적외선', (X(780) + x1) / 2, y0 + 4);
     c.font = '600 10px system-ui,sans-serif'; c.textBaseline = 'bottom'; c.fillStyle = 'rgba(255,255,255,.85)';
     let lx = -999; lab.sort((a, b) => a[0] - b[0]).forEach(([x, w]) => { if(x - lx < 32) return; c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.85)'; c.strokeText(w.toFixed(1), x, y1 - 3); c.fillText(w.toFixed(1), x, y1 - 3); lx = x; });
-    if(S.mode === 'lab' && !S.tgt && !(S.d && S.d.gone)){ c.fillStyle = 'rgba(255,255,255,.35)'; c.font = '11.5px system-ui,sans-serif'; c.textBaseline = 'middle'; c.fillText(EN() ? 'Put it in the flame to see its lines' : '불꽃에 넣으면 선이 보여요', (x0 + X(780)) / 2, (y0 + y1) / 2); }
+    if(S.mode === 'lab' && !S.tgt && !(S.d && S.d.gone)){ c.fillStyle = 'rgba(255,255,255,.35)'; c.font = '11.5px system-ui,sans-serif'; c.textBaseline = 'middle'; c.fillText(S.tube ? (EN() ? 'Switch the power on to see its lines' : '전원을 켜면 선이 보여요') : (EN() ? 'Put it in the flame to see its lines' : '불꽃에 넣으면 선이 보여요'), (x0 + X(780)) / 2, (y0 + y1) / 2); }
   }
   // 기존 불꽃 버튼이 새 화면을 열도록
   rxFlOpen = open;
