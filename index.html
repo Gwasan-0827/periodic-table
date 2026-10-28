@@ -3183,6 +3183,7 @@
   let pref = null; try{ pref = JSON.parse(localStorage.getItem('pt_lowpow') || 'null'); }catch(e){}
   const LOW = pref === null ? (app || coarse) : !!pref;
   window.RX_LOWPOW = LOW;
+  window.RX_LOWPOW_ON = pref === true;   // 설정에서 직접 '켜기'를 고른 경우
   if(!LOW) return;
   document.documentElement.classList.add('lowpow');
   // 캔버스가 읽는 화면 밀도를 1.5배까지만 (폰은 2.6~3배라 픽셀을 3~4배 더 그리고 있었다). 글자·화면 자체 선명도는 그대로
@@ -13864,8 +13865,8 @@ const ACH = [
     ko:['세상에서 가장 허무한 도전','음... 둘다 반감기가 겁나 짧은데 왜 하신거죠? (Bruh)'],
     en:['The boldest attempt','You tried to introduce oganesson to tennessine'] },
   { id:'ffull', bad:true, need:() => !!F().full,
-    ko:['물량으로 안 되는 게 있다','150개를 꽉 채우고도 실패했다'],
-    en:['Quantity is not everything','All 150 slots, and still nothing'] },
+    ko:['물량으로 안 되는 게 있다','200개를 꽉 채우고도 실패했다'],
+    en:['Quantity is not everything','All 200 slots, and still nothing'] },
   { id:'fsame', bad:true, need:() => (F().maxStreak || 0) >= 3,
     ko:['혹시 몰라서 다시 해봄','같은 조합을 세 번 연속 실패했다'],
     en:['Just in case, one more time','Same mix failed three times in a row'] },
@@ -18228,8 +18229,8 @@ Object.assign(RXT.en, {
 if(typeof ACH !== 'undefined'){
   const i = ACH.findIndex(a => a.id === 'master');
   const egg0 = { id:'egg0', secret:true, need:() => false,
-    ko:['0번 원소 발견','양성자가 하나도 없는 원소를 봤다'],
-    en:['Element zero','Saw an element with no protons at all'] };
+    ko:['T h e  Z e r o','양성자가 하나도 없는 원소를 봤다'],
+    en:['T h e  Z e r o','Saw an element with no protons at all'] };
   if(i >= 0) ACH.splice(i, 0, egg0); else ACH.push(egg0);
 }
 
@@ -18332,7 +18333,13 @@ function rxGhost(force){
     grid.style.marginTop = '';
     removeEventListener('resize', place);
     mo.disconnect();
+    try{ ro && ro.disconnect(); }catch(e){}
+    clearInterval(tick);
   };
+  // 표 폭이 바뀌어도(사이드 패널, 글꼴 로딩, 스크롤바) 헬륨 위에 딱 붙어 있게 계속 맞춘다
+  let ro = null, tick = 0;
+  try{ ro = new ResizeObserver(() => place()); }catch(e){}
+  tick = setInterval(() => { if(!g.isConnected){ clear(); return; } place(); }, 500);
   // 표를 다시 그려서 사라진 경우에도 자리를 되돌린다
   const mo = new MutationObserver(() => { if(!g.isConnected) clear(); });
   const vanish = e => {
@@ -18350,6 +18357,8 @@ function rxGhost(force){
   place();
   mo.observe(grid, { childList: true });
   addEventListener('resize', place);
+  try{ ro && ro.observe(grid); const he = heCell(); if(he && ro) ro.observe(he); }catch(e){}
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(place);
 }
 
 if(typeof ACH !== 'undefined'){
@@ -24059,7 +24068,7 @@ const RX_ACH_TXT = {
   f50:   { ko:['포기를 모르는 사람','50번 실패. 근데 아직 안 접음'], en:['Never gives up','50 failures. Still not quitting'] },
   f200:  { ko:['실패는 성공의 어머니','200번 실패. 실패도 재능임'], en:['Failure is the mother of success','200 failures. Failing is a talent too'] },
   fog:   { ko:['세상에서 가장 허무한 도전','음... 둘다 반감기가 겁나 짧은데 왜 하신거죠? (Bruh)'], en:['The most nihilistic challenge in the world','Uh... both have ridiculously short half-lives, so why? (Bruh)'] },
-  egg0:  { ko:['0번 원소 발견','양성자가 하나도 없는 원소를 봤다. 그게 원소 맞음?'], en:['Element zero','Saw an element with no protons. Does that even count?'] },
+  egg0:  { ko:['T h e  Z e r o','양성자가 하나도 없는 원소를 봤다. 그게 원소 맞음?'], en:['T h e  Z e r o','Saw an element with no protons. Does that even count?'] },
   labPeek:{ ko:['엿보기 금지','공사 중인 실험실 문을 일곱 번 두드렸다. 똑똑똑똑똑똑똑'], en:['No peeking','Knocked on the lab door seven times. Knock knock knock knock knock knock knock'] },
   rielCaught:{ ko:['순찰 중 적발','산책 나온 아스리엘을 붙잡았다. 놔 주세요'], en:['Caught on patrol','Grabbed Asriel on a walk. Please let go'] },
   decaychain:{ ko:['붕괴 사슬','방사성 원소가 끝까지 붕괴하는 걸 끝까지 지켜봤다. 인내심 만렙'], en:['Decay chain','Watched a radioactive element decay all the way down. Max patience'] },
@@ -26187,7 +26196,7 @@ function rxIce(){
         setTimeout(() => {
           if(isNew){ found.add('얼음'); saveFound(); try{ rxToast(LANG === 'en' ? 'Special find' : '특수 발견', LANG === 'en' ? 'Ice' : '얼음', LANG === 'en' ? 'Water stacked into hexagons' : '물이 육각형으로 쌓였어요'); }catch(e){} try{ checkAch(); }catch(e){} }
           rxShowEntry('얼음');
-        }, 1300);
+        }, 2100);   // 얼음이 다 차오르는 걸 보고 나서
       }
     }catch(e){}
     return r;
@@ -33891,6 +33900,8 @@ function rxFlashbang(soft){
   #rxUpdChk .uc-res button{margin-left:auto;font:700 12px/1 inherit;font-family:inherit;padding:7px 11px;border-radius:8px;border:0;background:#ffd43b;color:#1a1a1a;cursor:pointer}
   @media (prefers-reduced-motion:reduce){ #rxCredits .cr-name{animation:none;background-position:50% 0} }
   @media (max-width:700px){ #rxCredits .cr-role{flex-basis:74px} #rxCredits .cr-name{font-size:19px} }
+  #rxCredits .cr-yt{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:700;color:#c9d0ff;text-decoration:none;border-bottom:1px dashed rgba(201,208,255,.5);padding-bottom:1px}
+  #rxCredits .cr-yt:hover{color:#fff;border-bottom-color:#fff}
 </style>
 <script>
 (function(){
@@ -33900,7 +33911,7 @@ function rxFlashbang(soft){
     const en = LANG === 'en', V = typeof APP_VER !== 'undefined' ? APP_VER : '';
     if(!u){ u = document.createElement('div'); u.id = 'rxUpdChk'; body.appendChild(u); }
     u.dataset.tab = 'info';
-    u.innerHTML = `<div class="uc-l"><b>${en ? 'Check for updates' : '업데이트 확인하기'}</b><small>${en ? 'Current version' : '지금 버전'} · βV.${V}</small></div>
+    u.innerHTML = `<div class="uc-l"><b>${en ? 'Check for updates' : '업데이트 확인하기'}</b><small>${en ? 'Current version' : '지금 버전'} · ${verLabel(V)}</small></div>
       <button type="button" class="uc-btn">${en ? 'Check' : '확인하기'}</button><div class="uc-res" role="status"></div>`;
     const btn = u.querySelector('.uc-btn'), res = u.querySelector('.uc-res');
     btn.addEventListener('click', () => {
@@ -33911,12 +33922,12 @@ function rxFlashbang(soft){
       f.then(st => {
         // 파일은 받았는데 latest 가 없으면 '새 버전 공지 없음' = 최신으로 본다. 파일 자체가 없으면(404) 인터넷 탓이 아니다
         if(!st) return done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Update info was not found on the server' : '서버에서 업데이트 정보를 못 찾았어요'}</span>`);
-        if(!st.latest) return done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
+        if(!st.latest) return done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>${verLabel(V)}</span>`);
         const isNew = window.rxUpdNewer ? rxUpdNewer(st.latest, V) : String(st.latest) !== String(V);
         if(isNew){
-          done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>βV.${V} → βV.${st.latest}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
+          done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>${verLabel(V)} → ${verLabel(st.latest)}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
           setTimeout(() => { const b = res.querySelector('button'); if(b) b.addEventListener('click', () => { try{ document.getElementById('rxUpd') || rxUpdShow(st); }catch(e){} }); }, 650);
-        } else done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
+        } else done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>${verLabel(V)}</span>`);
       }).catch(() => done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Check your internet connection' : '인터넷 연결을 확인해 주세요'}</span>`));
     });
   }
@@ -33929,7 +33940,7 @@ function rxFlashbang(soft){
     c.dataset.tab = 'info';
     c.innerHTML = `<h4>CREDITS //</h4><div class="cr-sub">${en ? 'The people (and two AIs) behind 페리오딕//테이블' : '페리오딕//테이블을 만든 사람들 (그리고 AI 둘)'}</div>
       <div class="cr-row"><div class="cr-role">${en ? 'Director' : '디렉터'}</div><div class="cr-who"><span class="cr-name pw">Gwasan_2050</span>
-        <div class="cr-what">${en ? 'Concept · design direction · element characters · testing &amp; bug hunting' : '기획 · 디자인 디렉팅 · 원소 캐릭터 · 테스트와 버그 사냥'}</div></div></div>
+        <div class="cr-what">${en ? 'Concept · design direction · element characters · testing &amp; bug hunting' : '기획 · 디자인 디렉팅 · 원소 캐릭터 · 테스트와 버그 사냥'}</div>${(typeof rxNative === 'function' && rxNative()) ? '' : `<a class="cr-yt" href="https://www.youtube.com/@%EA%B3%BC%EC%82%B02%EC%9D%B8%EB%8D%B0%EC%9A%94" target="_blank" rel="noopener">▶ ${en ? "The weird one's YouTube channel" : '이상한놈의 유튜브채널'}</a>`}</div></div>
       <div class="cr-row"><div class="cr-role">${en ? 'Dev help' : '개발 도움'}</div><div class="cr-who"><span class="cr-name cl">Claude</span>
         <div class="cr-what">${en ? 'Code · animation · sound' : '코드 · 애니메이션 · 사운드'}</div></div></div>
       <div class="cr-row"><div class="cr-role">${en ? 'Art help' : '아트 도움'}</div><div class="cr-who"><span class="cr-name gp">ChatGPT</span>
@@ -35757,6 +35768,495 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
   addEventListener('blur', () => { blurAt = quizOpen() ? Date.now() : 0; });
   addEventListener('focus', () => { if(!blurAt) return; const d = Date.now() - blurAt; blurAt = 0; if(d > 1500 && d < 120000 && quizOpen()) setTimeout(frog, 600); });
   window.rxFrog = frog;
+})();
+</script>
+<script>
+/* 업적 아이콘: T h e  Z e r o (과산 그림) */
+try{ RX_ACH_IMG.egg0 = 'data:image/webp;base64,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'; }catch(e){}
+</script>
+<script>
+/* 업적 아이콘: 세상에서 가장 허무한 도전 — 실종 포스터 (과산 그림) */
+try{ RX_ACH_IMG.fog = 'data:image/webp;base64,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'; }catch(e){}
+</script>
+<script>
+/* 업적 아이콘: 물량으로 안 되는 게 있다 (과산 그림) */
+try{ RX_ACH_IMG.ffull = 'data:image/webp;base64,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'; }catch(e){}
+</script>
+<script>
+/* 업적 아이콘: 혹시 몰라서 다시 해봄 (과산 그림) */
+try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACdASrAAMAAPj0ejUSiIaGRuzUMIAPEsTdwuPCBpp/oH5K+CtWzuH8u/aP2cqe/Mfu9+SHxA/wHjBFZ9XPcX8r/cf3T/xHvA9QH6V/zPuAfw3+Nf5X+4fux2gP5h/sfUB/Nv6d/zP9d+//zO+gz9ff7p/TfgA/ln+E/8fYGfsx7AH69+l1+1HwV/td+2/wMf0D+7/9z8////3gH//6w/pb/k+07/H8qSkb+vvmfiB4AX4v/M/9DvLIAPqz30GpSqi0APzN6Df0r53/qf2DP5n/ZfSq9knoZrtlMzMzMzMzMzMzMzMqKBYLBgK8GQL99YO0KKCknrmis9yD/ofYRnIK7wTLVbg5RaF6BIymTu5ia286fR4gngzyoLALqD7f+dpRVYxgqcCmOho1o3EQmb9E2uFkPxAUeNZiwWoFzbLMVEuWUUhjKf/KZtoi8F5gcKxVbWngKPWYEf8SKoDFFvTfaY9ZKyXLEzL2+az4SwHTwDd3yJHsAEOPVtZZzvqnfNxSb8lh4ujpyKMnQni07B9JHn9woyR3RYlSk9RVwaWpNSgIUN2GQP49dCcjvFwgWCReT2+Cd9B8NpR0G1/JPXQbZPpz/IUzKAAD+/80YgAGF4tOpV2Cx6snTZBPkFQzBKI9JHBfOSgdwx89aq4FcqobmfYom0g+MobRnK9BcRIGn4kZGmfudoqFS9wESAF5Q0Mi8HKt3ji9mR0kN76byt2mZJhSZNm8fAjz5w9wZBarYVH7414IJ8z6b35+A4Vm1lReg3ai1eddkXy2uWByGBx8fldqisiDTaMni+E47y53Kmqm8whxAKGPKVUmU/E/l+ZcNCqTuOwkhI/IBkl/teceo0phxRSCOASPZjuy1f/EoIMOnf7RcgNF5LyTftp2s796vx3aEoxblujVS2R97qrtHkqEGfgq3loADWScE319RewDxBJLGcQbTDW1Jn8t31eoThV8j+4HyZ4OkPmUFcnyFVjPHYi4kIQrc3POcdOy8KZz+fNqx2/KZ3Cx1rU6Yzr1yLYgBC2wSEeHl5kf+BQKIAXoqbbMAjXCPZhFICoBbA3cDrnI75vs+2BTLyvkZb/olo7XTZy0vj/jbHrsbOMRxmLwxjuNFQssVcsFbpKm/0cpLXUpDa+m9RD8ifkGjFJPU5J54Q0OxbnP3Zp5IgJBMLrswNI3yEq/WDu7hLb4sy4RvJIZXKI/wakEuUvPoJG2By50eKXKeVOFyH/5xdxh1n00kqWtMo7M8OdI4G0Amp41f7o9b7aXYrNY0eE+2QNeZnLERjZjp3TxM8EH5Ifqt97YWcKbgNL/I16+/GCVRrdNJ/momCAvi/xU6YwN+S6u2nXvlvmR5hq2QxfmX6HxfKA3ualPGZpZ5FSHK4U8EFawvIF95f1PhRJArZyy+pDZch9C3Jp5hHOfa1dIVyIRuZJirGhu55t57C01Lk2LfuRI3U+zAScvi4GtmRXNbJyA+lGu5trWFPvOE0a5fVJZlbZdIyP/l8S371wIHzEW0429f+Fxv/++e1V/16Zou6hf/+Ojd/0Cmyc1ar2jezJ8EmOegUWAhTv8fAJGkn/5Oa1vexaBjqklkeZFCrI1OLUwQiUy0aByZvf7fiQ8AK/M4B1iCDDadySU1vG/ZP0gablreCVuTxGT0rVuHR5y/ScprkBM6wFXpbBY2In3ix+ccgvvOu7aaHIXFem+LFPoHOe1ejBAQOJ6Sauq+uUe+UbnsZAIQ4VQKrwCfK+pqVxGeniJWfo0AVKJmEks2T4KG4bUUgwIt691ITPhEZyX4cGuQPWBBQ4VQOimuCdy8jwiqcHN9tvAtp1nwmP2OF2xo3E6+ogEkyMMJhLHdXDzb83GT5qXibd+S+OVJ6lEnw5/6/wWKsYswXs7IPWqhe5//0t0vms1AtrFu0aGaoD/Tx4IdOc5oITwfOs7v5eCV0X1Uw/+gEg582nRirWaDaFDAgWMtGK6d0+nR8jX0931w87v6cJdvebOGRn8vK1ujEfzjIdOwKEij49xu0eQm5XtWzCmx5ATYzYi6CW/yF4+ksrtmOEvCK+jkC9klZpaI3FehpGAfS3YwK6Z++h807MkKNbDX7HghzwsWC+O+rgEZLRgQ8mrQRrZrbHAs38h1Px/vFK6B0SdDiarx0MbPqntUpgQJo6dyyjNMG93rbxHD9tS8nIv6gYm3KNNH+IdQkOTzZxF0rsW5ACs9wBmAfKX/n2j32elFcUO9JO/5lADU6Zvfun9a/C72oAoCL5uwbvGMW2eZbeIa7/+OGJmB2W7i/tdQevNORP7t6YMC2z5jDetA0YWpv6wpBMLG87jkeYlk8OGzE2cy4UIm3BeIRNK7EKw7p+cRhuEMpgvnD9v+h8/AZ/wP6nr/qYFeCCv7KOjpASiRF0SRWowyLZSShWA+XL39rtdlI/X7hGRk7HvOfD7CJ/mTFfvJsUdO+n/6Z63USn//hOtFc69W5oYMScH56KxmDk62IjdD2i7Qpq68e4mGPOcyN30NxFug5tfF7BEnE9DG/3DZy8y8G+sgvnenQ7GBz8iCTLr9aQ+6alQX7jMHlWpTyHJerxlDH8mk3HN0QjK4hbchKgBanocd7oMko/Y5DootKXAKxeVu4nF6fOZrsvlwKkKQUBVptsgY++8dzEjOUAgicowSk2EyIE2dJunccyN/iGU4nAWRY//8DQpruRwzdZX4FOOPnois5fmlaztN2tnTj55RyzntrKpbgoMOsYRAeMHoj5Z4mEyiw3OsKNmwvuaVEMR0BVf/cQDpavAIoaODonqRp/oEeMXyiui4yUgFYvHvE+aMNrXSRvNfR371Tg3GmtqXEw3+0MAsuYwg3PtyqnbkO3NkP3xYb4tV/lJOdH7DCgA9AzSasM99UtNzsId5vIycJFCfcNrqkjcXVHNgdfWHnN3CrASLHnwFemNWWwoeVyOFXpHIntx6xViDUQCpvOCmko0Yu7IdG0ME2dSDaJa9wWGnnM4V5ZUHEdtd03A6L4vEVqFHWesWwyWWaiJE2Hsd9jF7huumtAgeCqfR0fJY54Jgl2UaRuh1nBOoCcXCQ/levZHjxh9QpALphHcqTtJTbmZ9VEayxN0t5E32D9IX48IE1+QFUjBnL9lfGrgNCZjsNfYl9Quiw7Eqyo4nnI0NZLb9+OFyEjx49s7cTAxsHks9mtc2Vop9XaiUcLG/0uor5lzJj7kgpPJKd+RAGbNpjr7t7a6bkSnjgLB7kfvdnVNkeXNReQONBv9NaWoxHGReujiWsB8xGfxUEnBprpcEu7jlYpx0h4VTVU7c3//q+DnbMJwxfMLudBAaXWFyIVFwe0thpiS5QAdUgAjkikhzOFtAvV3nnON/SMChTmrZnvonpdgvdmFlsPmQr/8Lgt5r19hZ5UFn14I9nIF1Z+pZ+xIaYsbApiaaXa+7D6mNyIQyJLFdfbLTe0DJfLSKuBpA/bbY/PQlgx0N8NO7F2ooxbRU3f2UQt2yceBDRSovtHf3nFFeqW5bntp9kCjm/eQM76eTpgsm3318vBH81ab3vfXqPUJIpflnObAf7I16CuTxzODbqM/J6OWsPPk4CuY7PnBdaxj57j5Thoaq4CRgFLR4PBcraU2UhNntSdAvnUiYmZltwOowUT1dF3Ngjym7JNCZ/nb0A2P+3K/TVqNibh7bUOAdFRE1uTpf5d+2ssMidv+PL4y2OJYzEPrpHM8/ivol+IbtuL+MwOHFOSqmRf4B8dv+CCs32cLI3G3TYPO35GvA0KNcUqC3Rt5F9X3axeL6R/DTETZu6r4/wwh4e/v5QBRIo0+HOOFEhxn3J/C/R4OTfj8F1VUos6F4m6iumoAX9vRa+HA+J1iygsLKfuWGMc9oWh/5a3zDde74N0HQ7ZdC4a7cn7xNGE1K70X+C82vPiJ1k3Eo9/TzaLb3GY7PFcIveL0Xk/bEbtSgZd5BXNPhR6oUrnYRR5pkpgS//5FtnM/J4jAU58sMtfWE+lZBIM0IUnNZJqkS5aWD+ApohYwDbiym9Y4W38tb0v8FpyY8roVLmnznm/FklWRlX7jJE1TtmlBj89c605EbvonIHwP9eUQd7G586/60dW0Lu4s/+R0tma3V8brnjEV77b1ZdwkimCGBeWTBEeLmtVhgUy2o00/hUlSfxFcxYIYvhrUqTVEh6sZ+VER262ouYBVaG5tY1siGArGeUhir6lJtVR7/xorHIvvVxMvPCz/zVcvSuXkX5BAAAAAAAAA='; }catch(e){}
+</script>
+<style>
+  /* ═══ 헛것 뉴트로늄 칸 리워크: Y2K 페리윙클 ═══ */
+  .ghost-nu{
+    overflow:visible;
+    background:radial-gradient(circle at 50% 38%,rgba(154,168,255,.34),rgba(40,46,110,.55) 55%,rgba(10,12,30,.82) 100%),#0b0e1f!important;
+    box-shadow:inset 0 0 0 1px rgba(201,208,255,.75),inset 0 0 14px rgba(154,168,255,.45),0 0 18px rgba(154,168,255,.55),0 0 40px rgba(106,120,232,.3)!important;
+    animation:ghostIn .5s .4s both, gnFloat 3.2s ease-in-out .9s infinite, gnGlitch 4.2s steps(1) 1.4s infinite!important;
+  }
+  .ghost-nu::before{ /* 오른쪽 위 반짝이 (시작화면 별이랑 같은 75° 4각 별) */
+    content:"";position:absolute;right:-9px;top:-9px;width:18px;height:18px;transform:rotate(75deg);pointer-events:none;
+    background:conic-gradient(from 0deg,#fff,#c9d0ff,#9aa8ff,#6a78e8,#9aa8ff,#c9d0ff,#fff);
+    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+    filter:drop-shadow(0 0 5px rgba(154,168,255,.9));animation:gnTw 2.2s ease-in-out infinite;
+  }
+  .ghost-nu::after{ /* 바깥을 도는 점선 원 */
+    content:"";position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;
+    border:1.5px dotted rgba(201,208,255,.45);animation:gnSpin 14s linear infinite;
+  }
+  .ghost-nu .gn-num{color:#c9d0ff;font-family:ui-monospace,monospace;letter-spacing:.04em}
+  .ghost-nu .gn-sym{color:#fff;text-shadow:0 0 6px #c9d0ff,0 0 16px #9aa8ff,0 0 28px #6a78e8;font-family:Kanit,system-ui,sans-serif}
+  .ghost-nu .gn-name{color:#c9d0ff;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:clip}
+  .ghost-nu .gn-sym{font-size:1.15em}
+  @media (max-width:760px){ .ghost-nu .gn-name{font-size:.5em} .ghost-nu .gn-num{font-size:7px;top:1px;left:2px} }
+  .ghost-nu:hover{box-shadow:inset 0 0 0 1.5px #fff,inset 0 0 18px rgba(154,168,255,.6),0 0 26px rgba(154,168,255,.8),0 0 54px rgba(106,120,232,.45)!important}
+  @keyframes gnFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  @keyframes gnTw{50%{opacity:.4;transform:rotate(75deg) scale(.7)}}
+  @keyframes gnSpin{to{rotate:360deg}}
+  /* 가끔 RGB가 어긋나며 지지직 (헛것이라서) */
+  @keyframes gnGlitch{
+    0%,100%{filter:none;opacity:.94}
+    61%{filter:drop-shadow(3px 0 0 rgba(255,80,140,.7)) drop-shadow(-3px 0 0 rgba(80,220,255,.7));opacity:.6;transform:translateX(2px)}
+    62%{filter:none;opacity:.94;transform:none}
+    84%{opacity:.35}
+    85%{opacity:.94}
+  }
+  .ghost-nu.birth{background:radial-gradient(circle at 50% 38%,rgba(180,150,255,.45),rgba(70,40,150,.6) 55%,rgba(20,10,50,.85)),#120a2a!important}
+  @media (prefers-reduced-motion:reduce){ .ghost-nu,.ghost-nu::before,.ghost-nu::after{animation:none!important} }
+  /* 펄서 빔 (대기 중) + 붕괴 캔버스 */
+  .ghost-nu .gn-pulsar{position:absolute;left:50%;top:50%;width:260%;aspect-ratio:1;translate:-50% -50%;pointer-events:none;z-index:-1;border-radius:50%;
+    background:conic-gradient(from 0deg,transparent 0deg,rgba(201,208,255,.0) 80deg,rgba(201,208,255,.55) 88deg,rgba(201,208,255,0) 96deg,transparent 180deg,rgba(201,208,255,0) 260deg,rgba(201,208,255,.55) 268deg,rgba(201,208,255,0) 276deg,transparent 360deg);
+    -webkit-mask:radial-gradient(circle,#000 18%,rgba(0,0,0,.6) 40%,transparent 70%);mask:radial-gradient(circle,#000 18%,rgba(0,0,0,.6) 40%,transparent 70%);
+    animation:gnSpin 1.1s linear infinite;mix-blend-mode:screen}
+  .gn-ns{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:120}
+  @media (prefers-reduced-motion:reduce){ .ghost-nu .gn-pulsar{animation:none} }
+</style>
+<script>
+(function(){
+  /* ── 대기 중: 칸 뒤에서 펄서 빔 두 줄기가 빙글빙글 (중성자별은 빠르게 도는 등대) ── */
+  const addBeam = g => { if(!g || g.querySelector('.gn-pulsar')) return; const b = document.createElement('span'); b.className = 'gn-pulsar'; g.prepend(b); };
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && n.classList.contains('ghost-nu')) addBeam(n); }))).observe(document.body, { childList: true, subtree: true });
+
+  /* ── 누르면: 중성자별 붕괴 연출 (캔버스) ──
+     ① 칸이 안으로 빨려 들어가며 압축(물질이 소용돌이치며 낙하)
+     ② 섬광 + 충격파 고리
+     ③ 작은 중성자별: 하얀 핵 + 빛나는 띠 + 돌아가는 펄서 빔 + 자기장 고리, 그리고 사라짐 */
+  function boom(r){
+    const dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+    const cv = document.createElement('canvas'); cv.className = 'gn-ns';
+    cv.width = W * dpr; cv.height = H * dpr; document.body.appendChild(cv);
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, S = Math.max(r.width, r.height);
+    const R0 = S * 2.2;
+    const P = Array.from({ length: 90 }, () => ({ a: Math.random() * 6.283, d: S * (.5 + Math.random() * 1.7), w: (Math.random() < .5 ? 1 : 1.3) * (2.2 + Math.random() * 2), s: .8 + Math.random() * 1.6, h: Math.random() }));
+    const T1 = 420, T2 = 560, T3 = 2300, t0 = performance.now();
+    const ease = x => 1 - Math.pow(1 - x, 3), easeIn = x => x * x * x;
+    const glow = (x, y, rad, col, a) => { const g = c.createRadialGradient(x, y, 0, x, y, rad); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`); c.fillStyle = g; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill(); };
+    sound();
+    const frame = now => {
+      const t = now - t0; c.clearRect(0, 0, W, H);
+      c.globalCompositeOperation = 'lighter';
+      if(t < T1){ // ① 압축
+        const k = t / T1, e = easeIn(k);
+        const sz = S * (1 - e * .92);
+        // 빨려 들어가는 칸 (기울며 회전)
+        c.save(); c.translate(cx, cy); c.rotate(e * 2.4);
+        const g = c.createLinearGradient(-sz / 2, -sz / 2, sz / 2, sz / 2); g.addColorStop(0, `rgba(201,208,255,${.9 - k * .3})`); g.addColorStop(1, `rgba(106,120,232,${.7 - k * .3})`);
+        c.fillStyle = g; c.fillRect(-sz / 2, -sz / 2, sz, sz); c.restore();
+        glow(cx, cy, S * (1.6 - e), '154,168,255', .25 + e * .5);
+        // 강착 소용돌이: 바깥에서 안으로 감기며 가속
+        P.forEach(p => {
+          const d = p.d * (1 - e), a = p.a + e * p.w * 3;
+          const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * .78;
+          const x2 = cx + Math.cos(a - .25) * d * 1.06, y2 = cy + Math.sin(a - .25) * d * 1.06 * .78;
+          c.strokeStyle = p.h < .5 ? `rgba(201,208,255,${.8 * (1 - k * .4)})` : `rgba(140,160,255,${.7 * (1 - k * .4)})`;
+          c.lineWidth = p.s; c.beginPath(); c.moveTo(x2, y2); c.lineTo(x, y); c.stroke();
+        });
+      } else if(t < T2){ // ② 섬광 + 충격파
+        const k = (t - T1) / (T2 - T1);
+        glow(cx, cy, S * (2.6 + k * 3), '255,255,255', (1 - k) * .95);
+        glow(cx, cy, S * (1.2 + k * 2), '201,208,255', (1 - k));
+      }
+      if(t >= T1){ // 충격파 고리 (색수차로 세 겹)
+        const k = Math.min(1, (t - T1) / 900), rr = R0 * .2 + ease(k) * R0 * 2.4, a = (1 - k) * .9;
+        [['255,90,160', -2], ['154,168,255', 0], ['90,220,255', 2]].forEach(([col, o]) => { c.strokeStyle = `rgba(${col},${a})`; c.lineWidth = 2.2 * (1 - k) + .6; c.beginPath(); c.arc(cx, cy, rr + o, 0, 7); c.stroke(); });
+        c.setLineDash([2, 7]); c.strokeStyle = `rgba(201,208,255,${a * .7})`; c.lineWidth = 1.2; c.beginPath(); c.arc(cx, cy, rr * .72, 0, 7); c.stroke(); c.setLineDash([]);
+      }
+      if(t >= T1 + 60 && t < T3){ // ③ 중성자별
+        const k = (t - T1 - 60) / (T3 - T1 - 60), life = k < .12 ? k / .12 : 1 - Math.max(0, (k - .55) / .45);
+        const core = Math.max(2.5, S * .11) * (1 - Math.max(0, k - .7) * 1.8);
+        const spin = (t - T1) / 1000 * 6.283 * 1.6; // 초당 1.6바퀴
+        const tilt = .35;
+        // 자기장 고리 (쌍극자: 축을 따라 여러 겹의 고리)
+        c.save(); c.translate(cx, cy); c.rotate(spin * .15 + .4);
+        for(let i = 1; i <= 4; i++){
+          const L = core * (3 + i * 2.2);
+          c.strokeStyle = `rgba(154,168,255,${.22 * life / i * 1.6})`; c.lineWidth = 1;
+          [-1, 1].forEach(sd => { c.beginPath(); c.ellipse(sd * L * .55, 0, L * .55, L * .32, 0, 0, 7); c.stroke(); });
+        }
+        c.restore();
+        // 펄서 빔 두 줄기 (자기축 따라)
+        const bl = Math.max(W, H) * .55 * Math.min(1, k * 4);
+        [0, Math.PI].forEach(o => {
+          const a = spin + o;
+          c.save(); c.translate(cx, cy); c.rotate(a);
+          const g = c.createLinearGradient(0, 0, bl, 0); g.addColorStop(0, `rgba(230,236,255,${.75 * life})`); g.addColorStop(.25, `rgba(154,168,255,${.35 * life})`); g.addColorStop(1, 'rgba(106,120,232,0)');
+          c.fillStyle = g; c.beginPath(); c.moveTo(0, 0); c.lineTo(bl, -bl * .055); c.lineTo(bl, bl * .055); c.closePath(); c.fill();
+          c.restore();
+        });
+        // 중력 렌즈 고리 + 밝은 띠
+        c.strokeStyle = `rgba(220,226,255,${.55 * life})`; c.lineWidth = 1.2; c.beginPath(); c.arc(cx, cy, core * 3.1, 0, 7); c.stroke();
+        c.save(); c.translate(cx, cy); c.scale(1, tilt); const dg = c.createRadialGradient(0, 0, core * 1.2, 0, 0, core * 5); dg.addColorStop(0, `rgba(201,208,255,${.6 * life})`); dg.addColorStop(1, 'rgba(106,120,232,0)'); c.fillStyle = dg; c.beginPath(); c.arc(0, 0, core * 5, 0, 7); c.fill(); c.restore();
+        // 핵
+        glow(cx, cy, core * 7, '154,168,255', .55 * life);
+        glow(cx, cy, core * 2.6, '230,236,255', .9 * life);
+        c.fillStyle = `rgba(255,255,255,${life})`; c.beginPath(); c.arc(cx, cy, core, 0, 7); c.fill();
+        // 반짝이 (75° 4각 별)
+        c.save(); c.translate(cx, cy); c.rotate(75 * Math.PI / 180); const sr = core * (5 + Math.sin(t / 90) * 1.2);
+        c.fillStyle = `rgba(255,255,255,${.85 * life})`; c.beginPath();
+        for(let i = 0; i < 4; i++){ const a = i * Math.PI / 2; c.lineTo(Math.cos(a) * sr, Math.sin(a) * sr); c.lineTo(Math.cos(a + Math.PI / 4) * sr * .12, Math.sin(a + Math.PI / 4) * sr * .12); }
+        c.closePath(); c.fill(); c.restore();
+      }
+      c.globalCompositeOperation = 'source-over';
+      if(t < T3 + 50 && cv.isConnected) requestAnimationFrame(frame); else cv.remove();
+    };
+    requestAnimationFrame(frame);
+  }
+  function sound(){
+    try{
+      if(!sndOn) return; const a = ac(); if(!a) return; const t = a.currentTime;
+      // 압축: 아래로 미끄러지는 웅- 소리
+      const o = a.createOscillator(), g = a.createGain(); o.type = 'sawtooth';
+      const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(2400, t); f.frequency.exponentialRampToValueAtTime(180, t + .42);
+      o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(48, t + .42);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.06, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + .46);
+      o.connect(f); f.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .5);
+      // 쿵 (붕괴)
+      rxTone(70, .5, 'sine', .14, .42, 32);
+      // 펄서 소리: 진짜 펄서를 소리로 바꾸면 '틱 틱 틱' 하고 일정하게 뛴다
+      for(let i = 0; i < 9; i++){
+        const tt = t + .52 + i * .19, n = a.createBufferSource(), bf = a.createBuffer(1, Math.floor(a.sampleRate * .03), a.sampleRate), d = bf.getChannelData(0);
+        for(let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * Math.exp(-j / (a.sampleRate * .004));
+        n.buffer = bf; const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 3;
+        const gg = a.createGain(); gg.gain.value = .5 * (1 - i / 10); n.connect(bp); bp.connect(gg); gg.connect(a.destination); n.start(tt);
+      }
+    }catch(_){}
+  }
+  document.addEventListener('click', e => {
+    const g = e.target.closest && e.target.closest('.ghost-nu'); if(!g) return;
+    boom(g.getBoundingClientRect());
+  }, true);
+  window.rxGhostBoom = boom;
+})();
+</script>
+<style>
+  /* ═══ 조합 결과창 v5: Y2K 페리윙클 + 만든 물질 색(--ac) + 등장 연출 + 실패 화면 ═══ */
+  #card.rx5{--pw:#9aa8ff;--pw2:#c9d0ff;--ac:#9aa8ff;--acm:color-mix(in srgb,var(--ac) 55%,#9aa8ff);
+    border-color:color-mix(in srgb,var(--acm) 55%,transparent)!important;
+    background:
+      radial-gradient(120% 70% at 78% 0%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 60%),
+      radial-gradient(90% 60% at 0% 100%,rgba(154,168,255,.10),transparent 60%),
+      linear-gradient(180deg,rgba(16,19,32,.86),rgba(7,9,16,.9))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(0,0,0,.6),0 0 46px color-mix(in srgb,var(--acm) 22%,transparent),0 30px 80px rgba(0,0,0,.7)!important;
+    border-radius:14px!important}
+  /* 장식: 모서리 괄호 · 머리글 · 스캔 빛 */
+  .rx5-deco{position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:inherit;overflow:hidden}
+  .rx5-deco i{position:absolute;width:16px;height:16px;border:2px solid var(--pw2);opacity:.85;filter:drop-shadow(0 0 4px var(--pw))}
+  .rx5-deco i:nth-child(1){left:7px;top:7px;border-right:0;border-bottom:0}
+  .rx5-deco i:nth-child(2){right:7px;top:7px;border-left:0;border-bottom:0}
+  .rx5-deco i:nth-child(3){left:7px;bottom:7px;border-right:0;border-top:0}
+  .rx5-deco i:nth-child(4){right:7px;bottom:7px;border-left:0;border-top:0}
+  .rx5-deco b{position:absolute;right:30px;top:9px;font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:color-mix(in srgb,var(--pw2) 70%,transparent)}
+  .rx5-deco u{position:absolute;top:0;bottom:0;width:38%;left:-40%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ac) 18%,transparent),rgba(255,255,255,.10),transparent);text-decoration:none;opacity:0}
+  #card.rx5.rx-anim .rx5-deco u{animation:rx5Scan .9s .05s cubic-bezier(.4,0,.2,1) both}
+  @keyframes rx5Scan{0%{left:-40%;opacity:1}100%{left:110%;opacity:1}}
+  #card.rx5 .rx-stage{border-color:color-mix(in srgb,var(--acm) 35%,transparent)!important;border-radius:10px!important;
+    background-image:radial-gradient(circle,color-mix(in srgb,var(--acm) 22%,transparent) 1px,transparent 1.3px)!important}
+  #card.rx5 .rx-cap{border-radius:7px;border-color:color-mix(in srgb,var(--acm) 30%,transparent)!important}
+  /* 화학식: 흰색 → 페리윙클 → 물질 색 그라데이션 */
+  #card.rx5 .rx-info{position:relative}
+  #card.rx5 .formula:not(.fail){color:transparent!important;text-shadow:none!important;
+    background:linear-gradient(100deg,#fff 20%,var(--pw2) 55%,color-mix(in srgb,var(--ac) 80%,#fff));-webkit-background-clip:text;background-clip:text;
+    filter:drop-shadow(0 0 16px color-mix(in srgb,var(--acm) 45%,transparent)) drop-shadow(0 2px 0 rgba(0,0,0,.6))}
+  #card.rx5 .formula sub,#card.rx5 .formula sup{background:inherit;-webkit-background-clip:text;background-clip:text}
+  #card.rx5 .cname{color:#e3e7f5!important;letter-spacing:.01em}
+  /* 화학식 뒤 점선 원 + 별 */
+  #card.rx5 .formula{position:relative;clip-path:none!important;overflow:visible!important}
+  #card.rx5 .formula::before{content:"";position:absolute;left:50%;top:50%;width:var(--hw,124px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;z-index:-1;
+    border:1.5px dotted color-mix(in srgb,var(--acm) 40%,transparent);
+    background:radial-gradient(circle,color-mix(in srgb,var(--ac) 20%,transparent),transparent 65%);animation:rx5Spin 22s linear infinite}
+  #card.rx5 .formula::after{content:"";position:absolute;left:calc(50% + var(--hw,124px) * .36);top:calc(50% - var(--hw,124px) * .4);width:16px;height:16px;transform:rotate(75deg);pointer-events:none;
+    background:conic-gradient(from 0deg,#fff,var(--pw2),var(--pw),#6a78e8,var(--pw),var(--pw2),#fff);
+    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+  @keyframes rx5Spin{to{rotate:360deg}}
+  /* 조합 성공 줄: 모노 + 점선 */
+  #card.rx5 .rx-state{display:flex;align-items:center;gap:10px;font:800 13px/1 ui-monospace,monospace!important;letter-spacing:.14em;color:color-mix(in srgb,var(--ac) 65%,#fff)!important;text-transform:uppercase}
+  #card.rx5 .rx-state::before{content:"//";color:var(--pw)}
+  #card.rx5 .rx-state::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--acm) 60%,transparent) 0 4px,transparent 4px 8px)}
+  /* 버튼 */
+  #card.rx5 #mWipe{background:linear-gradient(90deg,#c9d0ff,#9aa8ff 50%,#c9d0ff)!important;background-size:200% 100%!important;color:#141833!important;border:0!important;border-radius:10px!important;
+    box-shadow:0 0 18px rgba(154,168,255,.35)!important;animation:rx5Sh 3s linear infinite}
+  #card.rx5 #mWipe svg{fill:#141833}
+  #card.rx5 #mMoreBtn{background:rgba(154,168,255,.07)!important;color:#e3e7f5!important;border:1px solid color-mix(in srgb,var(--acm) 45%,transparent)!important;border-radius:10px!important}
+  #card.rx5 #mMoreBtn:hover{background:rgba(154,168,255,.16)!important}
+  @keyframes rx5Sh{from{background-position:200% 0}to{background-position:0 0}}
+  #card.rx5 .rx-head .rt{border-radius:8px}
+
+  /* ── 등장 연출 (rx-anim 이 붙을 때마다 다시) ── */
+  #card.rx5.rx-anim .formula{animation:rx5Stamp .62s .22s cubic-bezier(.2,1.5,.4,1) both}
+  #card.rx5.rx-anim .cname{animation:rx5Type .55s .5s steps(14,end) both}
+  #card.rx5.rx-anim .rx-info > :not(.formula):not(.cname){animation:rx5Up .45s both}
+  #card.rx5.rx-anim .rx-info > :nth-child(3){animation-delay:.62s!important}
+  #card.rx5.rx-anim .rx-info > :nth-child(4){animation-delay:.7s!important}
+  #card.rx5.rx-anim .rx-info > :nth-child(n+5){animation-delay:.78s!important}
+  #card.rx5.rx-anim .rx-state{animation:rx5Up .45s .82s both}
+  #card.rx5.rx-anim .cdex{animation:rx5Up .45s .9s both}
+  #card.rx5.rx-anim .cbtns{animation:rx5Up .45s 1s both}
+  #card.rx5.rx-anim .rx5-deco i{animation:rx5Corner .5s .1s cubic-bezier(.2,.9,.3,1) both}
+  @keyframes rx5Stamp{0%{opacity:0;transform:scale(1.9);filter:blur(10px)}55%{opacity:1;transform:scale(.94);filter:blur(0) drop-shadow(0 0 26px #fff)}100%{opacity:1;transform:none}}
+  @keyframes rx5Type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+  @keyframes rx5Up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes rx5Halo{from{opacity:0;scale:.3}to{opacity:1;scale:1}}
+  @keyframes rx5Corner{from{opacity:0;transform:scale(2.2)}to{opacity:.85;transform:none}}
+
+  /* ── 실패 화면 ── */
+  #card.rx5.is-fail{--ac:#ff5a6e}
+  #card.rx5.is-fail .formula.fail{color:#ff8a98!important;text-shadow:2px 0 0 rgba(255,40,90,.7),-2px 0 0 rgba(80,220,255,.6)!important;animation:rx5Glitch 2.4s steps(1) 1.2s infinite}
+  #card.rx5.rx-anim.is-fail .formula.fail{animation:rx5Drop .5s .2s cubic-bezier(.3,1.6,.5,1) both,rx5Glitch 2.4s steps(1) 1.2s infinite}
+  #card.rx5.is-fail .formula::before{border-style:dashed;border-color:rgba(255,90,110,.45);background:radial-gradient(circle,rgba(255,60,90,.16),transparent 65%);animation:rx5Spin 4s linear infinite reverse}
+  #card.rx5.is-fail .formula::after{display:none}
+  #card.rx5.is-fail .rx5-deco i{border-color:#ff8a98;filter:drop-shadow(0 0 4px #ff5a6e)}
+  #card.rx5.is-fail .rx5-deco b{color:rgba(255,138,152,.8)}
+  #card.rx5.is-fail .rx-state::before{content:"!!";color:#ff5a6e}
+  .rx5-stamp{position:absolute;right:16px;top:30px;z-index:4;pointer-events:none;display:none;
+    font:900 22px/1 'IBM Plex Sans KR',system-ui,sans-serif;letter-spacing:.12em;color:#ff5a6e;
+    padding:7px 12px 6px;border:3px solid #ff5a6e;border-radius:6px;transform:rotate(-12deg);
+    background:rgba(255,40,70,.06);box-shadow:0 0 0 2px rgba(255,90,110,.25) inset,0 0 18px rgba(255,60,90,.35);
+    -webkit-mask:radial-gradient(circle at 30% 40%,#000 60%,rgba(0,0,0,.75) 61%,#000 75%);mask:radial-gradient(circle at 30% 40%,#000 60%,rgba(0,0,0,.75) 61%,#000 75%)}
+  #card.rx5.is-fail .rx5-stamp{display:block}
+  #card.rx5.rx-anim.is-fail .rx5-stamp{animation:rx5Thunk .42s .55s cubic-bezier(.3,1.5,.5,1) both}
+  .rx5-noise{position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:inherit;display:none;opacity:.5;mix-blend-mode:screen;
+    background:repeating-linear-gradient(0deg,rgba(255,90,110,.09) 0 1px,transparent 1px 3px);animation:rx5Roll 1.6s linear infinite}
+  #card.rx5.is-fail .rx5-noise{display:block}
+  #card.rx5.rx-anim.is-fail{animation:rxIn .34s cubic-bezier(.2,.9,.3,1.15) both,rx5Shake .45s .55s ease-out both!important}
+  @keyframes rx5Drop{0%{opacity:0;transform:translateY(-30px) rotate(-6deg)}100%{opacity:1;transform:none}}
+  @keyframes rx5Glitch{0%,100%{transform:none}46%{transform:translate(3px,-1px) skewX(-8deg);text-shadow:5px 0 0 rgba(255,40,90,.8),-5px 0 0 rgba(80,220,255,.7)}48%{transform:none}80%{transform:translateX(-2px);opacity:.7}82%{transform:none;opacity:1}}
+  @keyframes rx5Thunk{0%{opacity:0;transform:rotate(-12deg) scale(2.4)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
+  @keyframes rx5Roll{to{background-position:0 30px}}
+  @keyframes rx5Shake{0%,100%{translate:0}20%{translate:-6px 0}45%{translate:5px 0}70%{translate:-3px 0}}
+  @media (max-width:700px){
+    #card.rx5 .formula{--hw:96px}
+    .rx5-stamp{font-size:17px;top:auto;bottom:auto;right:14px;top:62px}
+    .rx5-deco b{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ #card.rx5 *,#card.rx5{animation:none!important} }
+</style>
+<script>
+(function(){
+  const card = document.getElementById('card'); if(!card) return;
+  card.classList.add('rx5');
+  const deco = document.createElement('div'); deco.className = 'rx5-deco';
+  deco.innerHTML = '<i></i><i></i><i></i><i></i><b></b><u></u>';
+  card.appendChild(deco);
+  const stamp = document.createElement('div'); stamp.className = 'rx5-stamp'; card.appendChild(stamp);
+  const info = document.getElementById('mInfo');
+  const stage = document.getElementById('mStage');
+  if(stage){ const nz = document.createElement('span'); nz.className = 'rx5-noise'; stage.appendChild(nz); }
+  let n = 0;
+  const accent = () => {
+    try{
+      if(RX.kind === 'fail') return '#ff5a6e';
+      if(RX.boom) return '#ff9a3c';
+      const c = RX.c || {}; let best = null, bc = -1;
+      (RX.order || []).forEach(k => { if((c[k] || 0) > bc){ bc = c[k] || 0; best = k; } });
+      // 여러 원소면 가장 많이 넣은 원소의 분류 색
+      const e = best != null ? byNum[best] : null;
+      return e ? cssv(CAT[e.c].v) : '#9aa8ff';
+    }catch(e){ return '#9aa8ff'; }
+  };
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{
+      card.classList.add('rx5');
+      card.style.setProperty('--ac', accent());
+      n++;
+      deco.querySelector('b').textContent = RX.kind === 'fail' ? '// ERROR' : '// RESULT ' + String(n).padStart(3, '0');
+      stamp.textContent = LANG === 'en' ? 'FAILED' : '실패';
+      if(RX.kind === 'fail'){ try{ rxTone(140, .22, 'square', .05, .55, 70); rxTone(90, .3, 'sine', .1, .56, 50); }catch(e){} }
+    }catch(e){}
+    return r;
+  };
+})();
+</script>
+<style>
+  /* ═══ 결과 창 액체 리워크: WebGL 메타볼 (굴절·프레넬·하이라이트·물결빛·기포) ═══ */
+  #mLiqGL{position:absolute;pointer-events:none;z-index:0}
+  #mStage.liq-gl #mMol{position:relative;z-index:1}
+  #mStage.liq-gl .mol-atoms.liquid .mol-ball,#mStage.liq-gl .mol-atoms.liquid .mol-glow{opacity:0!important}
+  /* 얼음: 각설탕 같은 네모 대신 WebGL 얼음 덩어리. 안의 분자 그림만 남긴다 */
+  #mStage.liq-gl .mol-tiles.ice .tl:not(.al) rect,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-hi,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-ck{opacity:0!important;transition:opacity .6s}
+</style>
+<script>
+(function(){
+  let MAXP = 120;
+  const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const mkFS = () => `precision highp float;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}
+// 보로노이: 얼음 결정 면(F1, F2, 칸 번호)
+vec3 voro(vec2 p){vec2 i=floor(p),f=fract(p);float d1=8.,d2=8.;vec2 id=vec2(0.);
+  for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){vec2 g=vec2(float(x),float(y));vec2 o=hash2(i+g);vec2 r=g+o-f;float d=dot(r,r);
+    if(d<d1){d2=d1;d1=d;id=i+g;}else if(d<d2)d2=d;}
+  return vec3(sqrt(d1),sqrt(d2),hash(id));}
+void main(){
+  vec2 q=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
+  float f=0.;vec2 g=vec2(0.);float sw=0.;
+  for(int i=0;i<${MAXP};i++){ if(i>=N)break; vec4 a=P[i]; vec2 d=q-a.xy; float r2=a.z*a.z; float dd=dot(d,d)+1.; float v=r2/dd; f+=v; g+=-2.*v*d/dd; sw+=v*a.w; }
+  float solid=sw/max(f,1e-4);                         // 이 점이 얼린 알갱이로 된 정도
+  float gl=length(g)+1e-4;
+  float dist=(f-1.)/gl;
+  float edge=smoothstep(-1.2,1.2,dist);
+  if(edge<=0.){ float halo=smoothstep(.55,1.,f)*.18; vec3 hc=mix(C,vec3(.8,.92,1.),solid*ICE); gl_FragColor=vec4(hc*halo,halo); return; }
+  float dpx=mix(max(dist,0.)/K,60.,smoothstep(1.25,1.9,f));
+  float h=smoothstep(0.,34.,dpx);
+  float bend=1.-smoothstep(0.,16.,dpx);
+  vec3 n=normalize(vec3(-g/gl*bend*1.25, .35+.65*(1.-bend)));
+  // ── 얼음이 차오르는 앞줄: 바닥에서 위로, 가장자리가 조금 먼저 (울퉁불퉁한 서리 경계) ──
+  float yrel=clamp((YB.y-q.y)/max(YB.y-YB.x,1.),0.,1.);   // 0=바닥, 1=꼭대기
+  float lead=yrel*.75+(1.-smoothstep(0.,26.,dpx))*-.18+(fbm(q/(18.*K))-.5)*.35;
+  float iceM=smoothstep(lead-.02,lead+.06,ICE*1.25-.1)*step(.5,solid+.5)*clamp(solid*1.6,0.,1.);
+  float front=smoothstep(.08,0.,abs(ICE*1.25-.1-lead))*step(.02,ICE)*step(ICE,.98);
+  // 얼음 좌표는 덩어리에 붙어 다닌다 (같이 움직여도 결이 안 미끄러짐)
+  vec2 iq=(q-O)/K;
+  vec3 vo=voro(iq/22.);
+  vec2 fn=(hash2(vec2(vo.z*91.,vo.z*17.))-.5)*.9;      // 결정 면마다 다른 기울기
+  vec3 ni=normalize(vec3(-g/gl*bend*1.1+fn*(1.-bend*.6), .5+.5*(1.-bend)));
+  vec3 nn=normalize(mix(n,ni,iceM));
+  // 굴절
+  vec2 rp=q+nn.xy*mix(10.+16.*h,22.+20.*h,iceM)*K;
+  vec2 cell=fract(rp/(14.*K))-.5; float dots=smoothstep(.11,.04,length(cell));
+  float depth=smoothstep(0.,1.,h);
+  vec3 deep=C*.42, shallow=mix(C,vec3(1.),.35);
+  vec3 col=mix(shallow,deep,depth*.85);
+  col+=dots*.16*mix(vec3(1.),C,.5)*(1.-depth*.5);
+  if(LOW<.5){ vec2 cp=q/(26.*K)+vec2(T*.35,-T*.22); float cs=noise(cp)+noise(cp*1.9+vec2(-T*.4,T*.3))*.6; cs=pow(smoothstep(.9,1.45,cs),2.); col+=cs*.22*mix(vec3(1.),C,.3)*(.4+depth)*(1.-iceM); }
+  // ── 얼음 몸통: 푸른 흰색, 안쪽 탁함, 결정 면마다 밝기 다름 ──
+  vec3 icec=mix(vec3(.80,.92,1.),C,.18);
+  vec3 ib=mix(icec*1.05,icec*.62,depth*.7)*(.86+.28*vo.z);
+  ib+=dots*.10;
+  float frost=fbm(iq/7.)*(1.-smoothstep(0.,24.,dpx))+fbm(iq/3.)*.25;   // 가장자리 서리
+  ib=mix(ib,vec3(.95,.98,1.),clamp(frost*.9,0.,.85));
+  float crack=smoothstep(.06,.0,vo.y-vo.x)*step(.35,vo.z)*(.55+.45*h);   // 금(결정 경계)
+  ib+=crack*.35;
+  float bub=step(.86,hash(floor(iq/5.)))*smoothstep(.32,.1,length(fract(iq/5.)-.5))*depth;  // 갇힌 공기 방울
+  ib+=bub*.25;
+  col=mix(col,ib,iceM);
+  // 빛
+  vec3 L=normalize(vec3(-.45,-.6,.66)); vec3 V=vec3(0,0,1); vec3 Hh=normalize(L+V);
+  float dif=clamp(dot(nn,L),0.,1.);
+  float sp=clamp(dot(nn,Hh),0.,1.);
+  float spec=pow(sp,mix(70.,140.,iceM))*mix(1.25,1.6,iceM) + pow(sp,12.)*.18;
+  float fres=pow(1.-clamp(nn.z,0.,1.),2.4);
+  col=col*(.62+.5*dif)+spec+fres*mix(vec3(.85,.9,1.),C,.25)*mix(.55,.8,iceM);
+  float rim=smoothstep(3.5,.5,dist)*(1.-smoothstep(.5,0.,dist)*.3);
+  col+=rim*mix(.22,.45,iceM);
+  // 반짝이: 얼음 결정이 빛을 받아 반짝
+  if(LOW<.5){ vec2 sg=floor(iq/9.); float tw=hash(sg); float sparkle=step(.93,tw)*pow(max(0.,sin(T*3.+tw*40.)),18.)*smoothstep(.45,.0,length(fract(iq/9.)-.5));
+    col+=sparkle*1.4*iceM; }
+  // 얼어붙는 앞줄: 하얗게 빛나는 서리 띠
+  col+=front*vec3(.75,.9,1.)*.9;
+  if(LOW<.5){ for(int k=0;k<7;k++){ float fk=float(k); vec2 b=vec2(fract(sin(fk*91.7)*437.5),fract(T*(.05+.03*fract(fk*.37))+fk*.31));
+      b=vec2(mix(.1,.9,b.x)*R.x, R.y*(1.-b.y)); float br=(2.+3.*fract(fk*.73))*K; float bd=length(q-b);
+      float ring=smoothstep(br+1.,br,bd)*smoothstep(br-1.6,br-.6,bd); float bh=smoothstep(br*.6,0.,length(q-b+vec2(br*.35,br*.35)));
+      col+=(ring*.5+bh*.6)*step(.04,h)*(1.-iceM); } }
+  float a=edge*mix(.80+.17*depth,.9+.08*depth,iceM);
+  gl_FragColor=vec4(col*a,a);
+}`;
+  let gl = null, prog = null, cv = null, U = {}, failed = false, t0 = performance.now(), buf = null;
+  const S = { fz: false, t: 0, from: 0, ice: 0, cx: 0, cy: 0, bx: 0, by: 0, ox: 0, oy: 0 };
+  function init(stage){
+    if(failed) return false;
+    if(cv && cv.isConnected && gl) return true;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'mLiqGL'; cv.setAttribute('aria-hidden', 'true');
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+      if(!gl) throw 0;
+      // 폰마다 셰이더에 넘길 수 있는 점 개수가 달라서 맞춘다
+      MAXP = Math.max(24, Math.min(120, (gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64) - 12));
+      buf = new Float32Array(MAXP * 4);
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, mkFS())); gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw gl.getProgramInfoLog(prog);
+      gl.useProgram(prog);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
+      return true;
+    }catch(e){ failed = true; cv = null; gl = null; return false; }
+  }
+  function off(){ const st = document.getElementById('mStage'); if(st) st.classList.remove('liq-gl'); if(cv) cv.style.display = 'none';
+    const g = document.querySelector('#mMol .mol-atoms.liquid'); if(g && g.dataset.goo){ g.setAttribute('filter', g.dataset.goo); delete g.dataset.goo; } }
+  const hex = c => { c = String(c || '#9fb4d6'); if(c[0] !== '#'){ const m = c.match(/\d+(\.\d+)?/g); return m ? m.slice(0, 3).map(v => v / 255) : [.62, .7, .84]; } if(c.length === 4) c = '#' + [...c.slice(1)].map(x => x + x).join(''); return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255); };
+  function render(m, yaw, pitch){
+    const st = document.getElementById('mStage'), svg = document.getElementById('mMol');
+    if(!st || !svg || !init(st)){ return; }
+    if(!cv.isConnected) st.insertBefore(cv, svg);
+    // SVG 끈적이 필터는 끈다 (매 프레임 다시 계산돼서 무겁다)
+    const grp = svg.querySelector('.mol-atoms.liquid');
+    if(grp && grp.getAttribute('filter')){ grp.dataset.goo = grp.getAttribute('filter'); grp.removeAttribute('filter'); }
+    st.classList.add('liq-gl'); cv.style.display = '';
+    const sr = svg.getBoundingClientRect(), tr = st.getBoundingClientRect();
+    const lowp = !!window.RX_LOWPOW, dpr = Math.min(lowp ? 1 : 1.5, devicePixelRatio || 1) * (lowp ? .75 : 1);
+    const W = Math.max(1, Math.round(sr.width * dpr)), H = Math.max(1, Math.round(sr.height * dpr));
+    cv.style.left = (sr.left - tr.left - st.clientLeft) + 'px'; cv.style.top = (sr.top - tr.top - st.clientTop) + 'px';
+    cv.style.width = sr.width + 'px'; cv.style.height = sr.height + 'px';
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    // viewBox 400×300 (meet) → 캔버스 픽셀
+    const s = Math.min(sr.width / 400, sr.height / 300), ox = (sr.width - 400 * s) / 2, oy = (sr.height - 300 * s) / 2;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
+    let n = 0, col = m.col, frozen = false, sx = 0, sy = 0, sn = 0, y0 = 1e9, y1 = -1e9;
+    for(const a of m.atoms){
+      if(n >= MAXP) break;
+      if(a.tile) continue;
+      if(!col && a.col) col = a.col;
+      const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1_ = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+      const X = (ox + (m.cx + x1 * m.sc * f) * s) * dpr, Y = (oy + (m.cy + y1_ * m.sc * f) * s) * dpr, rr = a.r * m.sc * f * s * dpr * 1.12;
+      buf[n * 4] = X; buf[n * 4 + 1] = Y; buf[n * 4 + 2] = a.solid ? rr * 1.08 : rr; buf[n * 4 + 3] = a.solid ? 1 : 0;
+      if(a.solid){ frozen = true; sx += X; sy += Y; sn++; }
+      y0 = Math.min(y0, Y - rr); y1 = Math.max(y1, Y + rr);
+      n++;
+    }
+    // 얼리기/녹이기 전환: 1.6초 동안 바닥부터 얼음이 차오르거나 녹는다
+    const now = performance.now();
+    if(frozen !== S.fz){ S.fz = frozen; S.t = now; S.from = S.ice; S.cx = sn ? sx / sn : 0; S.cy = sn ? sy / sn : 0; S.bx = S.cx; S.by = S.cy; }
+    const k = Math.min(1, (now - S.t) / (frozen ? 1600 : 1100)), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    S.ice = S.from + ((frozen ? 1 : 0) - S.from) * e;
+    // 덩어리 기준점: 얼린 순간의 중심에서 덩어리가 움직인 만큼 따라간다
+    if(sn){ S.ox = S.bx + (sx / sn - S.cx); S.oy = S.by + (sy / sn - S.cy); }
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
+    gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
+    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  const _d = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _d.apply(this, arguments);
+    try{
+      const m = mm || RX_M;
+      // 저전력 모드를 직접 '켜기'로 했으면 예전 벡터(SVG) 물로 그린다
+      if(!mm && m && m.liquid && !m.metal && m === RX_M && !m.fill && !window.RX_LOWPOW_ON) render(m, yaw, pitch);
+      else if(!mm && cv && cv.style.display !== 'none') off();
+    }catch(e){ failed = true; off(); }
+    return r;
+  };
+  window.rxLiqGL = { off, get failed(){ return failed; } };
 })();
 </script>
 <style>
