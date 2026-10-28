@@ -26196,7 +26196,7 @@ function rxIce(){
         setTimeout(() => {
           if(isNew){ found.add('얼음'); saveFound(); try{ rxToast(LANG === 'en' ? 'Special find' : '특수 발견', LANG === 'en' ? 'Ice' : '얼음', LANG === 'en' ? 'Water stacked into hexagons' : '물이 육각형으로 쌓였어요'); }catch(e){} try{ checkAch(); }catch(e){} }
           rxShowEntry('얼음');
-        }, 1300);
+        }, 2100);   // 얼음이 다 차오르는 걸 보고 나서
       }
     }catch(e){}
     return r;
@@ -36092,56 +36092,90 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   #mLiqGL{position:absolute;pointer-events:none;z-index:0}
   #mStage.liq-gl #mMol{position:relative;z-index:1}
   #mStage.liq-gl .mol-atoms.liquid .mol-ball,#mStage.liq-gl .mol-atoms.liquid .mol-glow{opacity:0!important}
+  /* 얼음: 각설탕 같은 네모 대신 WebGL 얼음 덩어리. 안의 분자 그림만 남긴다 */
+  #mStage.liq-gl .mol-tiles.ice .tl:not(.al) rect,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-hi,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-ck{opacity:0!important;transition:opacity .6s}
 </style>
 <script>
 (function(){
   let MAXP = 120;
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const mkFS = () => `precision highp float;
-uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}
+// 보로노이: 얼음 결정 면(F1, F2, 칸 번호)
+vec3 voro(vec2 p){vec2 i=floor(p),f=fract(p);float d1=8.,d2=8.;vec2 id=vec2(0.);
+  for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){vec2 g=vec2(float(x),float(y));vec2 o=hash2(i+g);vec2 r=g+o-f;float d=dot(r,r);
+    if(d<d1){d2=d1;d1=d;id=i+g;}else if(d<d2)d2=d;}
+  return vec3(sqrt(d1),sqrt(d2),hash(id));}
 void main(){
   vec2 q=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
-  float f=0.;vec2 g=vec2(0.);
-  for(int i=0;i<${MAXP};i++){ if(i>=N)break; vec4 a=P[i]; vec2 d=q-a.xy; float r2=a.z*a.z; float dd=dot(d,d)+1.; float v=r2/dd; f+=v; g+=-2.*v*d/dd; }
+  float f=0.;vec2 g=vec2(0.);float sw=0.;
+  for(int i=0;i<${MAXP};i++){ if(i>=N)break; vec4 a=P[i]; vec2 d=q-a.xy; float r2=a.z*a.z; float dd=dot(d,d)+1.; float v=r2/dd; f+=v; g+=-2.*v*d/dd; sw+=v*a.w; }
+  float solid=sw/max(f,1e-4);                         // 이 점이 얼린 알갱이로 된 정도
   float gl=length(g)+1e-4;
-  float dist=(f-1.)/gl;               // 가장자리까지 대략 몇 픽셀
+  float dist=(f-1.)/gl;
   float edge=smoothstep(-1.2,1.2,dist);
-  if(edge<=0.){ // 바깥: 바닥에 은은한 그림자/빛 번짐
-    float halo=smoothstep(.55,1.,f)*.18; gl_FragColor=vec4(C*halo,halo); return; }
-  // 면 모양은 '가장자리까지 거리'로: 안쪽은 평평하고 가장자리에서 둥글게 말린다 (알갱이 사이 주름 없음)
-  float dpx=mix(max(dist,0.)/K,60.,smoothstep(1.25,1.9,f));  // 깊은 안쪽(f가 큼)은 가장자리에서 먼 것으로 친다
-  float h=smoothstep(0.,34.,dpx);                     // 두께
-  float bend=1.-smoothstep(0.,16.,dpx);               // 가장자리일수록 많이 기운다
+  if(edge<=0.){ float halo=smoothstep(.55,1.,f)*.18; vec3 hc=mix(C,vec3(.8,.92,1.),solid*ICE); gl_FragColor=vec4(hc*halo,halo); return; }
+  float dpx=mix(max(dist,0.)/K,60.,smoothstep(1.25,1.9,f));
+  float h=smoothstep(0.,34.,dpx);
+  float bend=1.-smoothstep(0.,16.,dpx);
   vec3 n=normalize(vec3(-g/gl*bend*1.25, .35+.65*(1.-bend)));
-  // 굴절: 뒤 배경의 점 격자가 렌즈처럼 휘어 보인다
-  vec2 rp=q+n.xy*(10.+16.*h)*K;
+  // ── 얼음이 차오르는 앞줄: 바닥에서 위로, 가장자리가 조금 먼저 (울퉁불퉁한 서리 경계) ──
+  float yrel=clamp((YB.y-q.y)/max(YB.y-YB.x,1.),0.,1.);   // 0=바닥, 1=꼭대기
+  float lead=yrel*.75+(1.-smoothstep(0.,26.,dpx))*-.18+(fbm(q/(18.*K))-.5)*.35;
+  float iceM=smoothstep(lead-.02,lead+.06,ICE*1.25-.1)*step(.5,solid+.5)*clamp(solid*1.6,0.,1.);
+  float front=smoothstep(.08,0.,abs(ICE*1.25-.1-lead))*step(.02,ICE)*step(ICE,.98);
+  // 얼음 좌표는 덩어리에 붙어 다닌다 (같이 움직여도 결이 안 미끄러짐)
+  vec2 iq=(q-O)/K;
+  vec3 vo=voro(iq/22.);
+  vec2 fn=(hash2(vec2(vo.z*91.,vo.z*17.))-.5)*.9;      // 결정 면마다 다른 기울기
+  vec3 ni=normalize(vec3(-g/gl*bend*1.1+fn*(1.-bend*.6), .5+.5*(1.-bend)));
+  vec3 nn=normalize(mix(n,ni,iceM));
+  // 굴절
+  vec2 rp=q+nn.xy*mix(10.+16.*h,22.+20.*h,iceM)*K;
   vec2 cell=fract(rp/(14.*K))-.5; float dots=smoothstep(.11,.04,length(cell));
   float depth=smoothstep(0.,1.,h);
   vec3 deep=C*.42, shallow=mix(C,vec3(1.),.35);
   vec3 col=mix(shallow,deep,depth*.85);
   col+=dots*.16*mix(vec3(1.),C,.5)*(1.-depth*.5);
-  // 물속 물결빛(커스틱)
-  if(LOW<.5){ vec2 cp=q/(26.*K)+vec2(T*.35,-T*.22); float cs=noise(cp)+noise(cp*1.9+vec2(-T*.4,T*.3))*.6; cs=pow(smoothstep(.9,1.45,cs),2.); col+=cs*.22*mix(vec3(1.),C,.3)*(.4+depth); }
+  if(LOW<.5){ vec2 cp=q/(26.*K)+vec2(T*.35,-T*.22); float cs=noise(cp)+noise(cp*1.9+vec2(-T*.4,T*.3))*.6; cs=pow(smoothstep(.9,1.45,cs),2.); col+=cs*.22*mix(vec3(1.),C,.3)*(.4+depth)*(1.-iceM); }
+  // ── 얼음 몸통: 푸른 흰색, 안쪽 탁함, 결정 면마다 밝기 다름 ──
+  vec3 icec=mix(vec3(.80,.92,1.),C,.18);
+  vec3 ib=mix(icec*1.05,icec*.62,depth*.7)*(.86+.28*vo.z);
+  ib+=dots*.10;
+  float frost=fbm(iq/7.)*(1.-smoothstep(0.,24.,dpx))+fbm(iq/3.)*.25;   // 가장자리 서리
+  ib=mix(ib,vec3(.95,.98,1.),clamp(frost*.9,0.,.85));
+  float crack=smoothstep(.06,.0,vo.y-vo.x)*step(.35,vo.z)*(.55+.45*h);   // 금(결정 경계)
+  ib+=crack*.35;
+  float bub=step(.86,hash(floor(iq/5.)))*smoothstep(.32,.1,length(fract(iq/5.)-.5))*depth;  // 갇힌 공기 방울
+  ib+=bub*.25;
+  col=mix(col,ib,iceM);
   // 빛
   vec3 L=normalize(vec3(-.45,-.6,.66)); vec3 V=vec3(0,0,1); vec3 Hh=normalize(L+V);
-  float dif=clamp(dot(n,L),0.,1.);
-  float spec=pow(clamp(dot(n,Hh),0.,1.),70.)*1.25 + pow(clamp(dot(n,Hh),0.,1.),12.)*.18;
-  float fres=pow(1.-clamp(n.z,0.,1.),2.4);
-  col=col*(.62+.5*dif)+spec+fres*mix(vec3(.85,.9,1.),C,.25)*.55;
-  // 가장자리 얇은 밝은 테(표면 장력)
+  float dif=clamp(dot(nn,L),0.,1.);
+  float sp=clamp(dot(nn,Hh),0.,1.);
+  float spec=pow(sp,mix(70.,140.,iceM))*mix(1.25,1.6,iceM) + pow(sp,12.)*.18;
+  float fres=pow(1.-clamp(nn.z,0.,1.),2.4);
+  col=col*(.62+.5*dif)+spec+fres*mix(vec3(.85,.9,1.),C,.25)*mix(.55,.8,iceM);
   float rim=smoothstep(3.5,.5,dist)*(1.-smoothstep(.5,0.,dist)*.3);
-  col+=rim*.22;
-  // 기포: 몇 개가 위로 올라간다
+  col+=rim*mix(.22,.45,iceM);
+  // 반짝이: 얼음 결정이 빛을 받아 반짝
+  if(LOW<.5){ vec2 sg=floor(iq/9.); float tw=hash(sg); float sparkle=step(.93,tw)*pow(max(0.,sin(T*3.+tw*40.)),18.)*smoothstep(.45,.0,length(fract(iq/9.)-.5));
+    col+=sparkle*1.4*iceM; }
+  // 얼어붙는 앞줄: 하얗게 빛나는 서리 띠
+  col+=front*vec3(.75,.9,1.)*.9;
   if(LOW<.5){ for(int k=0;k<7;k++){ float fk=float(k); vec2 b=vec2(fract(sin(fk*91.7)*437.5),fract(T*(.05+.03*fract(fk*.37))+fk*.31));
       b=vec2(mix(.1,.9,b.x)*R.x, R.y*(1.-b.y)); float br=(2.+3.*fract(fk*.73))*K; float bd=length(q-b);
       float ring=smoothstep(br+1.,br,bd)*smoothstep(br-1.6,br-.6,bd); float bh=smoothstep(br*.6,0.,length(q-b+vec2(br*.35,br*.35)));
-      col+=(ring*.5+bh*.6)*step(.04,h); } }
-  float a=edge*(.80+.17*depth);
+      col+=(ring*.5+bh*.6)*step(.04,h)*(1.-iceM); } }
+  float a=edge*mix(.80+.17*depth,.9+.08*depth,iceM);
   gl_FragColor=vec4(col*a,a);
 }`;
   let gl = null, prog = null, cv = null, U = {}, failed = false, t0 = performance.now(), buf = null;
+  const S = { fz: false, t: 0, from: 0, ice: 0, cx: 0, cy: 0, bx: 0, by: 0, ox: 0, oy: 0 };
   function init(stage){
     if(failed) return false;
     if(cv && cv.isConnected && gl) return true;
@@ -36158,7 +36192,7 @@ void main(){
       gl.useProgram(prog);
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
       return true;
@@ -36184,19 +36218,29 @@ void main(){
     // viewBox 400×300 (meet) → 캔버스 픽셀
     const s = Math.min(sr.width / 400, sr.height / 300), ox = (sr.width - 400 * s) / 2, oy = (sr.height - 300 * s) / 2;
     const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
-    let n = 0, col = m.col;
+    let n = 0, col = m.col, frozen = false, sx = 0, sy = 0, sn = 0, y0 = 1e9, y1 = -1e9;
     for(const a of m.atoms){
       if(n >= MAXP) break;
-      if(a.tile || a.solid) continue;
+      if(a.tile) continue;
       if(!col && a.col) col = a.col;
-      const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
-      const X = m.cx + x1 * m.sc * f, Y = m.cy + y1 * m.sc * f;
-      buf[n * 4] = (ox + X * s) * dpr; buf[n * 4 + 1] = (oy + Y * s) * dpr; buf[n * 4 + 2] = a.r * m.sc * f * s * dpr * 1.12; buf[n * 4 + 3] = 0;
+      const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1_ = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+      const X = (ox + (m.cx + x1 * m.sc * f) * s) * dpr, Y = (oy + (m.cy + y1_ * m.sc * f) * s) * dpr, rr = a.r * m.sc * f * s * dpr * 1.12;
+      buf[n * 4] = X; buf[n * 4 + 1] = Y; buf[n * 4 + 2] = a.solid ? rr * 1.08 : rr; buf[n * 4 + 3] = a.solid ? 1 : 0;
+      if(a.solid){ frozen = true; sx += X; sy += Y; sn++; }
+      y0 = Math.min(y0, Y - rr); y1 = Math.max(y1, Y + rr);
       n++;
     }
+    // 얼리기/녹이기 전환: 1.6초 동안 바닥부터 얼음이 차오르거나 녹는다
+    const now = performance.now();
+    if(frozen !== S.fz){ S.fz = frozen; S.t = now; S.from = S.ice; S.cx = sn ? sx / sn : 0; S.cy = sn ? sy / sn : 0; S.bx = S.cx; S.by = S.cy; }
+    const k = Math.min(1, (now - S.t) / (frozen ? 1600 : 1100)), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    S.ice = S.from + ((frozen ? 1 : 0) - S.from) * e;
+    // 덩어리 기준점: 얼린 순간의 중심에서 덩어리가 움직인 만큼 따라간다
+    if(sn){ S.ox = S.bx + (sx / sn - S.cx); S.oy = S.by + (sy / sn - S.cy); }
     gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
     gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
+    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const _d = rxDraw;
