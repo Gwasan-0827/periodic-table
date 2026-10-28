@@ -34284,12 +34284,41 @@ function rxFlashbang(soft){
     if(typeof sndOn !== 'undefined' && !sndOn) return;
     const a = ac(); if(!a) return; const t = a.currentTime;
     const nb = (sec, f) => { const n = Math.floor(a.sampleRate * sec), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0); for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * f(i / n); const s = a.createBufferSource(); s.buffer = b; return s; };
-    const out = (n, v, pan) => { const g = a.createGain(); g.gain.value = v; n.connect(g); let tl = g; if(pan && a.createStereoPanner){ const p = a.createStereoPanner(); p.pan.value = pan; g.connect(p); tl = p; } tl.connect(a.destination); };
+    if(!a._flComp || a._flComp.context !== a){ const cp = a.createDynamicsCompressor(); cp.threshold.value = -10; cp.ratio.value = 6; cp.attack.value = .002; cp.release.value = .25; cp.connect(a.destination); a._flComp = cp; }
+    const out = (n, v, pan) => { const g = a.createGain(); g.gain.value = v; n.connect(g); let tl = g; if(pan && a.createStereoPanner){ const p = a.createStereoPanner(); p.pan.value = pan; g.connect(p); tl = p; } tl.connect(a._flComp); };
     if(kind === 'whoosh'){ const s = nb(.55, x => Math.sin(Math.PI * Math.min(1, x * 2.2)) * (1 - x)), f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(3200, t + .12); f.frequency.exponentialRampToValueAtTime(500, t + .5); s.connect(f); out(f, .5); s.start(t); }
-    if(kind === 'launch'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'sine'; os.frequency.setValueAtTime(900, t); os.frequency.exponentialRampToValueAtTime(2400, t + .7); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.035, t + .1); g.gain.exponentialRampToValueAtTime(.0001, t + .75); os.connect(g); out(g, 1, o); os.start(t); os.stop(t + .8);
-      const s = nb(.7, x => (1 - x) * .5), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3000; s.connect(f); out(f, .08, o); s.start(t); }
-    if(kind === 'boom'){ const s = nb(1.2, x => Math.pow(1 - x, 3)), f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; s.connect(f); out(f, .55, o); s.start(t);
-      const c2 = nb(1.4, x => (Math.random() < .02 ? 1 : 0) * (1 - x)), h = a.createBiquadFilter(); h.type = 'highpass'; h.frequency.value = 4000; c2.connect(h); out(h, .35, o); c2.start(t + .15); }
+    if(kind === 'launch'){ // 피유우우우웅: 음이 쭉 올라가는 휘파람 + 살짝 떨림 + 로켓 꼬리 쉬이익
+      const dur = .82, os = a.createOscillator(), lfo = a.createOscillator(), lg = a.createGain(), g = a.createGain(), bp = a.createBiquadFilter();
+      os.type = 'sine'; os.frequency.setValueAtTime(700, t); os.frequency.exponentialRampToValueAtTime(1500, t + dur * .35); os.frequency.exponentialRampToValueAtTime(2300, t + dur);
+      lfo.frequency.value = 11; lg.gain.value = 38; lfo.connect(lg); lg.connect(os.frequency);
+      bp.type = 'bandpass'; bp.Q.value = 6; bp.frequency.setValueAtTime(900, t); bp.frequency.exponentialRampToValueAtTime(2600, t + dur);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.16, t + .12); g.gain.setValueAtTime(.16, t + dur - .12); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      os.connect(bp); bp.connect(g); out(g, 1, o); os.start(t); lfo.start(t); os.stop(t + dur + .02); lfo.stop(t + dur + .02);
+      // 배음 하나 더 (휘파람 특유의 쨍함)
+      const o2 = a.createOscillator(), g2 = a.createGain(); o2.type = 'triangle'; o2.frequency.setValueAtTime(1400, t); o2.frequency.exponentialRampToValueAtTime(4600, t + dur);
+      g2.gain.setValueAtTime(.0001, t); g2.gain.exponentialRampToValueAtTime(.03, t + .15); g2.gain.exponentialRampToValueAtTime(.0001, t + dur); o2.connect(g2); out(g2, 1, o); o2.start(t); o2.stop(t + dur + .02);
+      const s = nb(dur + .1, x => (1 - x) * (.6 + .4 * Math.random())), hf = a.createBiquadFilter(); hf.type = 'bandpass'; hf.Q.value = .8; hf.frequency.setValueAtTime(2500, t); hf.frequency.exponentialRampToValueAtTime(6000, t + dur);
+      s.connect(hf); out(hf, .16, o); s.start(t);
+    }
+    if(kind === 'boom'){ // 펑!: 저음 쿵 + 공기 터짐 + 메아리 + 타닥타닥
+      const big = o && o.big;
+      const pan = typeof o === 'number' ? o : (o && o.pan) || 0;
+      // 쿵
+      const os = a.createOscillator(), g = a.createGain(); os.type = 'sine'; os.frequency.setValueAtTime(95, t); os.frequency.exponentialRampToValueAtTime(34, t + .5);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.55, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + .7); os.connect(g); out(g, 1, pan * .5); os.start(t); os.stop(t + .72);
+      // 펑 (넓게 터지는 공기)
+      const s = nb(1.6, x => Math.pow(1 - x, 2.4) * (x < .01 ? x / .01 : 1)), lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = .7;
+      lp.frequency.setValueAtTime(2600, t); lp.frequency.exponentialRampToValueAtTime(260, t + 1.2); s.connect(lp);
+      const gB = a.createGain(); gB.gain.value = .6; lp.connect(gB);
+      // 메아리: 살짝 늦게, 더 어둡게
+      const dl = a.createDelay(1), fb = a.createGain(), dlp = a.createBiquadFilter(); dl.delayTime.value = .22; fb.gain.value = .32; dlp.type = 'lowpass'; dlp.frequency.value = 700;
+      gB.connect(dl); dl.connect(dlp); dlp.connect(fb); fb.connect(dl);
+      const mix = a.createGain(); gB.connect(mix); dlp.connect(mix); out(mix, .9, pan); s.start(t);
+      // 타닥타닥 (터진 불티가 떨어지며)
+      const n = Math.floor(a.sampleRate * 1.6), cb = a.createBuffer(1, n, a.sampleRate), d = cb.getChannelData(0);
+      for(let i = Math.floor(a.sampleRate * .25); i < n; i++){ if(Math.random() < .0016 * (1 - i / n) * (o && o.glitter ? 3 : 1)){ const L = 40 + Math.random() * 120; for(let k = 0; k < L && i + k < n; k++) d[i + k] += (Math.random() * 2 - 1) * (1 - k / L) * .9; } }
+      const cs = a.createBufferSource(); cs.buffer = cb; const ch = a.createBiquadFilter(); ch.type = 'highpass'; ch.frequency.value = 2200; cs.connect(ch); out(ch, .32, -pan * .6); cs.start(t);
+    }
     if(kind === 'ok'){ [784, 1047, 1319].forEach((fr, i) => { const os = a.createOscillator(), g = a.createGain(); os.type = 'triangle'; os.frequency.value = fr; g.gain.setValueAtTime(.06, t + i * .07); g.gain.exponentialRampToValueAtTime(.0001, t + i * .07 + .35); os.connect(g); out(g, 1); os.start(t + i * .07); os.stop(t + i * .07 + .4); }); }
     if(kind === 'no'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.setValueAtTime(220, t); os.frequency.exponentialRampToValueAtTime(110, t + .25); g.gain.setValueAtTime(.04, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3); os.connect(g); out(g, 1); os.start(t); os.stop(t + .32); }
     if(kind === 'zap'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.value = 120; g.gain.setValueAtTime(.03, t); g.gain.exponentialRampToValueAtTime(.0001, t + .25); os.connect(g); out(g, 1); os.start(t); os.stop(t + .27); }
@@ -34447,7 +34476,7 @@ function rxFlashbang(soft){
     for(let i = 0; i < n; i++){ const a = Math.random() * Math.PI * 2, sp = (60 + Math.random() * 120) * (S.H / 400 + .4);
       S.fw.push({ k: 'p', x: f.x, y: f.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, dl: .45 + Math.random() * .35, c: glitter && Math.random() < .5 ? [255, 255, 255] : c, tw: glitter, px: f.x, py: f.y }); }
     S.fw.push({ k: 'f', x: f.x, y: f.y, l: 1, c });
-    snd('boom', (f.x / S.W - .5) * 1.4);
+    snd('boom', { pan: (f.x / S.W - .5) * 1.4, glitter: f.s === 'Mg' });
   }
   // ── 맞히기 ──
   function newQuiz(){
@@ -34637,7 +34666,7 @@ function rxFlashbang(soft){
     if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
     try{ RX_ACH_IC.flameQuiz5 = '🕵️'; }catch(e){}
   }
-  window.rxFl2 = { open, S, setMode };
+  window.rxFl2 = { open, S, setMode, snd };
 })();
 </script>
 <style>
