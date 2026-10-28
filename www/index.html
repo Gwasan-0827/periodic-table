@@ -33922,6 +33922,19 @@ function rxFlashbang(soft){
   #rxPlay.on .pc{transform:none;opacity:1}
   #rxPlay .pi{font-size:38px;line-height:1;display:block;margin-bottom:8px;animation:piTick 1s ease-in-out infinite}
   @keyframes piTick{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+  /* 이용 시간이 길수록 시계가 점점 정신을 놓는다 (처음 2.5초만, 그 뒤엔 다시 살랑살랑) */
+  #rxPlay .pi.lv2{animation:piBuzz .06s linear 40}
+  @keyframes piBuzz{0%{transform:translate(-2px,1px) rotate(-6deg)}25%{transform:translate(2px,-1px) rotate(5deg)}50%{transform:translate(-1px,-2px) rotate(-4deg)}75%{transform:translate(1px,2px) rotate(6deg)}100%{transform:translate(-2px,1px) rotate(-6deg)}}
+  #rxPlay .pi.lv3{animation:piSpin .35s linear 7}
+  @keyframes piSpin{to{transform:rotate(360deg)}}
+  #rxPlay .pi.lv4{animation:piSpinHop .45s linear 5}
+  @keyframes piSpinHop{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-26px) rotate(180deg) scale(1.15)}100%{transform:translateY(0) rotate(360deg)}}
+  #rxPlay .pi.lv5{animation:piChaos .5s linear 5;filter:drop-shadow(0 0 10px #ffe066)}
+  @keyframes piChaos{0%{transform:translate(0,0) rotate(0) scale(1);filter:hue-rotate(0)}20%{transform:translate(-40px,-24px) rotate(160deg) scale(1.6) skewX(20deg)}40%{transform:translate(36px,-30px) rotate(-90deg) scale(.6)}60%{transform:translate(-20px,18px) rotate(400deg) scale(1.9) scaleX(-1)}80%{transform:translate(30px,10px) rotate(200deg) scale(.8) skewY(-25deg)}100%{transform:translate(0,0) rotate(720deg) scale(1);filter:hue-rotate(360deg)}}
+  #rxPlay .orbit{position:absolute;left:50%;top:22px;width:0;height:0;pointer-events:none}
+  #rxPlay .orbit i{position:absolute;font-style:normal;font-size:18px;animation:piOrb 1s linear 3;opacity:0}
+  @keyframes piOrb{0%{opacity:1;transform:rotate(0) translateX(46px) rotate(0)}100%{opacity:1;transform:rotate(360deg) translateX(46px) rotate(-360deg)}}
+  #rxPlay .pc{position:relative}
   #rxPlay h4{margin:0;font:800 19px/1.3 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;color:#ffe066}
   #rxPlay .ps{margin:4px 0 12px;font:700 13.5px/1.4 'IBM Plex Sans KR',system-ui,sans-serif;color:#fff}
   #rxPlay .ps small{color:#8c9eff;font-weight:600}
@@ -33943,17 +33956,20 @@ function rxFlashbang(soft){
   const close = () => el.classList.remove('on');
   function show(n){
     const en = LANG === 'en';
-    el.innerHTML = `<div class="pc"><i class="pi">⏰</i>
+    const lv = Math.min(5, n);
+    el.innerHTML = `<div class="pc"><i class="pi lv${lv}">⏰</i>${lv >= 5 ? `<div class="orbit">${[0, 1, 2, 3, 4].map(k => `<i style="animation-delay:${-k * .2}s">💫</i>`).join('')}</div>` : ''}
       <h4>${en ? `Over ${n} hour${n > 1 ? 's' : ''} of exploring!` : `${n}시간 이상 이용했어요!`}</h4>
-      <div class="ps">${en ? 'Hey, let your eyes rest! <small>(plz)</small>' : '잠깐, 눈 좀 쉬게 냅둬요! <small>(제발)</small>'}</div>
-      <p>${en ? (n >= 3 ? 'Still not life-threatening. Your eyes, however, have filed a formal complaint.' : 'Not life-threatening, but staring at a screen for a long time can leave your eyes tired and dry.')
-              : (n >= 3 ? '여전히 생명에 지장은 없지만, 눈이 정식으로 항의하고 있어요.' : '생명에 지장은 없지만, 화면을 오래 보면 눈이 피곤하고 건조해질 수 있어요.')}</p>
+      <div class="ps">${en ? `Hey, let your eyes rest! <small>(${'plz'.repeat(1)}${n >= 5 ? ' PLZ' : ''})</small>` : `잠깐, 눈 좀 쉬게 냅둬요! <small>(제발${n >= 5 ? ' 제발' : ''})</small>`}</div>
+      <p>${en ? (n >= 5 ? 'The clock has given up on physics. Please give up on the screen for a bit.' : n >= 3 ? 'Still not life-threatening. Your eyes, however, have filed a formal complaint.' : 'Not life-threatening, but staring at a screen for a long time can leave your eyes tired and dry.')
+              : (n >= 5 ? '시계가 물리 법칙을 포기했어요. 이제 화면을 잠깐 포기해 주세요.' : n >= 3 ? '여전히 생명에 지장은 없지만, 눈이 정식으로 항의하고 있어요.' : '생명에 지장은 없지만, 화면을 오래 보면 눈이 피곤하고 건조해질 수 있어요.')}</p>
       <div class="rule">${en ? '<b>20-20-20</b> · every 20 minutes, look at something about 6 m (20 ft) away for 20 seconds 👀' : '<b>20-20-20</b> 규칙 · 20분마다 20초 동안 6m쯤 먼 곳을 바라보기 👀'}</div>
       <div class="pb"><button type="button" class="rest">${en ? 'Taking a break' : '잠깐 쉴게요'}</button><button type="button" class="go">${en ? 'Keep exploring' : '계속 탐험하기'}</button></div></div>`;
     el.querySelector('.rest').onclick = e => { e.stopPropagation(); close(); setTimeout(() => { try{ window.rxSaver && rxSaver.sleep(); }catch(err){} }, 350); };
     el.querySelector('.go').onclick = e => { e.stopPropagation(); close(); };
     el.querySelector('.pc').onclick = e => e.stopPropagation();
     requestAnimationFrame(() => el.classList.add('on')); try{ SFX.pick(); }catch(e){}
+    // 2.5초 뒤 얌전해진다
+    setTimeout(() => { const pi = el.querySelector('.pi'); if(pi){ pi.className = 'pi'; pi.style.filter = 'none'; } const o = el.querySelector('.orbit'); if(o) o.remove(); }, 2500);
   }
   el.addEventListener('click', close);
   setInterval(() => {
