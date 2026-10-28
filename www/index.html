@@ -35947,6 +35947,146 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
 })();
 </script>
 <style>
+  /* ═══ 조합 결과창 v5: Y2K 페리윙클 + 만든 물질 색(--ac) + 등장 연출 + 실패 화면 ═══ */
+  #card.rx5{--pw:#9aa8ff;--pw2:#c9d0ff;--ac:#9aa8ff;--acm:color-mix(in srgb,var(--ac) 55%,#9aa8ff);
+    border-color:color-mix(in srgb,var(--acm) 55%,transparent)!important;
+    background:
+      radial-gradient(120% 70% at 78% 0%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 60%),
+      radial-gradient(90% 60% at 0% 100%,rgba(154,168,255,.10),transparent 60%),
+      linear-gradient(180deg,rgba(16,19,32,.86),rgba(7,9,16,.9))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(0,0,0,.6),0 0 46px color-mix(in srgb,var(--acm) 22%,transparent),0 30px 80px rgba(0,0,0,.7)!important;
+    border-radius:14px!important}
+  /* 장식: 모서리 괄호 · 머리글 · 스캔 빛 */
+  .rx5-deco{position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:inherit;overflow:hidden}
+  .rx5-deco i{position:absolute;width:16px;height:16px;border:2px solid var(--pw2);opacity:.85;filter:drop-shadow(0 0 4px var(--pw))}
+  .rx5-deco i:nth-child(1){left:7px;top:7px;border-right:0;border-bottom:0}
+  .rx5-deco i:nth-child(2){right:7px;top:7px;border-left:0;border-bottom:0}
+  .rx5-deco i:nth-child(3){left:7px;bottom:7px;border-right:0;border-top:0}
+  .rx5-deco i:nth-child(4){right:7px;bottom:7px;border-left:0;border-top:0}
+  .rx5-deco b{position:absolute;right:30px;top:9px;font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:color-mix(in srgb,var(--pw2) 70%,transparent)}
+  .rx5-deco u{position:absolute;top:0;bottom:0;width:38%;left:-40%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ac) 18%,transparent),rgba(255,255,255,.10),transparent);text-decoration:none;opacity:0}
+  #card.rx5.rx-anim .rx5-deco u{animation:rx5Scan .9s .05s cubic-bezier(.4,0,.2,1) both}
+  @keyframes rx5Scan{0%{left:-40%;opacity:1}100%{left:110%;opacity:1}}
+  #card.rx5 .rx-stage{border-color:color-mix(in srgb,var(--acm) 35%,transparent)!important;border-radius:10px!important;
+    background-image:radial-gradient(circle,color-mix(in srgb,var(--acm) 22%,transparent) 1px,transparent 1.3px)!important}
+  #card.rx5 .rx-cap{border-radius:7px;border-color:color-mix(in srgb,var(--acm) 30%,transparent)!important}
+  /* 화학식: 흰색 → 페리윙클 → 물질 색 그라데이션 */
+  #card.rx5 .rx-info{position:relative}
+  #card.rx5 .formula:not(.fail){color:transparent!important;text-shadow:none!important;
+    background:linear-gradient(100deg,#fff 20%,var(--pw2) 55%,color-mix(in srgb,var(--ac) 80%,#fff));-webkit-background-clip:text;background-clip:text;
+    filter:drop-shadow(0 0 16px color-mix(in srgb,var(--acm) 45%,transparent)) drop-shadow(0 2px 0 rgba(0,0,0,.6))}
+  #card.rx5 .formula sub,#card.rx5 .formula sup{background:inherit;-webkit-background-clip:text;background-clip:text}
+  #card.rx5 .cname{color:#e3e7f5!important;letter-spacing:.01em}
+  /* 화학식 뒤 점선 원 + 별 */
+  #card.rx5 .formula{position:relative;clip-path:none!important;overflow:visible!important}
+  #card.rx5 .formula::before{content:"";position:absolute;left:50%;top:50%;width:var(--hw,124px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;z-index:-1;
+    border:1.5px dotted color-mix(in srgb,var(--acm) 40%,transparent);
+    background:radial-gradient(circle,color-mix(in srgb,var(--ac) 20%,transparent),transparent 65%);animation:rx5Spin 22s linear infinite}
+  #card.rx5 .formula::after{content:"";position:absolute;left:calc(50% + var(--hw,124px) * .36);top:calc(50% - var(--hw,124px) * .4);width:16px;height:16px;transform:rotate(75deg);pointer-events:none;
+    background:conic-gradient(from 0deg,#fff,var(--pw2),var(--pw),#6a78e8,var(--pw),var(--pw2),#fff);
+    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+  @keyframes rx5Spin{to{rotate:360deg}}
+  /* 조합 성공 줄: 모노 + 점선 */
+  #card.rx5 .rx-state{display:flex;align-items:center;gap:10px;font:800 13px/1 ui-monospace,monospace!important;letter-spacing:.14em;color:color-mix(in srgb,var(--ac) 65%,#fff)!important;text-transform:uppercase}
+  #card.rx5 .rx-state::before{content:"//";color:var(--pw)}
+  #card.rx5 .rx-state::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--acm) 60%,transparent) 0 4px,transparent 4px 8px)}
+  /* 버튼 */
+  #card.rx5 #mWipe{background:linear-gradient(90deg,#c9d0ff,#9aa8ff 50%,#c9d0ff)!important;background-size:200% 100%!important;color:#141833!important;border:0!important;border-radius:10px!important;
+    box-shadow:0 0 18px rgba(154,168,255,.35)!important;animation:rx5Sh 3s linear infinite}
+  #card.rx5 #mWipe svg{fill:#141833}
+  #card.rx5 #mMoreBtn{background:rgba(154,168,255,.07)!important;color:#e3e7f5!important;border:1px solid color-mix(in srgb,var(--acm) 45%,transparent)!important;border-radius:10px!important}
+  #card.rx5 #mMoreBtn:hover{background:rgba(154,168,255,.16)!important}
+  @keyframes rx5Sh{from{background-position:200% 0}to{background-position:0 0}}
+  #card.rx5 .rx-head .rt{border-radius:8px}
+
+  /* ── 등장 연출 (rx-anim 이 붙을 때마다 다시) ── */
+  #card.rx5.rx-anim .formula{animation:rx5Stamp .62s .22s cubic-bezier(.2,1.5,.4,1) both}
+  #card.rx5.rx-anim .cname{animation:rx5Type .55s .5s steps(14,end) both}
+  #card.rx5.rx-anim .rx-info > :not(.formula):not(.cname){animation:rx5Up .45s both}
+  #card.rx5.rx-anim .rx-info > :nth-child(3){animation-delay:.62s!important}
+  #card.rx5.rx-anim .rx-info > :nth-child(4){animation-delay:.7s!important}
+  #card.rx5.rx-anim .rx-info > :nth-child(n+5){animation-delay:.78s!important}
+  #card.rx5.rx-anim .rx-state{animation:rx5Up .45s .82s both}
+  #card.rx5.rx-anim .cdex{animation:rx5Up .45s .9s both}
+  #card.rx5.rx-anim .cbtns{animation:rx5Up .45s 1s both}
+  #card.rx5.rx-anim .rx5-deco i{animation:rx5Corner .5s .1s cubic-bezier(.2,.9,.3,1) both}
+  @keyframes rx5Stamp{0%{opacity:0;transform:scale(1.9);filter:blur(10px)}55%{opacity:1;transform:scale(.94);filter:blur(0) drop-shadow(0 0 26px #fff)}100%{opacity:1;transform:none}}
+  @keyframes rx5Type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+  @keyframes rx5Up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes rx5Halo{from{opacity:0;scale:.3}to{opacity:1;scale:1}}
+  @keyframes rx5Corner{from{opacity:0;transform:scale(2.2)}to{opacity:.85;transform:none}}
+
+  /* ── 실패 화면 ── */
+  #card.rx5.is-fail{--ac:#ff5a6e}
+  #card.rx5.is-fail .formula.fail{color:#ff8a98!important;text-shadow:2px 0 0 rgba(255,40,90,.7),-2px 0 0 rgba(80,220,255,.6)!important;animation:rx5Glitch 2.4s steps(1) 1.2s infinite}
+  #card.rx5.rx-anim.is-fail .formula.fail{animation:rx5Drop .5s .2s cubic-bezier(.3,1.6,.5,1) both,rx5Glitch 2.4s steps(1) 1.2s infinite}
+  #card.rx5.is-fail .formula::before{border-style:dashed;border-color:rgba(255,90,110,.45);background:radial-gradient(circle,rgba(255,60,90,.16),transparent 65%);animation:rx5Spin 4s linear infinite reverse}
+  #card.rx5.is-fail .formula::after{display:none}
+  #card.rx5.is-fail .rx5-deco i{border-color:#ff8a98;filter:drop-shadow(0 0 4px #ff5a6e)}
+  #card.rx5.is-fail .rx5-deco b{color:rgba(255,138,152,.8)}
+  #card.rx5.is-fail .rx-state::before{content:"!!";color:#ff5a6e}
+  .rx5-stamp{position:absolute;right:16px;top:30px;z-index:4;pointer-events:none;display:none;
+    font:900 22px/1 'IBM Plex Sans KR',system-ui,sans-serif;letter-spacing:.12em;color:#ff5a6e;
+    padding:7px 12px 6px;border:3px solid #ff5a6e;border-radius:6px;transform:rotate(-12deg);
+    background:rgba(255,40,70,.06);box-shadow:0 0 0 2px rgba(255,90,110,.25) inset,0 0 18px rgba(255,60,90,.35);
+    -webkit-mask:radial-gradient(circle at 30% 40%,#000 60%,rgba(0,0,0,.75) 61%,#000 75%);mask:radial-gradient(circle at 30% 40%,#000 60%,rgba(0,0,0,.75) 61%,#000 75%)}
+  #card.rx5.is-fail .rx5-stamp{display:block}
+  #card.rx5.rx-anim.is-fail .rx5-stamp{animation:rx5Thunk .42s .55s cubic-bezier(.3,1.5,.5,1) both}
+  .rx5-noise{position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:inherit;display:none;opacity:.5;mix-blend-mode:screen;
+    background:repeating-linear-gradient(0deg,rgba(255,90,110,.09) 0 1px,transparent 1px 3px);animation:rx5Roll 1.6s linear infinite}
+  #card.rx5.is-fail .rx5-noise{display:block}
+  #card.rx5.rx-anim.is-fail{animation:rxIn .34s cubic-bezier(.2,.9,.3,1.15) both,rx5Shake .45s .55s ease-out both!important}
+  @keyframes rx5Drop{0%{opacity:0;transform:translateY(-30px) rotate(-6deg)}100%{opacity:1;transform:none}}
+  @keyframes rx5Glitch{0%,100%{transform:none}46%{transform:translate(3px,-1px) skewX(-8deg);text-shadow:5px 0 0 rgba(255,40,90,.8),-5px 0 0 rgba(80,220,255,.7)}48%{transform:none}80%{transform:translateX(-2px);opacity:.7}82%{transform:none;opacity:1}}
+  @keyframes rx5Thunk{0%{opacity:0;transform:rotate(-12deg) scale(2.4)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
+  @keyframes rx5Roll{to{background-position:0 30px}}
+  @keyframes rx5Shake{0%,100%{translate:0}20%{translate:-6px 0}45%{translate:5px 0}70%{translate:-3px 0}}
+  @media (max-width:700px){
+    #card.rx5 .formula{--hw:96px}
+    .rx5-stamp{font-size:17px;top:auto;bottom:auto;right:14px;top:62px}
+    .rx5-deco b{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ #card.rx5 *,#card.rx5{animation:none!important} }
+</style>
+<script>
+(function(){
+  const card = document.getElementById('card'); if(!card) return;
+  card.classList.add('rx5');
+  const deco = document.createElement('div'); deco.className = 'rx5-deco';
+  deco.innerHTML = '<i></i><i></i><i></i><i></i><b></b><u></u>';
+  card.appendChild(deco);
+  const stamp = document.createElement('div'); stamp.className = 'rx5-stamp'; card.appendChild(stamp);
+  const info = document.getElementById('mInfo');
+  const stage = document.getElementById('mStage');
+  if(stage){ const nz = document.createElement('span'); nz.className = 'rx5-noise'; stage.appendChild(nz); }
+  let n = 0;
+  const accent = () => {
+    try{
+      if(RX.kind === 'fail') return '#ff5a6e';
+      if(RX.boom) return '#ff9a3c';
+      const c = RX.c || {}; let best = null, bc = -1;
+      (RX.order || []).forEach(k => { if((c[k] || 0) > bc){ bc = c[k] || 0; best = k; } });
+      // 여러 원소면 가장 많이 넣은 원소의 분류 색
+      const e = best != null ? byNum[best] : null;
+      return e ? cssv(CAT[e.c].v) : '#9aa8ff';
+    }catch(e){ return '#9aa8ff'; }
+  };
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{
+      card.classList.add('rx5');
+      card.style.setProperty('--ac', accent());
+      n++;
+      deco.querySelector('b').textContent = RX.kind === 'fail' ? '// ERROR' : '// RESULT ' + String(n).padStart(3, '0');
+      stamp.textContent = LANG === 'en' ? 'FAILED' : '실패';
+      if(RX.kind === 'fail'){ try{ rxTone(140, .22, 'square', .05, .55, 70); rxTone(90, .3, 'sine', .1, .56, 50); }catch(e){} }
+    }catch(e){}
+    return r;
+  };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
