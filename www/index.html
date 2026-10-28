@@ -33909,7 +33909,9 @@ function rxFlashbang(soft){
       const done = (cls, html) => setTimeout(() => { btn.disabled = false; btn.textContent = en ? 'Check again' : '다시 확인'; res.className = 'uc-res on ' + cls; res.innerHTML = html; }, Math.max(0, 600 - (Date.now() - t0)));
       const f = window.rxUpdFetch ? window.rxUpdFetch() : Promise.resolve(null);
       f.then(st => {
-        if(!st || !st.latest) return done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Check your internet connection' : '인터넷 연결을 확인해 주세요'}</span>`);
+        // 파일은 받았는데 latest 가 없으면 '새 버전 공지 없음' = 최신으로 본다. 파일 자체가 없으면(404) 인터넷 탓이 아니다
+        if(!st) return done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Update info was not found on the server' : '서버에서 업데이트 정보를 못 찾았어요'}</span>`);
+        if(!st.latest) return done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
         const isNew = window.rxUpdNewer ? rxUpdNewer(st.latest, V) : String(st.latest) !== String(V);
         if(isNew){
           done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>βV.${V} → βV.${st.latest}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
