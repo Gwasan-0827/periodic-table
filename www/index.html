@@ -33913,36 +33913,52 @@ function rxFlashbang(soft){
 })();
 </script>
 <style>
-  /* ═══ 이용 시간 알림 (마크 그거): 1시간마다 위에서 내려온다 ═══ */
-  #rxPlay{position:fixed;left:50%;top:14px;z-index:2147483630;transform:translate(-50%,-140%);transition:transform .5s cubic-bezier(.2,1.3,.4,1);
-    display:flex;gap:12px;align-items:center;width:max-content;max-width:min(92vw,460px);box-sizing:border-box;padding:12px 16px 12px 14px;border-radius:14px;
-    background:linear-gradient(135deg,rgba(28,32,58,.96),rgba(14,16,30,.96));border:1px solid rgba(140,158,255,.45);box-shadow:0 12px 34px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.3);pointer-events:auto;cursor:pointer}
-  #rxPlay.on{transform:translate(-50%,0)}
-  #rxPlay .pi{font-size:26px;line-height:1;flex-shrink:0}
-  #rxPlay b{display:block;font:800 14.5px/1.35 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;color:#ffe066}
-  #rxPlay span{display:block;font-size:12.5px;line-height:1.45;color:#c5cbff;margin-top:2px;word-break:keep-all}
-  @media (prefers-reduced-motion:reduce){ #rxPlay{transition:opacity .3s;transform:translate(-50%,0);opacity:0} #rxPlay.on{opacity:1} }
+  /* ═══ 이용 시간 알림 (마크 그거): 1시간마다 가운데에 카드 ═══ */
+  #rxPlay{position:fixed;inset:0;z-index:2147483630;display:grid;place-items:center;background:rgba(4,5,12,0);pointer-events:none;transition:background .35s}
+  #rxPlay.on{background:rgba(4,5,12,.55);pointer-events:auto}
+  #rxPlay .pc{width:min(90vw,400px);box-sizing:border-box;padding:22px 22px 18px;border-radius:18px;text-align:center;
+    background:linear-gradient(160deg,rgba(32,37,70,.98),rgba(14,16,30,.98));border:1px solid rgba(140,158,255,.5);box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(140,158,255,.15);
+    transform:scale(.85) translateY(14px);opacity:0;transition:transform .45s cubic-bezier(.2,1.4,.4,1),opacity .25s}
+  #rxPlay.on .pc{transform:none;opacity:1}
+  #rxPlay .pi{font-size:38px;line-height:1;display:block;margin-bottom:8px;animation:piTick 1s ease-in-out infinite}
+  @keyframes piTick{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+  #rxPlay h4{margin:0;font:800 19px/1.3 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;color:#ffe066}
+  #rxPlay .ps{margin:4px 0 12px;font:700 13.5px/1.4 'IBM Plex Sans KR',system-ui,sans-serif;color:#fff}
+  #rxPlay .ps small{color:#8c9eff;font-weight:600}
+  #rxPlay p{margin:0 0 6px;font-size:13px;line-height:1.55;color:#c5cbff;word-break:keep-all}
+  #rxPlay .rule{margin:10px 0 16px;padding:9px 12px;border-radius:10px;background:rgba(140,158,255,.1);border:1px dashed rgba(140,158,255,.35);font-size:12px;line-height:1.5;color:#c5cbff;word-break:keep-all}
+  #rxPlay .rule b{color:#fff;font-family:ui-monospace,Menlo,monospace;letter-spacing:.05em}
+  #rxPlay .pb{display:flex;gap:8px}
+  #rxPlay .pb button{flex:1;font:700 13.5px/1 'IBM Plex Sans KR',system-ui,sans-serif;padding:12px 10px;border-radius:11px;cursor:pointer;border:1px solid rgba(140,158,255,.45);background:transparent;color:#c5cbff}
+  #rxPlay .pb button.rest{background:linear-gradient(180deg,#a5b4ff,#7f8ff0);color:#0b0d1e;border-color:transparent}
+  #rxPlay .pb button:active{transform:scale(.97)}
+  @media (prefers-reduced-motion:reduce){ #rxPlay .pc{transition:opacity .3s;transform:none} #rxPlay .pi{animation:none} }
 </style>
 <script>
 (function(){
   const STEP = () => window.RX_PLAY_MS || 60 * 60 * 1000;
   let active = 0, hours = 0, last = performance.now();
-  const el = document.createElement('div'); el.id = 'rxPlay'; el.setAttribute('role', 'status');
+  const el = document.createElement('div'); el.id = 'rxPlay'; el.setAttribute('role', 'dialog');
   document.body.appendChild(el);
-  let hideT = 0;
+  const close = () => el.classList.remove('on');
   function show(n){
     const en = LANG === 'en';
-    el.innerHTML = `<i class="pi">⏰</i><div><b>${en ? `You've been here for over ${n} hour${n > 1 ? 's' : ''}!` : `${n}시간 이상 이용했어요!`}</b><span>${en
-      ? (n >= 3 ? 'Still not life-threatening. Your eyes, however, have filed a complaint 👀' : 'Not life-threatening, but your eyes might disagree. Go look out a window 👀')
-      : (n >= 3 ? '여전히 생명에 지장은 없지만, 눈이 정식으로 항의하고 있어요 👀' : '생명에 지장은 없지만 눈에는 지장이 있을 수 있어요. 창밖 한번 보고 와요 👀')}</span></div>`;
-    el.classList.add('on'); try{ SFX.pick(); }catch(e){}
-    clearTimeout(hideT); hideT = setTimeout(() => el.classList.remove('on'), 7000);
+    el.innerHTML = `<div class="pc"><i class="pi">⏰</i>
+      <h4>${en ? `Over ${n} hour${n > 1 ? 's' : ''} of exploring!` : `${n}시간 이상 이용했어요!`}</h4>
+      <div class="ps">${en ? 'Hey, let your eyes rest! <small>(plz)</small>' : '잠깐, 눈 좀 쉬게 냅둬요! <small>(제발)</small>'}</div>
+      <p>${en ? (n >= 3 ? 'Still not life-threatening. Your eyes, however, have filed a formal complaint.' : 'Not life-threatening, but staring at a screen for a long time can leave your eyes tired and dry.')
+              : (n >= 3 ? '여전히 생명에 지장은 없지만, 눈이 정식으로 항의하고 있어요.' : '생명에 지장은 없지만, 화면을 오래 보면 눈이 피곤하고 건조해질 수 있어요.')}</p>
+      <div class="rule">${en ? '<b>20-20-20</b> · every 20 minutes, look at something about 6 m (20 ft) away for 20 seconds 👀' : '<b>20-20-20</b> 규칙 · 20분마다 20초 동안 6m쯤 먼 곳을 바라보기 👀'}</div>
+      <div class="pb"><button type="button" class="rest">${en ? 'Taking a break' : '잠깐 쉴게요'}</button><button type="button" class="go">${en ? 'Keep exploring' : '계속 탐험하기'}</button></div></div>`;
+    el.querySelector('.rest').onclick = e => { e.stopPropagation(); close(); setTimeout(() => { try{ window.rxSaver && rxSaver.sleep(); }catch(err){} }, 350); };
+    el.querySelector('.go').onclick = e => { e.stopPropagation(); close(); };
+    el.querySelector('.pc').onclick = e => e.stopPropagation();
+    requestAnimationFrame(() => el.classList.add('on')); try{ SFX.pick(); }catch(e){}
   }
-  el.addEventListener('click', () => el.classList.remove('on'));
+  el.addEventListener('click', close);
   setInterval(() => {
     const now = performance.now(), dt = Math.min(5000, now - last); last = now;
-    const saving = document.body.classList.contains('rx-saving');
-    if(document.hidden || saving) return;
+    if(document.hidden || document.body.classList.contains('rx-saving') || el.classList.contains('on')) return;
     active += dt;
     if(active >= STEP() * (hours + 1)){ hours++; show(hours); }
   }, 1000);
