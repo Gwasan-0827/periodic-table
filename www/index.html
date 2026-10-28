@@ -3183,6 +3183,7 @@
   let pref = null; try{ pref = JSON.parse(localStorage.getItem('pt_lowpow') || 'null'); }catch(e){}
   const LOW = pref === null ? (app || coarse) : !!pref;
   window.RX_LOWPOW = LOW;
+  window.RX_LOWPOW_ON = pref === true;   // 설정에서 직접 '켜기'를 고른 경우
   if(!LOW) return;
   document.documentElement.classList.add('lowpow');
   // 캔버스가 읽는 화면 밀도를 1.5배까지만 (폰은 2.6~3배라 픽셀을 3~4배 더 그리고 있었다). 글자·화면 자체 선명도는 그대로
@@ -36203,7 +36204,8 @@ void main(){
     const r = _d.apply(this, arguments);
     try{
       const m = mm || RX_M;
-      if(!mm && m && m.liquid && !m.metal && m === RX_M && !m.fill) render(m, yaw, pitch);
+      // 저전력 모드를 직접 '켜기'로 했으면 예전 벡터(SVG) 물로 그린다
+      if(!mm && m && m.liquid && !m.metal && m === RX_M && !m.fill && !window.RX_LOWPOW_ON) render(m, yaw, pitch);
       else if(!mm && cv && cv.style.display !== 'none') off();
     }catch(e){ failed = true; off(); }
     return r;
