@@ -6204,6 +6204,7 @@ const CHANGELOG = [
            '막대 모형에 점선 결합이 생겼어요. 벤젠 같은 방향족 고리의 1.5중 결합은 안쪽 막대가 점선이 되고, 헴의 Fe–N이나 시스플라틴의 Pt–N 같은 배위 결합도 점선이에요. 살리실산메틸이나 알리자린처럼 분자 안에서 O–H가 다른 O를 살짝 붙잡고 있으면 하늘색 점선(수소 결합)으로 보여 줘요',
            '표 위의 보기 줄을 새로 만들었어요. 표준·히트맵·온도 탭에 아이콘이 붙었고, 표준에서는 분류를 누르면 그 분류 원소 칸이 살짝 떠오르고 나머지는 흐려져요',
            '시작 화면을 새로 만들었어요. 페리윙클빛 모션 그래픽이에요. 카메라가 확 빠지면서 날카로운 조각들이 박자에 맞춰 날아와 박히고, 아래로는 웨이브가 흘러요. 원소 기호들이 해독되듯 페리오딕//테이블 로고로 맞춰지면, "//"를 따라 화면이 베여 갈라져요. 가끔 칼날이 튕겨 나가면… 나이트로글리세린은 여전히 있어요',
+           '불꽃 반응 화면을 새로 만들었어요. 진짜처럼 일렁이는 불꽃에 백금선을 직접 끌어서 넣고, 원소를 바꿔 가며 비교할 수 있어요. 밤하늘에 원소 색 불꽃을 쏘아 올리는 "불꽃놀이", 불꽃색만 보고 원소를 맞히는 "맞히기"도 생겼어요',
            '설정에 화면 모드가 생겼어요. 라이트 모드는 지원하지 않아요(사유: 유저들 눈 보호). 그래도 누르면… 마그네슘이 튀어나와서 타 버려요',
            '온도 보기도 새로 만들었어요. 고체는 촘촘한 원자 격자, 액체는 출렁이는 물, 기체는 보글보글 피어오르는 방울로 보여요. 온도를 바꾸다 녹거나 끓는 순간 그 칸이 반짝이고, 온도 막대는 차가운 파랑부터 뜨거운 흰빛까지 색이 입혀졌어요',
            '히트맵이 물처럼 차올라요. 전기음성도·이온화 에너지·녹는점 같은 숫자 물성을 고르면 칸마다 값만큼 색이 물결치며 차오르고, 왼쪽 아래부터 번지듯 채워져요. 값이 없는 칸은 빗금으로 "없음"(결합을 안 하는 He·Ne·Ar)이나 "모름"을 보여 주고, 크립톤(3.00)과 제논(2.60)은 전기음성도가 생겼어요',
@@ -6236,6 +6237,7 @@ const CHANGELOG = [
            'Dashed bonds in the stick model: the inner stick of aromatic 1.5 bonds, coordination bonds like Fe–N in heme or Pt–N in cisplatin, and pale blue dashes for hydrogen bonds inside a molecule, as in methyl salicylate or alizarin',
            'The view bar above the table is redesigned: Standard, Heatmap and Temperature got icons, and in Standard, picking a category lifts its cells up while the rest fade',
            'New start screen: periwinkle motion graphics. The camera whips back as sharp shards fly in on the beat over flowing waves, element symbols lock into the 페리오딕//테이블 logo, and the screen is sliced in two along the "//". Sometimes the blade bounces off… the nitroglycerin is still there',
+           'The flame test is rebuilt: a flickering particle flame you can drag the platinum wire into, quick element switching to compare, plus a Fireworks mode that launches element-coloured shells and a Guess mode where you name the element from its flame',
            'Settings now has a theme option. Light mode is not supported (reason: protecting your eyes). Press it anyway if you dare',
            'The temperature view is redesigned: solids show a packed atom lattice, liquids slosh, and gases bubble upward. A cell flashes the moment it melts or boils, and the slider is now coloured from icy blue to white-hot',
            'The heatmap now fills like liquid: pick a numeric property and each cell fills to its value with a rippling surface, spreading from the bottom left. Empty cells are hatched as none (He, Ne, Ar do not bond) or unknown, and krypton (3.00) and xenon (2.60) now have electronegativity values',
@@ -34177,6 +34179,465 @@ function rxFlashbang(soft){
     if(name === NM) return { name, formula: R[0], sub: R[2], key: KEY, exact: true, mix: [['Ca', 2], ['Al', 3], ['Si', 3], ['O', 13], ['H', 1]] };
     return _en.apply(this, arguments);
   };
+})();
+</script>
+<style>
+  /* ═══ 불꽃 반응 리워크: 실험 · 불꽃놀이 · 맞히기 ═══ */
+  #fl2Chips[hidden],#fl2Ctl[hidden],#fl2Info[hidden],#fl2Quiz[hidden],#fl2Tip[hidden]{display:none!important}
+  #fl2{position:fixed;inset:0;z-index:73;display:none;align-items:center;justify-content:center;background:rgba(4,6,10,.88);padding:16px}
+  #fl2.on{display:flex}
+  #fl2Box{width:min(860px,96vw);max-height:94vh;display:flex;flex-direction:column;background:#0d1118;border:1px solid var(--line2);border-radius:16px;overflow:hidden;animation:nucCard .42s cubic-bezier(.2,.9,.25,1)}
+  #fl2Head{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+  #fl2Head h2{margin:0;font-size:16px;font-weight:800;white-space:nowrap}
+  #fl2Head .sub{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #fl2Tabs{margin-left:auto;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.05);position:relative}
+  #fl2Tabs button{font:inherit;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;border:0;background:none;color:var(--dim);cursor:pointer;white-space:nowrap}
+  #fl2Tabs button.on{background:var(--text);color:#0b0d11}
+  #fl2Head .x{cursor:pointer;font-size:20px;color:var(--dim);line-height:1;padding:0 2px 0 6px}
+  #fl2Chips{display:flex;gap:5px;overflow-x:auto;padding:8px 12px;scrollbar-width:none;border-bottom:1px solid var(--line)}
+  #fl2Chips::-webkit-scrollbar{display:none}
+  #fl2Chips button{flex-shrink:0;display:flex;align-items:center;gap:6px;font:inherit;font-size:12.5px;font-weight:700;padding:5px 10px 5px 7px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--text);cursor:pointer}
+  #fl2Chips button i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+  #fl2Chips button.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,transparent)}
+  #fl2Chips button small{font-weight:500;color:var(--dim);font-size:11px}
+  #fl2Body{overflow-y:auto;min-height:0}
+  #fl2Stage{position:relative;height:min(46vh,400px);background:#05070a;touch-action:none;cursor:grab}
+  #fl2Stage.drag{cursor:grabbing}
+  #fl2Cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #fl2Tip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:11.5px;color:rgba(255,255,255,.55);pointer-events:none;white-space:nowrap;transition:opacity .4s}
+  #fl2Spec{display:block;width:100%;height:112px;background:#020305;border-top:1px solid var(--line)}
+  #fl2Ctl{display:flex;gap:7px;flex-wrap:wrap;padding:10px 12px 0}
+  #fl2Ctl button{font:inherit;font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--text);cursor:pointer}
+  #fl2Ctl button.on{background:rgba(255,255,255,.12);border-color:var(--text)}
+  #fl2Ctl button.go{border-color:#ff8787;color:#ffc9c9}
+  #fl2Ctl button[hidden]{display:none}
+  #fl2Info{padding:10px 14px 14px;font-size:13px;line-height:1.55;color:var(--dim);word-break:keep-all}
+  #fl2Info .col{display:flex;align-items:center;gap:8px;font-size:13.5px;margin-bottom:6px}
+  #fl2Info .col i{width:14px;height:14px;border-radius:50%;box-shadow:0 0 10px currentColor;flex-shrink:0}
+  #fl2Info .col b{color:var(--text)}
+  #fl2Info .tmi{color:#c9d2e2}
+  #fl2Info .tmi b{color:var(--text)}
+  #fl2Info details{margin-top:8px;border-top:1px dashed var(--line2);padding-top:6px}
+  #fl2Info summary{cursor:pointer;color:var(--text);font-size:12.5px;font-weight:700;padding:3px 0}
+  #fl2Info ul{margin:6px 0 0;padding:0 0 0 16px;display:grid;gap:5px;font-size:12.5px}
+  /* 맞히기 */
+  #fl2Quiz{padding:12px 14px 14px}
+  #fl2Quiz .q{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+  #fl2Quiz .q span{margin-left:auto;font-size:12px;color:#ffd43b;font-variant-numeric:tabular-nums}
+  #fl2Quiz .opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #fl2Quiz .opts button{font:inherit;padding:10px 6px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  #fl2Quiz .opts button b{font:700 22px/1 Kanit,system-ui,sans-serif}
+  #fl2Quiz .opts button small{font-size:11px;color:var(--dim)}
+  #fl2Quiz .opts button.ok{border-color:#69db7c;background:rgba(105,219,124,.14)}
+  #fl2Quiz .opts button.no{border-color:#ff6b6b;background:rgba(255,107,107,.12);opacity:.7}
+  #fl2Quiz .res{min-height:1.5em;margin-top:10px;font-size:13px;color:var(--dim);word-break:keep-all}
+  #fl2Quiz .res b{color:var(--text)}
+  #fl2Quiz .next{margin-top:8px;font:inherit;font-size:13px;font-weight:700;padding:8px 16px;border-radius:999px;border:0;background:var(--text);color:#0b0d11;cursor:pointer}
+  @media (max-width:700px){
+    #fl2{padding:6px}
+    #fl2Box{max-height:97vh;border-radius:14px}
+    #fl2Head{flex-wrap:wrap;row-gap:8px;padding:10px 12px 8px}
+    #fl2Tabs{order:3;margin:0;width:100%;justify-content:space-between}
+    #fl2Tabs button{flex:1}
+    #fl2Stage{height:40vh}
+    #fl2Spec{height:92px}
+    #fl2Quiz .opts{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+<div id="fl2" aria-hidden="true"><div id="fl2Box" role="dialog" aria-modal="true" aria-labelledby="fl2Title">
+  <div id="fl2Head"><h2 id="fl2Title"></h2><span class="sub" id="fl2Sub"></span>
+    <div id="fl2Tabs" role="tablist"><button type="button" data-m="lab"></button><button type="button" data-m="fw"></button><button type="button" data-m="quiz"></button></div>
+    <span class="x" id="fl2X" role="button" aria-label="닫기">×</span></div>
+  <div id="fl2Chips"></div>
+  <div id="fl2Body">
+    <div id="fl2Stage"><canvas id="fl2Cv"></canvas><div id="fl2Tip"></div></div>
+    <canvas id="fl2Spec"></canvas>
+    <div id="fl2Ctl"><button type="button" id="fl2Go" class="go"></button><button type="button" id="fl2Na"></button><button type="button" id="fl2Co"></button><button type="button" id="fl2Auto" hidden></button></div>
+    <div id="fl2Info"></div>
+    <div id="fl2Quiz" hidden></div>
+  </div>
+</div></div>
+<script>
+(function(){
+  if(typeof RX_FL_D === 'undefined' || typeof rxWl !== 'function') return;
+  const $ = id => document.getElementById(id);
+  const EN = () => LANG === 'en';
+  const TX = {
+    ko: { lab: '🧪 실험', fw: '🎆 불꽃놀이', quiz: '❓ 맞히기', title: '불꽃 반응', tube: '방전관', sub: s => `${s}의 빛`, go: '🔥 불꽃에 넣기', off: '↺ 빼기', goT: '⚡ 전원 켜기', offT: '↺ 끄기',
+          na: '🧂 소금 한 꼬집', co: '🔵 코발트 유리', auto: '✨ 자동 발사', tipLab: '백금선을 끌어서 불꽃에 넣어 보세요', tipTube: '눌러서 전원을 켜 보세요', tipFw: '밤하늘을 눌러서 쏘아 올리세요',
+          col: '불꽃색', colT: '빛 색', none: '거의 무색', more: '원리 더 보기', qT: '이 불꽃은 어떤 원소일까요?', streak: n => `🔥 연속 ${n}`, right: '정답!', wrong: '아쉬워요, 정답은', next: '다음 문제',
+          fwNote: '불꽃놀이 화약 속 금속 화합물이 터지면서 뜨거워지면, 불꽃 반응과 똑같이 그 원소만의 색으로 빛나요' },
+    en: { lab: '🧪 Lab', fw: '🎆 Fireworks', quiz: '❓ Guess', title: 'Flame test', tube: 'Discharge tube', sub: s => `Light from ${s}`, go: '🔥 Into the flame', off: '↺ Take out', goT: '⚡ Power on', offT: '↺ Power off',
+          na: '🧂 Pinch of salt', co: '🔵 Cobalt glass', auto: '✨ Auto launch', tipLab: 'Drag the platinum wire into the flame', tipTube: 'Tap to switch the power on', tipFw: 'Tap the night sky to launch',
+          col: 'Flame colour', colT: 'Glow', none: 'almost colourless', more: 'How it works', qT: 'Which element makes this flame?', streak: n => `🔥 Streak ${n}`, right: 'Correct!', wrong: 'Not quite, it was', next: 'Next',
+          fwNote: 'When the metal compounds in fireworks burn hot, they glow in their own colours, exactly like a flame test' } };
+  const tx = () => TX[EN() ? 'en' : 'ko'];
+  const LAB_CHIPS = ['Li', 'Na', 'K', 'Rb', 'Cs', 'Ca', 'Sr', 'Ba', 'Cu', 'B', 'In', 'Tl', 'H', 'He', 'Ne', 'Hg'];
+  const FW_CHIPS = ['Sr', 'Li', 'Ca', 'Na', 'Ba', 'Cu', 'K', 'Cs', 'Mg'];
+  const QUIZ_POOL = ['Li', 'Na', 'K', 'Rb', 'Cs', 'Ca', 'Sr', 'Ba', 'Cu', 'B', 'In', 'Tl'];
+  const bySym = s => EL.find(e => e.s === s);
+  const nm = e => (EN() ? e.en : e.ko) || e.s;
+  const S = { on: false, mode: 'lab', e: null, d: null, tube: false, lit: 0, tgt: 0, na: false, co: false, naK: 0, t: 0, last: 0, raf: 0,
+              wire: { x: 0, y: 0, hx: 0, hy: 0, drag: false, init: false }, P: [], sparks: [], burst: 0, fw: [], fwSel: 'Sr', auto: false, autoT: 0, quiz: null, W: 0, H: 0, dpr: 1 };
+  // ── 소리 ──
+  function snd(kind, o){
+    if(typeof sndOn !== 'undefined' && !sndOn) return;
+    const a = ac(); if(!a) return; const t = a.currentTime;
+    const nb = (sec, f) => { const n = Math.floor(a.sampleRate * sec), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0); for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * f(i / n); const s = a.createBufferSource(); s.buffer = b; return s; };
+    const out = (n, v, pan) => { const g = a.createGain(); g.gain.value = v; n.connect(g); let tl = g; if(pan && a.createStereoPanner){ const p = a.createStereoPanner(); p.pan.value = pan; g.connect(p); tl = p; } tl.connect(a.destination); };
+    if(kind === 'whoosh'){ const s = nb(.55, x => Math.sin(Math.PI * Math.min(1, x * 2.2)) * (1 - x)), f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(3200, t + .12); f.frequency.exponentialRampToValueAtTime(500, t + .5); s.connect(f); out(f, .5); s.start(t); }
+    if(kind === 'launch'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'sine'; os.frequency.setValueAtTime(900, t); os.frequency.exponentialRampToValueAtTime(2400, t + .7); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.035, t + .1); g.gain.exponentialRampToValueAtTime(.0001, t + .75); os.connect(g); out(g, 1, o); os.start(t); os.stop(t + .8);
+      const s = nb(.7, x => (1 - x) * .5), f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3000; s.connect(f); out(f, .08, o); s.start(t); }
+    if(kind === 'boom'){ const s = nb(1.2, x => Math.pow(1 - x, 3)), f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; s.connect(f); out(f, .55, o); s.start(t);
+      const c2 = nb(1.4, x => (Math.random() < .02 ? 1 : 0) * (1 - x)), h = a.createBiquadFilter(); h.type = 'highpass'; h.frequency.value = 4000; c2.connect(h); out(h, .35, o); c2.start(t + .15); }
+    if(kind === 'ok'){ [784, 1047, 1319].forEach((fr, i) => { const os = a.createOscillator(), g = a.createGain(); os.type = 'triangle'; os.frequency.value = fr; g.gain.setValueAtTime(.06, t + i * .07); g.gain.exponentialRampToValueAtTime(.0001, t + i * .07 + .35); os.connect(g); out(g, 1); os.start(t + i * .07); os.stop(t + i * .07 + .4); }); }
+    if(kind === 'no'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.setValueAtTime(220, t); os.frequency.exponentialRampToValueAtTime(110, t + .25); g.gain.setValueAtTime(.04, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3); os.connect(g); out(g, 1); os.start(t); os.stop(t + .32); }
+    if(kind === 'zap'){ const os = a.createOscillator(), g = a.createGain(); os.type = 'square'; os.frequency.value = 120; g.gain.setValueAtTime(.03, t); g.gain.exponentialRampToValueAtTime(.0001, t + .25); os.connect(g); out(g, 1); os.start(t); os.stop(t + .27); }
+  }
+  // ── 색 ──
+  const hex = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+  function flameRGB(){
+    let c = S.d && !S.d.gone ? hex(S.d.c) : [90, 130, 230];
+    if(S.naK > .01){ const y = [255, 194, 26], k = S.naK * .85; c = c.map((v, i) => v * (1 - k) + y[i] * k); }
+    if(S.co){ c = [c[0] * .55, c[1] * .12, Math.min(255, c[2] * 1.05 + 30)]; if(S.e && S.e.s === 'K') c = [175, 70, 235]; }
+    return c.map(v => Math.round(Math.max(0, Math.min(255, v))));
+  }
+  // 색칠한 흐린 점 스프라이트 (색마다 한 번만)
+  const SPR = new Map();
+  function sprite(r, g, b){
+    const k = (r >> 3) + ',' + (g >> 3) + ',' + (b >> 3);
+    let s = SPR.get(k); if(s) return s;
+    if(SPR.size > 80) SPR.clear();
+    s = document.createElement('canvas'); s.width = s.height = 64; const x = s.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.4, `rgba(${r},${g},${b},.45)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64); SPR.set(k, s); return s;
+  }
+  // ── 열기 / 닫기 ──
+  function setEl(e){
+    S.e = e; S.d = typeof rxFlData === 'function' ? rxFlData(e) : RX_FL_D[e.s];
+    S.tube = !!(S.d && S.d.m === 't'); S.tgt = 0; S.na = false; S.co = false; S.burst = 0;
+    if(S.wire.init) placeWireOut();
+    sync();
+  }
+  function open(e){
+    e = e || (typeof atomEl !== 'undefined' && atomEl) || byNum[selected]; if(!e) return;
+    S.on = true; S.last = 0; S.P = []; S.sparks = []; S.fw = []; S.wire.init = false;
+    $('fl2').classList.add('on'); $('fl2').setAttribute('aria-hidden', 'false');
+    setMode('lab', true); setEl(e); fit();
+    cancelAnimationFrame(S.raf); S.raf = requestAnimationFrame(loop);
+  }
+  function close(){ S.on = false; cancelAnimationFrame(S.raf); $('fl2').classList.remove('on'); $('fl2').setAttribute('aria-hidden', 'true'); }
+  function fit(){
+    const cv = $('fl2Cv'), sp = $('fl2Spec'), r = cv.getBoundingClientRect(), rs = sp.getBoundingClientRect();
+    S.dpr = Math.min(2, devicePixelRatio || 1); S.W = r.width; S.H = r.height;
+    cv.width = Math.round(r.width * S.dpr); cv.height = Math.round(r.height * S.dpr);
+    sp.width = Math.round(rs.width * S.dpr); sp.height = Math.round(rs.height * S.dpr);
+    if(!S.wire.init) placeWireOut();
+  }
+  // 불꽃 자리
+  const geo = () => { const cx = S.W * .42, base = S.H * .8, fh = Math.min(S.H * .62, 260); return { cx, base, fh }; };
+  function placeWireOut(){ const g = geo(); S.wire.x = g.cx + Math.min(170, S.W * .32); S.wire.y = g.base - g.fh * .45; S.wire.init = true; }
+  function wireIn(){ const g = geo(), dx = Math.abs(S.wire.x - g.cx), dy = g.base - S.wire.y; return dx < 26 + dy * .08 && dy > 24 && dy < g.fh * .85; }
+  // ── 모드 ──
+  function setMode(m, quiet){
+    S.mode = m;
+    document.querySelectorAll('#fl2Tabs button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+    $('fl2Ctl').hidden = m === 'quiz'; $('fl2Info').hidden = m === 'quiz'; $('fl2Quiz').hidden = m !== 'quiz';
+    $('fl2Chips').hidden = m === 'quiz';
+    if(m === 'fw'){ S.fw = []; const e = bySym(S.fwSel) || bySym('Sr'); S.e = e; S.d = RX_FL_D[e.s]; S.tube = false; S.tgt = 1; }
+    if(m === 'lab' && !quiet){ const e = S.e; if(e) setEl(e); }
+    if(m === 'quiz') newQuiz();
+    sync();
+  }
+  function chips(){
+    const list = S.mode === 'fw' ? FW_CHIPS : LAB_CHIPS.slice();
+    if(S.mode === 'lab' && S.e && !list.includes(S.e.s)) list.unshift(S.e.s);
+    $('fl2Chips').innerHTML = list.map(s => { const e = bySym(s), d = RX_FL_D[s], c = d ? d.c : '#6b8bd6'; const on = S.mode === 'fw' ? S.fwSel === s : S.e && S.e.s === s;
+      return `<button type="button" data-s="${s}" class="${on ? 'on' : ''}" style="--c:${c}"><i></i>${s}<small>${e ? nm(e) : ''}</small></button>`; }).join('');
+  }
+  function sync(){
+    const T = tx(), d = S.d, e = S.e; if(!e) return;
+    document.querySelectorAll('#fl2Tabs button').forEach(b => b.textContent = T[b.dataset.m]);
+    $('fl2Title').textContent = S.mode === 'fw' ? T.fw.replace(/^\S+\s/, '') : S.tube ? T.tube : T.title;
+    $('fl2Sub').textContent = S.mode === 'quiz' ? '' : T.sub(nm(e));
+    chips();
+    const lab = S.mode === 'lab';
+    $('fl2Go').hidden = !lab || !!(d && d.gone); $('fl2Go').textContent = S.tgt ? (S.tube ? T.offT : T.off) : (S.tube ? T.goT : T.go); $('fl2Go').classList.toggle('go', !S.tgt);
+    $('fl2Na').hidden = !lab || S.tube || !!(d && d.gone); $('fl2Na').textContent = T.na; $('fl2Na').classList.toggle('on', S.na);
+    $('fl2Co').hidden = !lab || S.tube || !!(d && d.gone); $('fl2Co').textContent = T.co; $('fl2Co').classList.toggle('on', S.co);
+    $('fl2Auto').hidden = S.mode !== 'fw'; $('fl2Auto').textContent = T.auto; $('fl2Auto').classList.toggle('on', S.auto);
+    $('fl2Tip').textContent = S.mode === 'fw' ? T.tipFw : S.tube ? T.tipTube : T.tipLab;
+    $('fl2Tip').style.opacity = (S.mode === 'lab' && S.tgt) ? 0 : 1; $('fl2Tip').hidden = S.mode === 'quiz';
+    // 설명: 색 한 줄 + TMI 한 줄 + 접힌 원리
+    const FT = RX_FL_T[EN() ? 'en' : 'ko'], tmi = RX_FL_TMI[EN() ? 'en' : 'ko'][e.s];
+    const c = d && !d.gone ? d.c : '#6b8bd6';
+    const colTxt = d && d.gone ? FT.gone : d ? (EN() ? d.en : d.ko) : T.none;
+    const more = [];
+    if(d && d.gone) more.push(FT.goneTxt);
+    else {
+      if(!d) more.push(FT.noneTxt);
+      if(S.na) more.push(FT.naTxt);
+      if(S.co) more.push(FT.coTxt);
+      if(S.tube) more.push(FT.baseT);
+      more.push(...FT.base);
+      if(S.mode === 'fw') more.unshift(T.fwNote); else if(['Sr', 'Ba', 'Cu', 'Na', 'Li', 'Ca'].includes(e.s)) more.push(FT.fire);
+      more.push(`<span style="opacity:.75">${FT.note}</span>`);
+    }
+    $('fl2Info').innerHTML = `<div class="col"><i style="color:${c};background:${c}"></i>${S.tube ? T.colT : T.col}: <b>${colTxt}</b></div>
+      ${tmi ? `<div class="tmi">${tmi}</div>` : ''}
+      <details><summary>${T.more}</summary><ul>${more.map(x => `<li>${x}</li>`).join('')}</ul></details>`;
+  }
+  // ── 조작 ──
+  function goToggle(){
+    if(S.d && S.d.gone) return;
+    if(S.tube){ S.tgt = S.tgt ? 0 : 1; snd('zap'); }
+    else { if(S.tgt){ placeWireOut(); } else { const g = geo(); S.wire.x = g.cx + 6; S.wire.y = g.base - g.fh * .42; } }
+    sync();
+  }
+  function lit(on){
+    if(on === !!S.tgt) return;
+    S.tgt = on ? 1 : 0;
+    if(on){ S.burst = 1; snd('whoosh');
+      if(S.d && !S.d.gone){ const s = new Set(rxLS.get('pt_flame', [])); s.add(S.e.s); rxLS.set('pt_flame', [...s]); if(['Sr', 'Ba', 'Cu', 'Na'].every(x => s.has(x))) try{ rxEvt('fireworks'); }catch(err){} } }
+    else { S.na = false; S.co = false; }
+    sync();
+  }
+  const pos = ev => { const r = $('fl2Cv').getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+  $('fl2Stage').addEventListener('pointerdown', ev => {
+    const [x, y] = pos(ev);
+    if(S.mode === 'fw'){ launch(x, y); return; }
+    if(S.mode === 'quiz') return;
+    if(S.tube){ goToggle(); return; }
+    if(Math.hypot(x - S.wire.x, y - S.wire.y) < 46 || Math.abs(y - (S.wire.y + (x - S.wire.x) * .35)) < 24 && x > S.wire.x - 10){
+      S.wire.drag = true; S.wire.hx = x - S.wire.x; S.wire.hy = y - S.wire.y; $('fl2Stage').classList.add('drag');
+      try{ $('fl2Stage').setPointerCapture(ev.pointerId); }catch(e){}
+    } else goToggle();
+  });
+  $('fl2Stage').addEventListener('pointermove', ev => {
+    if(!S.wire.drag) return; const [x, y] = pos(ev);
+    S.wire.x = Math.max(20, Math.min(S.W - 30, x - S.wire.hx)); S.wire.y = Math.max(20, Math.min(S.H - 20, y - S.wire.hy));
+  });
+  const up = () => { S.wire.drag = false; $('fl2Stage').classList.remove('drag'); };
+  $('fl2Stage').addEventListener('pointerup', up); $('fl2Stage').addEventListener('pointercancel', up);
+  $('fl2Chips').addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-s]'); if(!b) return;
+    const e = bySym(b.dataset.s); if(!e) return;
+    if(S.mode === 'fw'){ S.fwSel = e.s; S.e = e; S.d = RX_FL_D[e.s]; sync(); return; }
+    setEl(e);
+  });
+  $('fl2Tabs').addEventListener('click', ev => { const b = ev.target.closest('button[data-m]'); if(b && b.dataset.m !== S.mode) setMode(b.dataset.m); });
+  $('fl2Go').addEventListener('click', goToggle);
+  $('fl2Na').addEventListener('click', () => { S.na = !S.na; if(S.na && !S.tgt){ const g = geo(); S.wire.x = g.cx + 6; S.wire.y = g.base - g.fh * .42; } sync(); });
+  $('fl2Co').addEventListener('click', () => { S.co = !S.co; sync(); });
+  $('fl2Auto').addEventListener('click', () => { S.auto = !S.auto; S.autoT = 0; sync(); });
+  $('fl2X').addEventListener('click', close);
+  $('fl2').addEventListener('click', ev => { if(ev.target.id === 'fl2') close(); });
+  addEventListener('keydown', ev => { if(ev.key === 'Escape' && S.on){ ev.stopImmediatePropagation(); close(); } }, true);
+  addEventListener('resize', () => { if(S.on) fit(); });
+  // ── 불꽃놀이 ──
+  function launch(x, y){
+    const e = bySym(S.fwSel), d = RX_FL_D[S.fwSel]; if(!d) return;
+    const sx = x + (Math.random() - .5) * 30;
+    S.fw.push({ k: 'r', x: sx, y: S.H + 6, tx: x, ty: Math.max(S.H * .12, Math.min(S.H * .7, y)), t: 0, c: hex(d.c), s: S.fwSel });
+    snd('launch', (x / S.W - .5) * 1.4);
+    const s = new Set(rxLS.get('pt_flame', [])); s.add(S.fwSel); rxLS.set('pt_flame', [...s]); if(['Sr', 'Ba', 'Cu', 'Na'].every(q => s.has(q))) try{ rxEvt('fireworks'); }catch(err){}
+  }
+  function burstAt(f){
+    const n = 90, c = f.c, glitter = f.s === 'Mg';
+    for(let i = 0; i < n; i++){ const a = Math.random() * Math.PI * 2, sp = (60 + Math.random() * 120) * (S.H / 400 + .4);
+      S.fw.push({ k: 'p', x: f.x, y: f.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, dl: .45 + Math.random() * .35, c: glitter && Math.random() < .5 ? [255, 255, 255] : c, tw: glitter, px: f.x, py: f.y }); }
+    S.fw.push({ k: 'f', x: f.x, y: f.y, l: 1, c });
+    snd('boom', (f.x / S.W - .5) * 1.4);
+  }
+  // ── 맞히기 ──
+  function newQuiz(){
+    const prev = S.quiz && S.quiz.ans;
+    let ans; do{ ans = QUIZ_POOL[Math.floor(Math.random() * QUIZ_POOL.length)]; } while(ans === prev);
+    const opts = new Set([ans]); while(opts.size < 4) opts.add(QUIZ_POOL[Math.floor(Math.random() * QUIZ_POOL.length)]);
+    S.quiz = Object.assign(S.quiz || { streak: 0 }, { ans, opts: [...opts].sort(() => Math.random() - .5), picked: null });
+    const e = bySym(ans); S.e = e; S.d = RX_FL_D[ans]; S.tube = false; S.na = false; S.co = false;
+    const g = geo(); S.wire.x = g.cx + 6; S.wire.y = g.base - g.fh * .42; S.tgt = 1; S.burst = 1;
+    renderQuiz();
+  }
+  function renderQuiz(){
+    const q = S.quiz, T = tx(); if(!q) return;
+    const done = !!q.picked, e = bySym(q.ans);
+    $('fl2Quiz').innerHTML = `<div class="q">${T.qT}<span>${q.streak ? T.streak(q.streak) : ''}</span></div>
+      <div class="opts">${q.opts.map(s => { const el = bySym(s); const cls = done ? (s === q.ans ? 'ok' : s === q.picked ? 'no' : '') : '';
+        return `<button type="button" data-s="${s}" class="${cls}" ${done ? 'disabled' : ''}><b>${s}</b><small>${nm(el)}</small></button>`; }).join('')}</div>
+      <div class="res">${done ? (q.picked === q.ans ? `✅ <b>${T.right}</b> ${nm(e)} · ${EN() ? RX_FL_D[q.ans].en : RX_FL_D[q.ans].ko}` : `❌ ${T.wrong} <b>${nm(e)} (${q.ans})</b> · ${EN() ? RX_FL_D[q.ans].en : RX_FL_D[q.ans].ko}`) : ''}</div>
+      ${done ? `<button type="button" class="next">${T.next} →</button>` : ''}`;
+    $('fl2Quiz').querySelectorAll('.opts button').forEach(b => b.addEventListener('click', () => {
+      if(q.picked) return; q.picked = b.dataset.s;
+      if(q.picked === q.ans){ q.streak++; snd('ok'); if(q.streak >= 5) try{ rxEvt('flameQuiz5'); }catch(err){} } else { q.streak = 0; snd('no'); }
+      renderQuiz();
+    }));
+    const nx = $('fl2Quiz').querySelector('.next'); if(nx) nx.addEventListener('click', () => { newQuiz(); });
+  }
+  // ── 그리기 ──
+  function loop(now){
+    if(!S.on) return;
+    const dt = Math.min(.05, Math.max(0, S.last ? (now - S.last) / 1000 : .016)); S.last = now; S.t += dt;
+    const red = typeof RX_REDUCED !== 'undefined' && RX_REDUCED;
+    if(S.mode !== 'fw' && !S.tube && !(S.d && S.d.gone)) lit(wireIn());
+    S.lit += (S.tgt - S.lit) * Math.min(1, dt * (S.tgt ? 5 : 3));
+    S.naK += ((S.na ? 1 : 0) - S.naK) * Math.min(1, dt * 5);
+    S.burst = Math.max(0, S.burst - dt * 1.6);
+    const cv = $('fl2Cv'), c = cv.getContext('2d');
+    c.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
+    if(S.mode === 'fw') drawFw(c, dt, red);
+    else if(S.tube){ c.fillStyle = '#05070a'; c.fillRect(0, 0, S.W, S.H); c.save(); const k = Math.min(S.W / 800, S.H / 400); c.translate((S.W - 800 * k) / 2, (S.H - 400 * k) / 2); c.scale(k, k);
+      RX_FL.t = S.t; RX_FL.e = S.e; try{ rxFlTube(c, 800, flameRGB(), S.lit, red ? 0 : 1); }catch(err){} c.restore(); }
+    else drawFlame(c, dt, red);
+    drawSpec();
+    if(S.mode === 'fw' && S.auto){ S.autoT -= dt; if(S.autoT <= 0){ S.autoT = .6 + Math.random() * .9; const keep = S.fwSel; S.fwSel = FW_CHIPS[Math.floor(Math.random() * FW_CHIPS.length)]; launch(S.W * (.15 + Math.random() * .7), S.H * (.15 + Math.random() * .35)); S.fwSel = keep; } }
+    S.raf = requestAnimationFrame(loop);
+  }
+  function drawFlame(c, dt, red){
+    const W = S.W, H = S.H, g = geo(), cx = g.cx, base = g.base, fh = g.fh, t = S.t;
+    const bg = c.createRadialGradient(cx, base - fh * .5, 10, cx, base - fh * .5, Math.max(W, H) * .8);
+    bg.addColorStop(0, '#121826'); bg.addColorStop(1, '#04060a'); c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    const col = flameRGB(), L = S.lit, [r, gg, b] = col;
+    // 빛이 벽에 번지는 것
+    const ga = c.createRadialGradient(cx, base - fh * .45, 5, cx, base - fh * .45, fh * 1.6);
+    ga.addColorStop(0, `rgba(${r},${gg},${b},${.16 * L + .05 * S.burst})`); ga.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+    c.fillStyle = ga; c.fillRect(0, 0, W, H);
+    // 버너
+    const bw = Math.max(18, fh * .1);
+    const mg = c.createLinearGradient(cx - bw, 0, cx + bw, 0); mg.addColorStop(0, '#2c333d'); mg.addColorStop(.45, '#6b7584'); mg.addColorStop(1, '#262c35');
+    c.fillStyle = mg; c.fillRect(cx - bw * .8, base, bw * 1.6, H - base - 14);
+    c.fillStyle = '#5d6676'; c.fillRect(cx - bw, base - 3, bw * 2, 6);
+    c.fillStyle = '#1d222a'; c.fillRect(cx - bw * 3, H - 16, bw * 6, 10);
+    // 입자 불꽃
+    const LP = window.RX_LOWPOW ? .5 : 1; // 폰: 입자 절반, 대신 조금 크게
+    const spawn = red ? 0 : Math.round((90 + 160 * L) * dt * 10 * (1 + S.burst * 1.5) * LP);
+    for(let i = 0; i < spawn; i++){
+      S.P.push({ x: cx + (Math.random() - .5) * bw * 1.3, y: base - 2, vx: (Math.random() - .5) * 14, vy: -(fh * (1.05 + Math.random() * .7)) * (1 + S.burst * .4), l: 1, dl: .9 + Math.random() * .6, sd: Math.random() * 6.28, s: 6 + Math.random() * 10 });
+    }
+    const CAP = window.RX_LOWPOW ? 320 : 700; if(S.P.length > CAP) S.P.splice(0, S.P.length - CAP);
+    c.save(); c.globalCompositeOperation = 'lighter';
+    S.P = S.P.filter(p => (p.l -= dt * p.dl) > 0);
+    for(const p of S.P){
+      const hgt = (base - p.y) / fh;
+      p.vx += (Math.sin(p.y * .045 + t * 6 + p.sd) * 42 - (p.x - cx) * 2.2) * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt * (.6 + p.l * .6);
+      // 아래쪽은 파란 기운, 위로 갈수록 원소 색 (안 넣었을 땐 거의 안 보이는 연파랑)
+      const blue = Math.max(0, 1 - hgt * 2.6);
+      const k = L * (1 - blue * .7);
+      const R = Math.round(70 * (1 - k) + r * k), G = Math.round(120 * (1 - k) + gg * k), B = Math.round(255 * (1 - k) + b * k);
+      const a = Math.min(1, p.l * 1.4) * (.16 + .34 * L) * (hgt > 1 ? Math.max(0, 1.5 - hgt) * 2 : 1) * (window.RX_LOWPOW ? 1.45 : 1);
+      const sz = p.s * (.6 + (1 - p.l) * 1.4) * (fh / 220) * (window.RX_LOWPOW ? 1.25 : 1);
+      c.globalAlpha = a; c.drawImage(sprite(R, G, B), p.x - sz, p.y - sz, sz * 2, sz * 2);
+    }
+    c.globalAlpha = 1;
+    // 안쪽 파란 원뿔
+    const ih = fh * .28 + (red ? 0 : Math.sin(t * 9) * 3);
+    const gi = c.createLinearGradient(0, base, 0, base - ih); gi.addColorStop(0, 'rgba(120,170,255,.8)'); gi.addColorStop(1, 'rgba(80,120,255,0)');
+    c.fillStyle = gi; c.beginPath(); c.moveTo(cx - bw * .75, base); c.quadraticCurveTo(cx - bw * .5, base - ih * .7, cx, base - ih); c.quadraticCurveTo(cx + bw * .5, base - ih * .7, cx + bw * .75, base); c.closePath(); c.fill();
+    // 불티
+    if(L > .3 && !red && Math.random() < dt * 30 * L) S.sparks.push({ x: cx + (Math.random() - .5) * 30, y: base - fh * (.5 + Math.random() * .3), vx: (Math.random() - .5) * 40, vy: -80 - Math.random() * 90, l: 1 });
+    S.sparks = S.sparks.filter(p => (p.l -= dt * 1.2) > 0);
+    S.sparks.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; c.fillStyle = `rgba(${Math.min(255, r + 60)},${Math.min(255, gg + 60)},${Math.min(255, b + 60)},${p.l})`; c.fillRect(p.x - 1, p.y - 1, 2.2, 2.2); });
+    c.restore();
+    // 코발트 유리
+    if(S.co){ const gw = Math.min(W * .5, fh * 1.3); c.fillStyle = 'rgba(40,60,200,.26)'; c.fillRect(cx - gw / 2, base - fh * 1.05, gw, fh * 1.05); c.strokeStyle = 'rgba(120,150,255,.6)'; c.lineWidth = 2; c.strokeRect(cx - gw / 2, base - fh * 1.05, gw, fh * 1.05); }
+    // 백금선: 손잡이(나무) → 철사 → 고리
+    const wx = S.wire.x, wy = S.wire.y, hx = Math.min(W - 8, wx + Math.max(120, W * .3)), hy = wy + 46;
+    c.lineCap = 'round';
+    c.strokeStyle = '#9aa3ad'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(hx - 50, hy - 4); c.lineTo(wx + 8, wy + 2); c.stroke();
+    const hot = Math.min(1, L * 1.4);
+    c.strokeStyle = hot > .3 ? `rgb(${Math.min(255, 200 + r * .2)},${Math.min(255, 150 + gg * .3)},${Math.min(255, 120 + b * .2)})` : '#c8ced6';
+    c.lineWidth = 3; c.beginPath(); c.arc(wx, wy, 8, 0, 7); c.stroke();
+    if(hot > .3){ c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = hot * .7; c.drawImage(sprite(r, gg, b), wx - 22, wy - 22, 44, 44); c.restore(); }
+    const wd = c.createLinearGradient(0, hy - 8, 0, hy + 8); wd.addColorStop(0, '#8a6038'); wd.addColorStop(1, '#5a3c20');
+    c.fillStyle = wd; c.save(); c.translate(hx - 50, hy - 4); c.rotate(Math.atan2(wy + 2 - (hy - 4), wx + 8 - (hx - 50)) + Math.PI); c.fillRect(-4, -7, 90, 14); c.restore();
+    // 넣는 순간 퍼지는 고리
+    if(S.burst > 0){ c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(${r},${gg},${b},${S.burst * .6})`; c.lineWidth = 3 * S.burst; const rr = (1 - S.burst) * fh * .9 + 10; c.beginPath(); c.ellipse(cx, base - fh * .42, rr, rr * .55, 0, 0, 7); c.stroke(); c.restore(); }
+  }
+  function drawFw(c, dt, red){
+    const W = S.W, H = S.H;
+    // 밤하늘 + 잔상
+    c.globalCompositeOperation = 'source-over';
+    c.fillStyle = 'rgba(4,6,14,.28)'; c.fillRect(0, 0, W, H);
+    if(!S.fwBg || S.fwBg.w !== W || S.fwBg.h !== H){ S.fwBg = { w: W, h: H, st: Array.from({length: 70}, () => [Math.random() * W, Math.random() * H * .8, Math.random() * 1.2 + .3]) }; c.fillStyle = '#04060e'; c.fillRect(0, 0, W, H); }
+    c.fillStyle = 'rgba(255,255,255,.5)'; S.fwBg.st.forEach(([x, y, s]) => c.fillRect(x, y, s, s));
+    // 도시 실루엣
+    c.fillStyle = '#070a12'; let x = 0; let sd = 7;
+    while(x < W){ sd = (sd * 9301 + 49297) % 233280; const bw = 18 + (sd / 233280) * 40, bh = H * (.06 + ((sd * 7) % 1000) / 1000 * .14); c.fillRect(x, H - bh, bw - 2, bh); x += bw; }
+    c.globalCompositeOperation = 'lighter';
+    const nxt = [];
+    for(const f of S.fw){
+      if(f.k === 'r'){
+        f.t += dt * 1.25; const e = 1 - Math.pow(1 - Math.min(1, f.t), 2.2);
+        const px = f.x + (f.tx - f.x) * e, py = f.y + (f.ty - f.y) * e;
+        c.fillStyle = 'rgba(255,230,190,.9)'; c.fillRect(px - 1.5, py - 1.5, 3, 3);
+        c.globalAlpha = .5; c.drawImage(sprite(255, 200, 140), px - 8, py - 8, 16, 16); c.globalAlpha = 1;
+        if(f.t >= 1){ burstAt({ x: px, y: py, c: f.c, s: f.s }); continue; }
+        nxt.push(f); continue;
+      }
+      if(f.k === 'f'){ f.l -= dt * 2.5; if(f.l <= 0) continue; c.globalAlpha = f.l * .6; const R = 140 * (1.2 - f.l); c.drawImage(sprite(...f.c), f.x - R, f.y - R, R * 2, R * 2); c.globalAlpha = 1; nxt.push(f); continue; }
+      f.l -= dt * f.dl; if(f.l <= 0) continue;
+      f.px = f.x; f.py = f.y;
+      f.vx *= Math.pow(.18, dt); f.vy = f.vy * Math.pow(.18, dt) + 60 * dt;
+      f.x += f.vx * dt; f.y += f.vy * dt;
+      const a = f.tw ? (Math.random() < .5 ? f.l : f.l * .2) : f.l;
+      c.strokeStyle = `rgba(${f.c[0]},${f.c[1]},${f.c[2]},${a})`; c.lineWidth = 2; c.beginPath(); c.moveTo(f.px, f.py); c.lineTo(f.x, f.y); c.stroke();
+      c.globalAlpha = a * .5; c.drawImage(sprite(...f.c), f.x - 5, f.y - 5, 10, 10); c.globalAlpha = 1;
+      nxt.push(f);
+    }
+    S.fw = nxt.length > 1600 ? nxt.slice(-1600) : nxt;
+    c.globalCompositeOperation = 'source-over';
+  }
+  // 분광기: 선택한 원소(불꽃놀이는 고른 색)의 선
+  function drawSpec(){
+    const cv = $('fl2Spec'), c = cv.getContext('2d'), W = cv.width / S.dpr, H = cv.height / S.dpr;
+    c.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); c.clearRect(0, 0, W, H);
+    const pad = 14, x0 = pad, x1 = W - pad, y0 = 24, y1 = H - 20, nm0 = 380, nm1 = 900;
+    const X = n => x0 + (n - nm0) / (nm1 - nm0) * (x1 - x0);
+    c.fillStyle = '#020305'; c.fillRect(0, 0, W, H);
+    for(let n = nm0; n < 780; n += 2){ const [r, g, b] = rxWl(n); c.fillStyle = `rgba(${r},${g},${b},.5)`; c.fillRect(X(n), y0 - 9, X(n + 2) - X(n) + .5, 4); }
+    c.fillStyle = 'rgba(255,255,255,.035)'; c.fillRect(X(780), y0, x1 - X(780), y1 - y0);
+    c.strokeStyle = 'rgba(255,255,255,.15)'; c.strokeRect(x0 + .5, y0 + .5, x1 - x0 - 1, y1 - y0 - 1);
+    c.fillStyle = 'rgba(255,255,255,.55)'; c.font = '600 10.5px system-ui,sans-serif'; c.textAlign = 'left'; c.textBaseline = 'top';
+    c.fillText(EN() ? 'SPECTROSCOPE' : '분광기', x0, 3);
+    // 지금 선
+    RX_FL.d = S.d; RX_FL.e = S.e; RX_FL.na = S.na; RX_FL.co = S.co; RX_FL.naK = S.naK; RX_FL.mode = S.tube ? 't' : 'f';
+    let lines = []; try{ lines = rxFlLines(); }catch(err){}
+    const L = S.mode === 'fw' ? 1 : S.lit;
+    c.save(); c.beginPath(); c.rect(x0, y0, x1 - x0, y1 - y0); c.clip(); c.globalCompositeOperation = 'lighter';
+    const lab = [];
+    lines.forEach(([w, i, w2]) => {
+      const a = i * L; if(a < .01) return;
+      if(w2){ const xa = X(w), xb = X(w2), mid = (w + w2) / 2, [r, g, b] = mid > 780 ? [120, 120, 130] : rxWl(mid);
+        const gr = c.createLinearGradient(xa - 6, 0, xb + 6, 0); gr.addColorStop(0, `rgba(${r},${g},${b},0)`); gr.addColorStop(.3, `rgba(${r},${g},${b},${.6 * a})`); gr.addColorStop(.7, `rgba(${r},${g},${b},${.6 * a})`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = gr; c.fillRect(xa - 6, y0, xb - xa + 12, y1 - y0); return; }
+      const x = X(w);
+      if(w > 780){ c.strokeStyle = `rgba(150,150,165,${.5 * a})`; c.setLineDash([3, 3]); c.lineWidth = 2; c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1); c.stroke(); c.setLineDash([]); }
+      else { const [r, g, b] = rxWl(w); const gl = c.createLinearGradient(x - 7, 0, x + 7, 0); gl.addColorStop(0, `rgba(${r},${g},${b},0)`); gl.addColorStop(.5, `rgba(${r},${g},${b},${.55 * a})`); gl.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        c.fillStyle = gl; c.fillRect(x - 7, y0, 14, y1 - y0); c.fillStyle = `rgba(${r},${g},${b},${Math.min(1, a * 1.3)})`; c.fillRect(x - 1.2, y0, 2.4, y1 - y0); c.fillStyle = `rgba(255,255,255,${.4 * a})`; c.fillRect(x - .5, y0, 1, y1 - y0); }
+      if(a > .4) lab.push([x, w]);
+    });
+    c.restore();
+    c.fillStyle = 'rgba(255,255,255,.4)'; c.font = '10px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'top';
+    for(let n = 400; n <= 900; n += 100){ const x = X(n); c.fillRect(x, y1, 1, 4); c.fillText(n + (n === 900 ? ' nm' : ''), Math.min(x, x1 - 16), y1 + 6); }
+    c.fillText(EN() ? 'Infrared' : '적외선', (X(780) + x1) / 2, y0 + 4);
+    c.font = '600 10px system-ui,sans-serif'; c.textBaseline = 'bottom'; c.fillStyle = 'rgba(255,255,255,.85)';
+    let lx = -999; lab.sort((a, b) => a[0] - b[0]).forEach(([x, w]) => { if(x - lx < 32) return; c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.85)'; c.strokeText(w.toFixed(1), x, y1 - 3); c.fillText(w.toFixed(1), x, y1 - 3); lx = x; });
+    if(S.mode === 'lab' && !S.tgt && !(S.d && S.d.gone)){ c.fillStyle = 'rgba(255,255,255,.35)'; c.font = '11.5px system-ui,sans-serif'; c.textBaseline = 'middle'; c.fillText(EN() ? 'Put it in the flame to see its lines' : '불꽃에 넣으면 선이 보여요', (x0 + X(780)) / 2, (y0 + y1) / 2); }
+  }
+  // 기존 불꽃 버튼이 새 화면을 열도록
+  rxFlOpen = open;
+  try{ const b = document.getElementById('atomFl'); if(b){ const nb = b.cloneNode(true); b.replaceWith(nb); nb.addEventListener('click', () => open()); } }catch(e){}
+  { const _ui = rxAtomUI; rxAtomUI = function(){ const r = _ui.apply(this, arguments); try{ const b = document.getElementById('atomFl'); if(b && !b.dataset.v2){ const nb = b.cloneNode(true); nb.dataset.v2 = '1'; b.replaceWith(nb); nb.addEventListener('click', () => open()); } }catch(e){} return r; }; }
+  try{ rxAtomUI(); }catch(e){}
+  // 숨은 업적: 불꽃색 5연속 정답
+  if(typeof ACH !== 'undefined' && !ACH.some(a => a.id === 'flameQuiz5')){
+    const i = ACH.findIndex(a => a.id === 'master');
+    const a = { id: 'flameQuiz5', secret: true, need: () => rxEvtHas('flameQuiz5'), ko: ['색깔 감별사', '불꽃색만 보고 원소를 5번 연속 맞혔다'], en: ['Colour detective', 'Named 5 elements in a row from their flame colour'] };
+    if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+    try{ RX_ACH_IC.flameQuiz5 = '🕵️'; }catch(e){}
+  }
+  window.rxFl2 = { open, S, setMode };
 })();
 </script>
 <style>
