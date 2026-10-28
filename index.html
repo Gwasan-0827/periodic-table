@@ -3185,6 +3185,8 @@
   window.RX_LOWPOW = LOW;
   if(!LOW) return;
   document.documentElement.classList.add('lowpow');
+  // 캔버스가 읽는 화면 밀도를 1.5배까지만 (폰은 2.6~3배라 픽셀을 3~4배 더 그리고 있었다). 글자·화면 자체 선명도는 그대로
+  try{ const real = window.devicePixelRatio || 1; if(real > 1.5) Object.defineProperty(window, 'devicePixelRatio', { get: () => 1.5, configurable: true }); }catch(e){}
   const _raf = window.requestAnimationFrame.bind(window);
   let q = [], ids = new Set(), next = 1, tick = 0, pending = false, lastIn = performance.now(), idle = false;
   const wake = () => { lastIn = performance.now(); if(idle){ idle = false; document.documentElement.classList.remove('idle'); } };
@@ -8441,9 +8443,7 @@ function renderSettings(){
           LANG === 'en' ? 'Convention is the textbook scheme (red oxygen). Real gives sky-blue oxygen (its colour as a liquid) and see-through hydrogen and nitrogen. A single atom has no colour; this is how lots of them look together.'
                         : '약속 색은 교과서 색(산소 빨강)이에요. 실제 색으로 바꾸면 산소는 하늘색(액체일 때 색), 수소·질소는 비쳐 보여요. 원자 하나에는 색이 없고, 잔뜩 모였을 때의 색이에요.')}
     ${row(t('setBg'), sw('bg', typeof BG_ON !== 'undefined' && BG_ON), t('setBgNote'))}
-    ${innerWidth > 700
-      ? row(t('setW95'), sw('w95', typeof W95 !== 'undefined' && W95), t('setW95Note'))
-      : ''}
+
 
     <div class="ssec">${t('setRecords')}</div>
     ${row(t('setDex'), `<button class="sbtn" data-clr="dex">${t('setReset')}</button>`, `${dexGot} / ${dexAll}`)}
@@ -14485,8 +14485,9 @@ function renderIon(){
    도감 Windows 95 스킨
    ═══════════════════════════════════════════════════ */
 var W95 = false;   // 도감은 기본 테마로 (윈도우95 스타일은 설정에서 켠다)
-try{ W95 = localStorage.getItem('pt_w95') === '1'; }catch(e){}
-document.body.classList.toggle('w95', W95);
+// 윈도우 95 스킨은 4.0에서 빠졌다. 예전에 켜 둔 사람도 기본 도감으로
+try{ localStorage.removeItem('pt_w95'); }catch(e){}
+document.body.classList.remove('w95');
 
 document.querySelectorAll('#w95btns button').forEach(b => {
   b.addEventListener('click', () => {
@@ -17735,9 +17736,24 @@ function rxCloudFog(c, w, h, pts, view, o){
   const upto = o.upto == null ? Infinity : o.upto;
   const rad = Math.max(7, scale * 0.075) * (o.fogSize || 1);
   const a0 = Math.min(0.2, 0.062 * Math.pow(2600 / Math.max(300, pts.length), 0.55)) * (o.fogAlpha || 1);
+  // 발열 줄이기: 흐린 빛 수천 개를 절반 해상도 캔버스에 그린 뒤 한 번에 키워 붙인다 (어차피 흐릿해서 차이가 안 보임)
+  const tc = c.getTransform ? c.getTransform() : null, HS = .5;
+  let dst = c, off = null;
+  if(tc && c.canvas && c.canvas.width > 64){
+    off = rxCloudFog._off || (rxCloudFog._off = document.createElement('canvas'));
+    const ow = Math.max(1, Math.round(c.canvas.width * HS)), oh = Math.max(1, Math.round(c.canvas.height * HS));
+    if(off.width !== ow || off.height !== oh){ off.width = ow; off.height = oh; }
+    dst = off.getContext('2d'); dst.setTransform(1, 0, 0, 1, 0, 0); dst.clearRect(0, 0, ow, oh);
+    dst.setTransform(tc.a * HS, tc.b * HS, tc.c * HS, tc.d * HS, tc.e * HS, tc.f * HS);
+  }
+  const c0 = c; c = dst;
   c.save();
   c.globalCompositeOperation = 'lighter';
+  // 폰(저전력): 점을 하나 걸러 그리고 대신 조금 더 밝게 → 그리는 양 절반, 보이는 구름은 거의 같다
+  const LOWF = window.RX_LOWPOW && pts.length > 600, kk = LOWF ? 2 : 1;
+  let qi = 0;
   for(const p of pts){
+    if(LOWF && (qi++ & 1)) continue;
     if(p.e >= upto) continue;
     const x1 = p.x * cY + p.z * sY, z1 = -p.x * sY + p.z * cY;
     const y1 = p.y * cX - z1 * sX, z2 = p.y * sX + z1 * cX;
@@ -17745,10 +17761,12 @@ function rxCloudFog(c, w, h, pts, view, o){
     const col = o.phase && p.sg < 0 ? RX_FOG_PINK : (RX_SUB_COL[p.l] || RX_SUB_COL.s);
     const r = rad * (0.8 + depth * 0.4);
     if(o.skip && p.k === o.skip) continue;
-    c.globalAlpha = Math.min(1, a0 * (0.55 + depth * 0.45) * (o.gain || 1));
+    c.globalAlpha = Math.min(1, a0 * kk * (0.55 + depth * 0.45) * (o.gain || 1));
     c.drawImage(rxFogSprite(col), cx + x1 * scale - r, cy + y1 * scale - r, r * 2, r * 2);
   }
   c.restore();
+  c = c0;
+  if(off){ c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter'; c.imageSmoothingEnabled = true; c.drawImage(off, 0, 0, c.canvas.width, c.canvas.height); c.restore(); }
   if(o.noNuc) return;
   const [R0, G0, B0] = o.nuc || [255, 255, 255];
   c.beginPath();
@@ -33986,6 +34004,64 @@ function rxFlashbang(soft){
 })();
 </script>
 <style>
+  /* ═══ 모바일: 원자 모형 / 원소 정보를 1·2 페이지로 나눠 보기 ═══ */
+  #detPager{display:none}
+  @media (max-width:900px){
+    #detPager{display:flex;gap:4px;padding:5px 8px;flex-shrink:0;border-bottom:1px solid var(--line);background:var(--panel);position:relative}
+    #detPager button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font:650 12px/1 inherit;font-family:inherit;padding:7px 8px;border-radius:8px;border:0;background:transparent;color:var(--dim);cursor:pointer;position:relative;z-index:1;transition:color .2s}
+    #detPager button b{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font-size:10.5px;border:1px solid currentColor}
+    #detPager button.on{color:#0b0d11}
+    #detPager button.on b{background:#0b0d11;color:var(--text);border-color:#0b0d11}
+    #detPager i.ind{position:absolute;top:5px;bottom:5px;left:8px;width:calc(50% - 10px);border-radius:8px;background:var(--text);transition:transform .32s cubic-bezier(.3,1.3,.5,1);z-index:0}
+    #detail.pg2 #detPager i.ind{transform:translateX(calc(100% + 4px))}
+    #detail.pg1 #info{display:none!important}
+    #detail.pg1 #atomBox{flex:1 1 auto;height:auto!important;border-bottom:0}
+    #detail.pg2 #atomBox,#detail.pg2 #atomNote{display:none!important}
+    #detail.pg2 #info{animation:dpIn .28s ease-out}
+    #detail.pg1 #atomBox{animation:dpIn .28s ease-out}
+    @keyframes dpIn{from{opacity:0;transform:translateX(var(--dpx,12px))}to{opacity:1;transform:none}}
+  }
+</style>
+<script>
+(function(){
+  const det = document.getElementById('detail'), atomBox = document.getElementById('atomBox'); if(!det || !atomBox) return;
+  const bar = document.createElement('div'); bar.id = 'detPager'; bar.setAttribute('role', 'tablist');
+  const lbl = () => LANG === 'en' ? ['Atom model', 'Element info'] : ['원자 모형', '원소 정보'];
+  bar.innerHTML = `<i class="ind"></i><button type="button" data-p="1"></button><button type="button" data-p="2"></button>`;
+  det.insertBefore(bar, det.firstChild);
+  let pg = 1; try{ pg = +(localStorage.getItem('pt_detpg') || 1) === 2 ? 2 : 1; }catch(e){}
+  function render(){
+    const L = lbl();
+    bar.querySelectorAll('button').forEach(b => { const p = +b.dataset.p; b.innerHTML = `<b>${p}</b>${L[p - 1]}`; b.classList.toggle('on', p === pg); b.setAttribute('aria-selected', p === pg); });
+  }
+  function set(p, dir){
+    if(p === pg) return;
+    pg = p; det.style.setProperty('--dpx', (dir || (p === 2 ? 1 : -1)) * 14 + 'px');
+    det.classList.toggle('pg1', pg === 1); det.classList.toggle('pg2', pg === 2);
+    try{ localStorage.setItem('pt_detpg', pg); }catch(e){}
+    render(); try{ SFX.pick(); }catch(e){}
+    // 원자 모형 칸 크기가 바뀌었으니 캔버스를 다시 맞춘다
+    requestAnimationFrame(() => dispatchEvent(new Event('resize')));
+  }
+  det.classList.add('pg' + pg); render();
+  bar.addEventListener('click', e => { const b = e.target.closest('button[data-p]'); if(b) set(+b.dataset.p); });
+  // 옆으로 밀어서 넘기기
+  let sx = 0, sy = 0, st = 0;
+  det.addEventListener('touchstart', e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
+  det.addEventListener('touchend', e => {
+    if(!matchMedia('(max-width:900px)').matches) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if(Date.now() - st < 600 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.8){
+      if(e.target.closest('canvas,#atomBox,input[type=range],.mchips,[data-noswipe]') && pg === 1) return; // 원자 모형을 돌리는 손짓은 넘김으로 안 친다
+      set(dx < 0 ? 2 : 1, dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+  // 언어가 바뀌면 글자만 다시
+  const _rl = window.applyLang; if(typeof _rl === 'function'){ window.applyLang = function(){ const r = _rl.apply(this, arguments); try{ render(); }catch(e){} return r; }; }
+  window.rxDetPage = set;
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -34190,7 +34266,7 @@ function rxFlashbang(soft){
     const MSGS = (LANG === 'en' ? LOAD_EN : LOAD_KO).slice().sort(() => Math.random() - .5);
     let msgI = 0, msgAt = 0, lastSeg = -1;
     let W = 0, H = 0, DPR = 1, U = 1;
-    const fit = () => { DPR = Math.min(1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W * .001, H * .0009); };
+    const fit = () => { DPR = Math.min(window.RX_LOWPOW ? 1.25 : 1.75, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; U = Math.min(W * .001, H * .0009); };
     fit(); addEventListener('resize', fit);
     const rnd = (a, b) => a + Math.random() * (b - a);
     // 날카로운 조각들: 화면 밖에서 회전하며 날아와 로고 둘레에 박힌다
