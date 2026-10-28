@@ -32940,6 +32940,9 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   if(document.readyState === 'complete') check(); else addEventListener('load', check);
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') check(); });
   window.rxUpdTest = st => show(Object.assign({ latest: '9.9' }, st || {}));
+  // 설정 › 정보의 "업데이트 확인하기" 버튼용
+  window.rxUpdFetch = () => fetch(url(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null);
+  window.rxUpdShow = show; window.rxUpdNewer = newer;
 })();
 </script>
 
@@ -33864,14 +33867,56 @@ function rxFlashbang(soft){
   @keyframes crShine{from{background-position:120% 0}to{background-position:-100% 0}}
   #rxCredits .cr-what{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
   #rxCredits .cr-foot{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2);font:600 10.5px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.1em;color:rgba(197,203,255,.5);text-align:center}
+  /* 업데이트 확인하기 */
+  #rxUpdChk{margin:18px 0 0;padding:14px 16px;border:1px solid var(--line2);border-radius:14px;background:#121620;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  #setBody[data-cur="info"] > #rxUpdChk{display:flex}
+  #rxUpdChk .uc-l{flex:1;min-width:150px}
+  #rxUpdChk .uc-l b{display:block;font-size:14px;color:var(--text)}
+  #rxUpdChk .uc-l small{display:block;font-size:11.5px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}
+  #rxUpdChk button.uc-btn{flex:0 0 auto;width:auto!important;margin:0!important;font:700 13px/1 inherit;font-family:inherit;padding:10px 14px;border-radius:10px;border:1px solid rgba(140,158,255,.5);background:rgba(140,158,255,.12);color:#c5cbff;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  #rxUpdChk button.uc-btn:disabled{opacity:.7;cursor:default}
+  #rxUpdChk button.uc-btn i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:ucSpin .7s linear infinite}
+  @keyframes ucSpin{to{transform:rotate(360deg)}}
+  #rxUpdChk .uc-res{flex-basis:100%;display:none;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:700;align-items:center;gap:8px;flex-wrap:wrap}
+  #rxUpdChk .uc-res.on{display:flex;animation:ucIn .3s ease-out}
+  @keyframes ucIn{from{opacity:0;transform:translateY(-4px)}}
+  #rxUpdChk .uc-res.new{background:rgba(255,212,59,.12);border:1px solid rgba(255,212,59,.45);color:#ffd43b}
+  #rxUpdChk .uc-res.ok{background:rgba(105,219,124,.1);border:1px solid rgba(105,219,124,.4);color:#8ce99a}
+  #rxUpdChk .uc-res.err{background:rgba(255,146,43,.1);border:1px solid rgba(255,146,43,.4);color:#ffb36b}
+  #rxUpdChk .uc-res span{font-weight:500;color:var(--dim);font-size:12px}
+  #rxUpdChk .uc-res button{margin-left:auto;font:700 12px/1 inherit;font-family:inherit;padding:7px 11px;border-radius:8px;border:0;background:#ffd43b;color:#1a1a1a;cursor:pointer}
   @media (prefers-reduced-motion:reduce){ #rxCredits .cr-name{animation:none;background-position:50% 0} }
   @media (max-width:700px){ #rxCredits .cr-role{flex-basis:74px} #rxCredits .cr-name{font-size:19px} }
 </style>
 <script>
 (function(){
   if(typeof renderSettings !== 'function') return;
+  function updBox(body){
+    let u = document.getElementById('rxUpdChk');
+    const en = LANG === 'en', V = typeof APP_VER !== 'undefined' ? APP_VER : '';
+    if(!u){ u = document.createElement('div'); u.id = 'rxUpdChk'; body.appendChild(u); }
+    u.dataset.tab = 'info';
+    u.innerHTML = `<div class="uc-l"><b>${en ? 'Check for updates' : '업데이트 확인하기'}</b><small>${en ? 'Current version' : '지금 버전'} · βV.${V}</small></div>
+      <button type="button" class="uc-btn">${en ? 'Check' : '확인하기'}</button><div class="uc-res" role="status"></div>`;
+    const btn = u.querySelector('.uc-btn'), res = u.querySelector('.uc-res');
+    btn.addEventListener('click', () => {
+      btn.disabled = true; btn.innerHTML = `<i></i>${en ? 'Checking…' : '확인 중…'}`; res.className = 'uc-res';
+      const t0 = Date.now();
+      const done = (cls, html) => setTimeout(() => { btn.disabled = false; btn.textContent = en ? 'Check again' : '다시 확인'; res.className = 'uc-res on ' + cls; res.innerHTML = html; }, Math.max(0, 600 - (Date.now() - t0)));
+      const f = window.rxUpdFetch ? window.rxUpdFetch() : Promise.resolve(null);
+      f.then(st => {
+        if(!st || !st.latest) return done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Check your internet connection' : '인터넷 연결을 확인해 주세요'}</span>`);
+        const isNew = window.rxUpdNewer ? rxUpdNewer(st.latest, V) : String(st.latest) !== String(V);
+        if(isNew){
+          done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>βV.${V} → βV.${st.latest}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
+          setTimeout(() => { const b = res.querySelector('button'); if(b) b.addEventListener('click', () => { try{ document.getElementById('rxUpd') || rxUpdShow(st); }catch(e){} }); }, 650);
+        } else done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
+      }).catch(() => done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Check your internet connection' : '인터넷 연결을 확인해 주세요'}</span>`));
+    });
+  }
   function credits(){
     const body = document.getElementById('setBody'); if(!body) return;
+    try{ updBox(body); }catch(e){}
     let c = document.getElementById('rxCredits');
     const en = LANG === 'en';
     if(!c){ c = document.createElement('div'); c.id = 'rxCredits'; body.appendChild(c); }
