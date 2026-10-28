@@ -18332,7 +18332,13 @@ function rxGhost(force){
     grid.style.marginTop = '';
     removeEventListener('resize', place);
     mo.disconnect();
+    try{ ro && ro.disconnect(); }catch(e){}
+    clearInterval(tick);
   };
+  // 표 폭이 바뀌어도(사이드 패널, 글꼴 로딩, 스크롤바) 헬륨 위에 딱 붙어 있게 계속 맞춘다
+  let ro = null, tick = 0;
+  try{ ro = new ResizeObserver(() => place()); }catch(e){}
+  tick = setInterval(() => { if(!g.isConnected){ clear(); return; } place(); }, 500);
   // 표를 다시 그려서 사라진 경우에도 자리를 되돌린다
   const mo = new MutationObserver(() => { if(!g.isConnected) clear(); });
   const vanish = e => {
@@ -18350,6 +18356,8 @@ function rxGhost(force){
   place();
   mo.observe(grid, { childList: true });
   addEventListener('resize', place);
+  try{ ro && ro.observe(grid); const he = heCell(); if(he && ro) ro.observe(he); }catch(e){}
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(place);
 }
 
 if(typeof ACH !== 'undefined'){
