@@ -33913,6 +33913,43 @@ function rxFlashbang(soft){
 })();
 </script>
 <style>
+  /* ═══ 이용 시간 알림 (마크 그거): 1시간마다 위에서 내려온다 ═══ */
+  #rxPlay{position:fixed;left:50%;top:14px;z-index:2147483630;transform:translate(-50%,-140%);transition:transform .5s cubic-bezier(.2,1.3,.4,1);
+    display:flex;gap:12px;align-items:center;width:max-content;max-width:min(92vw,460px);box-sizing:border-box;padding:12px 16px 12px 14px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(28,32,58,.96),rgba(14,16,30,.96));border:1px solid rgba(140,158,255,.45);box-shadow:0 12px 34px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.3);pointer-events:auto;cursor:pointer}
+  #rxPlay.on{transform:translate(-50%,0)}
+  #rxPlay .pi{font-size:26px;line-height:1;flex-shrink:0}
+  #rxPlay b{display:block;font:800 14.5px/1.35 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;color:#ffe066}
+  #rxPlay span{display:block;font-size:12.5px;line-height:1.45;color:#c5cbff;margin-top:2px;word-break:keep-all}
+  @media (prefers-reduced-motion:reduce){ #rxPlay{transition:opacity .3s;transform:translate(-50%,0);opacity:0} #rxPlay.on{opacity:1} }
+</style>
+<script>
+(function(){
+  const STEP = () => window.RX_PLAY_MS || 60 * 60 * 1000;
+  let active = 0, hours = 0, last = performance.now();
+  const el = document.createElement('div'); el.id = 'rxPlay'; el.setAttribute('role', 'status');
+  document.body.appendChild(el);
+  let hideT = 0;
+  function show(n){
+    const en = LANG === 'en';
+    el.innerHTML = `<i class="pi">⏰</i><div><b>${en ? `You've been here for over ${n} hour${n > 1 ? 's' : ''}!` : `${n}시간 이상 이용했어요!`}</b><span>${en
+      ? (n >= 3 ? 'Still not life-threatening. Your eyes, however, have filed a complaint 👀' : 'Not life-threatening, but your eyes might disagree. Go look out a window 👀')
+      : (n >= 3 ? '여전히 생명에 지장은 없지만, 눈이 정식으로 항의하고 있어요 👀' : '생명에 지장은 없지만 눈에는 지장이 있을 수 있어요. 창밖 한번 보고 와요 👀')}</span></div>`;
+    el.classList.add('on'); try{ SFX.pick(); }catch(e){}
+    clearTimeout(hideT); hideT = setTimeout(() => el.classList.remove('on'), 7000);
+  }
+  el.addEventListener('click', () => el.classList.remove('on'));
+  setInterval(() => {
+    const now = performance.now(), dt = Math.min(5000, now - last); last = now;
+    const saving = document.body.classList.contains('rx-saving');
+    if(document.hidden || saving) return;
+    active += dt;
+    if(active >= STEP() * (hours + 1)){ hours++; show(hours); }
+  }, 1000);
+  window.rxPlayTime = { show, get: () => active };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
