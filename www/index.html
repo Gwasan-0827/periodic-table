@@ -8443,9 +8443,7 @@ function renderSettings(){
           LANG === 'en' ? 'Convention is the textbook scheme (red oxygen). Real gives sky-blue oxygen (its colour as a liquid) and see-through hydrogen and nitrogen. A single atom has no colour; this is how lots of them look together.'
                         : '약속 색은 교과서 색(산소 빨강)이에요. 실제 색으로 바꾸면 산소는 하늘색(액체일 때 색), 수소·질소는 비쳐 보여요. 원자 하나에는 색이 없고, 잔뜩 모였을 때의 색이에요.')}
     ${row(t('setBg'), sw('bg', typeof BG_ON !== 'undefined' && BG_ON), t('setBgNote'))}
-    ${innerWidth > 700
-      ? row(t('setW95'), sw('w95', typeof W95 !== 'undefined' && W95), t('setW95Note'))
-      : ''}
+
 
     <div class="ssec">${t('setRecords')}</div>
     ${row(t('setDex'), `<button class="sbtn" data-clr="dex">${t('setReset')}</button>`, `${dexGot} / ${dexAll}`)}
@@ -14487,8 +14485,9 @@ function renderIon(){
    도감 Windows 95 스킨
    ═══════════════════════════════════════════════════ */
 var W95 = false;   // 도감은 기본 테마로 (윈도우95 스타일은 설정에서 켠다)
-try{ W95 = localStorage.getItem('pt_w95') === '1'; }catch(e){}
-document.body.classList.toggle('w95', W95);
+// 윈도우 95 스킨은 4.0에서 빠졌다. 예전에 켜 둔 사람도 기본 도감으로
+try{ localStorage.removeItem('pt_w95'); }catch(e){}
+document.body.classList.remove('w95');
 
 document.querySelectorAll('#w95btns button').forEach(b => {
   b.addEventListener('click', () => {
