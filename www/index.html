@@ -34222,7 +34222,7 @@ function rxFlashbang(soft){
         } else if(glyph[i] === c){
           x.fillStyle = '#f2f3ff'; x.textAlign = 'center'; x.fillText(c, mid, 0);
         } else {
-          x.save(); x.font = `600 ${F * .5}px ui-monospace, Menlo, monospace`; x.fillStyle = PW; x.shadowColor = PW; x.shadowBlur = 12 * DPR; x.textAlign = 'center'; x.fillText(glyph[i], mid, 0); x.restore();
+          x.save(); x.font = `600 ${F * (W < 700 ? .34 : .5)}px ui-monospace, Menlo, monospace`; x.fillStyle = PW; x.shadowColor = PW; x.shadowBlur = 12 * DPR; x.textAlign = 'center'; x.fillText(glyph[i], mid, 0); x.restore();
         }
         px += w;
       });
@@ -34312,7 +34312,7 @@ function rxFlashbang(soft){
       x.restore();
       // 별은 화면에 고정 (카메라가 돌아도 구석에 붙어 있게)
       { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520)), ROT = 75 * Math.PI / 180, S = U * cam.z;
-        const P1 = [W * (W < 700 ? .78 : .85), H * .82], P2 = [W * (W < 700 ? .18 : .15), H * (W < 700 ? .14 : .2)];
+        const P1 = [W * (W < 700 ? .8 : .85), H * (W < 700 ? .66 : .82)], P2 = [W * (W < 700 ? .18 : .15), H * (W < 700 ? .14 : .2)];
         x.save(); x.translate(lerp(ox, P1[0], mv), lerp(oy, P1[1], mv)); x.scale(S, S); sparkle(0, 0, lerp(250, 95, mv) * pop, ROT, cl(pop * 1.5)); x.restore();
         const p2 = oBack(seg(t, BEAT * 4 + 150, BEAT * 4 + 600));
         x.save(); x.translate(P2[0], P2[1]); x.scale(S, S); sparkle(0, 0, 60 * p2, ROT, cl(p2 * 1.5)); x.restore(); }
