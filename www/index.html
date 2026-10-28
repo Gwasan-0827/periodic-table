@@ -33868,6 +33868,51 @@ function rxFlashbang(soft){
 })();
 </script>
 <style>
+  /* ═══ 화면 보호기: 3분 동안 조작이 없으면 암전 + "~ !화면 보호중! ~" ═══ */
+  #rxSaver{position:fixed;inset:0;z-index:2147483640;background:#000;opacity:0;pointer-events:none;transition:opacity 1.2s ease;cursor:none}
+  #rxSaver.on{opacity:1;pointer-events:auto}
+  #rxSaver span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;color:#fff;font:600 clamp(15px,2.2vw,22px)/1 Orbit,'IBM Plex Sans KR',system-ui,sans-serif;letter-spacing:.12em;transition:left 2.4s ease-in-out,top 2.4s ease-in-out}
+  body.rx-saving *{animation-play-state:paused!important}
+  body.rx-saving #rxSaver,body.rx-saving #rxSaver *{animation-play-state:running!important}
+</style>
+<script>
+(function(){
+  const IDLE = () => window.RX_SAVER_MS || 3 * 60 * 1000;
+  const el = document.createElement('div'); el.id = 'rxSaver'; el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `<span>${LANG === 'en' ? '~ !Screen saver on! ~' : '~ !화면 보호중! ~'}</span>`;
+  document.body.appendChild(el);
+  const txt = el.querySelector('span');
+  let timer = 0, on = false, drift = 0, swallow = 0;
+  // 화면 보호 중에는 requestAnimationFrame을 잠시 붙잡아 둔다 → 캔버스·3D가 멈춰서 발열이 줄어든다
+  const raf0 = window.requestAnimationFrame.bind(window), held = [];
+  window.requestAnimationFrame = cb => { if(on){ held.push(cb); return -1; } return raf0(cb); };
+  const busy = () => document.getElementById('rxIntro') || document.getElementById('rxMgBurn');
+  function sleep(){
+    if(on) return; if(busy()){ arm(); return; }
+    on = true; txt.textContent = LANG === 'en' ? '~ !Screen saver on! ~' : '~ !화면 보호중! ~';
+    txt.style.left = '50%'; txt.style.top = '50%';
+    el.classList.add('on'); document.body.classList.add('rx-saving');
+    // 번인 방지: 글자가 가끔 자리를 옮긴다
+    drift = setInterval(() => { txt.style.left = (25 + Math.random() * 50) + '%'; txt.style.top = (20 + Math.random() * 60) + '%'; }, 9000);
+  }
+  function wake(e){
+    if(!on){ arm(); return; }
+    if(e){ e.preventDefault(); e.stopPropagation(); swallow = performance.now() + 600; }
+    on = false; clearInterval(drift);
+    el.classList.remove('on'); document.body.classList.remove('rx-saving');
+    const q = held.splice(0); q.forEach(cb => raf0(cb));
+    arm();
+  }
+  function arm(){ clearTimeout(timer); timer = setTimeout(sleep, IDLE()); }
+  ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(ev => addEventListener(ev, e => { if(on){ if(ev === 'pointerdown' || ev === 'keydown' || ev === 'touchstart') wake(e); else if(ev === 'pointermove' && e.pointerType === 'mouse' && (Math.abs(e.movementX) + Math.abs(e.movementY)) > 6) wake(); } else arm(); }, { capture: true, passive: ev !== 'pointerdown' && ev !== 'keydown' && ev !== 'touchstart' }));
+  // 깨우려고 누른 터치가 아래 버튼까지 눌러 버리지 않게
+  ['click', 'pointerup', 'mouseup', 'touchend'].forEach(ev => addEventListener(ev, e => { if(performance.now() < swallow){ e.preventDefault(); e.stopPropagation(); } }, { capture: true, passive: false }));
+  document.addEventListener('visibilitychange', () => { if(!document.hidden && !on) arm(); });
+  arm();
+  window.rxSaver = { sleep, wake: () => wake() };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
