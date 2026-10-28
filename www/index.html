@@ -36087,6 +36087,131 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
 })();
 </script>
 <style>
+  /* ═══ 결과 창 액체 리워크: WebGL 메타볼 (굴절·프레넬·하이라이트·물결빛·기포) ═══ */
+  #mLiqGL{position:absolute;pointer-events:none;z-index:0}
+  #mStage.liq-gl #mMol{position:relative;z-index:1}
+  #mStage.liq-gl .mol-atoms.liquid .mol-ball,#mStage.liq-gl .mol-atoms.liquid .mol-glow{opacity:0!important}
+</style>
+<script>
+(function(){
+  let MAXP = 120;
+  const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const mkFS = () => `precision highp float;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+void main(){
+  vec2 q=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
+  float f=0.;vec2 g=vec2(0.);
+  for(int i=0;i<${MAXP};i++){ if(i>=N)break; vec4 a=P[i]; vec2 d=q-a.xy; float r2=a.z*a.z; float dd=dot(d,d)+1.; float v=r2/dd; f+=v; g+=-2.*v*d/dd; }
+  float gl=length(g)+1e-4;
+  float dist=(f-1.)/gl;               // 가장자리까지 대략 몇 픽셀
+  float edge=smoothstep(-1.2,1.2,dist);
+  if(edge<=0.){ // 바깥: 바닥에 은은한 그림자/빛 번짐
+    float halo=smoothstep(.55,1.,f)*.18; gl_FragColor=vec4(C*halo,halo); return; }
+  // 면 모양은 '가장자리까지 거리'로: 안쪽은 평평하고 가장자리에서 둥글게 말린다 (알갱이 사이 주름 없음)
+  float dpx=mix(max(dist,0.)/K,60.,smoothstep(1.25,1.9,f));  // 깊은 안쪽(f가 큼)은 가장자리에서 먼 것으로 친다
+  float h=smoothstep(0.,34.,dpx);                     // 두께
+  float bend=1.-smoothstep(0.,16.,dpx);               // 가장자리일수록 많이 기운다
+  vec3 n=normalize(vec3(-g/gl*bend*1.25, .35+.65*(1.-bend)));
+  // 굴절: 뒤 배경의 점 격자가 렌즈처럼 휘어 보인다
+  vec2 rp=q+n.xy*(10.+16.*h)*K;
+  vec2 cell=fract(rp/(14.*K))-.5; float dots=smoothstep(.11,.04,length(cell));
+  float depth=smoothstep(0.,1.,h);
+  vec3 deep=C*.42, shallow=mix(C,vec3(1.),.35);
+  vec3 col=mix(shallow,deep,depth*.85);
+  col+=dots*.16*mix(vec3(1.),C,.5)*(1.-depth*.5);
+  // 물속 물결빛(커스틱)
+  if(LOW<.5){ vec2 cp=q/(26.*K)+vec2(T*.35,-T*.22); float cs=noise(cp)+noise(cp*1.9+vec2(-T*.4,T*.3))*.6; cs=pow(smoothstep(.9,1.45,cs),2.); col+=cs*.22*mix(vec3(1.),C,.3)*(.4+depth); }
+  // 빛
+  vec3 L=normalize(vec3(-.45,-.6,.66)); vec3 V=vec3(0,0,1); vec3 Hh=normalize(L+V);
+  float dif=clamp(dot(n,L),0.,1.);
+  float spec=pow(clamp(dot(n,Hh),0.,1.),70.)*1.25 + pow(clamp(dot(n,Hh),0.,1.),12.)*.18;
+  float fres=pow(1.-clamp(n.z,0.,1.),2.4);
+  col=col*(.62+.5*dif)+spec+fres*mix(vec3(.85,.9,1.),C,.25)*.55;
+  // 가장자리 얇은 밝은 테(표면 장력)
+  float rim=smoothstep(3.5,.5,dist)*(1.-smoothstep(.5,0.,dist)*.3);
+  col+=rim*.22;
+  // 기포: 몇 개가 위로 올라간다
+  if(LOW<.5){ for(int k=0;k<7;k++){ float fk=float(k); vec2 b=vec2(fract(sin(fk*91.7)*437.5),fract(T*(.05+.03*fract(fk*.37))+fk*.31));
+      b=vec2(mix(.1,.9,b.x)*R.x, R.y*(1.-b.y)); float br=(2.+3.*fract(fk*.73))*K; float bd=length(q-b);
+      float ring=smoothstep(br+1.,br,bd)*smoothstep(br-1.6,br-.6,bd); float bh=smoothstep(br*.6,0.,length(q-b+vec2(br*.35,br*.35)));
+      col+=(ring*.5+bh*.6)*step(.04,h); } }
+  float a=edge*(.80+.17*depth);
+  gl_FragColor=vec4(col*a,a);
+}`;
+  let gl = null, prog = null, cv = null, U = {}, failed = false, t0 = performance.now(), buf = null;
+  function init(stage){
+    if(failed) return false;
+    if(cv && cv.isConnected && gl) return true;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'mLiqGL'; cv.setAttribute('aria-hidden', 'true');
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+      if(!gl) throw 0;
+      // 폰마다 셰이더에 넘길 수 있는 점 개수가 달라서 맞춘다
+      MAXP = Math.max(24, Math.min(120, (gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64) - 12));
+      buf = new Float32Array(MAXP * 4);
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, mkFS())); gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw gl.getProgramInfoLog(prog);
+      gl.useProgram(prog);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
+      return true;
+    }catch(e){ failed = true; cv = null; gl = null; return false; }
+  }
+  function off(){ const st = document.getElementById('mStage'); if(st) st.classList.remove('liq-gl'); if(cv) cv.style.display = 'none';
+    const g = document.querySelector('#mMol .mol-atoms.liquid'); if(g && g.dataset.goo){ g.setAttribute('filter', g.dataset.goo); delete g.dataset.goo; } }
+  const hex = c => { c = String(c || '#9fb4d6'); if(c[0] !== '#'){ const m = c.match(/\d+(\.\d+)?/g); return m ? m.slice(0, 3).map(v => v / 255) : [.62, .7, .84]; } if(c.length === 4) c = '#' + [...c.slice(1)].map(x => x + x).join(''); return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255); };
+  function render(m, yaw, pitch){
+    const st = document.getElementById('mStage'), svg = document.getElementById('mMol');
+    if(!st || !svg || !init(st)){ return; }
+    if(!cv.isConnected) st.insertBefore(cv, svg);
+    // SVG 끈적이 필터는 끈다 (매 프레임 다시 계산돼서 무겁다)
+    const grp = svg.querySelector('.mol-atoms.liquid');
+    if(grp && grp.getAttribute('filter')){ grp.dataset.goo = grp.getAttribute('filter'); grp.removeAttribute('filter'); }
+    st.classList.add('liq-gl'); cv.style.display = '';
+    const sr = svg.getBoundingClientRect(), tr = st.getBoundingClientRect();
+    const lowp = !!window.RX_LOWPOW, dpr = Math.min(lowp ? 1 : 1.5, devicePixelRatio || 1) * (lowp ? .75 : 1);
+    const W = Math.max(1, Math.round(sr.width * dpr)), H = Math.max(1, Math.round(sr.height * dpr));
+    cv.style.left = (sr.left - tr.left - st.clientLeft) + 'px'; cv.style.top = (sr.top - tr.top - st.clientTop) + 'px';
+    cv.style.width = sr.width + 'px'; cv.style.height = sr.height + 'px';
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    // viewBox 400×300 (meet) → 캔버스 픽셀
+    const s = Math.min(sr.width / 400, sr.height / 300), ox = (sr.width - 400 * s) / 2, oy = (sr.height - 300 * s) / 2;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
+    let n = 0, col = m.col;
+    for(const a of m.atoms){
+      if(n >= MAXP) break;
+      if(a.tile || a.solid) continue;
+      if(!col && a.col) col = a.col;
+      const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+      const X = m.cx + x1 * m.sc * f, Y = m.cy + y1 * m.sc * f;
+      buf[n * 4] = (ox + X * s) * dpr; buf[n * 4 + 1] = (oy + Y * s) * dpr; buf[n * 4 + 2] = a.r * m.sc * f * s * dpr * 1.12; buf[n * 4 + 3] = 0;
+      n++;
+    }
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
+    gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  const _d = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _d.apply(this, arguments);
+    try{
+      const m = mm || RX_M;
+      if(!mm && m && m.liquid && !m.metal && m === RX_M && !m.fill) render(m, yaw, pitch);
+      else if(!mm && cv && cv.style.display !== 'none') off();
+    }catch(e){ failed = true; off(); }
+    return r;
+  };
+  window.rxLiqGL = { off, get failed(){ return failed; } };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
