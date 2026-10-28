@@ -33908,7 +33908,7 @@ function rxFlashbang(soft){
     const en = LANG === 'en', V = typeof APP_VER !== 'undefined' ? APP_VER : '';
     if(!u){ u = document.createElement('div'); u.id = 'rxUpdChk'; body.appendChild(u); }
     u.dataset.tab = 'info';
-    u.innerHTML = `<div class="uc-l"><b>${en ? 'Check for updates' : '업데이트 확인하기'}</b><small>${en ? 'Current version' : '지금 버전'} · βV.${V}</small></div>
+    u.innerHTML = `<div class="uc-l"><b>${en ? 'Check for updates' : '업데이트 확인하기'}</b><small>${en ? 'Current version' : '지금 버전'} · ${verLabel(V)}</small></div>
       <button type="button" class="uc-btn">${en ? 'Check' : '확인하기'}</button><div class="uc-res" role="status"></div>`;
     const btn = u.querySelector('.uc-btn'), res = u.querySelector('.uc-res');
     btn.addEventListener('click', () => {
@@ -33919,12 +33919,12 @@ function rxFlashbang(soft){
       f.then(st => {
         // 파일은 받았는데 latest 가 없으면 '새 버전 공지 없음' = 최신으로 본다. 파일 자체가 없으면(404) 인터넷 탓이 아니다
         if(!st) return done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Update info was not found on the server' : '서버에서 업데이트 정보를 못 찾았어요'}</span>`);
-        if(!st.latest) return done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
+        if(!st.latest) return done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>${verLabel(V)}</span>`);
         const isNew = window.rxUpdNewer ? rxUpdNewer(st.latest, V) : String(st.latest) !== String(V);
         if(isNew){
-          done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>βV.${V} → βV.${st.latest}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
+          done('new', `🎉 ${en ? 'A new release is out!' : '새 릴리즈가 있어요!'} <span>${verLabel(V)} → ${verLabel(st.latest)}</span><button type="button">${en ? 'See update' : '업데이트 보기'}</button>`);
           setTimeout(() => { const b = res.querySelector('button'); if(b) b.addEventListener('click', () => { try{ document.getElementById('rxUpd') || rxUpdShow(st); }catch(e){} }); }, 650);
-        } else done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>βV.${V}</span>`);
+        } else done('ok', `✓ ${en ? "You're on the latest version!" : '최신버전이에요!'} <span>${verLabel(V)}</span>`);
       }).catch(() => done('err', `⚠ ${en ? "Couldn't check right now" : '지금은 확인할 수 없어요'} <span>${en ? 'Check your internet connection' : '인터넷 연결을 확인해 주세요'}</span>`));
     });
   }
