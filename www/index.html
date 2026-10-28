@@ -3238,7 +3238,7 @@ const CAT = {
   noble:{ko:"비활성 기체",v:"--noble"},
   lanthanide:{ko:"란타넘족",v:"--lanthanide"},
   actinide:{ko:"악티늄족",v:"--actinide"},
-  unknown:{ko:"미확인",v:"--unknown"},
+  unknown:{ko:"성질 미확인",v:"--unknown"},
 };
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
@@ -5074,7 +5074,7 @@ const CAT_EN = {
   alkali:"Alkali metal", alkaline:"Alkaline earth metal", transition:"Transition metal",
   post:"Post-transition metal", metalloid:"Metalloid", nonmetal:"Nonmetal",
   halogen:"Halogen", noble:"Noble gas", lanthanide:"Lanthanide",
-  actinide:"Actinide", unknown:"Unknown",
+  actinide:"Actinide", unknown:"Unknown properties",
 };
 const catName = c => LANG === 'en' ? CAT_EN[c] : CAT[c].ko;
 const elName  = e => LANG === 'en' ? e.en : e.ko;
