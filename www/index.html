@@ -34911,6 +34911,405 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
 })();
 </script>
 <style>
+  /* ═══ 성격 탭 리워크: 4지선다 16문항 · 원소 24종 · 4축 성향 · 결과 카드 저장 (Y2K 페리윙클) ═══ */
+  .pt2{--pw:#9aa8ff;--pw2:#c9d0ff;--pw3:#6a78e8;position:relative}
+  .pt2 *{box-sizing:border-box}
+  .pt2-in{animation:pt2In .34s cubic-bezier(.2,.9,.25,1) both}
+  .pt2-back .pt2-in{animation-name:pt2InB}
+  @keyframes pt2In{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes pt2InB{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  .pt2-star{position:absolute;width:var(--s,14px);height:var(--s,14px);pointer-events:none;transform:rotate(75deg);
+    background:conic-gradient(from 0deg,#fff,var(--pw2),var(--pw),var(--pw3),var(--pw),var(--pw2),#fff);
+    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+    filter:drop-shadow(0 0 6px rgba(154,168,255,.8));animation:pt2Tw 2.6s ease-in-out infinite}
+  @keyframes pt2Tw{50%{opacity:.45;transform:rotate(75deg) scale(.82)}}
+  /* 시작 화면 */
+  .pt2-home{text-align:center;padding:18px 0 4px}
+  .pt2-orb{position:relative;width:132px;height:132px;margin:0 auto}
+  .pt2-orb::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px dotted rgba(154,168,255,.55);animation:pt2Spin 16s linear infinite}
+  .pt2-orb::after{content:"";position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(201,208,255,.3);animation:pt2Spin 24s linear infinite reverse}
+  .pt2-orb i{position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#dfe3ff,#9aa8ff 45%,#3c46a8 100%);box-shadow:0 0 34px rgba(154,168,255,.55),inset 0 0 16px rgba(255,255,255,.4);
+    display:flex;align-items:center;justify-content:center;font:800 40px/1 Kanit,system-ui,sans-serif;color:#141833;font-style:normal}
+  @keyframes pt2Spin{to{transform:rotate(360deg)}}
+  .pt2-lead{font-size:13.5px;color:var(--dim);margin:18px auto 12px;max-width:310px;line-height:1.65;word-break:keep-all}
+  .pt2-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+  .pt2-chips span{font:600 11px/1 ui-monospace,monospace;letter-spacing:.06em;padding:6px 9px;border-radius:999px;border:1px solid rgba(154,168,255,.35);color:var(--pw2);background:rgba(154,168,255,.07)}
+  .pt2 .pt2-go,#qBody .pt2 #ptGo{width:100%;border:0;border-radius:12px;padding:13px;cursor:pointer;font:800 14.5px/1 inherit;font-family:inherit;color:#121530;
+    background:linear-gradient(90deg,#c9d0ff,#9aa8ff 25%,#c9d0ff 50%,#9aa8ff 75%,#c9d0ff);background-size:200% 100%;animation:pt2Sh 3s linear infinite;box-shadow:0 0 22px rgba(154,168,255,.35)}
+  @keyframes pt2Sh{from{background-position:200% 0}to{background-position:0 0}}
+  .pt2-last{margin-top:12px;font-size:12px;color:var(--dim)}
+  .pt2-last b{color:var(--pw2)}
+  /* 질문 */
+  .pt2-segs{display:flex;gap:3px;margin-bottom:18px}
+  .pt2-segs i{flex:1;height:4px;border-radius:1px;background:rgba(154,168,255,.13);transition:background .25s}
+  .pt2-segs i.on{background:linear-gradient(90deg,#9aa8ff,#c9d0ff);box-shadow:0 0 6px rgba(154,168,255,.6)}
+  .pt2-segs i.cur{background:rgba(154,168,255,.45);animation:pt2Blink 1s steps(2) infinite}
+  @keyframes pt2Blink{50%{background:rgba(154,168,255,.15)}}
+  .pt2-qn{font:800 13px/1 Kanit,system-ui,sans-serif;letter-spacing:.14em;color:var(--pw);display:flex;align-items:center;gap:8px}
+  .pt2-qn::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,rgba(154,168,255,.5) 0 4px,transparent 4px 8px)}
+  .pt2-q{font-size:22px;font-weight:750;line-height:1.35;margin:10px 0 18px;word-break:keep-all}
+  .pt2-opts{display:grid;gap:8px}
+  .pt2-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;font:inherit;font-size:14px;color:var(--text);
+    padding:12px 14px;border-radius:10px;border:1px solid var(--line2);background:#0f131b;transition:border-color .15s,background .15s,transform .15s,opacity .2s}
+  .pt2-opt b{flex:none;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font:800 12px/1 Kanit,system-ui,sans-serif;
+    color:var(--pw2);border:1px solid rgba(154,168,255,.4);background:rgba(154,168,255,.08);transform:skewX(-8deg)}
+  @media (hover:hover){.pt2-opt:hover{border-color:rgba(154,168,255,.55);background:#141a28;transform:translateX(3px)}}
+  .pt2-opt.pick{border-color:#c9d0ff;background:linear-gradient(90deg,rgba(154,168,255,.32),rgba(154,168,255,.08));box-shadow:0 0 18px rgba(154,168,255,.35)}
+  .pt2-opt.pick b{background:#c9d0ff;color:#141833}
+  .pt2-opts.done .pt2-opt:not(.pick){opacity:.3}
+  .pt2-nav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;color:var(--dim)}
+  .pt2-nav button{background:none;border:0;color:var(--dim);font:inherit;cursor:pointer;padding:4px 0}
+  .pt2-nav button:hover{color:var(--text)}
+  .pt2-nav button[disabled]{opacity:.3;cursor:default}
+  /* 결과 */
+  .pt2-res{text-align:center}
+  .pt2-tile{position:relative;width:128px;height:128px;margin:6px auto 0;border-radius:16px;border:1.5px solid var(--ec);
+    background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--ec) 30%,transparent),rgba(10,12,20,.9) 75%);
+    box-shadow:0 0 30px color-mix(in srgb,var(--ec) 45%,transparent),inset 0 0 20px color-mix(in srgb,var(--ec) 25%,transparent);
+    animation:pt2Pop .6s cubic-bezier(.2,1.4,.4,1) both}
+  @keyframes pt2Pop{from{opacity:0;transform:scale(.6) rotate(-8deg)}to{opacity:1;transform:none}}
+  .pt2-tile .n{position:absolute;left:10px;top:8px;font:700 13px/1 ui-monospace,monospace;color:rgba(255,255,255,.7)}
+  .pt2-tile .s{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 56px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 18px var(--ec)}
+  .pt2-tile .k{position:absolute;left:0;right:0;bottom:9px;font-size:12px;font-weight:650;color:rgba(255,255,255,.8)}
+  .pt2-kick{margin-top:16px;font:700 11px/1 ui-monospace,monospace;letter-spacing:.16em;color:var(--pw)}
+  .pt2-title{font-size:23px;font-weight:800;margin-top:6px;background:linear-gradient(90deg,#fff,var(--pw2) 40%,var(--ec));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pt2-desc{font-size:13px;color:var(--dim);line-height:1.7;margin:8px auto 0;max-width:360px;word-break:keep-all}
+  .pt2-axes{margin:18px auto 0;max-width:380px;display:grid;gap:9px;text-align:left}
+  .pt2-ax{display:grid;grid-template-columns:52px 1fr 52px;align-items:center;gap:8px;font-size:11px;color:var(--dim)}
+  .pt2-ax span:last-child{text-align:right}
+  .pt2-ax span.on{color:var(--pw2);font-weight:700}
+  .pt2-bar{position:relative;height:8px;border-radius:2px;background:repeating-linear-gradient(90deg,rgba(154,168,255,.16) 0 6px,rgba(154,168,255,.06) 6px 8px)}
+  .pt2-bar::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:rgba(255,255,255,.25)}
+  .pt2-bar i{position:absolute;top:0;bottom:0;border-radius:2px;background:linear-gradient(90deg,#9aa8ff,#c9d0ff);box-shadow:0 0 8px rgba(154,168,255,.6);transition:all .8s cubic-bezier(.2,.9,.25,1) .2s}
+  .pt2-bar em{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;transform:rotate(45deg);background:#fff;box-shadow:0 0 8px #c9d0ff;transition:left .8s cubic-bezier(.2,.9,.25,1) .2s}
+  .pt2-pair{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  .pt2-pair button{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--line2);background:#0f131b;color:var(--text);font:inherit;font-size:12px;cursor:pointer}
+  .pt2-pair button small{color:var(--dim);font-size:11px}
+  .pt2-pair button b{font:800 15px/1 Kanit,system-ui,sans-serif}
+  .pt2-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+  .pt2-btns .pt2-go{grid-column:1/-1}
+  .pt2-btns .btn{margin:0}
+  .pt2-btns .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--dim)}
+  @media (max-width:700px){
+    .pt2-q{font-size:19px;margin:8px 0 14px}
+    .pt2-opt{font-size:13.5px;padding:11px 12px}
+    .pt2-tile{width:108px;height:108px}.pt2-tile .s{font-size:46px}
+    .pt2-title{font-size:20px}
+  }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  /* 축: A 반응성(신중↔즉흥) · B 결합력(독립↔어울림) · C 안정성(변화↔꾸준) · D 광채(실속↔화려) */
+  const AX = ['A', 'B', 'C', 'D'];
+  const AXN = {
+    ko: { A: ['신중', '즉흥', '반응성'], B: ['독립', '어울림', '결합력'], C: ['변화', '꾸준', '안정성'], D: ['실속', '화려', '광채'] },
+    en: { A: ['Careful', 'Impulsive', 'Reactivity'], B: ['Solo', 'Social', 'Bonding'], C: ['Fluid', 'Steady', 'Stability'], D: ['Practical', 'Flashy', 'Shine'] },
+  };
+  // 원소 24종: [A,B,C,D], 짝 원소
+  const T = {
+    H: [1, 1, -2, 0, 'O'], He: [-2, -1, 0, 1, 'Ne'], Li: [1, 1, 0, -1, 'Co'], C: [0, 2, 1, 0, 'H'],
+    N: [-1, 0, 2, -1, 'H'], O: [1, 2, -1, -1, 'H'], F: [2, 0, 0, 1, 'Ca'], Ne: [-1, -2, 1, 2, 'Ar'],
+    Na: [2, 1, -1, 1, 'Cl'], Mg: [1, 0, 0, 2, 'O'], Si: [-1, 1, 1, -2, 'O'], P: [2, -2, -1, 1, 'Ca'],
+    Ar: [-2, -2, 1, -1, 'Ne'], Ca: [0, 1, 2, -1, 'P'], Ti: [-1, 0, 2, 1, 'Al'], Fe: [0, 0, 2, -2, 'C'],
+    Cu: [1, 2, 0, 1, 'Sn'], Ga: [0, 2, -2, 0, 'As'], Ag: [0, 1, 0, 1, 'Au'], W: [-2, -1, 2, -1, 'C'],
+    Au: [-1, -1, 2, 2, 'Ag'], Hg: [0, -1, -2, 1, 'Au'], Bi: [-1, -2, -2, 2, 'Ga'], U: [2, -1, 1, 2, 'Pb'],
+  };
+  const D = {
+    ko: {
+      H: ['시작하는 사람', '가볍고 어디에나 있음. 우주에서 제일 먼저 생긴 것처럼 뭐든 시작은 내가 함. 대신 금방 딴 데로 날아감'],
+      He: ['둥둥 떠다니는 사람', '아무하고도 반응 안 하는데 이상하게 다들 좋아함. 무심하게 떠 있다가 가끔 목소리로 웃김'],
+      Li: ['충전해 주는 사람', '작은데 에너지를 꽉 채워 둠. 주변 배터리 채워 주다가 가끔 본인이 방전됨'],
+      C: ['엮이는 사람', '누구랑도 결합함. 관계가 넓고 튼튼해서 모임의 뼈대가 됨. 연필심도 되고 다이아몬드도 되는 반전'],
+      N: ['묵묵한 다수', '공기의 78%인데 아무도 의식 안 함. 삼중결합이라 한번 정한 건 잘 안 바꿈'],
+      O: ['없으면 안 되는 사람', '반응이 빠르고 어디든 낌. 조용한데 없으면 다들 숨 막혀 함'],
+      F: ['직진하는 사람', '전기음성도 1등. 원하는 건 끝까지 가져감. 근데 치약 속에선 이빨 지켜 주는 의외의 면도 있음'],
+      Ne: ['튀는 사람', '눈에 확 띄는데 남한테는 안 휘둘림. 빛나지만 섞이진 않음'],
+      Na: ['즉각적인 사람', '감정이 바로 나옴. 물 만나면 터지는 것처럼 솔직함'],
+      Mg: ['숨은 섬광', '평소엔 그냥 은색 금속. 근데 불붙으면 눈 못 뜰 만큼 빛남'],
+      Si: ['보이지 않는 기둥', '티는 안 나는데 없으면 세상이 안 돌아감. 지금 이 화면도 사실 내 덕분'],
+      P: ['어둠 속 불씨', '어두운 데서 혼자 빛남. 성냥처럼 한번 그으면 바로 불붙는 예측 불가'],
+      Ar: ['혼자가 편한 사람', '아무하고도 안 섞이는데 그게 강점. 그래서 용접할 때 꼭 불려 감'],
+      Ca: ['든든한 뼈대', '친구들 무너질 때 받쳐 주는 사람. 우유처럼 기본인데 빠지면 바로 티 남'],
+      Ti: ['가볍고 강한 사람', '무게는 안 잡는데 속은 단단함. 조용히 멋 부리는 타입 (산화막 색도 바꿀 수 있음)'],
+      Fe: ['믿음직한 사람', '단단하고 오래 감. 가끔 녹슬긴 해도 결국 다시 씀'],
+      Cu: ['잘 통하는 사람', '전기도 마음도 잘 통함. 소식이 제일 빨리 퍼지는 곳엔 항상 있음'],
+      Ga: ['정 많은 사람', '손에 쥐면 녹아 버림. 겉은 금속인데 속은 너무 말랑함'],
+      Ag: ['비춰 주는 사람', '빛을 제일 잘 반사함. 남이 빛나게 해 주는 게 특기. 2등 같지만 전도율은 사실 1등'],
+      W: ['버티는 사람', '3422°C까지 안 녹음. 웬만한 일로는 안 무너짐'],
+      Au: ['변하지 않는 사람', '시간이 지나도 그대로. 그래서 오래 남고 귀하게 여겨짐'],
+      Hg: ['흐르는 사람', '한 자리에 안 있음. 금속인데 혼자 액체인 것처럼 자유로움'],
+      Bi: ['4차원인 사람', '결정이 무지개 계단 모양으로 자람. 남들이 이해 못 해도 본인 세계가 확실함'],
+      U: ['존재감 폭발', '있는 것만으로 주변이 달라짐. 에너지가 너무 커서 다룰 때 주의가 필요함'],
+    },
+    en: {
+      H: ['The starter', 'Light and everywhere. Like the first thing the universe made, you start everything. Then drift off'],
+      He: ['The floater', 'Reacts with no one, yet everyone likes you. Drifts around and makes voices funny'],
+      Li: ['The charger', 'Small but full of stored energy. Charges everyone else, sometimes runs flat'],
+      C: ['The connector', 'Bonds with anyone. The backbone of every group. Pencil lead or diamond, your call'],
+      N: ['The quiet majority', '78% of the air and nobody notices. Triple bond, so once decided, decided'],
+      O: ['The essential one', 'Fast to react, gets everywhere. Quiet, but everyone suffocates without you'],
+      F: ['The go-getter', 'Top electronegativity. Takes what it wants. Also secretly guards teeth in toothpaste'],
+      Ne: ['The standout', 'Impossible to miss, impossible to sway. Glows without blending in'],
+      Na: ['The immediate one', 'Feelings show right away. Honest the way sodium meets water'],
+      Mg: ['The hidden flash', 'Just a grey metal most days. Light it up and nobody can look away'],
+      Si: ['The invisible pillar', 'Nobody notices, yet nothing runs without you. This screen included'],
+      P: ['The spark in the dark', 'Glows alone in the dark. Strike once and it catches, unpredictably'],
+      Ar: ['Fine on your own', 'Bonds with nothing, and that is the strength. It is why welding needs it'],
+      Ca: ['The backbone', 'Holds friends up when they crumble. Basic like milk, missed the moment it is gone'],
+      Ti: ['Light but tough', 'Never throws weight around, solid inside. Quietly stylish (can even change colour)'],
+      Fe: ['The dependable one', 'Strong and lasting. Rusts sometimes, still gets used again'],
+      Cu: ['The conductor', 'Current and feelings both pass through easily. Always where news spreads first'],
+      Ga: ['The softie', 'Melts in your hand. Metal outside, all heart inside'],
+      Ag: ['The reflector', 'Best mirror of all. Makes others shine. Looks like second place, conducts like first'],
+      W: ['The endurer', 'Does not melt until 3422°C. Very little brings you down'],
+      Au: ['The unchanging one', 'Same as ever, however long it takes. That is why you last'],
+      Hg: ['The one who flows', 'Never in one place. A metal that stays liquid on its own'],
+      Bi: ['The odd one', 'Grows rainbow staircase crystals. Others may not get it, your world is clear'],
+      U: ['Pure presence', 'Just being there changes the room. So much energy it needs careful handling'],
+    },
+  };
+  // 질문 16개 (축이 번갈아 나옴). 선택지: [글, '축값 ...']
+  const Q = {
+    ko: [
+      ['새로운 걸 시작할 때', [['일단 저지름', 'A2'], ['대충 감 잡고 출발', 'A1'], ['조사 좀 해 보고', 'A-1'], ['계획표부터 짬', 'A-2 C1']]],
+      ['사람 많은 곳에 가면', [['일단 신남', 'B2 A1'], ['아는 사람부터 찾음', 'B1'], ['구석 자리 찾음', 'B-1'], ['조용히 나갈 타이밍 봄', 'B-2']]],
+      ['내 방 상태는', [['모든 게 늘 같은 자리', 'C2'], ['나름의 질서가 있음', 'C1'], ['그때그때 바뀜', 'C-1'], ['가구 배치를 자주 바꿈', 'C-2 A1']]],
+      ['끌리는 물건은', [['반짝이고 예쁜 거', 'D2'], ['디자인 좋은 거', 'D1'], ['오래 쓰는 거', 'D-1 C1'], ['가성비 최고', 'D-2']]],
+      ['스트레스를 받으면', [['바로 터뜨림', 'A2'], ['친구한테 털어놓음', 'A1 B1'], ['혼자 삭힘', 'A-1 B-1'], ['아무렇지 않은 척', 'A-2']]],
+      ['조별 과제에서 나는', [['분위기 메이커', 'B2 D1'], ['의견 모으는 사람', 'B1'], ['내 파트만 확실히', 'B-1 C1'], ['그냥 혼자 다 해 둠', 'B-2 C1']]],
+      ['취미는', [['하나를 몇 년째', 'C2'], ['몇 개를 돌려 가며', 'C1'], ['유행 따라 바뀜', 'C-1 D1'], ['매달 새로운 거', 'C-2']]],
+      ['단체 사진 찍을 때', [['가운데서 포즈', 'D2 B1'], ['앞줄 어딘가', 'D1'], ['뒷줄 구석', 'D-1'], ['내가 찍어 줌', 'D-2 B1']]],
+      ['갑자기 여행 가자는 연락이 오면', [['지금 출발? ㄱㄱ', 'A2'], ['일정 보고 웬만하면 감', 'A1'], ['다음에 제대로 가자', 'A-1 C1'], ['집이 최고임', 'A-2 B-1']]],
+      ['친구 관계는', [['두루두루 넓게', 'B2'], ['적당히 여럿', 'B1'], ['소수랑 깊게', 'B-1 C1'], ['혼자가 제일 편함', 'B-2']]],
+      ['약속 시간에', [['10분 일찍 도착', 'C2'], ['딱 맞춰 감', 'C1'], ['5분쯤 늦음', 'C-1'], ['어쩌다 보니 많이 늦음', 'C-2 A1']]],
+      ['사람들이 나를 보면', [['튄다고 함', 'D2'], ['개성 있다고 함', 'D1'], ['무난하다고 함', 'D-1'], ['있는 줄 몰랐다고 함', 'D-2 B-1']]],
+      ['실수했을 때', [['웃고 넘김', 'A2 D1'], ['사과하고 바로 잊음', 'A1'], ['한동안 곱씹음', 'A-1'], ['같은 실수 안 하게 메모', 'A-2 C1']]],
+      ['처음 보는 사람이랑은', [['내가 먼저 말 걺', 'B2 A1'], ['말 걸면 잘 받아 줌', 'B1'], ['친해지는 데 시간 걸림', 'B-1'], ['굳이...?', 'B-2']]],
+      ['계획이 갑자기 바뀌면', [['원래대로 하고 싶음', 'C2'], ['아쉽지만 괜찮음', 'C1'], ['오히려 좋아', 'C-1 A1'], ['원래 계획 같은 거 없음', 'C-2']]],
+      ['칭찬받고 싶은 건', [['센스랑 스타일', 'D2'], ['기발한 아이디어', 'D1 A1'], ['꼼꼼함', 'D-1 C1'], ['묵묵히 해낸 결과', 'D-2 C1']]],
+    ],
+    en: [
+      ['Starting something new, you', [['just dive in', 'A2'], ['get the gist and go', 'A1'], ['look into it first', 'A-1'], ['make a full plan', 'A-2 C1']]],
+      ['In a crowded place you', [['get hyped', 'B2 A1'], ['find someone you know', 'B1'], ['find a corner', 'B-1'], ['plan your exit', 'B-2']]],
+      ['Your room is', [['always the same', 'C2'], ['ordered, your way', 'C1'], ['different each week', 'C-1'], ['rearranged all the time', 'C-2 A1']]],
+      ['You are drawn to', [['shiny pretty things', 'D2'], ['good design', 'D1'], ['things that last', 'D-1 C1'], ['best value', 'D-2']]],
+      ['Under stress you', [['blow up right away', 'A2'], ['vent to a friend', 'A1 B1'], ['hold it in', 'A-1 B-1'], ['act like nothing happened', 'A-2']]],
+      ['In a group project you are', [['the mood-maker', 'B2 D1'], ['the one gathering ideas', 'B1'], ['solid on your part', 'B-1 C1'], ['quietly doing all of it', 'B-2 C1']]],
+      ['Your hobbies', [['one, for years', 'C2'], ['a few in rotation', 'C1'], ['follow the trends', 'C-1 D1'], ['new every month', 'C-2']]],
+      ['In a group photo you', [['pose in the middle', 'D2 B1'], ['stand up front', 'D1'], ['hide at the back', 'D-1'], ['take the photo', 'D-2 B1']]],
+      ['A friend says "trip, now?"', [['already packing', 'A2'], ['probably yes', 'A1'], ['let us plan it properly', 'A-1 C1'], ['home is best', 'A-2 B-1']]],
+      ['Your friendships are', [['wide and many', 'B2'], ['a fair few', 'B1'], ['few and deep', 'B-1 C1'], ['solo is best', 'B-2']]],
+      ['For plans you are', [['10 min early', 'C2'], ['right on time', 'C1'], ['5 min late', 'C-1'], ['very late, somehow', 'C-2 A1']]],
+      ['People say you are', [['hard to miss', 'D2'], ['one of a kind', 'D1'], ['easy-going', 'D-1'], ['"oh, you were here?"', 'D-2 B-1']]],
+      ['After a mistake you', [['laugh it off', 'A2 D1'], ['say sorry, move on', 'A1'], ['replay it for days', 'A-1'], ['write a note to never repeat it', 'A-2 C1']]],
+      ['With someone new you', [['talk first', 'B2 A1'], ['chat back happily', 'B1'], ['need some time', 'B-1'], ['...why though?', 'B-2']]],
+      ['When plans suddenly change', [['you want the original', 'C2'], ['a bit sad, but fine', 'C1'], ['even better', 'C-1 A1'], ['what plans?', 'C-2']]],
+      ['You want praise for', [['style and taste', 'D2'], ['wild ideas', 'D1 A1'], ['attention to detail', 'D-1 C1'], ['quiet results', 'D-2 C1']]],
+    ],
+  };
+  const parse = s => { const o = {}; s.split(' ').forEach(p => { o[p[0]] = +p.slice(1); }); return o; };
+  const S = { i: 0, ans: [], order: [], back: false };
+  const L = () => EN() ? 'en' : 'ko';
+  const elOf = s => EL.find(x => x.s === s);
+  const colOf = e => { try{ return cssv(CAT[e.c].v); }catch(_){ return '#9aa8ff'; } };
+  const shuffle = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const lsGet = k => { try{ return localStorage.getItem(k); }catch(_){ return null; } };
+  const lsSet = (k, v) => { try{ localStorage.setItem(k, v); }catch(_){} };
+  const star = (x, y, s, d) => `<i class="pt2-star" style="left:${x};top:${y};--s:${s}px;animation-delay:${d || 0}s"></i>`;
+
+  function vec(){
+    const sum = { A: 0, B: 0, C: 0, D: 0 };
+    S.ans.forEach((a, qi) => { if(a == null) return; const v = parse(Q.ko[qi][1][a][1]); for(const k in v) sum[k] += v[k]; });
+    const r = {}; AX.forEach(k => r[k] = Math.max(-2, Math.min(2, sum[k] / 4))); return r;
+  }
+  function nearest(v, far){
+    let best = null, bd = far ? -1 : 1e9;
+    // 방향(코사인)으로 고른다: 거리로 고르면 가운데 근처 원소만 잔뜩 나와서
+    const nu = Math.hypot(...AX.map(k => v[k])) || 1e-9;
+    for(const s in T){ const t = T[s], nt = Math.hypot(t[0], t[1], t[2], t[3]); const d = -AX.reduce((a, k, i) => a + t[i] * v[k], 0) / nu / nt; if(far ? d > bd : d < bd){ bd = d; best = s; } }
+    return best;
+  }
+
+  function head(extra){
+    qHeadEl.innerHTML = `<h2>${t('ptTitle')}</h2>${extra || ''}<span class="x" id="qClose">×</span>`;
+    bindQClose();
+  }
+
+  window.ptHome = function(){
+    setFocus(false);
+    const last = lsGet('pt_ptype'), le = last && T[last] && elOf(last);
+    qBodyEl.innerHTML = `<div class="pt2"><div class="pt2-home pt2-in">
+      <div class="pt2-orb"><i>?</i>${star('2%', '8%', 18)}${star('86%', '70%', 12, .8)}${star('92%', '6%', 8, 1.4)}</div>
+      <div class="pt2-lead">${EN() ? 'Answer 16 questions and find the element most like you' : '질문 16개에 답하면 나와 닮은 원소를 찾아줘요'}</div>
+      <div class="pt2-chips"><span>Q × 16</span><span>${EN() ? '24 ELEMENTS' : '원소 24종'}</span><span>${EN() ? '4 AXES' : '성향 4축'}</span></div>
+      <button class="pt2-go" id="ptGo">${t('qStart')}</button>
+      ${le ? `<div class="pt2-last">${EN() ? 'Last result' : '지난 결과'} · <b>${le.s} ${elName(le)}</b></div>` : ''}
+    </div></div>`;
+    document.getElementById('ptGo').addEventListener('click', ptStart);
+  };
+  window.ptStart = function(){
+    S.i = 0; S.ans = []; S.back = false;
+    S.order = Q.ko.map(q => shuffle([0, 1, 2, 3]));
+    ptRender();
+  };
+  window.ptRender = function(){
+    setFocus(true);
+    const qs = Q[L()], n = qs.length;
+    if(S.i >= n){ ptResult(); return; }
+    const [prompt, opts] = qs[S.i];
+    head(`<span class="qprog">${S.i + 1} / ${n}</span>`);
+    const segs = qs.map((_, k) => `<i class="${k < S.i ? 'on' : k === S.i ? 'cur' : ''}"></i>`).join('');
+    const cur = S.ans[S.i];
+    qBodyEl.innerHTML = `<div class="pt2${S.back ? ' pt2-back' : ''}">
+      <div class="pt2-segs">${segs}</div>
+      <div class="pt2-in">
+        <div class="pt2-qn">Q.${String(S.i + 1).padStart(2, '0')}</div>
+        <div class="pt2-q">${prompt}</div>
+        <div class="pt2-opts">${S.order[S.i].map((oi, k) => `<button class="pt2-opt qopt${cur === oi ? ' pick' : ''}" data-o="${oi}"><b>${'ABCD'[k]}</b><span>${opts[oi][0]}</span></button>`).join('')}</div>
+      </div>
+      <div class="pt2-nav"><button id="pt2Prev" ${S.i ? '' : 'disabled'}>← ${EN() ? 'Back' : '이전'}</button><span>${Math.round(S.i / n * 100)}%</span></div>
+    </div>`;
+    S.back = false;
+    let lock = false;
+    const box = qBodyEl.querySelector('.pt2-opts');
+    box.querySelectorAll('.pt2-opt').forEach(btn => btn.addEventListener('click', () => {
+      if(lock) return; lock = true;
+      S.ans[S.i] = +btn.dataset.o;
+      btn.classList.add('pick'); box.classList.add('done');
+      try{ SFX.pick(); }catch(_){}
+      setTimeout(() => { S.i++; ptRender(); }, 230);
+    }));
+    document.getElementById('pt2Prev').addEventListener('click', () => { if(S.i){ S.i--; S.back = true; ptRender(); } });
+  };
+  window.ptResult = function(){
+    const v = vec(), sym = nearest(v), far = nearest(v, true);
+    const e = elOf(sym), mate = elOf(T[sym][4]) || elOf('O'), opp = elOf(far);
+    const [title, desc] = D[L()][sym], col = colOf(e), ax = AXN[L()];
+    S.res = { sym, v };
+    PTEST.result = sym; lsSet('pt_ptype', sym);
+    try{ SFX.gem(); }catch(_){}
+    head();
+    const bars = AX.map(k => {
+      const x = v[k], p = 50 + x / 2 * 50, l = Math.min(50, p), w = Math.abs(p - 50);
+      return `<div class="pt2-ax"><span class="${x < 0 ? 'on' : ''}">${ax[k][0]}</span>
+        <div class="pt2-bar"><i style="left:50%;width:0" data-l="${l}" data-w="${w}"></i><em style="left:50%" data-p="${p}"></em></div>
+        <span class="${x > 0 ? 'on' : ''}">${ax[k][1]}</span></div>`;
+    }).join('');
+    const pairBtn = (el, lab, id) => `<button id="${id}"><small>${lab}</small><b style="color:${colOf(el)}">${el.s}</b>${elName(el)}</button>`;
+    qBodyEl.innerHTML = `<div class="pt2"><div class="pt2-res pt2-in">
+      <div class="pt2-tile" style="--ec:${col}"><span class="n">${e.n}</span><span class="s">${e.s}</span><span class="k">${elName(e)}</span>
+        ${star('-10px', '-10px', 22)}${star('108px', '96px', 13, .9)}</div>
+      <div class="pt2-kick">${EN() ? 'YOUR ELEMENT TYPE' : 'YOUR ELEMENT TYPE'}</div>
+      <div class="pt2-title" style="--ec:${col}">${title}</div>
+      <div class="pt2-desc">${desc}</div>
+      <div class="pt2-axes">${bars}</div>
+      <div class="pt2-pair">${pairBtn(mate, EN() ? 'Pairs well' : '잘 맞는 원소', 'pt2Mate')}${opp.s !== sym ? pairBtn(opp, EN() ? 'Opposite' : '정반대 원소', 'pt2Opp') : ''}</div>
+      <div class="pt2-btns">
+        <button class="pt2-go" id="pt2Card">${EN() ? '✦ Save result card' : '✦ 결과 카드 저장'}</button>
+        <button class="btn" id="ptSee">${t('ptSee')}</button>
+        <button class="btn ghost" id="ptAgain">${t('qRetry')}</button>
+      </div>
+    </div></div>`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      qBodyEl.querySelectorAll('.pt2-bar i').forEach(i => { i.style.left = i.dataset.l + '%'; i.style.width = i.dataset.w + '%'; });
+      qBodyEl.querySelectorAll('.pt2-bar em').forEach(m => { m.style.left = m.dataset.p + '%'; });
+    }));
+    const go = el => { qEnd(); select(el.n); };
+    document.getElementById('ptSee').addEventListener('click', () => go(e));
+    document.getElementById('pt2Mate').addEventListener('click', () => go(mate));
+    const ob = document.getElementById('pt2Opp'); if(ob) ob.addEventListener('click', () => go(opp));
+    document.getElementById('ptAgain').addEventListener('click', ptStart);
+    document.getElementById('pt2Card').addEventListener('click', () => saveCard(sym, v));
+  };
+
+  /* ── 결과 카드 (1080×1350 PNG) ── */
+  function cardStar(c, x, y, r, rot){
+    c.save(); c.translate(x, y); c.rotate((rot || 75) * Math.PI / 180);
+    const g = c.createConicGradient ? c.createConicGradient(0, 0, 0) : null;
+    if(g){ [['#ffffff', 0], ['#c9d0ff', .17], ['#9aa8ff', .33], ['#6a78e8', .5], ['#9aa8ff', .67], ['#c9d0ff', .83], ['#ffffff', 1]].forEach(([cc, o]) => g.addColorStop(o, cc)); c.fillStyle = g; }
+    else c.fillStyle = '#c9d0ff';
+    c.shadowColor = 'rgba(154,168,255,.9)'; c.shadowBlur = r * .8;
+    c.beginPath(); const k = .16;
+    for(let i = 0; i < 4; i++){ const a = i * Math.PI / 2; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); const b = a + Math.PI / 4; c.lineTo(Math.cos(b) * r * k, Math.sin(b) * r * k); }
+    c.closePath(); c.fill(); c.restore();
+  }
+  function wrap(c, text, x, y, maxW, lh){
+    const words = text.split(' '); let line = '', yy = y;
+    for(const w of words){ const tst = line ? line + ' ' + w : w; if(c.measureText(tst).width > maxW && line){ c.fillText(line, x, yy); line = w; yy += lh; } else line = tst; }
+    if(line) c.fillText(line, x, yy); return yy;
+  }
+  async function saveCard(sym, v){
+    try{ await document.fonts.ready; }catch(_){}
+    const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const c = cv.getContext('2d'), e = elOf(sym), col = colOf(e), [title, desc] = D[L()][sym], ax = AXN[L()];
+    const mate = elOf(T[sym][4]) || elOf('O');
+    // 배경
+    const bg = c.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#0a0c18'); bg.addColorStop(.55, '#121736'); bg.addColorStop(1, '#070811');
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    const gl = c.createRadialGradient(W / 2, 470, 20, W / 2, 470, 520); gl.addColorStop(0, 'rgba(154,168,255,.42)'); gl.addColorStop(.5, 'rgba(106,120,232,.12)'); gl.addColorStop(1, 'rgba(106,120,232,0)');
+    c.fillStyle = gl; c.fillRect(0, 0, W, H);
+    // 웨이브
+    c.lineWidth = 2;
+    for(let k = 0; k < 6; k++){ c.strokeStyle = `rgba(154,168,255,${.05 + k * .02})`; c.beginPath();
+      for(let x = 0; x <= W; x += 12){ const y = 1010 + k * 16 + Math.sin(x / 120 + k * .7) * 22; x ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); }
+    // 점선 원
+    c.setLineDash([3, 12]); c.lineCap = 'round'; c.strokeStyle = 'rgba(201,208,255,.45)'; c.lineWidth = 4;
+    c.beginPath(); c.arc(W / 2, 470, 250, 0, 7); c.stroke();
+    c.setLineDash([2, 8]); c.strokeStyle = 'rgba(201,208,255,.22)'; c.lineWidth = 2; c.beginPath(); c.arc(W / 2, 470, 285, 0, 7); c.stroke();
+    c.setLineDash([]);
+    // 틀 + 모서리
+    c.strokeStyle = 'rgba(201,208,255,.35)'; c.lineWidth = 2; c.strokeRect(40, 40, W - 80, H - 80);
+    c.fillStyle = '#c9d0ff'; [[40, 40], [W - 40, 40], [40, H - 40], [W - 40, H - 40]].forEach(([x, y]) => c.fillRect(x - 7, y - 7, 14, 14));
+    // 머리글
+    c.fillStyle = 'rgba(201,208,255,.85)'; c.font = '700 26px ui-monospace,monospace'; c.textBaseline = 'alphabetic';
+    c.textAlign = 'left'; c.fillText('// ELEMENT TYPE', 80, 108);
+    c.textAlign = 'right'; c.fillText('No.' + String(Object.keys(T).indexOf(sym) + 1).padStart(2, '0') + ' / 24', W - 80, 108);
+    // 원소 타일
+    const tx = W / 2 - 170, ty = 300, ts = 340;
+    c.save(); c.shadowColor = col; c.shadowBlur = 60;
+    const tg = c.createLinearGradient(0, ty, 0, ty + ts); tg.addColorStop(0, 'rgba(30,36,70,.95)'); tg.addColorStop(1, 'rgba(10,12,24,.95)');
+    c.fillStyle = tg; c.beginPath(); c.roundRect ? c.roundRect(tx, ty, ts, ts, 36) : c.rect(tx, ty, ts, ts); c.fill(); c.restore();
+    c.strokeStyle = col; c.lineWidth = 5; c.beginPath(); c.roundRect ? c.roundRect(tx, ty, ts, ts, 36) : c.rect(tx, ty, ts, ts); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.75)'; c.font = '700 36px ui-monospace,monospace'; c.textAlign = 'left'; c.fillText(e.n, tx + 28, ty + 58);
+    c.textAlign = 'center'; c.fillStyle = '#fff'; c.shadowColor = col; c.shadowBlur = 40;
+    c.font = '800 168px Kanit,system-ui,sans-serif'; c.fillText(e.s, W / 2, ty + 222); c.shadowBlur = 0;
+    c.fillStyle = 'rgba(255,255,255,.85)'; c.font = '650 36px "IBM Plex Sans KR",system-ui,sans-serif'; c.fillText(elName(e), W / 2, ty + 300);
+    cardStar(c, tx - 4, ty + 6, 54); cardStar(c, tx + ts + 10, ty + ts - 30, 34); cardStar(c, 170, 220, 20); cardStar(c, W - 150, 640, 26); cardStar(c, 150, 760, 14);
+    // 타이틀 + 설명
+    const tg2 = c.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0); tg2.addColorStop(0, '#ffffff'); tg2.addColorStop(.5, '#c9d0ff'); tg2.addColorStop(1, col);
+    c.fillStyle = tg2; c.font = '800 72px "IBM Plex Sans KR",system-ui,sans-serif'; c.fillText(title, W / 2, 830);
+    c.fillStyle = 'rgba(220,226,255,.72)'; c.font = '500 32px "IBM Plex Sans KR",system-ui,sans-serif';
+    let y = wrap(c, desc, W / 2, 900, 820, 46);
+    // 축 막대
+    y = Math.min(Math.max(y + 70, 1030), 1050);
+    AX.forEach((k, i) => {
+      const yy = y + i * 52, x0 = 290, x1 = W - 290, x = v[k], p = x0 + (x1 - x0) * (.5 + x / 4);
+      c.font = `${x < 0 ? 800 : 500} 26px "IBM Plex Sans KR",system-ui,sans-serif`; c.fillStyle = x < 0 ? '#c9d0ff' : 'rgba(201,208,255,.45)'; c.textAlign = 'right'; c.fillText(ax[k][0], x0 - 24, yy + 9);
+      c.font = `${x > 0 ? 800 : 500} 26px "IBM Plex Sans KR",system-ui,sans-serif`; c.fillStyle = x > 0 ? '#c9d0ff' : 'rgba(201,208,255,.45)'; c.textAlign = 'left'; c.fillText(ax[k][1], x1 + 24, yy + 9);
+      for(let s = x0; s < x1; s += 14){ c.fillStyle = 'rgba(154,168,255,.18)'; c.fillRect(s, yy - 6, 10, 12); }
+      const g = c.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, '#9aa8ff'); g.addColorStop(1, '#c9d0ff');
+      c.fillStyle = g; const mid = (x0 + x1) / 2; c.fillRect(Math.min(mid, p), yy - 6, Math.abs(p - mid), 12);
+      c.fillStyle = 'rgba(255,255,255,.4)'; c.fillRect(mid - 1, yy - 12, 2, 24);
+      c.save(); c.translate(p, yy); c.rotate(Math.PI / 4); c.fillStyle = '#fff'; c.shadowColor = '#c9d0ff'; c.shadowBlur = 14; c.fillRect(-10, -10, 20, 20); c.restore();
+    });
+    // 바닥
+    c.textAlign = 'left'; c.font = '600 26px "IBM Plex Sans KR",system-ui,sans-serif'; c.fillStyle = 'rgba(201,208,255,.6)';
+    c.fillText((EN() ? 'Pairs well with ' : '잘 맞는 원소  ') + mate.s + ' ' + elName(mate), 80, H - 86);
+    c.textAlign = 'right'; c.font = '800 28px Kanit,system-ui,sans-serif'; c.fillStyle = '#c9d0ff'; c.fillText(EN() ? 'PERIODIC//TABLE' : '페리오딕//테이블', W - 80, H - 86);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/png')); if(!blob) return;
+    const file = `element_type_${sym}.png`;
+    if(typeof rxNative === 'function' && rxNative()){
+      const ok = await rxNativeShareFile(blob, file, title); if(ok){ try{ rxSay(rt('cardAppNote'), 3600); }catch(_){} return; }
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    try{ rxSay(rt('cardSaved'), 1800); }catch(_){}
+  }
+  window.rxPtype = { T, D, Q, vec, nearest, saveCard, S };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
