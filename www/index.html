@@ -34128,16 +34128,22 @@ function rxFlashbang(soft){
       x.beginPath(); x.arc(0, 0, r * lerp(1.25, 1, prog), 0, Math.PI * 2); x.strokeStyle = pwl(alpha); x.lineWidth = 3 / U; x.stroke();
       x.setLineDash([]); x.restore();
     }
+    // 사각 프레임: X·Y·Z 세 축으로 천천히 굴러가는 3D 회전 (원근 투영)
     function frameRect(prog, t){
       if(prog <= 0) return;
       const sc = oBack(prog);
-      x.save(); x.rotate(.2 + Math.sin(t * .0006) * .02); x.transform(1, 0, -.12, 1, 0, 0); x.scale(sc, sc); x.globalAlpha = cl(prog * 2);
-      x.lineJoin = 'miter';
-      x.strokeStyle = 'rgba(235,238,255,.95)'; x.lineWidth = 9 / U; x.shadowColor = PW; x.shadowBlur = 18 * DPR; x.strokeRect(-340, -235, 680, 470);
-      x.shadowBlur = 0; x.strokeStyle = pwl(.6); x.lineWidth = 1.6 / U; x.strokeRect(-372, -265, 744, 530);
-      // 모서리 계단
+      const ax = Math.sin(t * .00031) * .75, ay = Math.sin(t * .00023 + 1.3) * .8, az = .2 + t * .00011;
+      const cx_ = Math.cos(ax), sx_ = Math.sin(ax), cy_ = Math.cos(ay), sy_ = Math.sin(ay), cz = Math.cos(az), sz = Math.sin(az), F = 1500;
+      const P = (px, py) => { // Y → X → Z 회전 후 원근
+        let x1 = px * cy_, z1 = -px * sy_; let y2 = py * cx_ - z1 * sx_, z2 = py * sx_ + z1 * cx_;
+        const x3 = x1 * cz - y2 * sz, y3 = x1 * sz + y2 * cz, k = F / (F + z2) * sc; return [x3 * k, y3 * k, k]; };
+      const poly = (w, h) => { const c = [P(-w, -h), P(w, -h), P(w, h), P(-w, h)]; x.beginPath(); x.moveTo(c[0][0], c[0][1]); for(let q = 1; q < 4; q++) x.lineTo(c[q][0], c[q][1]); x.closePath(); };
+      x.save(); x.globalAlpha = cl(prog * 2); x.lineJoin = 'miter';
+      poly(340, 235); x.strokeStyle = 'rgba(235,238,255,.95)'; x.lineWidth = 9 / U; x.shadowColor = PW; x.shadowBlur = 18 * DPR; x.stroke();
+      x.shadowBlur = 0; poly(372, 265); x.strokeStyle = pwl(.6); x.lineWidth = 1.6 / U; x.stroke();
+      // 모서리 계단 (프레임과 같이 돈다)
       x.fillStyle = 'rgba(235,238,255,.9)';
-      for(let i = 0; i < 6; i++){ x.fillRect(-372 + i * 16, -265 - 16 - i * 0, 12, 12); x.fillRect(372 - 12 - i * 16, 265 + 4, 12, 12); }
+      for(let q = 0; q < 6; q++){ [P(-366 + q * 16, -275), P(366 - q * 16, 275)].forEach(([px, py, k]) => x.fillRect(px - 6 * k, py - 6 * k, 12 * k, 12 * k)); }
       x.restore();
     }
     function pixelArc(r, a0, a1, prog, cell, col){
