@@ -33827,6 +33827,44 @@ function rxFlashbang(soft){
 
 
 <style>
+  /* ═══ 설정 › 정보: 제작자 크레딧 ═══ */
+  #rxCredits{margin:18px 0 6px;padding:18px 18px 14px;border:1px solid var(--line2);border-radius:14px;background:
+    radial-gradient(120% 140% at 0% 0%,rgba(140,158,255,.12),transparent 55%),radial-gradient(120% 140% at 100% 100%,rgba(217,119,87,.10),transparent 55%),#121620}
+  #rxCredits h4{margin:0 0 2px;font:800 15px/1.3 Orbit,system-ui,sans-serif;letter-spacing:.06em;color:var(--text)}
+  #rxCredits .cr-sub{font-size:11.5px;color:var(--dim);margin-bottom:14px}
+  #rxCredits .cr-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px dashed var(--line2)}
+  #rxCredits .cr-role{flex:0 0 92px;font:700 10.5px/1.3 ui-monospace,Menlo,monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+  #rxCredits .cr-who{flex:1;min-width:0}
+  #rxCredits .cr-name{display:inline-block;font:700 23px/1.15 Kanit,Orbit,system-ui,sans-serif;letter-spacing:.03em;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;background-color:transparent!important;background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:crShine 5s linear infinite}
+  #rxCredits .cr-name.pw{background-image:linear-gradient(100deg,#8c9eff 0%,#8c9eff 30%,#fff 45%,#c5cbff 55%,#8c9eff 70%,#8c9eff 100%)}
+  #rxCredits .cr-name.cl{background-image:linear-gradient(100deg,#D97757 0%,#D97757 30%,#fff 45%,#f0b49e 55%,#D97757 70%,#D97757 100%);animation-delay:-2.5s}
+  @keyframes crShine{from{background-position:120% 0}to{background-position:-100% 0}}
+  #rxCredits .cr-what{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
+  #rxCredits .cr-foot{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2);font:600 10.5px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.1em;color:rgba(197,203,255,.5);text-align:center}
+  @media (prefers-reduced-motion:reduce){ #rxCredits .cr-name{animation:none;background-position:50% 0} }
+  @media (max-width:700px){ #rxCredits .cr-role{flex-basis:74px} #rxCredits .cr-name{font-size:19px} }
+</style>
+<script>
+(function(){
+  if(typeof renderSettings !== 'function') return;
+  function credits(){
+    const body = document.getElementById('setBody'); if(!body) return;
+    let c = document.getElementById('rxCredits');
+    const en = LANG === 'en';
+    if(!c){ c = document.createElement('div'); c.id = 'rxCredits'; body.appendChild(c); }
+    c.dataset.tab = 'info';
+    c.innerHTML = `<h4>CREDITS //</h4><div class="cr-sub">${en ? 'The people (and one AI) behind 페리오딕//테이블' : '페리오딕//테이블을 만든 사람들 (그리고 AI 하나)'}</div>
+      <div class="cr-row"><div class="cr-role">${en ? 'Director' : '디렉터'}</div><div class="cr-who"><span class="cr-name pw">Gwasan_2050</span>
+        <div class="cr-what">${en ? 'Concept · design direction · element characters · testing &amp; bug hunting' : '기획 · 디자인 디렉팅 · 원소 캐릭터 · 테스트와 버그 사냥'}</div></div></div>
+      <div class="cr-row"><div class="cr-role">${en ? 'Dev help' : '개발 도움'}</div><div class="cr-who"><span class="cr-name cl">Claude</span>
+        <div class="cr-what">${en ? 'Code · animation · sound' : '코드 · 애니메이션 · 사운드'}</div></div></div>
+      <div class="cr-foot">© ${new Date().getFullYear()} GWASAN_2050 · ${en ? 'proudly committed to scientifically accurate nonsense' : '과학적으로 정확한 헛소리를 지향합니다'}</div>`;
+  }
+  const _rs = renderSettings;
+  renderSettings = function(){ const r = _rs.apply(this, arguments); try{ credits(); }catch(e){} return r; };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
