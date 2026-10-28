@@ -35752,6 +35752,10 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
     if(document.hidden){ away = quizOpen() ? Date.now() : 0; return; }
     if(away){ const d = Date.now() - away; away = 0; if(d > 3000 && d < 120000 && quizOpen()) setTimeout(frog, 600); }
   });
+  // ④ 서클 투 서치·알림창 등으로 창 포커스를 잃었다가(1.5초~2분) 돌아옴
+  let blurAt = 0;
+  addEventListener('blur', () => { blurAt = quizOpen() ? Date.now() : 0; });
+  addEventListener('focus', () => { if(!blurAt) return; const d = Date.now() - blurAt; blurAt = 0; if(d > 1500 && d < 120000 && quizOpen()) setTimeout(frog, 600); });
   window.rxFrog = frog;
 })();
 </script>
