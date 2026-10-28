@@ -35720,6 +35720,42 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
 })();
 </script>
 <style>
+  .rx-noai{cursor:pointer;transition:transform .15s}
+  .rx-noai:active{transform:scale(.94)}
+  .rx-noai.shake{animation:rxNoaiSh .35s}
+  @keyframes rxNoaiSh{20%{transform:translateX(-4px) rotate(-2deg)}40%{transform:translateX(4px) rotate(2deg)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+</style>
+<script>
+/* ── 숨은 업적: 청개구리 본능 🐸 — "AI 쓰지마세요"를 무시하려는 낌새가 보이면
+   ① 경고문을 3번 누름  ② 퀴즈 문제를 복사함  ③ 문제 푸는 중 딴 앱 갔다가 돌아옴(3초~2분) ── */
+(function(){
+  const frog = () => { try{ if(!rxEvtHas('frog')){ rxEvt('frog'); } }catch(e){} };
+  if(typeof ACH !== 'undefined' && !ACH.some(a => a.id === 'frog')){
+    const i = ACH.findIndex(a => a.id === 'master');
+    const a = { id: 'frog', secret: true, need: () => rxEvtHas('frog'), ko: ['청개구리 본능', '하지 말라니까 더 하고 싶잖아.'], en: ['Contrarian instinct', 'Told not to, so of course you wanted to.'] };
+    if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+    try{ RX_ACH_IC.frog = '🐸'; }catch(e){}
+  }
+  const LINES = { ko: ['AI 쓰지마세요 ;)', '진짜로요.', '진짜 진짜로요.', '🐸 …청개구리 발견'], en: ['No AI, please ;)', 'Seriously.', 'Seriously seriously.', '🐸 …a contrarian appears'] };
+  let taps = 0;
+  document.addEventListener('click', e => {
+    const w = e.target.closest && e.target.closest('.rx-noai'); if(!w) return;
+    taps = Math.min(3, taps + 1);
+    w.textContent = LINES[LANG === 'en' ? 'en' : 'ko'][taps];
+    w.classList.remove('shake'); void w.offsetWidth; w.classList.add('shake');
+    if(taps >= 3) frog();
+  });
+  const quizOpen = () => { try{ return quizEl.classList.contains('on') && QZ && QZ.on; }catch(e){ return false; } };
+  document.addEventListener('copy', () => { try{ const s = getSelection(); if(quizOpen() && s && qBodyEl.contains(s.anchorNode)) frog(); }catch(e){} });
+  let away = 0;
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){ away = quizOpen() ? Date.now() : 0; return; }
+    if(away){ const d = Date.now() - away; away = 0; if(d > 3000 && d < 120000 && quizOpen()) setTimeout(frog, 600); }
+  });
+  window.rxFrog = frog;
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
