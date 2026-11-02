@@ -37874,6 +37874,172 @@ function rxSunGem(){
 })();
 </script>
 <style>
+  /* ═══ 학습 탭 리워크: 홈 화면 + 묶음(문제 풀기 · 탐구 · 놀이) + 페리윙클 디자인 ═══ */
+  #qBox{--lp:#9aa8ff;--lp2:#c9d0ff;--lp3:#6a78e8}
+  .hubt[data-h="home"]::before{content:"⌂";font-size:15px}
+  .hubt[data-h="star"]::before{content:"⭐"}
+  .hubt[data-h="type"]::before{content:"⌨"}
+  .hubt[data-h="orbx"]::before{content:"🌀"}
+  .hubt[data-h="photo"]::before{content:"📷"}
+  .hubt[data-h="star"]::before, .hubt[data-h="type"]::before{display:inline-grid}
+  .hubt[data-h="star"], .hubt[data-h="type"]{padding-left:12px}
+  .hubg{display:none}
+  @media (min-width:761px){
+    #qBox:has(> #qHead .hubtabs) > #qHead{background:linear-gradient(180deg,rgba(154,168,255,.07),rgba(154,168,255,0) 60%)}
+    #qBox:has(> #qHead .hubtabs) > #qHead::before{content:"LEARN";font:800 17px/1 Kanit,system-ui,sans-serif;letter-spacing:.16em;padding:2px 12px 2px;
+      background:linear-gradient(90deg,#fff,var(--lp2) 45%,var(--lp));-webkit-background-clip:text;background-clip:text;color:transparent}
+    html[lang="en"] #qBox:has(> #qHead .hubtabs) > #qHead::before{content:"LEARN"}
+    #qBox:has(> #qHead .hubtabs) > #qHead::after{content:"// 학습";position:absolute;left:22px;top:38px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.12em;color:rgba(154,168,255,.55)}
+    html[lang="en"] #qBox:has(> #qHead .hubtabs) > #qHead::after{content:"// study hub"}
+    #qBox:has(> #qHead .hubtabs) > #qHead{position:relative;padding-top:18px}
+    #qBox:has(> #qHead .hubtabs) .hubtabs{margin-top:16px;gap:1px}
+    .hubg{display:block;margin:8px 12px 2px;font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.12em;color:rgba(154,168,255,.6);white-space:nowrap}
+    .hubg:first-of-type{margin-top:6px}
+    #qBox:has(> #qHead .hubtabs) .hubt{position:relative;transition:background .2s,color .2s,transform .15s;padding-top:6px;padding-bottom:6px}
+    #qBox:has(> #qHead .hubtabs) .hubt:hover{background:rgba(154,168,255,.07);transform:translateX(2px)}
+    #qBox:has(> #qHead .hubtabs) .hubt.on{background:linear-gradient(90deg,rgba(154,168,255,.22),rgba(154,168,255,.03));box-shadow:none;color:#fff}
+    #qBox:has(> #qHead .hubtabs) .hubt.on::after{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(180deg,#fff,var(--lp));box-shadow:0 0 10px var(--lp)}
+    .hubt::before{border:1px solid rgba(154,168,255,.18);background:rgba(154,168,255,.07)!important}
+    .hubt.on::before{background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(154,168,255,.45))!important;border-color:rgba(201,208,255,.7);box-shadow:0 0 10px rgba(154,168,255,.45)}
+  }
+  @media (max-width:760px){
+    .hubtabs .hubsep{flex:none;width:1px;align-self:stretch;margin:4px 3px;background:rgba(154,168,255,.25)}
+    .hubt.on{background:linear-gradient(180deg,rgba(154,168,255,.25),rgba(154,168,255,.1))!important;border-color:rgba(154,168,255,.45)!important;color:#fff!important}
+  }
+  .hubsep{display:none}
+  @media (max-width:760px){ .hubsep{display:block} }
+  /* 본문 전환 */
+  @keyframes lhIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  #qBody.lh-in > *{animation:lhIn .28s cubic-bezier(.2,.9,.25,1) both}
+  /* 홈 */
+  .lh{--lp:#9aa8ff;--lp2:#c9d0ff}
+  .lh-hero{position:relative;padding:18px 18px 16px;border-radius:16px;overflow:hidden;border:1px solid rgba(154,168,255,.25);
+    background:radial-gradient(120% 140% at 0% 0%,rgba(154,168,255,.25),rgba(154,168,255,0) 55%),radial-gradient(90% 120% at 100% 100%,rgba(106,120,232,.22),rgba(106,120,232,0) 60%),#0a0d18}
+  .lh-hero::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);pointer-events:none}
+  .lh-k{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.7)}
+  .lh-h{margin:8px 0 4px;font:800 22px/1.25 system-ui,sans-serif;word-break:keep-all}
+  .lh-h b{background:linear-gradient(90deg,#fff,var(--lp2) 50%,var(--lp));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lh-sub{font-size:12.5px;color:var(--dim)}
+  .lh-today{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 12px;border-radius:12px;background:rgba(5,7,13,.55);border:1px solid rgba(154,168,255,.2);cursor:pointer;transition:transform .15s,border-color .2s;position:relative;z-index:1;width:100%;text-align:left;font:inherit;color:inherit}
+  .lh-today:hover{transform:translateY(-1px);border-color:rgba(201,208,255,.5)}
+  .lh-today .sym{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font:600 20px/1 Kanit,system-ui,sans-serif;background:rgba(255,255,255,.04);border:1px solid currentColor;flex:none}
+  .lh-today .tt{font-size:10.5px;color:var(--dim);font-family:ui-monospace,monospace;letter-spacing:.08em}
+  .lh-today .nm{font-size:14px;font-weight:750;margin-top:2px}
+  .lh-today .go{margin-left:auto;color:var(--lp2);font-size:12px;font-weight:700}
+  .lh-g{margin-top:18px}
+  .lh-gh{display:flex;align-items:baseline;gap:8px;margin:0 2px 8px}
+  .lh-gh b{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:var(--lp)}
+  .lh-gh span{font-size:12px;color:var(--dim)}
+  .lh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+  .lh-c{position:relative;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px;border-radius:12px;border:1px solid rgba(154,168,255,.16);background:linear-gradient(180deg,rgba(154,168,255,.06),rgba(154,168,255,.015));
+    color:var(--text);font:inherit;cursor:pointer;transition:transform .18s cubic-bezier(.2,.9,.25,1),border-color .2s,background .2s;animation:lhIn .35s cubic-bezier(.2,.9,.25,1) both}
+  .lh-c:hover{transform:translateY(-2px);border-color:rgba(201,208,255,.55);background:linear-gradient(180deg,rgba(154,168,255,.14),rgba(154,168,255,.03));box-shadow:0 8px 24px rgba(106,120,232,.18)}
+  .lh-c:active{transform:scale(.98)}
+  .lh-ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(154,168,255,.22));border:1px solid rgba(201,208,255,.3)}
+  .lh-ct{font-size:13.5px;font-weight:750}
+  .lh-cd{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:2px;word-break:keep-all}
+  .lh-new{position:absolute;right:8px;top:8px;font:800 8.5px/1 ui-monospace,monospace;letter-spacing:.1em;padding:3px 5px;border-radius:5px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff);color:#141833}
+  @media (max-width:520px){ .lh-grid{grid-template-columns:1fr 1fr} .lh-c{flex-direction:column;gap:8px} .lh-h{font-size:19px} }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  // 묶음과 설명
+  const GROUPS = [
+    { id: 'practice', k: 'PRACTICE', ko: '문제 풀기', en: 'Quizzes & drills', tabs: ['quiz', 'mem', 'today', 'ion'] },
+    { id: 'explore', k: 'EXPLORE', ko: '탐구', en: 'Hands-on & facts', tabs: ['ahist', 'dyk', 'orbx', 'photo', 'stat'] },
+    { id: 'play', k: 'PLAY', ko: '놀이', en: 'Games', tabs: ['ptest', 'star', 'type'] },
+  ];
+  const ICON = { quiz: '?', mem: '🧠', today: '📅', ion: '±', ahist: '🕰', dyk: '💡', orbx: '🌀', photo: '📷', stat: '⚡', ptest: '🎭', star: '⭐', type: '⌨' };
+  const DESC = {
+    ko: { quiz: '기호·이름·번호·분류, 8가지 유형으로 맞히기', mem: '카드를 넘기며 주기율표 외우기', today: '매일 바뀌는 오늘의 원소와 한 줄 운세', ion: '양이온·음이온과 이온의 이동',
+          ahist: '돌턴부터 전자 구름까지, 직접 실험해 보며', dyk: '눌러 보며 확인하는 신기한 과학 사실', orbx: '오비탈을 잘라서 속을 들여다보기', photo: '사람이 실제로 찍은 원자 사진들', stat: '마찰 전기로 네온 전구 켜기',
+          ptest: '16문항으로 알아보는 나와 닮은 원소', star: '별 속 핵융합을 2048로', type: '원소 이름 빨리 치기' },
+    en: { quiz: 'Symbols, names, numbers, groups — 8 question types', mem: 'Flip cards to memorise the table', today: 'A new element every day, with a fortune', ion: 'Cations, anions and how ions move',
+          ahist: 'From Dalton to the electron cloud, hands-on', dyk: 'Surprising facts you can poke at', orbx: 'Slice an orbital and look inside', photo: 'Real photographs of atoms', stat: 'Light a neon bulb with static',
+          ptest: '16 questions to find your element', star: 'Stellar fusion as 2048', type: 'Type element names fast' },
+  };
+  const NEW = new Set(['dyk']);
+  const clean = s => String(s || '').replace(/^[\p{Extended_Pictographic}⌨⌀-⏿️\s]+/u, '').trim();
+
+  if(typeof HUB !== 'undefined' && HUB === 'quiz') HUB = 'home';
+
+  const _hh = hubHead;
+  hubHead = function(){
+    const r = _hh.apply(this, arguments);
+    const tabs = qHeadEl.querySelector('.hubtabs');
+    if(!tabs || tabs.dataset.lh) return r;
+    tabs.dataset.lh = '1';
+    const btn = {};
+    tabs.querySelectorAll('.hubt').forEach(b => { btn[b.dataset.h] = b; b.textContent = clean(b.textContent); });
+    // 홈 버튼
+    const home = document.createElement('button');
+    home.className = 'hubt' + (HUB === 'home' ? ' on' : ''); home.dataset.h = 'home'; home.textContent = EN() ? 'Home' : '홈';
+    home.addEventListener('click', () => { HUB = 'home'; openHub(); });
+    // 묶음 순서대로 다시 놓는다 (모르는 탭은 맨 뒤에 그대로)
+    const frag = document.createDocumentFragment();
+    frag.appendChild(home);
+    GROUPS.forEach(g => {
+      const have = g.tabs.filter(k => btn[k]);
+      if(!have.length) return;
+      const sep = document.createElement('i'); sep.className = 'hubsep'; frag.appendChild(sep);
+      const h = document.createElement('div'); h.className = 'hubg'; h.textContent = EN() ? g.k : `${g.k} · ${g.ko}`; frag.appendChild(h);
+      have.forEach(k => { frag.appendChild(btn[k]); delete btn[k]; });
+    });
+    Object.values(btn).forEach(b => frag.appendChild(b));
+    tabs.appendChild(frag);
+    tabs.querySelectorAll('.hubt').forEach(b => b.classList.toggle('on', b.dataset.h === HUB));
+    return r;
+  };
+
+  function renderHome(){
+    setFocus(false);
+    const L = EN() ? 'en' : 'ko';
+    const names = {};
+    qHeadEl.querySelectorAll('.hubt').forEach(b => names[b.dataset.h] = b.textContent);
+    let today = '';
+    try{
+      const { el: e } = todayElement(), col = cssv(CAT[e.c].v);
+      today = `<button class="lh-today" id="lhToday"><span class="sym" style="color:${col}">${e.s}</span><span><div class="tt">${EN() ? "TODAY'S ELEMENT" : '오늘의 원소'}</div><div class="nm">${elName(e)}</div></span><span class="go">${EN() ? 'open →' : '보러 가기 →'}</span></button>`;
+    }catch(_){}
+    const h = new Date().getHours();
+    const greet = EN() ? (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') : (h < 6 ? '늦은 밤이네요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '좋은 오후예요' : '좋은 저녁이에요');
+    let n = 0;
+    qBodyEl.innerHTML = `<div class="lh">
+      <div class="lh-hero"><div class="lh-k">LEARN // ${EN() ? 'STUDY HUB' : '학습'}</div>
+        <div class="lh-h">${greet}. <b>${EN() ? 'What shall we learn?' : '오늘은 뭘 배워 볼까요?'}</b></div>
+        <div class="lh-sub">${EN() ? 'Pick a card below, or use the tabs.' : '아래 카드를 고르거나 탭에서 바로 골라요.'}</div>
+        ${today}</div>
+      ${GROUPS.map(g => {
+        const have = g.tabs.filter(k => names[k]);
+        if(!have.length) return '';
+        return `<div class="lh-g"><div class="lh-gh"><b>${g.k}</b><span>${EN() ? g.en : g.ko}</span></div><div class="lh-grid">${have.map(k =>
+          `<button class="lh-c" data-h="${k}" style="animation-delay:${(n++) * 35}ms">${NEW.has(k) ? '<span class="lh-new">NEW</span>' : ''}<span class="lh-ic">${ICON[k] || '•'}</span><span><div class="lh-ct">${names[k]}</div><div class="lh-cd">${DESC[L][k] || ''}</div></span></button>`).join('')}</div></div>`;
+      }).join('')}
+    </div>`;
+    qBodyEl.querySelectorAll('.lh-c').forEach(b => b.addEventListener('click', () => { HUB = b.dataset.h; try{ SFX.pick(); }catch(_){} openHub(); }));
+    const td = document.getElementById('lhToday'); if(td) td.addEventListener('click', () => { HUB = 'today'; openHub(); });
+  }
+
+  const _oh = openHub;
+  openHub = function(){
+    if(HUB === 'home'){
+      setFocus(false);
+      QZ.on = false; QZ.q = null; MEM.on = false;
+      clearFill();
+      qBarEl.classList.remove('on');
+      quizEl.classList.add('on');
+      hubHead();
+      renderHome();
+    } else _oh.apply(this, arguments);
+    // 본문이 바뀔 때 살짝 떠오르며 들어온다
+    if(!window.RX_REDUCED){ qBodyEl.classList.remove('lh-in'); void qBodyEl.offsetWidth; qBodyEl.classList.add('lh-in'); clearTimeout(qBodyEl._lh); qBodyEl._lh = setTimeout(() => qBodyEl.classList.remove('lh-in'), 400); }
+    const on = qHeadEl.querySelector('.hubt.on'); if(on && on.scrollIntoView) try{ on.scrollIntoView({ block: 'nearest', inline: 'center' }); }catch(_){}
+  };
+  window.rxLearnHome = () => { HUB = 'home'; openHub(); };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
