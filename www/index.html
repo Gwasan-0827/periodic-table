@@ -36134,7 +36134,7 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   let MAXP = 120;
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const mkFS = () => `precision highp float;
-uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;uniform float ICET;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;uniform float ICET;uniform float FIZZ;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -36239,8 +36239,20 @@ void main(){
   col+=front*vec3(.75,.9,1.)*.9;
   if(LOW<.5){ for(int k=0;k<7;k++){ float fk=float(k); vec2 b=vec2(fract(sin(fk*91.7)*437.5),fract(T*(.05+.03*fract(fk*.37))+fk*.31));
       b=vec2(mix(.1,.9,b.x)*R.x, R.y*(1.-b.y)); float br=(2.+3.*fract(fk*.73))*K; float bd=length(q-b);
-      float ring=smoothstep(br+1.,br,bd)*smoothstep(br-1.6,br-.6,bd); float bh=smoothstep(br*.6,0.,length(q-b+vec2(br*.35,br*.35)));
+      float ring=(1.-smoothstep(br,br+1.,bd))*smoothstep(br-1.6,br-.6,bd); float bh=1.-smoothstep(0.,br*.6,length(q-b+vec2(br*.35,br*.35)));
       col+=(ring*.5+bh*.6)*step(.04,h)*(1.-iceM); } }
+  // 탄산(콜라): CO₂ 기포가 바닥에서 생겨 흔들리며 빠르게 올라가고, 위로 갈수록 조금씩 커진다
+  if(FIZZ>.01){ for(int k=0;k<36;k++){ float fk=float(k); if(fk>=FIZZ*36.) break;
+      float sp=.22+.3*fract(fk*.618), ph=fract(T*sp+fk*.137), x0=fract(sin(fk*12.9898)*43758.5)*.84+.08;
+      float yb=mix(YB.y-4.*K,YB.x+6.*K,ph);
+      vec2 b=vec2(x0*R.x+sin(T*3.+fk)*2.*K*ph, yb);
+      float br=(1.8+2.6*fract(fk*.37))*K*(.55+.7*ph), bd=length(q-b);
+      float ring=(1.-smoothstep(br,br+.9,bd))*smoothstep(br-1.3,br-.4,bd), bh=1.-smoothstep(0.,br*.55,length(q-b+vec2(br*.3,br*.3)));
+      col+=(ring*.85+bh*.9)*step(.04,h)*(1.-iceM)*smoothstep(0.,.08,ph); }
+    // 윗면 거품: 위쪽 가장자리에 작은 기포가 모여 하얗게
+    float topE=clamp(-g.y/gl,0.,1.)*(1.-smoothstep(0.,7.*K,max(dist,0.)))*(1.-smoothstep(1.,1.6,f));
+    float fo=smoothstep(.45,.75,noise(q/(3.*K)+vec2(T*.6,0.)));
+    col=mix(col,vec3(.95,.9,.82),topE*fo*.75*FIZZ*(1.-iceM)); }
   float a=edge*mix(.80+.17*depth,.9+.08*depth,iceM);
   gl_FragColor=vec4(col*a,a);
 }`;
@@ -36252,6 +36264,9 @@ void main(){
     const v = hex(c), mx = Math.max(...v), mn = Math.min(...v), sat = mx > 0 ? (mx - mn) / mx : 0, dark = 1 - mx;
     return Math.max(.18, Math.min(.88, .18 + sat * .75 + dark * .7));
   };
+  // 탄산이 든 액체: 기포 양 (0~1)
+  const FIZZY = { '콜라': 1, '사이다': .9, '탄산수': .8, '맥주': .5 };
+  const fizz = () => { try{ return FIZZY[RX.raw] || 0; }catch(e){ return 0; } };
   const S = { fz: false, t: 0, from: 0, ice: 0, cx: 0, cy: 0, bx: 0, by: 0, ox: 0, oy: 0 };
   function init(stage){
     if(failed) return false;
@@ -36269,7 +36284,7 @@ void main(){
       gl.useProgram(prog);
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET', 'ICET'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET', 'ICET', 'FIZZ'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
       return true;
@@ -36317,7 +36332,7 @@ void main(){
     gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
     gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
-    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1); gl.uniform1f(U.MET, m.metal ? 1 : 0); gl.uniform1f(U.ICET, iceTint(col));
+    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1); gl.uniform1f(U.MET, m.metal ? 1 : 0); gl.uniform1f(U.ICET, iceTint(col)); gl.uniform1f(U.FIZZ, lowp ? 0 : fizz());
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const _d = rxDraw;
