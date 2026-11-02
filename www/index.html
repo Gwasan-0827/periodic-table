@@ -38566,6 +38566,131 @@ function rxSunGem(){
 })();
 </script>
 <style>
+  /* ═══ 빈칸 채우기: 빠진 원소 카드 더미. 맨 위 카드를 끌어다 제자리에 놓는다 ═══ */
+  body.mem-fill #qBar .ftray{display:none!important}
+  body.mem-fill{-webkit-user-select:none;user-select:none}
+  body.mem-fill #qBar.on{width:auto;min-width:min(420px,calc(100vw - 24px));padding:9px 14px}
+  #fbDeck{position:fixed;left:50%;bottom:66px;transform:translateX(-50%);z-index:9400;height:104px;pointer-events:none}
+  #fbDeck .fb-card{position:absolute;bottom:0;left:0;width:86px;height:100px;border-radius:16px;border:2px solid var(--c);pointer-events:none;
+    background:linear-gradient(165deg,color-mix(in srgb,var(--c) 30%,#121626),#0c0f19 72%);box-shadow:0 10px 26px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:transform .35s cubic-bezier(.2,1.2,.4,1),filter .3s;transform-origin:50% 100%}
+  #fbDeck .fb-card b{font:500 34px/1 Kanit,system-ui,sans-serif;text-shadow:0 0 14px color-mix(in srgb,var(--c) 70%,transparent)}
+  #fbDeck .fb-card span{margin-top:6px;font-size:11px;color:rgba(255,255,255,.75);max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fbDeck .fb-card.top{pointer-events:auto;cursor:grab;touch-action:none;box-shadow:0 14px 30px rgba(0,0,0,.55),0 0 22px color-mix(in srgb,var(--c) 40%,transparent)}
+  #fbDeck .fb-card.top::after{content:"";position:absolute;inset:-2px;border-radius:16px;border:2px solid rgba(255,255,255,.0);animation:fbPulse 1.8s ease-in-out infinite}
+  @keyframes fbPulse{50%{border-color:rgba(255,255,255,.45)}}
+  #fbDeck .fb-card.held{visibility:hidden}
+  #fbDeck .fb-more{position:absolute;bottom:-4px;font:800 10px/1 ui-monospace,monospace;color:#c9d0ff;background:rgba(10,13,22,.9);border:1px solid rgba(154,168,255,.4);padding:3px 6px;border-radius:7px;pointer-events:none}
+  #fbDeck .fb-skip{position:absolute;bottom:34px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(154,168,255,.45);background:rgba(10,13,22,.9);color:#c9d0ff;font-size:16px;cursor:pointer;pointer-events:auto;display:grid;place-items:center}
+  #fbDeck .fb-skip:hover{background:rgba(154,168,255,.2)}
+  .fb-ghost{position:fixed;left:0;top:0;z-index:9600;width:86px;height:100px;border-radius:16px;border:2px solid var(--c);pointer-events:none;
+    background:linear-gradient(165deg,color-mix(in srgb,var(--c) 30%,#121626),#0c0f19 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;
+    box-shadow:0 24px 50px rgba(0,0,0,.6),0 0 30px color-mix(in srgb,var(--c) 50%,transparent)}
+  .fb-ghost b{font:500 34px/1 Kanit,system-ui,sans-serif}
+  .fb-ghost span{margin-top:6px;font-size:11px;color:rgba(255,255,255,.75)}
+  body.mem-fill .cell.blank.fb-hover{border-color:#fff!important;border-style:solid!important;background:rgba(201,208,255,.18)!important;box-shadow:0 0 16px rgba(201,208,255,.6);transform:scale(1.08);z-index:5}
+  @media (max-width:700px){ #fbDeck{bottom:112px;height:88px} #fbDeck .fb-card,.fb-ghost{width:70px;height:84px;border-radius:13px} #fbDeck .fb-card b,.fb-ghost b{font-size:28px} #fbDeck .fb-skip{bottom:26px} }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  const SHOW = 5, STEP = 13;
+  let order = [], deck = null, entered = false;
+  const small = () => innerWidth <= 700;
+  const CW = () => small() ? 70 : 86;
+  function ensure(){
+    if(deck && deck.isConnected) return deck;
+    deck = document.createElement('div'); deck.id = 'fbDeck'; document.body.appendChild(deck);
+    return deck;
+  }
+  function kill(){ const d = document.getElementById('fbDeck'); if(d) d.remove(); deck = null; document.querySelectorAll('.fb-ghost').forEach(g => g.remove()); }
+  function render(enter){
+    if(!document.body.classList.contains('mem-fill') || !MEM.on || !MEM.tray.length){ kill(); return; }
+    const d = ensure(), vis = order.slice(0, SHOW), w = CW() + (vis.length - 1) * STEP;
+    d.style.width = (w + 44) + 'px';
+    d.innerHTML = vis.map((n, i) => {
+      const e = byNum[n];
+      return `<div class="fb-card${i === 0 ? ' top' : ''}" data-n="${n}" style="--c:${cssv(CAT[e.c].v)};left:${i * STEP}px;z-index:${SHOW - i};transform:scale(${1 - i * .035});filter:brightness(${1 - i * .13})"><b>${e.s}</b><span>${elName(e)}</span></div>`;
+    }).reverse().join('') +
+      (order.length > 1 ? `<button class="fb-skip" title="${EN() ? 'next card' : '다음 카드'}" style="left:${w + 10}px">↻</button>` : '') +
+      (order.length > SHOW ? `<span class="fb-more" style="left:${w - 14}px">+${order.length - SHOW}</span>` : '');
+    if(enter){
+      // 화면 아래에서 하나씩 튀어 올라온다
+      [...d.querySelectorAll('.fb-card')].reverse().forEach((c, i) => c.animate([
+        { transform: `translateY(${260 + i * 40}px) rotate(${(i % 2 ? 1 : -1) * 18}deg)`, opacity: 0 },
+        { transform: `translateY(-18px) ${c.style.transform}`, opacity: 1, offset: .7 },
+        { transform: c.style.transform, opacity: 1 }], { duration: 620, delay: i * 70, easing: 'cubic-bezier(.2,.9,.3,1.2)', fill: 'backwards' }));
+      try{ rxNoise(.3, .06, 'bandpass', 1400, .8); }catch(_){}
+    }
+    const top = d.querySelector('.fb-card.top');
+    if(top) top.addEventListener('pointerdown', grab);
+    const sk = d.querySelector('.fb-skip');
+    if(sk) sk.addEventListener('click', () => { order.push(order.shift()); try{ SFX.pick(); }catch(_){} render(); });
+  }
+  let hoverCell = null, dragging = false;
+  function grab(ev){
+    ev.preventDefault();
+    const card = ev.currentTarget, n = +card.dataset.n, e = byNum[n], r = card.getBoundingClientRect();
+    const g = document.createElement('div'); g.className = 'fb-ghost'; g.style.setProperty('--c', cssv(CAT[e.c].v));
+    g.innerHTML = `<b>${e.s}</b><span>${elName(e)}</span>`; document.body.appendChild(g);
+    const ox = ev.clientX - r.left, oy = ev.clientY - r.top;
+    let x = r.left, y = r.top, rot = 0, lx = ev.clientX;
+    const place = (px, py) => { const dx = px - lx; lx = px; rot += (Math.max(-14, Math.min(14, dx * 1.2)) - rot) * .35; x = px - ox; y = py - oy; g.style.transform = `translate(${x}px,${y}px) scale(1.08) rotate(${rot}deg)`; };
+    place(ev.clientX, ev.clientY);
+    card.classList.add('held'); dragging = true;
+    try{ SFX.pick(); }catch(_){}
+    const cellAt = (px, py) => { const el = document.elementFromPoint(px, py); const c = el && el.closest && el.closest('.cell.blank'); return c; };
+    const mv = e2 => { place(e2.clientX, e2.clientY); const c = cellAt(e2.clientX, e2.clientY); if(c !== hoverCell){ if(hoverCell) hoverCell.classList.remove('fb-hover'); hoverCell = c; if(c) c.classList.add('fb-hover'); } };
+    const back = () => {
+      const a = g.animate([{ transform: g.style.transform }, { transform: `translate(${r.left}px,${r.top}px) scale(1) rotate(0deg)` }], { duration: 320, easing: 'cubic-bezier(.2,1.1,.4,1)', fill: 'forwards' });
+      a.onfinish = () => { g.remove(); dragging = false; render(); };
+    };
+    const up = e2 => {
+      removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+      const c = cellAt(e2.clientX, e2.clientY);
+      if(hoverCell){ hoverCell.classList.remove('fb-hover'); hoverCell = null; }
+      if(!c){ back(); return; }
+      const cn = +c.dataset.n;
+      MEM.picked = n;
+      if(cn === n){
+        // 정답: 칸 속으로 쏙
+        const cr = c.getBoundingClientRect();
+        const a = g.animate([{ transform: g.style.transform, opacity: 1 }, { transform: `translate(${cr.left + cr.width / 2 - CW() / 2}px,${cr.top + cr.height / 2 - 50}px) scale(${cr.width / CW()}) rotate(0deg)`, opacity: .2 }], { duration: 220, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+        a.onfinish = () => g.remove();
+        order = order.filter(k => k !== n);
+        dragging = false;
+        fillPlace(cn, c);
+      } else {
+        // 틀림: 흔들리며 더미로 돌아간다
+        fillPlace(cn, c);
+        g.animate([{ transform: g.style.transform }, { transform: g.style.transform + ' translateX(-10px)' }, { transform: g.style.transform + ' translateX(10px)' }, { transform: g.style.transform }], { duration: 220 }).onfinish = back;
+      }
+    };
+    addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up);
+  }
+  // 칩 막대가 다시 그려질 때마다 카드 더미도 맞춘다
+  const _rb = renderFillBar;
+  renderFillBar = function(){
+    _rb.apply(this, arguments);
+    const q = qBarEl.querySelector('.qbq'); if(q) q.textContent = EN() ? 'Drag the top card to where it belongs' : '맨 위 카드를 끌어서 제자리에 놓아요';
+    order = order.filter(n => MEM.tray.includes(n));
+    MEM.tray.forEach(n => { if(!order.includes(n)) order.push(n); });
+    if(entered && !dragging) render();
+  };
+  const _fs = fillStart;
+  fillStart = function(){
+    kill(); entered = false; order = [];
+    _fs.apply(this, arguments);
+    order = shuffle(MEM.tray.slice());
+    // 펑 하고 날아간 카드들이 잠시 뒤 아래에서 다시 튀어나온다
+    setTimeout(() => { if(MEM.on && MEM.mode === 'fill'){ entered = true; render(true); } }, window.RX_REDUCED ? 0 : 1300);
+  };
+  const _cf = clearFill;
+  clearFill = function(){ kill(); entered = false; return _cf.apply(this, arguments); };
+  window.rxDeck = { order: () => order };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
