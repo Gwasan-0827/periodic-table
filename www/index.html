@@ -36335,6 +36335,222 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 자세히 알아보기 › 물 분자는 어떻게 물을 만들까? (물·DHMO·얼음) ═══ */
+  .wm{margin-bottom:14px}
+  .wm-steps{display:flex;gap:4px;margin:6px 0 8px}
+  .wm-steps button{flex:1;font:inherit;font-size:11.5px;padding:6px 2px;border-radius:7px;cursor:pointer;
+    border:1px solid rgba(154,168,255,.3);background:rgba(154,168,255,.06);color:#aab3c3;white-space:nowrap}
+  .wm-steps button.on{background:#c9d0ff;color:#141833;border-color:#c9d0ff;font-weight:750}
+  .wm-cv{display:block;width:100%;height:210px;border-radius:10px;background:#070a12;border:1px solid rgba(154,168,255,.22)}
+  .wm-cap{font-size:12.5px;line-height:1.65;color:#d6dbe8;margin-top:8px;word-break:keep-all;min-height:3.3em}
+  .wm-cap b{color:#c9d0ff}
+  .wm-cap .wm-hd{display:block;font-weight:750;color:#fff;margin-bottom:2px}
+</style>
+<script>
+(function(){
+  const NAMES = () => ['물', '얼음', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : ''];
+  const T = {
+    ko: { h: '물 분자는 어떻게 물을 만들까?', tabs: ['① 분자 하나', '② 수소 결합', '③ 물', '④ 얼음'],
+      cap: [
+        ['꺾인 분자 하나', '산소 하나에 수소 둘이 <b>104.5°</b>로 꺾여 붙어 있어요. 산소가 전자를 더 세게 끌어당겨서 산소 쪽은 살짝 <b>(−)</b>, 수소 쪽은 살짝 <b>(+)</b>를 띠어요. 이걸 "극성"이라고 해요.'],
+        ['서로 끌어당기기', '한 분자의 (+) 수소가 옆 분자의 (−) 산소에 끌려가요. 이 끌림이 <b>수소 결합</b>(점선)이에요. 분자 하나는 이웃과 수소 결합을 최대 <b>4개</b>까지 맺을 수 있어요.'],
+        ['물 = 끊임없이 붙었다 떨어지는 그물', '액체 물에서는 수소 결합이 <b>1조분의 1초</b>마다 끊겼다 다시 붙어요. 그래서 물은 흐르면서도 서로 꽉 붙어 있어요. 물방울이 동그랗게 뭉치는 표면 장력, 분자 크기에 비해 높은 끓는점(100°C)도 다 이 덕분이에요. 물 한 방울에는 분자가 약 <b>1,700,000,000,000,000,000,000개</b>(1.7×10²¹) 들어 있어요.'],
+        ['얼음 = 줄 맞춘 육각형', '0°C 아래로 식으면 분자들이 수소 결합 4개를 꽉 채우고 <b>육각형</b>으로 줄을 서요. 이 모양은 액체보다 빈틈이 많아서 부피가 약 9% 커져요. 그래서 얼음이 물에 떠요. 눈송이가 육각형인 것도 이 때문이에요.'],
+      ] },
+    en: { h: 'How do water molecules make water?', tabs: ['① One molecule', '② H-bonds', '③ Water', '④ Ice'],
+      cap: [
+        ['One bent molecule', 'One oxygen and two hydrogens, bent at <b>104.5°</b>. Oxygen pulls electrons harder, so its side is slightly <b>(−)</b> and the hydrogen side slightly <b>(+)</b>. That is called polarity.'],
+        ['Pulling on each other', 'The (+) hydrogen of one molecule is drawn to the (−) oxygen of the next. That pull is a <b>hydrogen bond</b> (dotted line). One molecule can hold up to <b>4</b> of them.'],
+        ['Water = a net that never stops re-forming', 'In liquid water, hydrogen bonds break and re-form about every <b>trillionth of a second</b>. That is why water flows yet sticks together: surface tension, round droplets, and a boiling point (100°C) far higher than such a small molecule should have. One drop holds about <b>1.7×10²¹</b> molecules.'],
+        ['Ice = hexagons in line', 'Below 0°C each molecule locks all 4 hydrogen bonds and they line up in <b>hexagons</b>. That shape has more empty space than the liquid, so ice is about 9% bigger and floats. It is also why snowflakes are hexagonal.'],
+      ] },
+  };
+  const L = () => T[LANG === 'en' ? 'en' : 'ko'];
+  const ANG = 104.5 * Math.PI / 180, BL = 1;   // 결합 길이 (산소 반지름 기준)
+  let raf = 0, step = 0;
+
+  function section(start){
+    const t = L();
+    return `<div class="mm-sec wm" id="wmSec" data-start="${start}"><div class="mm-h">${t.h}</div>
+      <div class="wm-steps">${t.tabs.map((s, i) => `<button type="button" data-i="${i}">${s}</button>`).join('')}</div>
+      <canvas class="wm-cv" id="wmCv"></canvas><div class="wm-cap" id="wmCap"></div></div>`;
+  }
+
+  /* ── 시뮬레이션 ── */
+  function H2(m){ // 수소 두 개의 위치
+    const a1 = m.a - ANG / 2, a2 = m.a + ANG / 2, d = m.r * 1.55;
+    return [[m.x + Math.cos(a1) * d, m.y + Math.sin(a1) * d], [m.x + Math.cos(a2) * d, m.y + Math.sin(a2) * d]];
+  }
+  function drawMol(c, m, big){
+    const [h1, h2] = H2(m), r = m.r;
+    c.strokeStyle = 'rgba(230,236,255,.75)'; c.lineWidth = Math.max(1.5, r * .32);
+    [h1, h2].forEach(h => { c.beginPath(); c.moveTo(m.x, m.y); c.lineTo(h[0], h[1]); c.stroke(); });
+    [h1, h2].forEach(h => { const g = c.createRadialGradient(h[0] - r * .2, h[1] - r * .2, 0, h[0], h[1], r * .62); g.addColorStop(0, '#fff'); g.addColorStop(1, '#b9c3d8');
+      c.fillStyle = g; c.beginPath(); c.arc(h[0], h[1], r * .58, 0, 7); c.fill(); });
+    const g = c.createRadialGradient(m.x - r * .3, m.y - r * .3, 0, m.x, m.y, r); g.addColorStop(0, '#ff9a9a'); g.addColorStop(1, '#d43a3a');
+    c.fillStyle = g; c.beginPath(); c.arc(m.x, m.y, r, 0, 7); c.fill();
+    if(big){
+      c.font = `700 ${r * .7}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = '#fff'; c.fillText('O', m.x, m.y + 1);
+      c.fillStyle = '#20263a'; [h1, h2].forEach(h => c.fillText('H', h[0], h[1] + 1));
+    }
+  }
+  function mkMols(n, W, H, r){
+    const A = [];
+    for(let i = 0; i < n; i++) A.push({ x: r * 3 + Math.random() * (W - r * 6), y: r * 3 + Math.random() * (H - r * 6), a: Math.random() * 6.28, vx: 0, vy: 0, va: 0, r });
+    return A;
+  }
+  function physics(A, W, H, dt, temp, bonds, pull){
+    const R = A[0].r, RG = pull ? 4.6 : 3.2;
+    A.forEach(m => { m.vx += (Math.random() - .5) * temp; m.vy += (Math.random() - .5) * temp; m.va += (Math.random() - .5) * temp * .04;
+      if(pull){ m.vx += (W / 2 - m.x) * .0012; m.vy += (H / 2 - m.y) * .0012; } });
+    for(let i = 0; i < A.length; i++) for(let j = 0; j < A.length; j++){
+      if(i === j) continue;
+      const a = A[i], b = A[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1;
+      const RM = pull ? 3.1 : 2.6; if(d < R * RM){ const f = (R * RM - d) * (pull ? .14 : .16); a.vx -= dx / d * f; a.vy -= dy / d * f; }   // 산소끼리 밀기
+      if(d < R * 6){
+        H2(a).forEach(h => {   // a 의 수소 → b 의 산소
+          const hx = b.x - h[0], hy = b.y - h[1], hd = Math.hypot(hx, hy) || 1;
+          if(hd < R * RG){
+            const f = .018 * (1 - hd / (R * RG));
+            a.vx += hx / hd * f * 20; a.vy += hy / hd * f * 20;
+            // 수소가 상대 산소를 향하도록 회전
+            const cross = (h[0] - a.x) * hy - (h[1] - a.y) * hx; a.va += Math.sign(cross) * f * .6;
+            if(hd < R * 2.3) bonds.push([h[0], h[1], b.x, b.y, 1 - hd / (R * 2.3)]);
+          }
+        });
+      }
+    }
+    A.forEach(m => {
+      m.vx *= .9; m.vy *= .9; m.va *= .86;
+      m.x += m.vx * dt * 60; m.y += m.vy * dt * 60; m.a += m.va * dt * 60;
+      const p = R * 2;
+      if(m.x < p){ m.x = p; m.vx = Math.abs(m.vx); } if(m.x > W - p){ m.x = W - p; m.vx = -Math.abs(m.vx); }
+      if(m.y < p){ m.y = p; m.vy = Math.abs(m.vy); } if(m.y > H - p){ m.y = H - p; m.vy = -Math.abs(m.vy); }
+    });
+  }
+  function drawBonds(c, bonds){
+    c.save(); c.setLineDash([3, 3]); c.lineWidth = 1.6;
+    bonds.forEach(([x1, y1, x2, y2, s]) => { c.strokeStyle = `rgba(154,214,255,${.25 + s * .7})`; c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); });
+    c.restore();
+  }
+  function iceLattice(W, H, r){
+    // 육각 고리를 위에서 본 벌집: 꼭짓점마다 분자, 수소는 이웃 산소 쪽으로
+    const s = r * 4.2, A = [], ox = W / 2, oy = H / 2, cols = Math.ceil(W / (s * 1.5)) + 2, rows = Math.ceil(H / (s * .866 * 2)) + 2;
+    const pts = [];
+    for(let q = -cols; q <= cols; q++) for(let k = -rows; k <= rows; k++){
+      const cx = ox + q * s * 1.5, cy = oy + k * s * 1.732 + (q & 1 ? s * .866 : 0);
+      for(let v = 0; v < 6; v++){ const a = v * Math.PI / 3; const x = cx + Math.cos(a) * s, y = cy + Math.sin(a) * s;
+        if(x < -s || x > W + s || y < -s || y > H + s) continue;
+        if(!pts.some(p => Math.hypot(p[0] - x, p[1] - y) < 2)) pts.push([x, y]); }
+    }
+    pts.forEach(([x, y], i) => {
+      const nb = pts.filter(p => { const d = Math.hypot(p[0] - x, p[1] - y); return d > 1 && d < s * 1.1; }).map(p => Math.atan2(p[1] - y, p[0] - x));
+      const a = nb.length >= 2 ? Math.atan2(Math.sin(nb[0]) + Math.sin(nb[1]), Math.cos(nb[0]) + Math.cos(nb[1])) : 0;
+      A.push({ x, y, x0: x, y0: y, a: (i % 2 ? a : a + Math.PI * 0) , r, nb, ph: Math.random() * 6 });
+    });
+    return { A, s };
+  }
+
+  function mount(start){
+    stop();
+    const sec = document.getElementById('wmSec'); if(!sec) return;
+    const cv = document.getElementById('wmCv'), cap = document.getElementById('wmCap');
+    const btns = sec.querySelectorAll('.wm-steps button');
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    let W = 0, H = 0, c = cv.getContext('2d'), S = null;
+    const size = () => { W = cv.clientWidth || 300; H = cv.clientHeight || 210; cv.width = W * dpr; cv.height = H * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const set = i => {
+      step = i; size();
+      btns.forEach((b, k) => b.classList.toggle('on', k === i));
+      const [hd, tx] = L().cap[i]; cap.innerHTML = `<span class="wm-hd">${hd}</span>${tx}`;
+      const r = Math.max(7, Math.min(10, W / 38));
+      if(i === 0) S = { m: { x: W / 2, y: H * .5, a: -Math.PI / 2, r: Math.min(W, H) * .13 } };
+      else if(i === 1){
+        // 가운데 분자 하나 + 이웃 넷 (수소를 주는 쪽 둘, 받는 쪽 둘) — 정해진 자리로 미끄러져 들어온다
+        const R = Math.min(r * 1.5, H * .085), C = { x: W / 2, y: H * .5, a: -Math.PI / 2, r: R }, D = R * 4.4, nb = [];
+        H2(C).forEach(h => { const ang = Math.atan2(h[1] - C.y, h[0] - C.x); nb.push({ ang, a: ang, give: false }); });
+        [Math.PI / 2 - .95, Math.PI / 2 + .95].forEach(ang => nb.push({ ang, a: ang + Math.PI + ANG / 2, give: true }));
+        nb.forEach(n => { n.r = R; n.tx = C.x + Math.cos(n.ang) * D; n.ty = C.y + Math.sin(n.ang) * D; });
+        S = { C, nb, t0: performance.now() };
+      }
+      else if(i === 2) S = { A: mkMols(Math.round(W * H / 1500), W, H, r) };
+      else S = iceLattice(W, H, r);
+      try{ SFX.pick(); }catch(e){}
+    };
+    btns.forEach(b => b.addEventListener('click', () => set(+b.dataset.i)));
+    set(start);
+    let last = performance.now(), t0 = last;
+    const loop = now => {
+      if(!cv.isConnected){ raf = 0; return; }
+      const dt = Math.min(.05, (now - last) / 1000), t = (now - t0) / 1000; last = now;
+      c.clearRect(0, 0, W, H);
+      if(step === 0){
+        const m = S.m; m.a = -Math.PI / 2 + Math.sin(t * .8) * .35;
+        // 전하 구름
+        const g1 = c.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 2.4); g1.addColorStop(0, 'rgba(255,90,90,.28)'); g1.addColorStop(1, 'rgba(255,90,90,0)');
+        c.fillStyle = g1; c.beginPath(); c.arc(m.x, m.y, m.r * 2.4, 0, 7); c.fill();
+        H2(m).forEach(h => { const g = c.createRadialGradient(h[0], h[1], 0, h[0], h[1], m.r * 1.5); g.addColorStop(0, 'rgba(90,170,255,.3)'); g.addColorStop(1, 'rgba(90,170,255,0)'); c.fillStyle = g; c.beginPath(); c.arc(h[0], h[1], m.r * 1.5, 0, 7); c.fill(); });
+        // 각도 호
+        c.strokeStyle = 'rgba(201,208,255,.8)'; c.lineWidth = 1.5; c.beginPath(); c.arc(m.x, m.y, m.r * 2.1, m.a - ANG / 2, m.a + ANG / 2); c.stroke();
+        drawMol(c, m, true);
+        c.font = `800 ${Math.max(12, m.r * .45)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillStyle = '#ff8a8a'; c.fillText('δ−', m.x - Math.cos(m.a) * m.r * 1.7, m.y - Math.sin(m.a) * m.r * 1.7);
+        c.fillStyle = '#8ac4ff'; H2(m).forEach(h => c.fillText('δ+', h[0] + (h[0] - m.x) * .55, h[1] + (h[1] - m.y) * .55));
+        c.fillStyle = '#c9d0ff'; c.font = `700 ${Math.max(11, m.r * .36)}px ui-monospace,monospace`; c.fillText('104.5°', m.x + Math.cos(m.a) * m.r * 2.55, m.y + Math.sin(m.a) * m.r * 2.55);
+      } else if(step === 1){
+        const k = Math.min(1, (now - S.t0) / 1600), e = 1 - Math.pow(1 - k, 3), C = S.C, bonds = [];
+        C.a = -Math.PI / 2 + Math.sin(t * 1.3) * .04;
+        S.nb.forEach((n, i) => {
+          const far = 2.4 - 1.4 * e; n.x = C.x + (n.tx - C.x) * far + Math.sin(t * 1.7 + i) * 1.2; n.y = C.y + (n.ty - C.y) * far + Math.cos(t * 1.4 + i) * 1.2;
+          if(k > .85){ const s2 = (k - .85) / .15;
+            if(!n.give){ const h = H2(C)[i]; bonds.push([h[0], h[1], n.x, n.y, s2]); }
+            else { const h = H2(n)[0]; bonds.push([h[0], h[1], C.x, C.y, s2]); } }
+        });
+        drawBonds(c, bonds); S.nb.forEach(n => drawMol(c, n, true)); drawMol(c, C, true);
+        c.font = '700 11px ui-monospace,monospace'; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = 'rgba(154,214,255,.85)';
+        c.fillText((LANG === 'en' ? 'H-bonds ' : '수소 결합 ') + bonds.length + ' / 4', 8, 7);
+      } else if(step === 2){
+        const bonds = [];
+        physics(S.A, W, H, dt, .32, bonds, false);
+        drawBonds(c, bonds); S.A.forEach(m => drawMol(c, m, false));
+        c.font = '700 11px ui-monospace,monospace'; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = 'rgba(154,214,255,.85)';
+        c.fillText((LANG === 'en' ? 'H-bonds ' : '수소 결합 ') + bonds.length, 8, 7);
+      } else {
+        const { A, s } = S;
+        c.strokeStyle = 'rgba(154,214,255,.18)'; c.lineWidth = 1;
+        A.forEach(m => { m.x = m.x0 + Math.sin(t * 7 + m.ph) * .7; m.y = m.y0 + Math.cos(t * 6 + m.ph) * .7; });
+        // 수소 결합 (이웃 산소끼리 점선)
+        c.save(); c.setLineDash([3, 3]); c.strokeStyle = 'rgba(154,214,255,.55)'; c.lineWidth = 1.4;
+        A.forEach(m => A.forEach(n => { if(n === m || n.x0 < m.x0) return; const d = Math.hypot(n.x0 - m.x0, n.y0 - m.y0); if(d < s * 1.1){ c.beginPath(); c.moveTo(m.x, m.y); c.lineTo(n.x, n.y); c.stroke(); } }));
+        c.restore();
+        A.forEach(m => drawMol(c, m, false));
+        // 반짝이
+        const k = Math.floor(t * 3) % A.length, sp = A[(k * 7) % A.length];
+        if(sp){ c.save(); c.globalCompositeOperation = 'lighter'; const g = c.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, 16); g.addColorStop(0, 'rgba(220,240,255,.7)'); g.addColorStop(1, 'rgba(220,240,255,0)'); c.fillStyle = g; c.beginPath(); c.arc(sp.x, sp.y, 16, 0, 7); c.fill(); c.restore(); }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+  }
+  function stop(){ if(raf) cancelAnimationFrame(raf); raf = 0; }
+
+  const _mh = rxMoreHtml;
+  rxMoreHtml = function(){
+    const h = _mh.apply(this, arguments);
+    try{ if(RX && RX.kind !== 'fail' && NAMES().includes(RX.raw)) return section(RX.raw === '얼음' ? 3 : 0) + h; }catch(e){}
+    return h;
+  };
+  const _sm = rxShowMore;
+  rxShowMore = function(open){
+    const r = _sm.apply(this, arguments);
+    try{ if(open){ const s = document.getElementById('wmSec'); if(s) requestAnimationFrame(() => mount(+s.dataset.start || 0)); } else stop(); }catch(e){}
+    return r;
+  };
+  window.rxWaterMore = { mount, stop };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
