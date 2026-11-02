@@ -37450,7 +37450,7 @@ function rxSunGem(){
   // ── 치수 (논리 좌표, 화면 크기에 맞춰 통째로 확대한다) ──
   const PCH = 70, PCW_RIM = 31, PCW_BASE = 21;   // 플라스틱 컵: 높이, 입구 반폭, 바닥 반폭
   const ALH = 56, ALW_RIM = 28, ALW_BASE = 20;   // 알루미늄 컵
-  const BR = 36;                                 // 풍선 반지름
+  const BR = 32;                                 // 풍선 반지름
   const ER = .16;                                // 컵 타원 납작도
   // 뒤집힌 플라스틱 컵 위에 뒤집힌 알루미늄 컵이 겹쳐 씌워진 자리: 입구 반폭이 맞는 높이에서 멈춘다
   const SEAT = (ALW_RIM - 1.5 - PCW_BASE) / (PCW_RIM - PCW_BASE) * PCH;
@@ -37458,8 +37458,9 @@ function rxSunGem(){
   const alBox = s => { const r = alRimY(s); return { x0: s.al.x - ALW_RIM, x1: s.al.x + ALW_RIM, y0: r - ALH - 4, y1: r + 2 }; };
   // 전구: 손으로 잡는 극 끝(=커서)에서 다른 극 끝까지
   // 전구: 유리관 바닥(G)과 다리 끝 두 개(A, B)가 따로 움직인다. 다리는 휘는 철사
-  const LEG = 48, LEGMAX = 64, LEGOFF = { A: [-6, LEG], B: [7, LEG] };
-  const bulbGeo = b => ({ gx: b.G.x, gy: b.G.y - 33, tipA: [b.A.x, b.A.y], tipB: [b.B.x, b.B.y] });
+  const BS = 1.5;                               // 전구 유리관 배율 (실물은 작아서 보기 좋게 키운다)
+  const LEG = 56, LEGMAX = 74, LEGOFF = { A: [-4, LEG], B: [5, LEG] };
+  const bulbGeo = b => ({ gx: b.G.x, gy: b.G.y - 33, mid: [b.G.x, b.G.y - 19 * BS], tipA: [b.A.x, b.A.y], tipB: [b.B.x, b.B.y] });
   const pt = (x, y) => ({ x, y, vx: 0, vy: 0 });
 
   function init(W, H){
@@ -37514,7 +37515,7 @@ function rxSunGem(){
     }
     // 다리 길이 한계, 탁자 아래로는 못 감
     ['A', 'B'].forEach(k => {
-      const P = Bu[k], ax = G.x + (k === 'A' ? -2.2 : 2.2), ay = G.y + 2, dx = P.x - ax, dy = P.y - ay, d = Math.hypot(dx, dy);
+      const P = Bu[k], ax = G.x + (k === 'A' ? -3.3 : 3.3), ay = G.y + 2, dx = P.x - ax, dy = P.y - ay, d = Math.hypot(dx, dy);
       if(d > LEGMAX){ if(k === h){ G.x += dx * (1 - LEGMAX / d); G.y += dy * (1 - LEGMAX / d); } else { P.x = ax + dx * LEGMAX / d; P.y = ay + dy * LEGMAX / d; } }
       if(P.y > s.ty){ P.y = s.ty; P.vy = 0; }
     });
@@ -37596,7 +37597,7 @@ function rxSunGem(){
     c.fillStyle = 'rgba(220,226,255,.28)'; c.fillRect(0, ty, W, 1);
     c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(0, ty + 10, W, 1.5);
     // 전구 빛이 탁자에 비친다
-    if(s.bulb.glow > 0){ const g = bulbGeo(s.bulb), lg = c.createRadialGradient(g.gx, ty + 3, 0, g.gx, ty + 3, 120); lg.addColorStop(0, `rgba(255,120,50,${.28 * s.bulb.glow})`); lg.addColorStop(1, 'rgba(255,120,50,0)'); c.fillStyle = lg; c.fillRect(g.gx - 120, ty, 240, 12); }
+    if(s.bulb.glow > 0){ const g = bulbGeo(s.bulb), lg = c.createRadialGradient(g.gx, ty + 3, 0, g.gx, ty + 3, 140); lg.addColorStop(0, `rgba(255,120,50,${.28 * s.bulb.glow})`); lg.addColorStop(1, 'rgba(255,120,50,0)'); c.fillStyle = lg; c.fillRect(g.gx - 120, ty, 240, 12); }
   }
   function drawFur(c, s){
     const F = s.fur, I = s.furImg;
@@ -37680,13 +37681,13 @@ function rxSunGem(){
     if(!Bu.hold) shadow(c, gx + 1, s.ty + 1, 16, .45);
     c.lineCap = 'round';
     // 다리: 유리관 바닥에서 아래로 뻗다가 끝 쪽으로 휜다
-    [[g.tipA, gx - 2.2], [g.tipB, gx + 2.2]].forEach(([tp, sx]) => {
-      const y0 = gy + GH + 2, cx = sx + (tp[0] - sx) * .15, cy = y0 + Math.max(10, (tp[1] - y0) * .6);
+    [[g.tipA, gx - 3.3], [g.tipB, gx + 3.3]].forEach(([tp, sx]) => {
+      const y0 = Bu.G.y + 2, cx = sx + (tp[0] - sx) * .15, cy = y0 + Math.max(10, (tp[1] - y0) * .6);
       c.strokeStyle = '#8a7a4e'; c.lineWidth = 1.6; c.beginPath(); c.moveTo(sx, y0); c.quadraticCurveTo(cx, cy, tp[0], tp[1]); c.stroke();
       c.strokeStyle = 'rgba(255,240,190,.55)'; c.lineWidth = .6; c.beginPath(); c.moveTo(sx - .4, y0); c.quadraticCurveTo(cx - .4, cy, tp[0] - .4, tp[1]); c.stroke();
     });
     // 유리관은 움직임에 따라 살짝 기운다
-    c.save(); c.translate(gx, gy + GH); c.rotate(Bu.tilt); c.translate(-gx, -(gy + GH));
+    c.save(); c.translate(gx, gy + GH + 3); c.rotate(Bu.tilt); c.scale(BS, BS); c.translate(-gx, -(gy + GH + 3));
     if(Bu.glow > 0){
       c.save(); c.globalCompositeOperation = 'lighter';
       const R = 30 + 70 * Bu.glow, gl = c.createRadialGradient(gx, gy + 12, 1, gx, gy + 12, R);
@@ -37719,7 +37720,7 @@ function rxSunGem(){
     drawFur(c, s);
     drawPlastic(c, s);
     drawAlu(c, s);
-    const bg = bulbGeo(s.bulb), ab = alBox(s), mid = [bg.gx, bg.gy + 14];
+    const bg = bulbGeo(s.bulb), ab = alBox(s), mid = bg.mid;
     s.flow.forEach(p => {
       const P = p.o ? s.bulb[p.o] : null;
       if(p.k === 'c2b'){ p.x0 = s.al.x + p.ox; p.y0 = ab.y0 + p.oy; p.x1 = P.x; p.y1 = P.y; }
@@ -37740,7 +37741,7 @@ function rxSunGem(){
     // 다리 끝을 먼저 (잡는 범위를 넉넉히), 그다음 유리관
     const near = ['A', 'B'].map(k => [k, Math.hypot(x - Bu[k].x, y - Bu[k].y)]).sort((a, b) => a[1] - b[1])[0];
     if(near[1] < 16){ const P = Bu[near[0]]; s.drag = { o: 'leg', k: near[0], dx: P.x - x, dy: P.y - y }; Bu.hold = near[0]; snd(() => SFX.pick()); return; }
-    if(Math.abs(x - g.gx) < 14 && y > g.gy - 10 && y < g.gy + 40){ s.drag = { o: 'glass', dx: Bu.G.x - x, dy: Bu.G.y - y }; Bu.hold = 'G'; snd(() => SFX.pick()); return; }
+    if(Math.abs(x - g.gx) < 18 && y > Bu.G.y - 36 * BS - 8 && y < Bu.G.y + 8){ s.drag = { o: 'glass', dx: Bu.G.x - x, dy: Bu.G.y - y }; Bu.hold = 'G'; snd(() => SFX.pick()); return; }
     const ab = alBox(s);
     if(!s.al.on && x > ab.x0 - 8 && x < ab.x1 + 8 && y > ab.y0 - 8 && y < ab.y1 + 6){ s.drag = { o: 'al', dx: s.al.x - x, dy: s.al.y - y }; return; }
     if(Math.abs(x - s.pc.x) < PCW_RIM + 10 && y > s.ty - PCH - 24 && y < s.ty + 4 && s.pc.flip < .5 && !s.pc.flipping){ s.pc.flipping = 1; snd(() => rxTone(300, .12, 'triangle', .05, 0, 420)); say(s, 'cup'); }
