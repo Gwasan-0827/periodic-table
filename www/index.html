@@ -12628,7 +12628,8 @@ function rxSolutionModel(info, formula, rnd){
   const A = [];
   for(let i = 0; i < n; i++){
     let gl = main, ion = null;
-    if(info.sol && i % 4 === 1){
+    if(info.ions && i % 5 === 2) ion = info.ions[Math.floor(i / 5) % info.ions.length];   // 미네랄 이온 (생수)
+    else if(info.sol && i % 4 === 1){
       if(info.sol === 'NaCl') ion = (i % 8 === 1) ? 'Na' : 'Cl';
       else gl = solG;
     }
@@ -36258,7 +36259,7 @@ void main(){
 }`;
   let gl = null, prog = null, cv = null, U = {}, failed = false, t0 = performance.now(), buf = null;
   // 얼음 색: 물 종류는 푸르스름한 흰 얼음, 색이 진한 액체일수록 그 색이 진하게 남는다
-  const CLEAR_ICE = new Set(['물', '바닷물', '눈물', '얼음', '과산화수소', '메탄올', '에탄올', '아세트산', '폼산', '인산트라이메틸', '염산', '플루오린화수소산', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : '']);
+  const CLEAR_ICE = new Set(['물', '생수', '바닷물', '눈물', '얼음', '과산화수소', '메탄올', '에탄올', '아세트산', '폼산', '인산트라이메틸', '염산', '플루오린화수소산', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : '']);
   const iceTint = c => {
     try{ if(RX && CLEAR_ICE.has(RX.raw)) return .18; }catch(e){}
     const v = hex(c), mx = Math.max(...v), mn = Math.min(...v), sat = mx > 0 ? (mx - mn) / mx : 0, dark = 1 - mx;
@@ -36406,7 +36407,7 @@ void main(){
 </style>
 <script>
 (function(){
-  const NAMES = () => ['물', '얼음', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : ''];
+  const NAMES = () => ['물', '얼음', '생수', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : ''];
   const T = {
     ko: { h: '물 분자는 어떻게 물을 만들까?', tabs: ['① 분자 하나', '② 수소 결합', '③ 물', '④ 얼음'],
       cap: [
@@ -36768,6 +36769,52 @@ void main(){
     return r;
   };
   window.rxStructModel = structModel;
+})();
+</script>
+<script>
+/* ── 4.1 생수: 우리가 평소에 마시는, 미네랄이 녹아 있는 물 (특수 발견, 도감 540 유지) ── */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const NM = '생수', KEY = 'Ca1+H2+Mg1+O1', F = 'H₂O + Ca²⁺ + Mg²⁺', SUB = '칼슘·마그네슘이 살짝 녹아 있는, 우리가 마시는 물';
+  EXACT[KEY] = [F, NM, SUB];
+  try{ REC_EN[NM] = ['Mineral water', 'The water we actually drink, with a little calcium and magnesium in it']; }catch(e){}
+  try{ RX_TMI[NM] = '조합 칸에서 만든 그냥 "물"은 사실 아무것도 안 섞인 증류수예요. 우리가 마시는 생수는 땅속을 흐르면서 바위에서 칼슘, 마그네슘, 나트륨, 칼륨 같은 미네랄을 조금씩 녹여 와요. 1리터에 수십~수백 mg 정도라 아주 적지만, 물맛은 이 미네랄이 정해요. 칼슘과 마그네슘이 많으면 "센물(경수)"이라고 하고, 주전자 바닥에 하얀 물때(탄산칼슘)가 끼어요.'; }catch(e){}
+  try{ RX_DEX_ALIAS[NM] = 'mineral water 미네랄 워터 먹는 물 먹는샘물 샘물 물 water 경수 센물'; }catch(e){}
+  try{ RX_LIQ_NAMED[NM] = { col: '#74c0fc', ions: ['Ca', 'Mg', 'Ca', 'Na', 'Mg', 'K'], glyph: 'H₂O', n: 30 }; }catch(e){}
+  try{ RX_LIQ_SMILES[NM] = 'O'; }catch(e){}
+  try{ RX_MAKE[NM] = '땅속 깊이 스며든 빗물이 바위 틈을 지나며 미네랄을 녹이고 걸러진 지하수를 퍼 올려서, 걸러 내고 소독해 병에 담아요.'; }catch(e){}
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== NM); };
+  const _sl = specialList;
+  specialList = function(){
+    const L = _sl.apply(this, arguments);
+    if(!L.some(x => x.name === NM)) L.push({ sym: 'H', lo: 2, hi: 2, formula: F, name: NM, sub: SUB, hint: LANG === 'en' ? 'Water + a pinch of Ca and Mg' : '물 + 칼슘·마그네슘 한 꼬집' });
+    return L;
+  };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    if(name === NM) return { name, formula: F, sub: SUB, key: KEY, exact: true, mix: [['H', 2], ['O', 1], ['Ca', 1], ['Mg', 1]] };
+    return _en.apply(this, arguments);
+  };
+  // 마시기: 생수는 맛이 있다
+  try{
+    Object.assign(RX_DRINK_T.ko, { firstM: '물맛이 나요! 칼슘·마그네슘 같은 미네랄이 살짝 녹아 있어서 증류수보다 맛이 있어요.' });
+    Object.assign(RX_DRINK_T.en, { firstM: 'Tastes like water! A little calcium and magnesium gives it flavour, unlike distilled water.' });
+    const _html = rxToolsHTML;
+    rxToolsHTML = function(){
+      let h = _html.apply(this, arguments);
+      if(h && RX && RX.raw === NM && RX.views && RX.views.liq && !h.includes('data-act="drink"')){
+        const T = rxDrT();
+        h += `<button type="button" class="rtool" data-act="drink" title="${T.btn}" aria-label="${T.btn}"><span aria-hidden="true">🥤</span><em>${T.btn.replace('🥤 ', '')}</em></button>`;
+      }
+      return h;
+    };
+    const _say = rxSay;
+    rxSay = function(text){
+      try{ if(RX && RX.raw === NM){ const T = rxDrT(); if(text === T.first) arguments[0] = T.firstM; } }catch(e){}
+      return _say.apply(this, arguments);
+    };
+  }catch(e){}
 })();
 </script>
 <style>
