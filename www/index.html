@@ -9844,6 +9844,12 @@ function rxMount(model, svgEl){
     let mx = 0, my = 0, mz = 0, n = 0;
     model.faces.forEach(f => f.p.forEach(q => { mx += q[0]; my += q[1]; mz += q[2]; n++; }));
     mx /= n; my /= n; mz /= n;
+    if(model.boxCenter){
+      // 꼭짓점이 한쪽에 몰린 모형(결정 무리 등)은 평균 대신 상자 가운데로
+      const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+      model.faces.forEach(f => f.p.forEach(q => { for(let k = 0; k < 3; k++){ lo[k] = Math.min(lo[k], q[k]); hi[k] = Math.max(hi[k], q[k]); } }));
+      mx = (lo[0] + hi[0]) / 2; my = (lo[1] + hi[1]) / 2 + (model.boxDy || 0); mz = (lo[2] + hi[2]) / 2;
+    }
     model.faces.forEach(f => f.p.forEach(q => { q[0] -= mx; q[1] -= my; q[2] -= mz;
       hw = Math.max(hw, Math.hypot(q[0], q[2])); hh = Math.max(hh, Math.hypot(q[1], q[2])); }));
     if(model.rods) model.rods.forEach(r => [r.a, r.b].forEach(q => { q[0] -= mx; q[1] -= my; q[2] -= mz; }));
@@ -29781,8 +29787,9 @@ function rxAmethystMin(){
   }
   const faces = rxCluster(RX_AME_V, RX_AME_F, { seg: 60, mats, noClip: true });
   faces.forEach((f, i) => { f.seed = i; });
-  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, twoSided: true,
-           tilt: -0.3, yaw0: 0.4, maxScale: 1.55, col: '#8f5fd0' };
+  // 결정 끝이 위쪽 탭에 닿지 않게: 꼭짓점 평균(결정 쪽에 몰림) 대신 상자 가운데에 맞추고 살짝 아래로
+  return { atoms: [], bonds: [], faces, crystal: true, mineral: true, twoSided: true, boxCenter: true, boxDy: 8,
+           tilt: -0.3, yaw0: 0.4, maxScale: 1.15, col: '#8f5fd0' };
 }
 {
   const _mnA = rxMineral;
