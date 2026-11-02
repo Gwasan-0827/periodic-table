@@ -36551,6 +36551,151 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 분자 모형: 구조식 (원소 기호 + 결합선, 이중결합 = , 삼중결합 ≡) ═══ */
+  #mMol.struct-on .mol-atoms, #mMol.struct-on .mol-bonds, #mMol.struct-on .mol-shadow{display:none}
+  .struct-g line{stroke:#c9d0ff;stroke-linecap:round}
+  .struct-g line.dash{stroke-dasharray:3 3;opacity:.8}
+  .struct-g text{font-family:Kanit,'IBM Plex Sans KR',system-ui,sans-serif;font-weight:500;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:#070a12;stroke-width:3px}
+</style>
+<script>
+(function(){
+  const COL = s => {   // 탄소·수소는 흰색, 나머지는 원소 색을 밝게
+    if(s === 'C' || s === 'H') return '#eef1fa';
+    const c = rxCpk(s); try{ const h = [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)); return `rgb(${h.map(v => Math.round(v + (255 - v) * .35)).join(',')})`; }catch(e){ return c; }
+  };
+  /* 3D 좌표 → 평면: 가장 넓게 퍼진 두 방향(주성분)으로 눕힌 뒤, 결합 길이는 지키고 겹친 원자는 밀어낸다 */
+  function flatten(atoms, bonds){
+    const n = atoms.length, c = [0, 0, 0];
+    atoms.forEach(a => { c[0] += a.x; c[1] += a.y; c[2] += a.z || 0; }); c.forEach((v, i) => c[i] = v / n);
+    const P = atoms.map(a => [a.x - c[0], a.y - c[1], (a.z || 0) - c[2]]);
+    const cov = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    P.forEach(p => { for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++) cov[i][j] += p[i] * p[j]; });
+    const mul = v => cov.map(r => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]);
+    const norm = v => { const l = Math.hypot(...v) || 1; return v.map(x => x / l); };
+    let e1 = [1, .3, .2]; for(let k = 0; k < 40; k++) e1 = norm(mul(e1));
+    let e2 = [.2, 1, .3];
+    for(let k = 0; k < 40; k++){ e2 = mul(e2); const d = e2[0] * e1[0] + e2[1] * e1[1] + e2[2] * e1[2]; e2 = norm(e2.map((x, i) => x - d * e1[i])); }
+    const Q = P.map(p => ({ x: p[0] * e1[0] + p[1] * e1[1] + p[2] * e1[2], y: p[0] * e2[0] + p[1] * e2[1] + p[2] * e2[2] }));
+    const L3 = bonds.map(([i, j]) => Math.hypot(P[i][0] - P[j][0], P[i][1] - P[j][1], P[i][2] - P[j][2]));
+    const Lm = L3.slice().sort((a, b) => a - b)[L3.length >> 1] || 30;
+    const nb = atoms.map(() => new Set()); bonds.forEach(([i, j]) => { nb[i].add(j); nb[j].add(i); });
+    for(let it = 0; it < 260; it++){
+      const cool = 1 - it / 300;
+      bonds.forEach(([i, j], k) => {   // 결합 길이 (수소는 짧게, 나머지는 고르게)
+        const want = (atoms[i].s === 'H' || atoms[j].s === 'H') ? Lm * .8 : Lm * 1.05;
+        const dx = Q[j].x - Q[i].x, dy = Q[j].y - Q[i].y, d = Math.hypot(dx, dy) || .01, f = (d - want) / d * .25 * cool;
+        Q[i].x += dx * f; Q[i].y += dy * f; Q[j].x -= dx * f; Q[j].y -= dy * f;
+      });
+      for(let i = 0; i < n; i++) for(let j = i + 1; j < n; j++){   // 겹침 밀기
+        if(nb[i].has(j)) continue;
+        const dx = Q[j].x - Q[i].x, dy = Q[j].y - Q[i].y, d = Math.hypot(dx, dy) || .01, m = Lm * (nb[i].size && nb[j].size && [...nb[i]].some(k => nb[j].has(k)) ? 1.15 : 1.25);
+        if(d < m){ const f = (m - d) / d * .3 * cool; Q[i].x -= dx * f; Q[i].y -= dy * f; Q[j].x += dx * f; Q[j].y += dy * f; }
+      }
+    }
+    return Q;
+  }
+  /* 방향족(1.5) 결합은 교과서처럼 단일/이중 결합이 번갈아 나오게 바꾼다 (케쿨레 구조) */
+  function kekule(bonds, n){
+    const ar = bonds.map((b, k) => b[2] === 1.5 ? k : -1).filter(k => k >= 0);
+    if(!ar.length) return bonds;
+    const adj = new Map(); ar.forEach(k => { const [i, j] = bonds[k]; [[i, j], [j, i]].forEach(([u, v]) => { if(!adj.has(u)) adj.set(u, []); adj.get(u).push([v, k]); }); });
+    const atoms = [...adj.keys()].sort((a, b) => adj.get(a).length - adj.get(b).length);
+    const mate = new Map(); let best = null, bestN = -1, steps = 0;
+    const go = idx => {
+      if(++steps > 40000) return;
+      while(idx < atoms.length && mate.has(atoms[idx])) idx++;
+      if(idx >= atoms.length){ if(mate.size > bestN){ bestN = mate.size; best = new Map(mate); } return; }
+      const u = atoms[idx];
+      for(const [v, k] of adj.get(u)){ if(mate.has(v)) continue; mate.set(u, k); mate.set(v, k); go(idx + 1); mate.delete(u); mate.delete(v); if(bestN === atoms.length) return; }
+      go(idx + 1);   // u 는 짝 없이
+    };
+    go(0);
+    const dbl = new Set(best ? best.values() : []);
+    return bonds.map((b, k) => b[2] === 1.5 ? [b[0], b[1], dbl.has(k) ? 2 : 1] : b);
+  }
+  function structModel(ball){
+    if(!ball || !ball.atoms || !(ball.bonds || []).length || ball.atoms.length > 140) return null;
+    const bonds = ball.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b, (b[2] != null ? b[2] : b.o) || 1]);
+    const Q = flatten(ball.atoms, bonds);
+    return { atoms: ball.atoms.map((a, i) => ({ s: a.s, x: Q[i].x, y: Q[i].y, z: 0, r: 10 })), bonds: [], sbonds: kekule(bonds, ball.atoms.length), struct: true, noLabel: true, static: true, maxScale: 1.6 };
+  }
+  // 보기 목록에 구조식 추가
+  const _mv = rxMolViews;
+  rxMolViews = function(model, name){
+    const v = _mv.apply(this, arguments);
+    if(v && v.ball){ try{ const s = structModel(v.ball); if(s) v.struct = s; }catch(e){} }
+    return v;
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const _mount = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _mount.apply(this, arguments);
+    const svg = svgEl || document.getElementById('mMol'); if(!svg) return r;
+    svg.classList.toggle('struct-on', !!(model && model.struct));
+    if(model && model.struct){
+      const G = document.createElementNS(NS, 'g'); G.setAttribute('class', 'struct-g');
+      const segs = [];
+      model.sbonds.forEach(([i, j, o]) => {
+        const lanes = o >= 3 ? [-1, 0, 1] : o > 1 ? [-.5, .5] : [0];
+        lanes.forEach(L => { const l = document.createElementNS(NS, 'line'); if(o === 1.5 && L > 0) l.setAttribute('class', 'dash'); G.appendChild(l); segs.push({ i, j, L, l, o }); });
+      });
+      const labels = model.atoms.map(a => { const t = document.createElementNS(NS, 'text'); t.textContent = a.s; t.setAttribute('fill', COL(a.s)); G.appendChild(t); return t; });
+      svg.appendChild(G); model.sg = { G, segs, labels };
+      rxDraw(0, 0, svgEl ? model : undefined);
+    }
+    return r;
+  };
+  const _draw = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const m = mm || RX_M;
+    if(m && m.struct && m.sg){
+      // 구조식은 돌리지 않고 평평하게
+      const sc = m.sc, X = a => m.cx + a.x * sc, Y = a => m.cy + a.y * sc;
+      const fs = Math.max(9, Math.min(20, sc * 14));
+      const cut = fs * .62, gap = Math.max(2.2, fs * .2), w = Math.max(1.3, fs * .1);
+      m.sg.labels.forEach((t, i) => { const a = m.atoms[i]; t.setAttribute('x', X(a).toFixed(1)); t.setAttribute('y', Y(a).toFixed(1)); t.setAttribute('font-size', fs.toFixed(1)); });
+      m.sg.segs.forEach(s => {
+        const a = m.atoms[s.i], b = m.atoms[s.j], ax = X(a), ay = Y(a), bx = X(b), by = Y(b);
+        const dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+        const lo = s.i < s.j ? 1 : -1, px = -uy * lo, py = ux * lo, o = s.L * gap * (s.o >= 3 ? 1.1 : 1.6);
+        const k = Math.min(cut, d * .38);
+        s.l.setAttribute('x1', (ax + ux * k + px * o).toFixed(1)); s.l.setAttribute('y1', (ay + uy * k + py * o).toFixed(1));
+        s.l.setAttribute('x2', (bx - ux * k + px * o).toFixed(1)); s.l.setAttribute('y2', (by - uy * k + py * o).toFixed(1));
+        s.l.setAttribute('stroke-width', w.toFixed(2));
+      });
+      return;
+    }
+    return _draw.apply(this, arguments);
+  };
+  const _sv = rxSetView;
+  rxSetView = function(v){
+    const r = _sv.apply(this, arguments);
+    if(v === 'struct') rxLS.set('pt_molstyle', 'struct');
+    return r;
+  };
+  const _render = rxRender;
+  rxRender = function(){
+    const r = _render.apply(this, arguments);
+    try{
+      const tabs = document.getElementById('mTabs');
+      let b = document.getElementById('mTabStruct');
+      if(!b){
+        b = document.createElement('button'); b.type = 'button'; b.id = 'mTabStruct'; b.setAttribute('role', 'tab'); b.dataset.v = 'struct';
+        b.addEventListener('click', e => { e.stopPropagation(); rxSetView('struct'); });
+        tabs.appendChild(b);
+      }
+      b.textContent = LANG === 'en' ? 'Structure' : '구조식';
+      const ok = !!(RX && RX.molTabs && RX.views && RX.views.struct);
+      b.hidden = !ok;
+      if(ok && rxLS.get('pt_molstyle', 'ball') === 'struct' && !RX.views.liq && !RX.views.glass && RX_VIEW !== 'struct'){ const v0 = RX_VIEW; RX_VIEW = v0; rxSetView('struct'); }
+      rxTabsSync();
+    }catch(e){}
+    return r;
+  };
+  window.rxStructModel = structModel;
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
