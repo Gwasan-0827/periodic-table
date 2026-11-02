@@ -39104,6 +39104,51 @@ function rxCardPreview(blob, file, name, tier, share){
   };
 })();
 </script>
+<script>
+/* ── 프랑슘 + 물: 폭발 전에 증발 (특수 발견, 도감 540 유지) ──
+   알칼리 금속은 아래로 갈수록 물에서 더 세게 터지지만(Na < K < Rb < Cs), 프랑슘은 모을 수가 없어서 아무도 못 해 봤다.
+   덩어리로 모으면 자기 방사능 열 때문에 물에 닿기도 전에 증발할 거라는 농담 같은 결말 */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const A = { nm: '폭발 전에 증발', key: 'Fr1+H2+O1', f: 'Fr + H₂O', sub: '프랑슘이 물에 닿기도 전에 자기 열로 날아가 버림',
+    en: ['Gone before the bang', 'Francium boils away from its own heat before it even reaches the water'], sym: 'Fr', mix: [['Fr', 1], ['H', 2], ['O', 1]],
+    hint: 'Fr + H ×2 + O',
+    tmi: '나트륨 → 칼륨 → 루비듐 → 세슘, 아래로 갈수록 물에서 더 세게 터져요. 그럼 그 아래 프랑슘은? 아무도 몰라요. 프랑슘은 지구 전체를 통틀어도 한순간에 수십 g 정도밖에 없고, 제일 오래 버티는 것도 반감기가 22분이라 눈에 보일 만큼 모아 본 사람이 없거든요. 만약 모은다면 자기 방사능 열 때문에 물에 닿기도 전에 증발해 버릴 거라고 해요.',
+    alias: 'francium 프랑슘 물 폭발 water' };
+  EXACT[A.key] = [A.f, A.nm, A.sub];
+  try{ REC_EN[A.nm] = A.en; }catch(e){}
+  try{ RX_TMI[A.nm] = A.tmi; }catch(e){}
+  try{ RX_DEX_ALIAS[A.nm] = A.alias; }catch(e){}
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== A.nm); };
+  const _sl = specialList;
+  specialList = function(){ const L = _sl.apply(this, arguments); if(!L.some(x => x.name === A.nm)) L.push({ sym: A.sym, lo: 1, hi: 1, formula: A.f, name: A.nm, sub: A.sub, hint: A.hint }); return L; };
+  const _en = rxEntry;
+  rxEntry = function(name){ if(name === A.nm) return { name, formula: A.f, sub: A.sub, key: A.key, exact: true, mix: A.mix }; return _en.apply(this, arguments); };
+  // 이름에 '폭발'이 들어 있지만 터지지 않는다
+  const _bl = rxBoomLevel;
+  rxBoomLevel = function(name){ if(name === A.nm) return 0; return _bl.apply(this, arguments); };
+  // 모형: 초록빛으로 달아오른 프랑슘 원자들이 위로 증발해 흩어진다
+  const _cr = rxCrystal;
+  rxCrystal = function(formula, name){
+    if(name === A.nm){
+      const m = rxGasModel('Fr', 14, rxRand('frvap'), name);
+      m.phys.g = -0.16; m.phys.brown = 0.5; m.phys.maxV = 4;
+      m.atoms.forEach((a, i) => { a.y = 60 + Math.random() * 60; a.vy = -1 - Math.random() * 2; a.col = i % 3 ? '#9dff8a' : '#e6ffd0'; });
+      m.frVapor = true;
+      return m;
+    }
+    return _cr.apply(this, arguments);
+  };
+  // 소리: 쾅 대신 치이익 → 퓨 (김 빠지는 소리)
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{ if(RX && RX.raw === A.nm){ rxNoise(.9, .07, 'highpass', 3000); rxTone(900, .6, 'sine', .04, .3, 2400); const st = document.getElementById('mStage'); if(st) st.style.setProperty('--glow', '#7dff6a'); } }catch(e){}
+    return r;
+  };
+})();
+</script>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
