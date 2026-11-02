@@ -37843,11 +37843,13 @@ function rxSunGem(){
     raf = requestAnimationFrame(loop);
   }
 
+  // 아직 다듬는 중이라 학습 탭에는 안 보이게 해 둔다 (true로 바꾸면 다시 나타남, rxStatic.open()으로는 열 수 있음)
+  const STAT_ON = false;
   const _hh = hubHead;
   hubHead = function(){
     const r = _hh.apply(this, arguments);
     const tabs = qHeadEl.querySelector('.hubtabs');
-    if(tabs && !tabs.querySelector('[data-h="stat"]')){
+    if(STAT_ON && tabs && !tabs.querySelector('[data-h="stat"]')){
       const b = document.createElement('button');
       b.className = 'hubt' + (HUB === 'stat' ? ' on' : ''); b.dataset.h = 'stat'; b.textContent = T().tab;
       b.addEventListener('click', () => { HUB = 'stat'; openHub(); });
