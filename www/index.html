@@ -38457,6 +38457,99 @@ function rxSunGem(){
 })();
 </script>
 <style>
+  /* ═══ 빈칸 채우기 시작 연출: 원소 칸이 펑 터져 날아가고, 몇 개는 화면에 철퍽 붙었다가 흘러내린다 ═══ */
+  #fbLayer{position:fixed;inset:0;z-index:9500;pointer-events:none;overflow:hidden;perspective:900px}
+  .fb-p{position:absolute;left:0;top:0;display:grid;place-items:center;border-radius:6px;border:1.5px solid var(--c);
+    background:linear-gradient(160deg,color-mix(in srgb,var(--c) 28%,#10141c),#0d1018 75%);color:#fff;font:600 16px/1 Kanit,system-ui,sans-serif;
+    box-shadow:0 0 12px color-mix(in srgb,var(--c) 40%,transparent);will-change:transform,opacity;backface-visibility:hidden}
+  .fb-p small{position:absolute;left:4px;top:3px;font:700 8px/1 ui-monospace,monospace;color:rgba(255,255,255,.6)}
+  .fb-p.stick{box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 30px color-mix(in srgb,var(--c) 45%,transparent)}
+  .fb-flash{position:fixed;inset:0;z-index:9499;pointer-events:none;background:radial-gradient(circle at var(--x) var(--y),rgba(255,255,255,.55),rgba(201,208,255,.15) 30%,transparent 60%);animation:fbFlash .5s ease-out forwards}
+  @keyframes fbFlash{to{opacity:0}}
+  body.fb-shake .wrap,body.fb-shake main,body.fb-shake #grid{animation:fbShake .45s cubic-bezier(.3,.7,.4,1)}
+  @keyframes fbShake{10%{transform:translate(-6px,3px)}25%{transform:translate(5px,-4px)}40%{transform:translate(-4px,2px)}60%{transform:translate(3px,-1px)}80%{transform:translate(-1px,1px)}}
+</style>
+<script>
+(function(){
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function boomSound(){
+    try{
+      rxTone(70, .5, 'sine', .22, 0, 30);                 // 쿵
+      rxNoise(.45, .2, 'lowpass', 1800);                   // 펑
+      rxNoise(.12, .12, 'highpass', 3000);                 // 파삭
+    }catch(_){}
+  }
+  function splat(delay){ setTimeout(() => { try{ rxNoise(.12, .14, 'lowpass', 700); rxTone(140, .08, 'sine', .08, 0, 60); }catch(_){} }, delay); }
+  function explode(cells){
+    if(window.RX_REDUCED || !cells.length) return;
+    let L = document.getElementById('fbLayer'); if(L) L.remove();
+    L = document.createElement('div'); L.id = 'fbLayer'; document.body.appendChild(L);
+    const W = innerWidth, H = innerHeight;
+    // 터지는 중심: 칸들의 가운데
+    let cx = 0, cy = 0; cells.forEach(({ r }) => { cx += r.left + r.width / 2; cy += r.top + r.height / 2; }); cx /= cells.length; cy /= cells.length;
+    const fl = document.createElement('div'); fl.className = 'fb-flash'; fl.style.setProperty('--x', cx + 'px'); fl.style.setProperty('--y', cy + 'px'); document.body.appendChild(fl); setTimeout(() => fl.remove(), 600);
+    document.body.classList.add('fb-shake'); setTimeout(() => document.body.classList.remove('fb-shake'), 500);
+    boomSound();
+    // 화면에 붙을 조각: 몇 개만 (너무 많으면 가린다)
+    const maxFly = Math.min(cells.length, W < 700 ? 45 : 80);
+    const pick = cells.slice().sort(() => Math.random() - .5).slice(0, maxFly);
+    const nStick = Math.min(pick.length, Math.max(2, Math.round(pick.length / 14)), W < 700 ? 4 : 7);
+    const spots = [];   // 붙는 자리끼리 너무 겹치지 않게
+    let longest = 0;
+    pick.forEach(({ e, r }, i) => {
+      const p = document.createElement('div'); p.className = 'fb-p';
+      p.style.setProperty('--c', cssv(CAT[e.c].v));
+      p.style.width = r.width + 'px'; p.style.height = r.height + 'px'; p.style.fontSize = Math.max(11, r.width * .38) + 'px';
+      p.innerHTML = `<small>${e.n}</small>${e.s}`;
+      L.appendChild(p);
+      const x0 = r.left, y0 = r.top, ox = x0 + r.width / 2 - cx, oy = y0 + r.height / 2 - cy, d = Math.hypot(ox, oy) || 1;
+      const stick = i < nStick;
+      if(stick){
+        // 카메라 쪽으로 날아와 화면에 철퍽 → 버티다가 스르륵 → 갑자기 뚝
+        let tx, ty, tries = 0;
+        do{ tx = rnd(W * .08, W * .78); ty = rnd(H * .08, H * .55); tries++; } while(tries < 12 && spots.some(([a, b]) => Math.hypot(a - tx, b - ty) < Math.min(W, H) * .22));
+        spots.push([tx, ty]);
+        const S = rnd(W < 700 ? 3.2 : 4, W < 700 ? 4.4 : 6.2), rot = rnd(-18, 18), hit = 280 + i * 70;
+        const dx = tx - x0, dy = ty - y0, sag = rnd(40, 75), hold = rnd(500, 900), slow = rnd(900, 1300), fall = 480;
+        p.classList.add('stick'); p.style.zIndex = 10 + i;
+        const tot = hit + hold + slow + fall;
+        const k = ms => ms / tot;
+        p.animate([
+          { transform: `translate(${x0}px,${y0}px) scale(1) rotate(0deg)`, offset: 0, easing: 'cubic-bezier(.3,.0,.2,1)' },
+          { transform: `translate(${dx * .5 + x0}px,${dy * .5 + y0 - 60}px) scale(${S * .45}) rotate(${rot * 2}deg)`, offset: k(hit * .55), easing: 'cubic-bezier(.4,0,1,1)' },
+          { transform: `translate(${tx}px,${ty}px) scale(${S * 1.08},${S * .9}) rotate(${rot}deg)`, offset: k(hit) },                       // 철퍽 (납작)
+          { transform: `translate(${tx}px,${ty}px) scale(${S},${S}) rotate(${rot}deg)`, offset: k(hit + 120), easing: 'ease-in-out' },
+          { transform: `translate(${tx}px,${ty + 2}px) scale(${S},${S}) rotate(${rot}deg)`, offset: k(hit + hold), easing: 'cubic-bezier(.5,0,.9,.5)' },   // 버티기
+          { transform: `translate(${tx}px,${ty + sag}px) scale(${S},${S * 1.02}) rotate(${rot + rnd(-3, 3)}deg)`, offset: k(hit + hold + slow), easing: 'cubic-bezier(.55,0,1,.45)' },   // 스르륵 (느리게)
+          { transform: `translate(${tx + rnd(-30, 30)}px,${H + 200}px) scale(${S},${S}) rotate(${rot + rnd(-25, 25)}deg)`, offset: 1 },     // 갑자기 뚝
+        ], { duration: tot, fill: 'forwards' });
+        splat(hit);
+        longest = Math.max(longest, tot);
+      } else {
+        // 그냥 펑: 바깥으로 튀었다가 포물선으로 떨어진다
+        const sp = rnd(260, 620), vx = ox / d * sp + rnd(-80, 80), vy = oy / d * sp * .6 - rnd(260, 520), g = 1500, rot = rnd(-540, 540), sc = rnd(1.05, 1.6);
+        const dur = rnd(1100, 1600), N = 8, frames = [];
+        for(let j = 0; j <= N; j++){
+          const tt = j / N * dur / 1000;
+          frames.push({ transform: `translate(${x0 + vx * tt}px,${y0 + vy * tt + .5 * g * tt * tt}px) scale(${1 + (sc - 1) * Math.min(1, j / 3)}) rotate(${rot * j / N}deg)`, opacity: j < N - 1 ? 1 : 0 });
+        }
+        p.animate(frames, { duration: dur, fill: 'forwards', delay: rnd(0, 60) });
+        longest = Math.max(longest, dur + 60);
+      }
+    });
+    setTimeout(() => { if(L.isConnected) L.remove(); }, longest + 200);
+  }
+  const _fs = fillStart;
+  fillStart = function(){
+    _fs.apply(this, arguments);
+    const cells = [];
+    memPool().forEach(e => { const c = document.querySelector(`.cell[data-n="${e.n}"]`); if(c){ const r = c.getBoundingClientRect(); if(r.width) cells.push({ e, r }); } });
+    requestAnimationFrame(() => explode(cells));
+  };
+  window.rxFillBoom = () => { const cells = []; memPool().forEach(e => { const c = document.querySelector(`.cell[data-n="${e.n}"]`); if(c) cells.push({ e, r: c.getBoundingClientRect() }); }); explode(cells); };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
