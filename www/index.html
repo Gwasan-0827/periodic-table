@@ -12150,7 +12150,7 @@ function rxCrack(){
   modal.appendChild(svg);
 }
 function rxBoomScreen(lv){
-  modal.querySelectorAll('.rx-flash,.rx-crack').forEach(e => e.remove());
+  modal.querySelectorAll('.rx-flash,.rx-crack,.rx-glitch').forEach(e => e.remove());
   const fl = document.createElement('div');
   fl.className = 'rx-flash';
   fl.style.setProperty('--lv', lv);
@@ -13004,7 +13004,7 @@ function rxRender(kind, formula, order, c){
   RX = { kind, formula, order, c };
   const card = document.getElementById('card');
   card.classList.remove('is-ok', 'is-loose', 'is-fail', 'is-new', 'is-boom');
-  modal.querySelectorAll('.rx-flash,.rx-crack').forEach(e => e.remove());
+  modal.querySelectorAll('.rx-flash,.rx-crack,.rx-glitch').forEach(e => e.remove());
   document.getElementById('mStage').querySelectorAll('.rx-fx').forEach(e => e.remove());
   const rawName = RX_RAW || document.getElementById('mName').textContent;
   RX_RAW = '';
@@ -38922,6 +38922,21 @@ function rxCardPreview(blob, file, name, tier, share){
   @keyframes ckFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--fx),110vh) rotate(var(--fr))}}
   .rx-crack2{animation:ckIn .07s both}
   @keyframes ckIn{from{opacity:0}}
+  /* 화면이 진짜 고장 난 느낌: 액정 번짐 + 세로 줄 + 가끔 지지직 */
+  .rx-glitch{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
+  .rx-glitch .ink{position:absolute;width:var(--r);height:var(--r);margin:calc(var(--r) / -2) 0 0 calc(var(--r) / -2);border-radius:50%;
+    background:radial-gradient(circle,rgba(0,0,0,.92) 0 18%,rgba(10,0,20,.75) 34%,rgba(60,0,90,.25) 55%,transparent 70%);filter:url(#rxInkWobble);animation:gkInk 1.8s ease-out both}
+  @keyframes gkInk{from{transform:scale(.15);opacity:0}to{transform:none;opacity:1}}
+  .rx-glitch .vl{position:absolute;top:0;bottom:0;width:var(--w);background:var(--c);box-shadow:0 0 6px var(--c);opacity:.85;animation:gkLine 2.6s steps(1) infinite;animation-delay:var(--d)}
+  @keyframes gkLine{0%,100%{opacity:.85}12%{opacity:.25}14%{opacity:.9}47%{opacity:0}49%{opacity:.8}}
+  .rx-glitch .band{position:absolute;left:0;right:0;height:var(--h);top:var(--y);backdrop-filter:hue-rotate(var(--hue)) saturate(2.4) contrast(1.4);-webkit-backdrop-filter:hue-rotate(var(--hue)) saturate(2.4) contrast(1.4);
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px);opacity:0}
+  .rx-glitch.burst .band{animation:gkBand .42s steps(4) both;animation-delay:var(--bd)}
+  @keyframes gkBand{0%{opacity:1;transform:translateX(-14px)}33%{opacity:1;transform:translateX(18px)}66%{opacity:.8;transform:translateX(-6px)}100%{opacity:0;transform:none}}
+  #modal.rx-glitching #card{animation:gkShift .42s steps(5) both}
+  @keyframes gkShift{0%{filter:drop-shadow(4px 0 rgba(255,0,90,.75)) drop-shadow(-4px 0 rgba(0,240,255,.75));transform:translate(-3px,1px) skewX(-1deg)}
+    40%{filter:drop-shadow(-5px 0 rgba(255,0,90,.7)) drop-shadow(5px 0 rgba(0,240,255,.7));transform:translate(4px,-1px) skewX(1.5deg)}
+    80%{filter:drop-shadow(2px 0 rgba(255,0,90,.5)) drop-shadow(-2px 0 rgba(0,240,255,.5));transform:translate(-1px,0)}100%{filter:none;transform:none}}
 </style>
 <script>
 (function(){
@@ -39018,6 +39033,35 @@ function rxCardPreview(blob, file, name, tier, share){
     // 4) 떨어져 나간 조각이 바닥에 닿는 소리 (조금 뒤)
     for(let i = 0; i < 7; i++){ const dt = .9 + Math.random() * 1.1; ping(t + dt, 2000 + Math.random() * 3000, .025); }
   };
+
+  /* ── 글리치: 깨진 자리에서 액정이 번지고, 세로 줄이 생기고, 가끔 화면이 지지직 ── */
+  let gTimer = 0;
+  function glitch(cx, cy, W, H){
+    if(typeof RX_FX !== 'undefined' && RX_FX === 'lo') return;
+    document.querySelectorAll('.rx-glitch').forEach(e => e.remove()); clearTimeout(gTimer);
+    if(!document.getElementById('rxInkWobble')){
+      const d = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); d.setAttribute('width', 0); d.setAttribute('height', 0); d.style.position = 'absolute';
+      d.innerHTML = '<filter id="rxInkWobble"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="38"/></filter>';
+      document.body.appendChild(d);
+    }
+    const g = document.createElement('div'); g.className = 'rx-glitch';
+    const C = ['#ff2bd6', '#2bff88', '#22e6ff', '#ffffff', '#ffe14d'];
+    let h = `<i class="ink" style="left:${cx}px;top:${cy}px;--r:${(90 + Math.random() * 70) | 0}px"></i>`;
+    const nl = 3 + (Math.random() * 4 | 0);
+    for(let i = 0; i < nl; i++){ const x = cx + (Math.random() - .5) * Math.min(W * .5, 420); h += `<i class="vl" style="left:${x | 0}px;--w:${Math.random() < .7 ? 1 : 2}px;--c:${C[i % C.length]};--d:${(Math.random() * 2).toFixed(2)}s"></i>`; }
+    for(let i = 0; i < 6; i++) h += `<i class="band" style="--y:${(Math.random() * 100).toFixed(1)}%;--h:${(6 + Math.random() * 40) | 0}px;--hue:${(Math.random() * 360) | 0}deg;--bd:${(Math.random() * 120) | 0}ms"></i>`;
+    g.innerHTML = h; modal.appendChild(g);
+    const burst = strong => {
+      if(!g.isConnected || !modal.classList.contains('on')) return;
+      g.classList.remove('burst'); void g.offsetWidth; g.classList.add('burst');
+      g.querySelectorAll('.band').forEach(b => { b.style.setProperty('--y', (Math.random() * 100).toFixed(1) + '%'); b.style.setProperty('--hue', ((Math.random() * 360) | 0) + 'deg'); });
+      modal.classList.remove('rx-glitching'); void modal.offsetWidth; modal.classList.add('rx-glitching');
+      setTimeout(() => modal.classList.remove('rx-glitching'), 450);
+      try{ const a = ac(); if(a && (typeof sndOn === 'undefined' || sndOn)){ rxNoise(strong ? .22 : .12, strong ? .06 : .035, 'bandpass', 900 + Math.random() * 2400, 6); rxTone(60, .1, 'square', strong ? .03 : .015); } }catch(e){}
+      gTimer = setTimeout(() => burst(false), 1800 + Math.random() * 2800);
+    };
+    setTimeout(() => burst(true), 120);
+  }
   /* ── 깨진 유리: 충격점에서 뻗는 금 + 동심원 금 → 조각(다각형)마다 빛이 조금씩 다르게, 큰 폭발이면 가운데 조각이 떨어져 나간다 ── */
   rxCrack = function(){
     const W = innerWidth, H = innerHeight, f = v => v.toFixed(1);
@@ -39056,6 +39100,7 @@ function rxCardPreview(blob, file, name, tier, share){
       `<circle cx="${f(cx)}" cy="${f(cy)}" r="7" fill="rgba(255,255,255,.75)"/><circle cx="${f(cx)}" cy="${f(cy)}" r="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>`;
     modal.appendChild(svg);
     try{ rxGlassSnd(); }catch(e){}
+    try{ glitch(cx, cy, W, H); }catch(e){}
   };
 })();
 </script>
