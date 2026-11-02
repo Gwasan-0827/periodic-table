@@ -26917,7 +26917,7 @@ function rxTungstenCube(key){
   #card .csub.sub-danger{color:#ff5252;font-weight:800;text-shadow:0 0 6px rgba(255,60,60,.9),0 0 16px rgba(255,40,40,.6);animation:subDanger 1.6s ease-in-out infinite}
   @keyframes subDanger{50%{text-shadow:0 0 10px rgba(255,80,80,1),0 0 26px rgba(255,40,40,.85)}}
   /* 오줌: 모자이크(?) */
-  #mStage.rx-mosaic #mMol{filter:url(#rxPixF)}
+  #mStage.rx-mosaic #mMol,#mStage.rx-mosaic #mLiqGL{filter:url(#rxPixF)}   /* WebGL 액체 캔버스도 같이 */
   #mStage .rx-censor{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%) rotate(-4deg);z-index:3;font-size:16px;font-weight:900;letter-spacing:.14em;text-align:center;
     color:#fff;background:#000;border-radius:3px;padding:6px 18px;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.5);white-space:nowrap}
   /* 핵융합: 번쩍! */
@@ -26961,11 +26961,14 @@ function rxTungstenCube(key){
             if(!g || !st.classList.contains('rx-mosaic')) return;
             const r = g.getBoundingClientRect(), sr = st.getBoundingClientRect();
             if(!r.width) return;
+            c.style.transition = 'left .25s, top .25s';
             c.style.left = (r.left + r.width / 2 - sr.left) + 'px';
             c.style.top = (r.top + r.height / 2 - sr.top) + 'px';
             c.style.minWidth = Math.min(r.width * 0.75, sr.width * 0.8) + 'px';
           };
-          [80, 500, 1200, 2500].forEach(t => setTimeout(fit, t));
+          // 액체는 계속 흔들리고 던질 수도 있어서, 모자이크가 켜져 있는 동안 계속 따라간다
+          clearInterval(window.__rxCensorT);
+          fit(); window.__rxCensorT = setInterval(() => { if(!st.classList.contains('rx-mosaic')) return clearInterval(window.__rxCensorT); fit(); }, 250);
         }
       }
       if(raw === '핵융합' && !RX_REDUCED){
