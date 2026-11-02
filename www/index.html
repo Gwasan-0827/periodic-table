@@ -36616,8 +36616,9 @@ void main(){
   function structModel(ball){
     if(!ball || !ball.atoms || !(ball.bonds || []).length || ball.atoms.length > 140) return null;
     const bonds = ball.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b, (b[2] != null ? b[2] : b.o) || 1]);
-    const Q = flatten(ball.atoms, bonds);
-    return { atoms: ball.atoms.map((a, i) => ({ s: a.s, x: Q[i].x, y: Q[i].y, z: 0, r: 10 })), bonds: [], sbonds: kekule(bonds, ball.atoms.length), struct: true, noLabel: true, static: true, maxScale: 1.6 };
+    // 3D 좌표 그대로: 글자는 늘 정면을 보고, 모형은 다른 탭처럼 돌아간다
+    return { atoms: ball.atoms.map(a => ({ s: a.s, x: a.x, y: a.y, z: a.z || 0, r: 10 })), bonds: [], sbonds: kekule(bonds, ball.atoms.length), struct: true, noLabel: true,
+             real3d: ball.real3d, maxScale: ball.maxScale, yaw0: ball.yaw0, tilt: ball.tilt };
   }
   // 보기 목록에 구조식 추가
   const _mv = rxMolViews;
@@ -36641,7 +36642,7 @@ void main(){
       });
       const labels = model.atoms.map(a => { const t = document.createElementNS(NS, 'text'); t.textContent = a.s; t.setAttribute('fill', COL(a.s)); G.appendChild(t); return t; });
       svg.appendChild(G); model.sg = { G, segs, labels };
-      rxDraw(0, 0, svgEl ? model : undefined);
+      rxDraw(RX_YAW, RX_PITCH, svgEl ? model : undefined);
     }
     return r;
   };
@@ -36649,20 +36650,36 @@ void main(){
   rxDraw = function(yaw, pitch, mm){
     const m = mm || RX_M;
     if(m && m.struct && m.sg){
-      // 구조식은 돌리지 않고 평평하게
-      const sc = m.sc, X = a => m.cx + a.x * sc, Y = a => m.cy + a.y * sc;
-      const fs = Math.max(9, Math.min(20, sc * 14));
-      const cut = fs * .62, gap = Math.max(2.2, fs * .2), w = Math.max(1.3, fs * .1);
-      m.sg.labels.forEach((t, i) => { const a = m.atoms[i]; t.setAttribute('x', X(a).toFixed(1)); t.setAttribute('y', Y(a).toFixed(1)); t.setAttribute('font-size', fs.toFixed(1)); });
-      m.sg.segs.forEach(s => {
-        const a = m.atoms[s.i], b = m.atoms[s.j], ax = X(a), ay = Y(a), bx = X(b), by = Y(b);
-        const dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
-        const lo = s.i < s.j ? 1 : -1, px = -uy * lo, py = ux * lo, o = s.L * gap * (s.o >= 3 ? 1.1 : 1.6);
-        const k = Math.min(cut, d * .38);
-        s.l.setAttribute('x1', (ax + ux * k + px * o).toFixed(1)); s.l.setAttribute('y1', (ay + uy * k + py * o).toFixed(1));
-        s.l.setAttribute('x2', (bx - ux * k + px * o).toFixed(1)); s.l.setAttribute('y2', (by - uy * k + py * o).toFixed(1));
-        s.l.setAttribute('stroke-width', w.toFixed(2));
+      const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
+      const P = m.atoms.map(a => {
+        const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
+        return { X: m.cx + x1 * m.sc * f, Y: m.cy + y1 * m.sc * f, z: z2, f };
       });
+      let zmin = 1e9, zmax = -1e9; P.forEach(p => { zmin = Math.min(zmin, p.z); zmax = Math.max(zmax, p.z); });
+      const depth = p => zmax > zmin ? (p.z - zmin) / (zmax - zmin) : 1;   // 0 = 뒤, 1 = 앞
+      const fs0 = Math.max(9, Math.min(20, m.sc * 14)), gap = Math.max(2.2, fs0 * .2), w0 = Math.max(1.3, fs0 * .1);
+      const items = [];
+      m.sg.labels.forEach((t, i) => {
+        const p = P[i], d = depth(p), fs = fs0 * p.f;
+        t.setAttribute('x', p.X.toFixed(1)); t.setAttribute('y', p.Y.toFixed(1)); t.setAttribute('font-size', fs.toFixed(1));
+        t.setAttribute('opacity', (.45 + .55 * d).toFixed(2));
+        items.push([p.z + .5, t]);
+      });
+      m.sg.segs.forEach(s => {
+        const a = P[s.i], b = P[s.j];
+        const dx = b.X - a.X, dy = b.Y - a.Y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+        const lo = s.i < s.j ? 1 : -1, px = -uy * lo, py = ux * lo, f = (a.f + b.f) / 2, o = s.L * gap * f * (s.o >= 3 ? 1.1 : 1.6);
+        const ka = Math.min(fs0 * a.f * .62, d * .38), kb = Math.min(fs0 * b.f * .62, d * .38);
+        s.l.setAttribute('x1', (a.X + ux * ka + px * o).toFixed(1)); s.l.setAttribute('y1', (a.Y + uy * ka + py * o).toFixed(1));
+        s.l.setAttribute('x2', (b.X - ux * kb + px * o).toFixed(1)); s.l.setAttribute('y2', (b.Y - uy * kb + py * o).toFixed(1));
+        s.l.setAttribute('stroke-width', (w0 * f).toFixed(2));
+        s.l.setAttribute('opacity', (.35 + .65 * (depth(a) + depth(b)) / 2).toFixed(2));
+        items.push([(a.z + b.z) / 2, s.l]);
+      });
+      // 뒤에 있는 것부터 그리기 (순서가 바뀔 때만 다시 붙인다)
+      items.sort((p, q) => p[0] - q[0]);
+      const key = items.map(x => x[1].__k || (x[1].__k = Math.random().toString(36).slice(2, 7))).join('');
+      if(key !== m.sg.order){ m.sg.order = key; items.forEach(x => m.sg.G.appendChild(x[1])); }
       return;
     }
     return _draw.apply(this, arguments);
