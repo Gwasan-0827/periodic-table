@@ -7037,8 +7037,11 @@ const flameOf = e => FLAME[e.s] || null;
    오늘의 원소
    날짜로 정해지므로 하루 동안은 바뀌지 않는다.
    ═══════════════════════════════════════════════════ */
+/* 하루는 아침 9시에 바뀐다 (오늘의 원소·운세·화학식·연구 과제 모두) */
+const RX_DAY_H = 9;
+function rxDayDate(){ return new Date(Date.now() - RX_DAY_H * 3600e3); }
 function daySeed(){
-  const d = new Date();
+  const d = rxDayDate();
   const s = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
   let h = 2166136261;
   for(let i = 0; i < s.length; i++){
@@ -7158,7 +7161,7 @@ const HOLIDAY = {
 };
 
 function todayKey(){
-  const d = new Date();
+  const d = rxDayDate();
   return String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 function todayHoliday(){ return HOLIDAY[todayKey()] || null; }
@@ -38137,9 +38140,9 @@ function rxSunGem(){
     // 오늘 들른 날을 기록하고, 오늘까지 며칠 연속인지 센다
     let days = [];
     try{ days = JSON.parse(localStorage.getItem('pt_todaydays') || '[]'); }catch(_){}
-    const today = ymd(new Date());
+    const today = ymd(rxDayDate());
     if(!days.includes(today)){ days.push(today); days = days.slice(-60); try{ localStorage.setItem('pt_todaydays', JSON.stringify(days)); }catch(_){} }
-    const set = new Set(days); let n = 0; const d = new Date();
+    const set = new Set(days); let n = 0; const d = rxDayDate();
     while(set.has(ymd(d))){ n++; d.setDate(d.getDate() - 1); }
     return n;
   }
@@ -38162,7 +38165,7 @@ function rxSunGem(){
     if(!wrap || !wrap.querySelector('.todayname') || wrap.querySelector('.todaysym.gone')) return;   // 만우절 화면 등은 그대로
     let info; try{ info = todayElement(); }catch(_){ return; }
     const { el: e, fortune, holiday, solemn } = info, L = EN() ? 'en' : 'ko', col = cssv(CAT[e.c].v);
-    const d = new Date(), dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${DAYS[L][d.getDay()]}`;
+    const d = rxDayDate(), dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${DAYS[L][d.getDay()]}`;
     const n = streak();
     const extra = [...wrap.querySelectorAll('.tform, .rtask')];
     const bust = wrap.querySelector('.holibadge.bust');
@@ -38194,7 +38197,7 @@ function rxSunGem(){
     const cd = document.getElementById('td2Cd');
     const upd = () => {
       if(!cd.isConnected){ clearInterval(tick); return; }
-      const now = new Date(), mid = new Date(now); mid.setHours(24, 0, 0, 0);
+      const now = new Date(), mid = new Date(now); mid.setHours(RX_DAY_H, 0, 0, 0); if(mid <= now) mid.setDate(mid.getDate() + 1);
       const s = Math.max(0, Math.floor((mid - now) / 1000));
       cd.textContent = [s / 3600 | 0, (s % 3600) / 60 | 0, s % 60].map(v => String(v).padStart(2, '0')).join(':');
       if(s === 0){ clearInterval(tick); setTimeout(() => { try{ if(HUB === 'today' && quizEl.classList.contains('on')) renderToday(); }catch(_){} }, 1200); }
