@@ -6164,7 +6164,7 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '4.0';
+const APP_VER = '4.1';
 
 /* 버전 표기 (시대 구분): αV = 1.x / βV = 2.0 ~ 4.x / ΔV = 5.0 부터. 뒷자리는 아래 첨자 (3.2 → βV.3.₂) */
 function verLabel(v){
@@ -6175,6 +6175,38 @@ function verLabel(v){
   return `${era}V.${a}.${sub}`;
 }
 const CHANGELOG = [
+  {
+    v: '4.1', date: '2026-11-02',
+    title: { ko: '얼음과 청개구리', en: 'Ice and Frogs' },
+    items: {
+      ko: ['결과 창을 새로 꾸몄어요. 모서리 괄호와 결과 번호, 만든 물질 색을 따라가는 테두리 빛이 생겼고, 화학식이 "쾅" 찍히고 이름이 타자 치듯 써지는 등장 연출이 붙었어요',
+           '조합에 실패하면 카드가 빨갛게 바뀌고 "실패" 도장이 쿵 찍혀요. ???는 가끔 지지직거려요',
+           '액체를 새로 그렸어요. 뒤 배경이 렌즈처럼 휘어 보이고, 가장자리는 빛나고, 속에는 물결빛이 일렁이고 기포가 올라와요',
+           '❄ 얼리기도 새로 만들었어요. 바닥부터 서리 띠를 그리며 얼음이 차올라 하나의 얼음 덩어리가 돼요. 결정 면, 금, 갇힌 공기 방울, 반짝이까지 있어요. 녹이기도 천천히 풀려요',
+           '설정에서 저전력 모드를 "켜기"로 하면 액체와 얼음을 예전처럼 가볍게 그려요',
+           '학습에 "🕰 변천사" 탭이 생겼어요. 돌턴, 톰슨, 러더퍼드, 보어, 전자 구름까지 원자 모형이 어떻게 바뀌었는지 직접 눌러 보며 따라가요. 금박에 알파 입자를 쏘고, 전자를 들뜨게 해서 수소 스펙트럼을 찍어 볼 수 있어요',
+           '성격 탭을 새로 만들었어요. 4지선다 16문항, 결과 원소 24종, 성향 4축(반응성·결합력·안정성·광채). 잘 맞는 원소와 정반대 원소도 알려 주고, 결과 카드를 이미지로 저장할 수 있어요',
+           '방전관을 과학실 스펙트럼관 모양으로 바꿨어요. PC에선 가로로, 폰에선 세로로 놓여요',
+           '헬륨 위에 가끔 나타나는 그 칸이 페리윙클 빛으로 바뀌었어요. 누르면… 직접 보세요',
+           '퀴즈에 빨간 글씨가 하나 생겼어요. 하지 말라는 건 하지 마세요 ;)',
+           '특수 발견 2종: 용암이 너무 빨리 식어 생긴 흑요석, 적철석 조각이 햇빛처럼 반짝이는 선스톤',
+           '업적 아이콘이 손그림으로 몇 개 더 바뀌었어요. 0번 원소 업적의 이름도 바뀌었고요',
+           '고친 것: 설정의 "업데이트 확인하기"가 인터넷이 멀쩡한데도 연결을 확인하라고 하던 문제, 헬륨 위 칸이 표 크기가 바뀌면 삐딱하게 밀리던 문제'],
+      en: ['The result card got a makeover: corner brackets, a result number, an edge glow that follows the colour of what you made, and an entrance where the formula stamps down and the name types itself in',
+           'Failed mixes turn the card red and slam a FAILED stamp on it. The ??? glitches now and then',
+           'Liquids are redrawn: the background bends like a lens behind them, the edges glow, light ripples inside and bubbles rise',
+           '❄ Freeze is new too: ice climbs up from the bottom behind a frosty front until it is one solid block, with facets, cracks, trapped air and sparkles. Melting thaws it slowly',
+           'Setting Battery saver to "On" draws liquids and ice the old, lighter way',
+           'New "🕰 Atom history" tab in Learn: follow the atom from Dalton, Thomson, Rutherford and Bohr to the electron cloud, hands-on. Fire alpha particles at gold foil, or excite an electron and catch hydrogen\'s spectrum',
+           'The personality tab is rebuilt: 16 four-choice questions, 24 result elements and 4 traits (reactivity, bonding, stability, shine). It shows your best match and your opposite, and you can save a result card image',
+           'The discharge tube is now a classroom spectrum tube: horizontal on PC, upright on phones',
+           'That cell that sometimes appears above helium now glows periwinkle. Tap it and… see for yourself',
+           'The quiz has a new line in red. When it says don\'t, don\'t ;)',
+           'Two special finds: obsidian, lava that cooled too fast, and sunstone, sparkling with flakes of hematite',
+           'A few more achievement icons are now hand-drawn, and the element-zero achievement has a new name',
+           'Fixed: "Check for updates" telling you to check your internet when it was fine, and the cell above helium drifting when the table resized'],
+    },
+  },
   {
     v: '4.0', date: '2026-10-26', big: true,
     title: { ko: '더 위어도스', en: 'The Weirdos' },
@@ -36491,7 +36523,7 @@ void main(){
     box.innerHTML = `<canvas class="pw-main"></canvas><i class="pw-zone" id="inScene"></i>
       <svg class="pw-slash" aria-hidden="true"><line class="rc" pathLength="1"/><line class="rm" pathLength="1"/><line class="core" pathLength="1"/></svg><canvas class="pw-fx"></canvas><i class="pw-flash"></i>
       <div class="pw-hud tl">PERIODIC <b>//</b> TABLE<br>${LANG === 'en' ? 'ALIGNING' : '정렬 중'} · <b id="pwZ">001</b> / 118</div>
-      <div class="pw-hud tr">β V.4.0<br>${new Date().getFullYear()}</div>
+      <div class="pw-hud tr">β V.${typeof APP_VER !== 'undefined' ? APP_VER : '4.1'}<br>${new Date().getFullYear()}</div>
       <div class="in-foot pw-load"><div class="pw-lmsg"><div class="in-msg" id="inMsg">${tt('load')}</div><b id="pwPct">0<small>%</small></b></div>
         <div class="pw-lbar">[<div class="pw-segs" id="pwSegs">${'<i></i>'.repeat(28)}</div>]</div>
         <div class="pw-lsub"><span id="pwEl">H · 001</span><span>${LANG === 'en' ? 'LOADING' : '로딩 중'} //</span></div><i id="inBar" hidden></i></div>
