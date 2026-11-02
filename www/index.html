@@ -36134,7 +36134,7 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   let MAXP = 120;
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const mkFS = () => `precision highp float;
-uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;uniform float ICET;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -36213,7 +36213,7 @@ void main(){
   col+=dots*.16*mix(vec3(1.),C,.5)*(1.-depth*.5);
   if(LOW<.5){ vec2 cp=q/(26.*K)+vec2(T*.35,-T*.22); float cs=noise(cp)+noise(cp*1.9+vec2(-T*.4,T*.3))*.6; cs=pow(smoothstep(.9,1.45,cs),2.); col+=cs*.22*mix(vec3(1.),C,.3)*(.4+depth)*(1.-iceM); }
   // ── 얼음 몸통: 푸른 흰색, 안쪽 탁함, 결정 면마다 밝기 다름 ──
-  vec3 icec=mix(vec3(.80,.92,1.),C,.18);
+  vec3 icec=mix(vec3(.80,.92,1.),C*mix(1.,1.15,ICET),ICET);   // 색 있는 액체는 그 색 얼음이 된다 (브로민 → 붉은 얼음, 콜라 → 갈색 얼음)
   vec3 ib=mix(icec*1.05,icec*.62,depth*.7)*(.86+.28*vo.z);
   ib+=dots*.10;
   float frost=fbm(iq/7.)*(1.-smoothstep(0.,24.,dpx))+fbm(iq/3.)*.25;   // 가장자리 서리
@@ -36245,6 +36245,13 @@ void main(){
   gl_FragColor=vec4(col*a,a);
 }`;
   let gl = null, prog = null, cv = null, U = {}, failed = false, t0 = performance.now(), buf = null;
+  // 얼음 색: 물 종류는 푸르스름한 흰 얼음, 색이 진한 액체일수록 그 색이 진하게 남는다
+  const CLEAR_ICE = new Set(['물', '바닷물', '눈물', '얼음', '과산화수소', '메탄올', '에탄올', '아세트산', '폼산', '인산트라이메틸', '염산', '플루오린화수소산', typeof RX_DHMO_NM !== 'undefined' ? RX_DHMO_NM : '']);
+  const iceTint = c => {
+    try{ if(RX && CLEAR_ICE.has(RX.raw)) return .18; }catch(e){}
+    const v = hex(c), mx = Math.max(...v), mn = Math.min(...v), sat = mx > 0 ? (mx - mn) / mx : 0, dark = 1 - mx;
+    return Math.max(.18, Math.min(.88, .18 + sat * .75 + dark * .7));
+  };
   const S = { fz: false, t: 0, from: 0, ice: 0, cx: 0, cy: 0, bx: 0, by: 0, ox: 0, oy: 0 };
   function init(stage){
     if(failed) return false;
@@ -36262,7 +36269,7 @@ void main(){
       gl.useProgram(prog);
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET', 'ICET'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
       return true;
@@ -36310,7 +36317,7 @@ void main(){
     gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
     gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
-    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1); gl.uniform1f(U.MET, m.metal ? 1 : 0);
+    gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1); gl.uniform1f(U.MET, m.metal ? 1 : 0); gl.uniform1f(U.ICET, iceTint(col));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const _d = rxDraw;
