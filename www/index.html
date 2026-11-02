@@ -38991,6 +38991,33 @@ function rxCardPreview(blob, file, name, tier, share){
     try{ boom(lv); }catch(e){}
   };
 
+
+  /* 유리 깨지는 소리: 쩍(갈라짐) → 와장창(파편 수십 개가 짤랑짤랑) → 잔챙이 */
+  window.rxGlassSnd = function(){
+    if(typeof sndOn !== 'undefined' && !sndOn) return;
+    const a = ac(); if(!a) return;
+    const t = a.currentTime + .01, SR = a.sampleRate;
+    const out = a.createDynamicsCompressor(); out.threshold.value = -16; out.ratio.value = 5; out.connect(a.destination);
+    const bus = a.createGain(); bus.gain.value = 2.2; bus.connect(out);
+    const noise = (sec, curve) => { const b = a.createBuffer(1, Math.floor(SR * sec), SR), d = b.getChannelData(0); for(let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * curve(i / d.length); const n = a.createBufferSource(); n.buffer = b; return n; };
+    // 1) 쩍: 아주 짧고 날카로운 갈라짐
+    { const n = noise(.05, x => Math.pow(1 - x, 5)), hp = a.createBiquadFilter(), g = a.createGain(); hp.type = 'highpass'; hp.frequency.value = 2500; g.gain.value = .55; n.connect(hp); hp.connect(g); g.connect(bus); n.start(t); }
+    { const o = a.createOscillator(), g = a.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(70, t + .12); g.gain.setValueAtTime(.18, t); g.gain.exponentialRampToValueAtTime(.0001, t + .14); o.connect(g); g.connect(bus); o.start(t); o.stop(t + .16); }
+    // 2) 와장창: 밝은 노이즈가 쏟아지듯
+    { const n = noise(.45, x => Math.pow(1 - x, 2.2) * (.6 + .4 * Math.random())), bp = a.createBiquadFilter(), g = a.createGain(); bp.type = 'bandpass'; bp.frequency.value = 5200; bp.Q.value = .8; g.gain.value = .22; n.connect(bp); bp.connect(g); g.connect(bus); n.start(t + .015); }
+    // 3) 파편: 높은 음이 짧게 땡그랑 (비정수배 배음 → 유리 느낌), 점점 드문드문
+    const ping = (tt, f, v) => {
+      [1, 2.32, 4.25].forEach((m, k) => {
+        const o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = f * m;
+        const dur = (.09 + Math.random() * .12) / (1 + k * .6);
+        g.gain.setValueAtTime(.0001, tt); g.gain.linearRampToValueAtTime(v / (1 + k * 1.4), tt + .002); g.gain.exponentialRampToValueAtTime(.0001, tt + dur);
+        o.connect(g); g.connect(bus); o.start(tt); o.stop(tt + dur + .02);
+      });
+    };
+    for(let i = 0; i < 34; i++){ const dt = Math.pow(Math.random(), 1.8) * .75; ping(t + .02 + dt, 2400 + Math.random() * 4200, .05 * (1 - dt * .9)); }
+    // 4) 떨어져 나간 조각이 바닥에 닿는 소리 (조금 뒤)
+    for(let i = 0; i < 7; i++){ const dt = .9 + Math.random() * 1.1; ping(t + dt, 2000 + Math.random() * 3000, .025); }
+  };
   /* ── 깨진 유리: 충격점에서 뻗는 금 + 동심원 금 → 조각(다각형)마다 빛이 조금씩 다르게, 큰 폭발이면 가운데 조각이 떨어져 나간다 ── */
   rxCrack = function(){
     const W = innerWidth, H = innerHeight, f = v => v.toFixed(1);
@@ -39028,7 +39055,7 @@ function rxCardPreview(blob, file, name, tier, share){
     svg.innerHTML = `${shards}<path class="cd" d="${lines}"/><path class="cl" d="${lines}"/><path class="gl" d="${glint}"/>` +
       `<circle cx="${f(cx)}" cy="${f(cy)}" r="7" fill="rgba(255,255,255,.75)"/><circle cx="${f(cx)}" cy="${f(cy)}" r="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>`;
     modal.appendChild(svg);
-    try{ rxNoise(.25, .12, 'highpass', 4200); rxNoise(.08, .2, 'bandpass', 2600, 2); }catch(e){}
+    try{ rxGlassSnd(); }catch(e){}
   };
 })();
 </script>
