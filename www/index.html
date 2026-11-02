@@ -37040,6 +37040,352 @@ function rxSunGem(){
 (function(){ const _m = rxMineral; rxMineral = function(name){ if(name === '선스톤') return rxSunGem(); return _m.apply(this, arguments); }; })();
 </script>
 <style>
+  /* ═══ 학습 › 알고 계셨나요? (눌러 보며 확인하는 과학 사실 카드) ═══ */
+  .hubt[data-h="dyk"]::before{content:"💡"}
+  .dk-dots{display:flex;justify-content:center;gap:7px;margin:2px 0 12px}
+  .dk-dots button{width:9px;height:9px;padding:0;border-radius:50%;border:1px solid rgba(154,168,255,.5);background:transparent;cursor:pointer;transition:all .25s}
+  .dk-dots button.on{width:26px;border-radius:5px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff);border-color:#c9d0ff;box-shadow:0 0 10px rgba(154,168,255,.6)}
+  .dk-q{margin:14px 0 2px;font:700 10.5px/1 ui-monospace,monospace;letter-spacing:.14em;color:#9aa8ff}
+  .dk-t{font-size:19px;font-weight:800;line-height:1.4;margin-top:6px;word-break:keep-all}
+  .ah-stage.dk-top .ah-hint{top:7px;bottom:auto}
+  .dk-mode{position:absolute;right:8px;top:6px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:75%}
+  .dk-mode button{font:inherit;font-size:11px;padding:4px 8px;border-radius:7px;border:1px solid rgba(154,168,255,.35);background:rgba(10,12,22,.75);color:var(--dim);cursor:pointer}
+  .dk-mode button.on{background:#c9d0ff;color:#141833;border-color:#c9d0ff;font-weight:700}
+  .dk-why{width:100%;margin-top:10px;padding:10px 12px;border-radius:10px;border:1px dashed rgba(154,168,255,.45);background:rgba(154,168,255,.05);color:#c9d0ff;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left}
+  .dk-why::after{content:" ▾";opacity:.7}
+  .dk-why.open::after{content:" ▴"}
+  .dk-ans{display:none;animation:ahIn .35s cubic-bezier(.2,.9,.25,1) both}
+  .dk-ans.open{display:block}
+  .dk-ans table{width:100%;border-collapse:collapse;margin:6px 0 2px;font-size:12px}
+  .dk-ans td{padding:3px 4px;border-bottom:1px solid rgba(154,168,255,.12)}
+  .dk-ans td:last-child{text-align:right;font-family:ui-monospace,monospace;color:#dfe3ff}
+  .dk-ans tr.sum td{font-weight:800;border-bottom:0;color:#fff}
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  const nf = n => Math.round(n).toLocaleString(EN() ? 'en-US' : 'ko-KR');
+  // ── 지구–달 사이에 행성 줄 세우기 (평균 지름, km · NASA 행성 자료) ──
+  const R_E = 6371, R_M = 1737;
+  const PL = [
+    { ko: '수성', en: 'Mercury', d: 4879, c: '#a9a29a' }, { ko: '금성', en: 'Venus', d: 12104, c: '#e6c58a' },
+    { ko: '화성', en: 'Mars', d: 6779, c: '#d0623c' }, { ko: '목성', en: 'Jupiter', d: 139820, c: '#d9b48c', band: 1 },
+    { ko: '토성', en: 'Saturn', d: 116460, c: '#e8d3a0', band: 1 }, { ko: '천왕성', en: 'Uranus', d: 50724, c: '#9fe0e6' },
+    { ko: '해왕성', en: 'Neptune', d: 49244, c: '#5b7cf0' } ];
+  const SUM = PL.reduce((s, p) => s + p.d, 0);                 // 380,010 km
+  const DIST = { per: 363300, avg: 384400, apo: 405500 };      // 지구 중심 ~ 달 중심
+  const gap = k => DIST[k] - R_E - R_M;                        // 표면 사이 거리
+
+  const TX = {
+    ko: { tab: '알고 계셨나요?', head: '알고 계셨나요?', prev: '← 이전', next: '다음 →', again: '처음부터 ↺', fact: '사실', more: '조금 더' },
+    en: { tab: 'Did you know?', head: 'Did you know?', prev: '← Back', next: 'Next →', again: 'From the start ↺', fact: 'The fact', more: 'A bit more' },
+  };
+  const CARDS = [
+    { id: 'moon',
+      ko: { t: '지구와 달 사이에 태양계 행성 7개가 전부 들어가요. …달이 멀리 있을 때만요.',
+        fact: () => `수성·금성·화성·목성·토성·천왕성·해왕성의 지름을 다 더하면 약 ${nf(SUM)} km예요. 달이 가장 멀리 있을 때 지구 표면과 달 표면 사이는 약 ${nf(gap('apo'))} km라서, 일곱 개를 줄 세워도 약 ${nf(gap('apo') - SUM)} km가 남아요.`,
+        why: '왜 평균 거리에선 안 들어갈까요?',
+        ans: () => `흔히 "지구–달 평균 거리 384,400 km"라고 하는데, 이건 <b>지구 중심에서 달 중심까지</b>예요. 행성은 표면 사이에 세워야 하니까 지구 반지름(${nf(R_E)} km)과 달 반지름(${nf(R_M)} km)을 빼야 해요.
+          <table><tr><td>중심 사이 평균 거리</td><td>${nf(DIST.avg)} km</td></tr><tr><td>− 지구 반지름 − 달 반지름</td><td>${nf(gap('avg'))} km</td></tr><tr><td>행성 7개 지름 합</td><td>${nf(SUM)} km</td></tr><tr class="sum"><td>결과</td><td>${nf(SUM - gap('avg'))} km 모자람</td></tr></table>
+          달 궤도는 살짝 찌그러진 타원이라 거리가 약 36만~40만 km 사이를 오가요. 그래서 달이 가장 멀 때(원지점)만 들어가요. 그리고 하나 더: <b>토성은 고리를 떼야 해요.</b> 고리까지 치면 폭이 27만 km가 넘거든요.`,
+        hint: '위 버튼으로 달 거리를 바꿔 보세요', modes: { per: '가장 가까울 때', avg: '평균', apo: '가장 멀 때' } },
+      en: { t: 'All seven other planets fit between the Earth and the Moon. …but only when the Moon is far away.',
+        fact: () => `Add up the diameters of Mercury, Venus, Mars, Jupiter, Saturn, Uranus and Neptune and you get about ${nf(SUM)} km. When the Moon is farthest away, the gap from Earth's surface to the Moon's surface is about ${nf(gap('apo'))} km — so all seven fit with about ${nf(gap('apo') - SUM)} km to spare.`,
+        why: 'Why don\'t they fit at the average distance?',
+        ans: () => `The famous "384,400 km" is measured <b>from Earth's centre to the Moon's centre</b>. Planets have to sit between the surfaces, so take off Earth's radius (${nf(R_E)} km) and the Moon's (${nf(R_M)} km).
+          <table><tr><td>Average centre-to-centre</td><td>${nf(DIST.avg)} km</td></tr><tr><td>− Earth radius − Moon radius</td><td>${nf(gap('avg'))} km</td></tr><tr><td>7 planet diameters</td><td>${nf(SUM)} km</td></tr><tr class="sum"><td>Result</td><td>${nf(SUM - gap('avg'))} km short</td></tr></table>
+          The Moon's orbit is a slightly squashed ellipse, so the distance swings between about 360,000 and 405,000 km. Only near the far point (apogee) do they fit. One more catch: <b>Saturn has to take its rings off.</b> With rings it is over 270,000 km wide.`,
+        hint: 'Change the Moon\'s distance with the buttons', modes: { per: 'Closest', avg: 'Average', apo: 'Farthest' } } },
+    { id: 'round',
+      ko: { t: '전자는 지금까지 측정한 것 중 가장 동그란 물체예요.',
+        fact: '전자가 완벽한 공이 아니라 아주 살짝이라도 찌그러져 있다면(전기 쌍극자 모멘트), 정밀한 실험에 걸려요. 2023년 미국 JILA 연구진이 지금까지 가장 정밀하게 재 봤는데도 찌그러짐은 보이지 않았어요. 전자를 지구만큼 키워도, 찌그러진 정도가 원자 하나 반지름보다 작다는 뜻이에요.',
+        why: '이게 왜 중요해요?',
+        ans: '빅뱅 때 물질과 반물질이 똑같이 생겼다면 서로 만나 모두 빛으로 사라졌어야 해요. 그런데 우리는 남아 있죠. 이 불균형을 설명하는 새 이론들은 대부분 "전자가 아주 살짝 찌그러져 있다"고 예언해요. 전자가 동그랄수록 그런 이론들이 하나씩 탈락해요. 그러니까 이 실험은 <b>"우리는 왜 존재할까?"</b>를 묻는 실험이에요.',
+        hint: '눌러서 "찌그러졌다면" ↔ "실제" 바꾸기' },
+      en: { t: 'The electron is the roundest thing ever measured.',
+        fact: 'If the electron were even slightly squashed (an electric dipole moment), precise experiments would catch it. In 2023 a JILA team made the most precise measurement yet and still saw no squashing. Blow the electron up to the size of the Earth and any bump would be smaller than the radius of a single atom.',
+        why: 'Why does that matter?',
+        ans: 'If the Big Bang made equal amounts of matter and antimatter, they should have met and vanished into light. Yet here we are. Most new theories that explain the imbalance predict that the electron is very slightly squashed. The rounder the electron turns out, the more of those theories are ruled out. So this is really an experiment asking <b>"why do we exist?"</b>',
+        hint: 'Tap to switch "if squashed" ↔ "real"' } },
+    { id: 'cube',
+      ko: { t: '원자 속 빈 공간을 다 빼면, 인류 전체가 각설탕 한 개 크기로 들어가요.',
+        fact: '원자는 거의 텅 비어 있어요. 질량은 거의 다 한가운데 원자핵에 몰려 있는데, 원자핵은 원자 지름의 약 10만분의 1밖에 안 돼요. 사람 80억 명의 원자핵만 빈틈없이 모으면 부피가 약 2 cm³, 딱 각설탕 한 개 정도예요.',
+        why: '그럼 무게는요?',
+        ans: '그대로예요. 빈 공간만 뺐으니까 약 <b>5억 톤</b>이에요. 각설탕 한 개가 5억 톤인 셈이죠. 실제로 이렇게 원자핵끼리 빽빽하게 눌린 천체가 있는데, 그게 바로 중성자별이에요. 헬륨 위에 가끔 나타나는 그 칸이 바로 그 이야기예요.',
+        hint: '눌러서 다시 압축' },
+      en: { t: 'Remove the empty space inside atoms and all of humanity fits in a sugar cube.',
+        fact: 'Atoms are almost entirely empty. Nearly all the mass sits in the nucleus at the centre, which is only about 1/100,000 of the atom\'s width. Pack the nuclei of all 8 billion people together with no gaps and they take up about 2 cm³ — roughly one sugar cube.',
+        why: 'What would it weigh?',
+        ans: 'The same as before — you only removed empty space — so about <b>500 million tonnes</b>. A sugar cube weighing 500 million tonnes. Objects squeezed like this really exist: neutron stars. That cell that sometimes appears above helium? That\'s its story.',
+        hint: 'Tap to squeeze again' } },
+    { id: 'banana',
+      ko: { t: '바나나는 방사능이 있어요. 아주 조금요.',
+        fact: '바나나에는 칼륨이 많은데, 자연에 있는 칼륨의 약 0.012%는 방사성인 칼륨-40이에요. 그래서 과학자들은 "바나나 하나 먹었을 때 받는 양(약 0.1 µSv)"을 방사선 양을 쉽게 비교하는 단위처럼 쓰기도 해요.',
+        why: '그럼 바나나 먹으면 위험해요?',
+        ans: '전혀요. 우리 몸은 칼륨 양을 일정하게 유지해서, 많이 먹으면 그만큼 내보내요. 그래서 바나나를 먹어도 몸속 칼륨-40 양은 거의 그대로예요. 비교하자면 사람이 자연에서 1년 동안 받는 방사선(세계 평균 약 2.4 mSv)은 바나나 약 <b>2만 4천 개</b>, 가슴 X선 한 번(약 0.1 mSv)은 바나나 약 <b>1천 개</b>예요. 사실 우리 몸에도 칼륨-40이 있어서, 사람도 아주 살짝 방사능이 있어요.',
+        hint: '눌러서 바나나 쌓기' },
+      en: { t: 'Bananas are radioactive. Very slightly.',
+        fact: 'Bananas are rich in potassium, and about 0.012% of natural potassium is radioactive potassium-40. Scientists sometimes use "the dose from eating one banana" (about 0.1 µSv) as an easy unit for comparing radiation doses.',
+        why: 'So are bananas dangerous?',
+        ans: 'Not at all. Your body keeps its potassium level steady and gets rid of the extra, so eating bananas barely changes the potassium-40 inside you. For scale: the natural radiation a person gets in a year (world average about 2.4 mSv) is about <b>24,000 bananas</b>, and one chest X-ray (about 0.1 mSv) is about <b>1,000 bananas</b>. Your own body contains potassium-40 too, so people are very slightly radioactive as well.',
+        hint: 'Tap to stack bananas' } },
+    { id: 'touch',
+      ko: { t: '여러분은 지금까지 아무것도 진짜로 만져 본 적이 없어요.',
+        fact: '손이 물건에 닿을 때, 원자들은 실제로 붙지 않아요. 원자 바깥을 둘러싼 전자들이 서로 밀어내서, 아주 가까워지면 더 못 다가가요. 우리가 느끼는 "닿았다"는 감각은 이 밀어내는 힘이에요.',
+        why: '그럼 의자에 앉아 있는 것도요?',
+        ans: '네. 엄밀히 말하면 여러분은 의자 위에 아주아주 살짝 떠 있어요. 전자끼리 밀어내는 힘(전자기력)과, 같은 상태에 전자 두 개가 못 들어간다는 규칙(파울리 배타 원리)이 같이 버텨 주는 거예요. 그 덕분에 손이 책상을 뚫고 지나가지 않아요.',
+        hint: '눌러서 손가락 밀어 넣기' },
+      en: { t: 'You have never truly touched anything.',
+        fact: 'When your hand meets an object, the atoms never actually join. The electrons around the outside of the atoms push each other away, so past a certain point they cannot get closer. The feeling of "touch" is that push.',
+        why: 'Even sitting on a chair?',
+        ans: 'Yes. Strictly speaking you are hovering ever so slightly above the chair, held up by electrons repelling each other (electromagnetism) and the rule that two electrons cannot share the same state (the Pauli exclusion principle). That is why your hand does not sink through the desk.',
+        hint: 'Tap to push the fingertip in' } },
+  ];
+  const lsG = () => { try{ return Math.min(CARDS.length - 1, +localStorage.getItem('pt_dyk') || 0); }catch(_){ return 0; } };
+  const lsS = v => { try{ localStorage.setItem('pt_dyk', v); }catch(_){} };
+  let cur = lsG(), back = false, raf = 0, sim = null, mode = 'apo';
+  const stop = () => { if(raf) cancelAnimationFrame(raf); raf = 0; };
+  const ease = x => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
+
+  // ── 그림들 ──
+  const SIM = {
+    moon: {
+      init: () => ({ t: 0, from: 0 }),
+      tap: s => { s.t = 0; },
+      draw(c, s, W, H){
+        const L = EN() ? 'en' : 'ko', g = gap(mode), padL = 16, padR = 16;
+        // 지구 표면(왼쪽 끝)부터 달 표면까지를 화면 너비에 맞춘다 (가장 멀 때 기준 고정 축척)
+        const span = gap('apo') + 30000, k = (W - padL - padR) / span;
+        const cy = H * .52, ex = padL, mx = ex + g * k;
+        // 지구·달 (표면만 살짝 보이게)
+        const er = R_E * k * 6, mr = R_M * k * 6;
+        let gr = c.createRadialGradient(ex - er * .7, cy - er * .3, 2, ex - er * .5, cy, er);
+        gr.addColorStop(0, '#9fd4ff'); gr.addColorStop(.6, '#2f6fd6'); gr.addColorStop(1, '#0b2a66');
+        c.fillStyle = gr; c.beginPath(); c.arc(ex - er, cy, er, 0, 7); c.fill();
+        c.fillStyle = '#c8ccd6'; c.beginPath(); c.arc(mx + mr, cy, mr, 0, 7); c.fill();
+        c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.arc(mx + mr * 1.3, cy + mr * .2, mr * .9, 0, 7); c.fill();
+        // 행성: 차례로 미끄러져 들어온다
+        let x = ex, small = null; const over = SUM > g;
+        PL.forEach((p, i) => {
+          const r = p.d / 2 * k, a = ease((s.t - i * .18) / .5), px = x + r;
+          const fx = px + (1 - a) * (W + 60);
+          if(a > 0){
+            const ov = over && x + p.d * k > mx;
+            const g2 = c.createRadialGradient(fx - r * .35, cy - r * .35, r * .1, fx, cy, r);
+            g2.addColorStop(0, '#fff'); g2.addColorStop(.25, p.c); g2.addColorStop(1, ov ? '#5a1020' : 'rgba(20,24,40,1)');
+            c.fillStyle = g2; c.beginPath(); c.arc(fx, cy, Math.max(1.2, r), 0, 7); c.fill();
+            if(p.band && r > 8){ c.save(); c.beginPath(); c.arc(fx, cy, r, 0, 7); c.clip(); c.fillStyle = 'rgba(120,80,50,.22)'; for(let b = -2; b <= 2; b++) c.fillRect(fx - r, cy + b * r * .32 - r * .06, r * 2, r * .1); c.restore(); }
+            c.fillStyle = 'rgba(223,227,255,.85)'; c.font = '600 10px system-ui,sans-serif'; c.textAlign = 'center';
+            if(r > 14) c.fillText(p[L], fx, cy + r + 13);
+            else if(i === 1) small = fx;   // 작은 셋은 이름 하나로 묶는다 (목성에 가리지 않게 맨 나중에)
+          }
+          x += p.d * k;
+        });
+        if(small != null){
+          c.fillStyle = 'rgba(223,227,255,.9)'; c.strokeStyle = 'rgba(223,227,255,.5)'; c.lineWidth = 1;
+          c.beginPath(); c.moveTo(small, cy + 6); c.lineTo(small, cy + 34); c.stroke();
+          c.textAlign = 'left'; c.font = '600 10px system-ui,sans-serif';
+          const tx = PL.slice(0, 3).map(q => q[L]).join(EN() ? ', ' : '·'), tw = c.measureText(tx).width;
+          c.fillStyle = 'rgba(5,7,13,.75)'; c.fillRect(small - 4, cy + 36, tw + 8, 15);
+          c.fillStyle = 'rgba(223,227,255,.9)'; c.fillText(tx, small, cy + 47);
+        }
+        // 결과
+        const done = s.t > PL.length * .18 + .5;
+        c.textAlign = 'left';
+        if(done){
+          const left = g - SUM;
+          if(left >= 0){
+            c.strokeStyle = 'rgba(120,255,170,.8)'; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(x, cy - 30); c.lineTo(mx, cy - 30); c.stroke(); c.setLineDash([]);
+            c.fillStyle = '#8dffb9'; c.font = '800 13px system-ui,sans-serif';
+            c.fillText((EN() ? `fits! ${nf(left)} km to spare` : `들어가요! ${nf(left)} km 남음`), 10, 58);
+          } else {
+            const pulse = .55 + .45 * Math.sin(s.t * 6);
+            c.fillStyle = `rgba(255,90,110,${.25 * pulse})`; c.fillRect(mx, cy - 40, x - mx, 80);
+            c.fillStyle = '#ff7a8a'; c.font = '800 13px system-ui,sans-serif';
+            c.fillText((EN() ? `${nf(-left)} km short — Neptune hits the Moon` : `${nf(-left)} km 모자라요 — 해왕성이 달에 쿵`), 10, 58);
+          }
+        }
+        c.fillStyle = 'rgba(201,208,255,.7)'; c.font = '600 10px ui-monospace,monospace'; c.textAlign = 'left';
+        c.fillText((EN() ? 'surface gap ' : '표면 사이 ') + nf(g) + ' km', 10, 38);
+      } },
+    round: {
+      init: () => ({ t: 0, sq: 0, tgt: 0 }),
+      tap: s => { s.tgt = s.tgt ? 0 : 1; },
+      draw(c, s, W, H, dt){
+        s.sq += (s.tgt - s.sq) * Math.min(1, dt * 5);
+        const cx = W / 2, cy = H / 2, R = Math.min(W, H) * .32, rot = s.t * .6;
+        // 전자 구름 빛
+        const gl = c.createRadialGradient(cx, cy, R * .2, cx, cy, R * 1.7);
+        gl.addColorStop(0, 'rgba(154,168,255,.35)'); gl.addColorStop(1, 'rgba(154,168,255,0)'); c.fillStyle = gl; c.fillRect(0, 0, W, H);
+        // 위경선 구 (찌그러지면 한쪽이 불룩, 다른 쪽이 홀쭉: 쌍극자)
+        const P = (u, v) => { // u 경도, v 위도
+          let x = Math.cos(v) * Math.cos(u + rot), y = Math.sin(v), z = Math.cos(v) * Math.sin(u + rot);
+          const b = 1 + s.sq * .28 * y;            // 위는 불룩, 아래는 홀쭉
+          return [cx + x * R * b, cy - y * R * (1 + s.sq * .12), z];
+        };
+        c.lineWidth = 1;
+        for(let i = -4; i <= 4; i++){ const v = i / 5 * Math.PI / 2; c.beginPath(); for(let j = 0; j <= 48; j++){ const p = P(j / 48 * Math.PI * 2, v); j ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); } c.strokeStyle = 'rgba(201,208,255,.35)'; c.stroke(); }
+        for(let i = 0; i < 12; i++){ const u = i / 12 * Math.PI * 2; c.beginPath(); for(let j = 0; j <= 32; j++){ const p = P(u, -Math.PI / 2 + j / 32 * Math.PI); j ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); } c.strokeStyle = 'rgba(154,168,255,.3)'; c.stroke(); }
+        const core = c.createRadialGradient(cx - R * .3, cy - R * .3, 2, cx, cy, R * 1.05);
+        core.addColorStop(0, 'rgba(255,255,255,.55)'); core.addColorStop(1, 'rgba(154,168,255,.05)');
+        c.fillStyle = core; c.beginPath(); c.ellipse(cx, cy - s.sq * R * .04, R * (1 + s.sq * .05), R * (1 + s.sq * .12), 0, 0, 7); c.fill();
+        c.fillStyle = '#fff'; c.font = '800 22px Kanit,system-ui,sans-serif'; c.textAlign = 'center'; c.fillText('e⁻', cx, cy + 8);
+        c.font = '700 12px system-ui,sans-serif';
+        c.fillStyle = s.tgt ? '#ffb27a' : '#8dffb9';
+        c.fillText(s.tgt ? (EN() ? 'IF squashed (hugely exaggerated)' : '만약 찌그러졌다면 (엄청 과장)') : (EN() ? 'Real: round as far as we can measure' : '실제: 잴 수 있는 한 완벽히 동그래요'), cx, H - 14);
+      } },
+    cube: {
+      init(W, H){ const P = []; for(let i = 0; i < 260; i++) P.push({ x: Math.random() * W, y: Math.random() * H, d: Math.random() }); return { t: 0, P }; },
+      tap: s => { s.t = 0; },
+      draw(c, s, W, H){
+        const cx = W / 2, cy = H / 2 + 6, a = ease((s.t - .6) / 1.6), side = 34;
+        s.P.forEach((p, i) => {
+          const tx = cx - side / 2 + (i % 16) / 16 * side, ty = cy - side / 2 + Math.floor(i / 16) / 16 * side;
+          const x = p.x + (tx - p.x) * a, y = p.y + (ty - p.y) * a;
+          const r = 3.2 * (1 - a) + .9 * a;
+          c.fillStyle = `rgba(${a > .98 ? '255,255,255' : '201,208,255'},${.35 + .5 * (1 - p.d * .5)})`;
+          c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+        });
+        if(a > .97){
+          const g = c.createRadialGradient(cx, cy, 2, cx, cy, side * 2); g.addColorStop(0, 'rgba(255,255,255,.4)'); g.addColorStop(1, 'rgba(154,168,255,0)');
+          c.fillStyle = g; c.fillRect(cx - side * 2, cy - side * 2, side * 4, side * 4);
+          c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.strokeRect(cx - side / 2 - 2, cy - side / 2 - 2, side + 4, side + 4);
+          c.fillStyle = '#fff'; c.textAlign = 'center'; c.font = '800 13px system-ui,sans-serif';
+          c.fillText(EN() ? '8 billion people ≈ 2 cm³ · 500 million t' : '80억 명 ≈ 2 cm³ · 5억 톤', cx, H - 16);
+        } else {
+          c.fillStyle = 'rgba(201,208,255,.75)'; c.textAlign = 'center'; c.font = '600 11px system-ui,sans-serif';
+          c.fillText(EN() ? 'removing the empty space…' : '빈 공간 빼는 중…', cx, H - 16);
+        }
+      } },
+    banana: {
+      init: () => ({ t: 0, n: 1, drop: [] }),
+      tap(s){ s.n = s.n >= 1000 ? 1 : s.n * 10; s.drop.push({ t: 0 }); try{ SFX.pick(); }catch(_){} },
+      draw(c, s, W, H, dt){
+        const cx = W / 2;
+        const steps = [[1, '0.1 µSv', EN() ? 'eat one' : '하나 먹으면'], [10, '1 µSv', EN() ? 'still tiny' : '아직 아주 조금'], [100, '10 µSv', EN() ? 'about two dental X-rays' : '치과 X선 두 번쯤'], [1000, '0.1 mSv', EN() ? 'one chest X-ray' : '가슴 X선 한 번']];
+        const st = steps.find(x => x[0] === s.n) || steps[0];
+        // 바나나 더미
+        const shown = Math.min(48, s.n), cols = 12;
+        c.font = '20px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif'; c.textAlign = 'center';
+        for(let i = 0; i < shown; i++){
+          const col = i % cols, row = Math.floor(i / cols);
+          const x = cx + (col - (Math.min(shown, cols) - 1) / 2) * 20, y = H - 44 - row * 15;
+          c.fillText('🍌', x + (row % 2) * 6, y);
+        }
+        if(s.n > 48){ c.fillStyle = 'rgba(255,224,102,.95)'; c.font = '800 12px system-ui,sans-serif'; c.textAlign = 'left'; c.fillText('× ' + nf(s.n / 48), cx + 6 * 20 + 6, H - 44 - 15); c.textAlign = 'center'; }
+        // 계기판
+        c.fillStyle = '#ffe066'; c.font = '800 24px Kanit,system-ui,sans-serif'; c.fillText(st[1], cx, 62);
+        c.fillStyle = 'rgba(223,227,255,.85)'; c.font = '600 12px system-ui,sans-serif'; c.fillText(nf(s.n) + (EN() ? ' banana' + (s.n > 1 ? 's' : '') : '개') + ' · ' + st[2], cx, 82);
+        c.fillStyle = 'rgba(201,208,255,.6)'; c.font = '600 10px system-ui,sans-serif';
+        c.fillText(EN() ? 'one year of natural background ≈ 24,000 bananas' : '자연에서 1년 동안 받는 양 ≈ 바나나 2만 4천 개', cx, H - 14);
+      } },
+    touch: {
+      init: () => ({ t: 0, push: 0, tgt: .55 }),
+      tap: s => { s.tgt = s.tgt > .6 ? .55 : 1; },
+      draw(c, s, W, H, dt){
+        s.push += (s.tgt - s.push) * Math.min(1, dt * 4);
+        // 실제로 다가갈 수 있는 한계: 아무리 밀어도 구름끼리 겹치지 않는다
+        const cy = H / 2, R = Math.min(52, H * .26), want = W / 2 - 40 - (W / 2 - 40) * s.push;
+        const minGap = R * 2 + 6, gapNow = Math.max(minGap, want * 2 + R * 2);
+        const ax = W / 2 - gapNow / 2, bx = W / 2 + gapNow / 2, squish = Math.max(0, (minGap - (want * 2 + R * 2)) / minGap);
+        const atom = (x, dir, col) => {
+          const g = c.createRadialGradient(x, cy, 2, x, cy, R);
+          g.addColorStop(0, `rgba(${col},.55)`); g.addColorStop(1, `rgba(${col},0)`);
+          c.save(); c.translate(x, cy); c.scale(1 - squish * .18, 1 + squish * .12); c.translate(-x, -cy);
+          c.fillStyle = g; c.beginPath(); c.arc(x, cy, R, 0, 7); c.fill(); c.restore();
+          for(let i = 0; i < 14; i++){ const a = s.t * (1.5 + i * .13) + i * 2.1, rr = R * (.45 + (i % 4) * .13);
+            c.fillStyle = `rgba(${col},.9)`; c.beginPath(); c.arc(x + Math.cos(a) * rr * (1 - squish * .18), cy + Math.sin(a) * rr, 1.6, 0, 7); c.fill(); }
+          c.fillStyle = '#fff'; c.beginPath(); c.arc(x, cy, 2.5, 0, 7); c.fill();
+        };
+        atom(ax, 1, '154,168,255'); atom(bx, -1, '255,190,150');
+        c.textAlign = 'center'; c.font = '600 11px system-ui,sans-serif';
+        c.fillStyle = 'rgba(201,208,255,.8)'; c.fillText(EN() ? 'your fingertip' : '손가락 끝 원자', ax, cy + R + 18); c.fillStyle = 'rgba(255,200,170,.85)'; c.fillText(EN() ? 'the desk' : '책상 원자', bx, cy + R + 18);
+        if(squish > .05){
+          // 밀어내는 힘 화살표
+          c.strokeStyle = `rgba(255,120,140,${Math.min(1, squish * 3)})`; c.lineWidth = 2;
+          [[ax - R * .2, -1], [bx + R * .2, 1]].forEach(([x, d]) => { c.beginPath(); c.moveTo(x, cy - R - 8); c.lineTo(x + d * 26, cy - R - 8); c.lineTo(x + d * 20, cy - R - 13); c.moveTo(x + d * 26, cy - R - 8); c.lineTo(x + d * 20, cy - R - 3); c.stroke(); });
+          c.fillStyle = '#ff8c9c'; c.font = '800 12px system-ui,sans-serif'; c.fillText(EN() ? 'electrons push back — no contact' : '전자끼리 밀어내요 — 닿지 않아요', W / 2, H - 14);
+        }
+      } },
+  };
+
+  function render(){
+    stop();
+    setFocus(false);
+    const L = EN() ? 'en' : 'ko', T = TX[L], card = CARDS[cur], d = card[L];
+    const val = v => typeof v === 'function' ? v() : v;
+    const dots = CARDS.map((_, i) => `<button class="${i === cur ? 'on' : ''}" data-i="${i}" aria-label="${i + 1}"></button>`).join('');
+    const modes = card.id === 'moon' ? `<div class="dk-mode">${Object.entries(d.modes).map(([k, v]) => `<button data-m="${k}" class="${k === mode ? 'on' : ''}">${v}</button>`).join('')}</div>` : '';
+    qBodyEl.innerHTML = `<div class="ah${back ? ' ah-back' : ''}">
+      <div class="dk-dots">${dots}</div>
+      <div class="ah-body">
+        <div class="ah-stage${card.id === 'moon' ? '' : ' dk-top'}"><canvas id="dkCv"></canvas><span class="ah-tag">FACT ${String(cur + 1).padStart(2, '0')} / ${String(CARDS.length).padStart(2, '0')}</span>${modes}<span class="ah-hint">👆 ${d.hint}</span></div>
+        <div class="dk-q">${T.head.toUpperCase()}</div>
+        <div class="dk-t">${d.t}</div>
+        <div class="ah-sec"><h4>${T.fact}</h4>${val(d.fact)}</div>
+        <button class="dk-why" id="dkWhy">${d.why}</button>
+        <div class="ah-sec dk-ans" id="dkAns"><h4>${T.more}</h4>${val(d.ans)}</div>
+        <div class="ah-nav"><button id="dkPrev" ${cur ? '' : 'disabled'}>${T.prev}</button><button class="nx" id="dkNext">${cur < CARDS.length - 1 ? T.next : T.again}</button></div>
+      </div></div>`;
+    back = false;
+    qBodyEl.querySelectorAll('.dk-dots button').forEach(b => b.addEventListener('click', () => go(+b.dataset.i)));
+    document.getElementById('dkPrev').addEventListener('click', () => go(cur - 1));
+    document.getElementById('dkNext').addEventListener('click', () => go(cur < CARDS.length - 1 ? cur + 1 : 0));
+    document.getElementById('dkWhy').addEventListener('click', e => { const a = document.getElementById('dkAns'); a.classList.toggle('open'); e.currentTarget.classList.toggle('open'); try{ SFX.pick(); }catch(_){} });
+    let sx = null; const body = qBodyEl.querySelector('.ah-body');
+    body.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    body.addEventListener('touchend', e => { if(sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if(Math.abs(dx) > 60 && !e.target.closest('canvas')) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
+    const cv = document.getElementById('dkCv'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = cv.clientWidth || 480, H = cv.clientHeight || 270;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const S = SIM[card.id]; sim = S.init(W, H);
+    qBodyEl.querySelectorAll('.dk-mode button').forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation(); mode = b.dataset.m; qBodyEl.querySelectorAll('.dk-mode button').forEach(x => x.classList.toggle('on', x === b));
+      sim.t = 0; try{ SFX.pick(); }catch(_){}
+    }));
+    cv.addEventListener('pointerdown', e => { if(e.target.closest('.dk-mode')) return; S.tap(sim); const h = qBodyEl.querySelector('.ah-hint'); if(h) h.style.opacity = '0'; });
+    let last = performance.now();
+    const loop = now => {
+      if(!cv.isConnected || HUB !== 'dyk'){ raf = 0; return; }
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      sim.t += dt;
+      c.clearRect(0, 0, W, H);
+      S.draw(c, sim, W, H, dt);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+  }
+  function go(i){ if(i < 0 || i >= CARDS.length || i === cur) return; back = i < cur; cur = i; lsS(cur); try{ SFX.pick(); }catch(_){} render(); }
+
+  const _hh = hubHead;
+  hubHead = function(){
+    const r = _hh.apply(this, arguments);
+    const tabs = qHeadEl.querySelector('.hubtabs');
+    if(tabs && !tabs.querySelector('[data-h="dyk"]')){
+      const b = document.createElement('button');
+      b.className = 'hubt' + (HUB === 'dyk' ? ' on' : ''); b.dataset.h = 'dyk'; b.textContent = TX[EN() ? 'en' : 'ko'].tab;
+      b.addEventListener('click', () => { HUB = 'dyk'; openHub(); });
+      const ah = tabs.querySelector('[data-h="ahist"]'); if(ah && ah.nextSibling) tabs.insertBefore(b, ah.nextSibling); else tabs.appendChild(b);
+    }
+    return r;
+  };
+  const _oh = openHub;
+  openHub = function(){
+    if(HUB !== 'dyk'){ stop(); return _oh.apply(this, arguments); }
+    setFocus(false);
+    QZ.on = false; QZ.q = null; MEM.on = false;
+    clearFill();
+    qBarEl.classList.remove('on');
+    quizEl.classList.add('on');
+    hubHead();
+    render();
+    const on = qHeadEl.querySelector('.hubt.on'); if(on && on.scrollIntoView) try{ on.scrollIntoView({ block: 'nearest', inline: 'center' }); }catch(_){}
+  };
+  window.rxDyk = { go: i => { HUB = 'dyk'; cur = i; openHub(); }, CARDS };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
