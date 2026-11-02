@@ -35994,22 +35994,73 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
     requestAnimationFrame(frame);
   }
   function sound(){
+    // 화면 연출 시간표와 맞춘다: 0~0.42초 압축 → 0.42초 붕괴(섬광·충격파) → 2.3초까지 중성자별(초당 1.6바퀴, 빔 두 줄기)
     try{
-      if(!sndOn) return; const a = ac(); if(!a) return; const t = a.currentTime;
-      // 압축: 아래로 미끄러지는 웅- 소리
-      const o = a.createOscillator(), g = a.createGain(); o.type = 'sawtooth';
-      const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(2400, t); f.frequency.exponentialRampToValueAtTime(180, t + .42);
-      o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(48, t + .42);
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.06, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + .46);
-      o.connect(f); f.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .5);
-      // 쿵 (붕괴)
-      rxTone(70, .5, 'sine', .14, .42, 32);
-      // 펄서 소리: 진짜 펄서를 소리로 바꾸면 '틱 틱 틱' 하고 일정하게 뛴다
-      for(let i = 0; i < 9; i++){
-        const tt = t + .52 + i * .19, n = a.createBufferSource(), bf = a.createBuffer(1, Math.floor(a.sampleRate * .03), a.sampleRate), d = bf.getChannelData(0);
-        for(let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * Math.exp(-j / (a.sampleRate * .004));
-        n.buffer = bf; const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 3;
-        const gg = a.createGain(); gg.gain.value = .5 * (1 - i / 10); n.connect(bp); bp.connect(gg); gg.connect(a.destination); n.start(tt);
+      if(!sndOn) return; const a = ac(); if(!a) return;
+      const t = a.currentTime + .02, SR = a.sampleRate, TC = .42, TE = 2.3;
+      const noise = sec => { const b = a.createBuffer(1, Math.max(1, Math.floor(SR * sec)), SR), d = b.getChannelData(0); for(let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const n = a.createBufferSource(); n.buffer = b; return n; };
+      // 출력: 너무 커지지 않게 컴프레서 + 짧은 우주 잔향
+      const out = a.createDynamicsCompressor(); out.threshold.value = -14; out.ratio.value = 6; out.connect(a.destination);
+      const dry = a.createGain(); dry.gain.value = .9; dry.connect(out);
+      const rv = a.createConvolver(), ir = a.createBuffer(2, Math.floor(SR * 1.8), SR);
+      for(let ch = 0; ch < 2; ch++){ const d = ir.getChannelData(ch); for(let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3.2); }
+      rv.buffer = ir; const wet = a.createGain(); wet.gain.value = .32; rv.connect(wet); wet.connect(out);
+      const bus = a.createGain(); bus.connect(dry); bus.connect(rv);
+      const env = (g, pts) => { g.gain.setValueAtTime(pts[0][1], t + pts[0][0]); pts.slice(1).forEach(([tt, v, lin]) => lin ? g.gain.linearRampToValueAtTime(v, t + tt) : g.gain.exponentialRampToValueAtTime(Math.max(v, 1e-4), t + tt)); };
+
+      // ① 압축: 빨려 들어가는 바람 (소용돌이가 빨라질수록 음이 올라가고 커진다)
+      { const n = noise(TC + .05), bp = a.createBiquadFilter(), g = a.createGain();
+        bp.type = 'bandpass'; bp.Q.value = 4; bp.frequency.setValueAtTime(260, t); bp.frequency.exponentialRampToValueAtTime(3400, t + TC);
+        env(g, [[0, .02], [TC * .5, .18, 1], [TC - .02, .9], [TC + .03, 1e-4]]);
+        n.connect(bp); bp.connect(g); g.connect(bus); n.start(t); n.stop(t + TC + .05); }
+      // 낮게 깔리는 중력 웅- (점점 낮아지며 조여든다)
+      { const o = a.createOscillator(), o2 = a.createOscillator(), lp = a.createBiquadFilter(), g = a.createGain();
+        o.type = 'sawtooth'; o2.type = 'sawtooth'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + TC);
+        o2.frequency.setValueAtTime(113, t); o2.frequency.exponentialRampToValueAtTime(41, t + TC);
+        lp.type = 'lowpass'; lp.frequency.setValueAtTime(300, t); lp.frequency.exponentialRampToValueAtTime(1400, t + TC - .03);
+        env(g, [[0, .01], [TC * .4, .07, 1], [TC - .03, .16], [TC + .02, 1e-4]]);
+        o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o2.start(t); o.stop(t + TC + .05); o2.stop(t + TC + .05); }
+
+      // ② 붕괴: 아주 짧은 정적 뒤 쾅 — 묵직한 킥 + 터지는 소리 + 깨지는 고음
+      const tb = t + TC;
+      { const o = a.createOscillator(), g = a.createGain(); o.type = 'sine';
+        o.frequency.setValueAtTime(140, tb); o.frequency.exponentialRampToValueAtTime(28, tb + .7);
+        g.gain.setValueAtTime(1e-4, tb); g.gain.linearRampToValueAtTime(.55, tb + .008); g.gain.exponentialRampToValueAtTime(1e-4, tb + .9);
+        o.connect(g); g.connect(bus); o.start(tb); o.stop(tb + .95); }
+      { const n = noise(1.2), lp = a.createBiquadFilter(), g = a.createGain();
+        lp.type = 'lowpass'; lp.frequency.setValueAtTime(5200, tb); lp.frequency.exponentialRampToValueAtTime(140, tb + 1.1);
+        g.gain.setValueAtTime(1e-4, tb); g.gain.linearRampToValueAtTime(.32, tb + .006); g.gain.exponentialRampToValueAtTime(1e-4, tb + 1.15);
+        n.connect(lp); lp.connect(g); g.connect(bus); n.start(tb); n.stop(tb + 1.2); }
+      { const n = noise(.12), hp = a.createBiquadFilter(), g = a.createGain();
+        hp.type = 'highpass'; hp.frequency.value = 3800;
+        g.gain.setValueAtTime(.22, tb); g.gain.exponentialRampToValueAtTime(1e-4, tb + .1);
+        n.connect(hp); hp.connect(g); g.connect(bus); n.start(tb); n.stop(tb + .12); }
+      // 충격파가 퍼져 나가는 휘익 (위에서 아래로)
+      { const n = noise(.6), bp = a.createBiquadFilter(), g = a.createGain();
+        bp.type = 'bandpass'; bp.Q.value = 2.5; bp.frequency.setValueAtTime(2600, tb + .03); bp.frequency.exponentialRampToValueAtTime(220, tb + .55);
+        g.gain.setValueAtTime(1e-4, tb + .03); g.gain.linearRampToValueAtTime(.16, tb + .08); g.gain.exponentialRampToValueAtTime(1e-4, tb + .58);
+        n.connect(bp); bp.connect(g); g.connect(bus); n.start(tb + .03); n.stop(tb + .6); }
+
+      // ③ 중성자별: 회전에 맞춰 떨리는 낮은 웅웅 + 빔이 지나갈 때마다 틱
+      const ts = tb + .06, SPIN = 1.6, P = 1 / (SPIN * 2);
+      { const o = a.createOscillator(), g = a.createGain(), trem = a.createOscillator(), tg = a.createGain(), lp = a.createBiquadFilter();
+        o.type = 'triangle'; o.frequency.value = 55; lp.type = 'lowpass'; lp.frequency.value = 420;
+        trem.frequency.value = SPIN * 2; tg.gain.value = .035;
+        g.gain.setValueAtTime(1e-4, ts); g.gain.linearRampToValueAtTime(.05, ts + .35); g.gain.setValueAtTime(.05, t + TE - .5); g.gain.exponentialRampToValueAtTime(1e-4, t + TE);
+        trem.connect(tg); tg.connect(g.gain);
+        o.connect(lp); lp.connect(g); g.connect(bus); o.start(ts); trem.start(ts); o.stop(t + TE + .05); trem.stop(t + TE + .05); }
+      for(let k = 0; ; k++){
+        const tt = ts + .12 + k * P; if(tt > t + TE - .08) break;
+        const fade = 1 - (tt - ts) / (t + TE - ts);
+        // 딸깍 (펄서를 소리로 바꾸면 이렇게 일정하게 뛴다)
+        const n = noise(.03), bp = a.createBiquadFilter(), g = a.createGain();
+        bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 2.5;
+        g.gain.setValueAtTime(.4 * fade, tt); g.gain.exponentialRampToValueAtTime(1e-4, tt + .028);
+        n.connect(bp); bp.connect(g); g.connect(bus); n.start(tt); n.stop(tt + .03);
+        // 살짝 울리는 금속성 핑
+        const o = a.createOscillator(), og = a.createGain(); o.type = 'sine'; o.frequency.value = k % 2 ? 1320 : 1760;
+        og.gain.setValueAtTime(1e-4, tt); og.gain.linearRampToValueAtTime(.035 * fade, tt + .004); og.gain.exponentialRampToValueAtTime(1e-4, tt + .16);
+        o.connect(og); og.connect(bus); o.start(tt); o.stop(tt + .18);
       }
     }catch(_){}
   }
