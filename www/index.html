@@ -38468,6 +38468,22 @@ function rxSunGem(){
   @keyframes fbFlash{to{opacity:0}}
   body.fb-shake .wrap,body.fb-shake main,body.fb-shake #grid{animation:fbShake .45s cubic-bezier(.3,.7,.4,1)}
   @keyframes fbShake{10%{transform:translate(-6px,3px)}25%{transform:translate(5px,-4px)}40%{transform:translate(-4px,2px)}60%{transform:translate(3px,-1px)}80%{transform:translate(-1px,1px)}}
+  /* 빈칸 채우기: 위쪽 띠 대신, 아래 조합 막대 자리에 원소 칩 독 */
+  body.mem-fill #tray{visibility:hidden}
+  body.mem-fill #qBar.on{top:auto;bottom:14px;left:50%;right:auto;transform:translateX(-50%);width:min(1060px,calc(100vw - 24px));
+    border:1px solid rgba(154,168,255,.32);border-radius:18px;padding:10px 14px 12px;gap:6px 12px;
+    background:linear-gradient(180deg,rgba(20,24,40,.92),rgba(10,13,22,.94));backdrop-filter:blur(10px);
+    box-shadow:0 -6px 30px rgba(0,0,0,.45),0 0 26px rgba(154,168,255,.14);animation:fbDock .45s cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes fbDock{from{transform:translate(-50%,40px);opacity:0}}
+  body.mem-fill #qBar .qbq{font-size:12.5px;color:#dfe3ff}
+  body.mem-fill #qBar .qbmeta{font:700 11px/1 ui-monospace,monospace;color:rgba(201,208,255,.7)}
+  body.mem-fill #qBar .ftray{flex-wrap:nowrap;overflow-x:auto;gap:5px;padding:6px 2px 4px;scroll-snap-type:x proximity;mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}
+  body.mem-fill{padding-bottom:110px}
+  body.mem-fill #qBar .fchip{min-width:38px;height:36px;padding:0 6px;border-radius:7px;border-width:1.5px;font:600 14px/1 Kanit,system-ui,sans-serif;
+    background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.01));transition:transform .15s,box-shadow .15s}
+  body.mem-fill #qBar .fchip:hover{transform:translateY(-2px)}
+  body.mem-fill #qBar .fchip.on{transform:translateY(-4px) scale(1.08);background:#fff;color:#141833;box-shadow:0 6px 16px rgba(154,168,255,.45)}
+  @media (max-width:700px){ body.mem-fill #qBar.on{bottom:8px;padding:8px 10px 10px;border-radius:14px} body.mem-fill #qBar .fchip{min-width:34px;height:32px;font-size:13px} }
 </style>
 <script>
 (function(){
