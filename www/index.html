@@ -16139,13 +16139,32 @@ async function rxNativeShareFile(blob, file, title){
     return true;
   }catch(e){ return !!(e && /cancel/i.test(String(e.message || e))); }
 }
+/* 앱 전용: 갤러리(사진 › Pictures/PeriodicTable)에 바로 저장. 안 되면 false (그때는 공유 창으로) */
+async function rxNativeGallery(blob, file){
+  try{
+    const G = rxCapPlugin('GallerySave');
+    if(!G || !G.save) return false;
+    const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+    await G.save({ data: b64, filename: file });
+    return true;
+  }catch(e){ return false; }
+}
+/* 화면 아래 작은 알림 (결과 창 밖에서도 보이게) */
+function rxMiniToast(msg){
+  let el = document.getElementById('rxMiniToast'); if(el) el.remove();
+  el = document.createElement('div'); el.id = 'rxMiniToast'; el.textContent = msg;
+  el.style.cssText = 'position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483000;padding:10px 16px;border-radius:12px;background:rgba(12,15,26,.94);border:1px solid rgba(154,168,255,.45);color:#dfe3ff;font:600 13px/1.4 system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center;transition:opacity .4s';
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 450); }, 2600);
+}
+const RX_GAL_MSG = () => LANG === 'en' ? 'Saved to your gallery (Pictures › PeriodicTable)' : '갤러리에 저장했어요 (사진 › PeriodicTable)';
 function rxCardMenu(btn){
   let mn = document.getElementById('rxCardMenu');
   if(mn){ mn.remove(); return; }
   mn = document.createElement('div');
   mn.id = 'rxCardMenu'; mn.className = 'rx-pop';
   mn.innerHTML = `<button type="button" data-th="dark">${rt('cardDark')}</button><button type="button" data-th="light">${rt('cardLight')}</button>` +
-    (rxCanShareFile() && !rxNative() ? `<button type="button" data-th="dark" data-share="1">↗ ${rt('cardShare')}</button>` : '');
+    ((rxCanShareFile() || rxNative()) ? `<button type="button" data-th="dark" data-share="1">↗ ${rt('cardShare')}</button>` : '');
   document.getElementById('mStage').appendChild(mn);
   mn.addEventListener('pointerdown', e => e.stopPropagation());
   mn.addEventListener('click', e => {
@@ -16418,6 +16437,9 @@ async function rxSaveCard(theme){
   let shared = false;
   // 앱(안드로이드 웹뷰)은 다운로드가 안 돼서, 파일로 써 두고 공유 창을 연다
   if(rxNative()){
+    // 기본은 갤러리에 바로 저장, '공유하기'를 고른 경우(또는 저장이 안 되는 폰)만 공유 창
+    if(!RX_CARD_SHARE && await rxNativeGallery(blob, file)){ RX_CARD_SHARE = false; rxSay(RX_GAL_MSG(), 3200); rxMiniToast(RX_GAL_MSG()); rxEvt('card'); return; }
+    RX_CARD_SHARE = false;
     const ok = await rxNativeShareFile(blob, file, name);
     if(ok){ rxSay(rt('cardAppNote'), 3600); rxEvt('card'); return; }
   }
@@ -35410,6 +35432,7 @@ const RX_TZ_F = [8,0,0,1,2,3,4,5,6,7,4,0,0,8,9,1,4,0,1,9,10,2,4,0,2,10,11,3,4,0,
     const blob = await new Promise(r => cv.toBlob(r, 'image/png')); if(!blob) return;
     const file = `element_type_${sym}.png`;
     if(typeof rxNative === 'function' && rxNative()){
+      if(await rxNativeGallery(blob, file)){ rxMiniToast(RX_GAL_MSG()); return; }
       const ok = await rxNativeShareFile(blob, file, title); if(ok){ try{ rxSay(rt('cardAppNote'), 3600); }catch(_){} return; }
     }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file;
