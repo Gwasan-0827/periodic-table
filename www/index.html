@@ -5003,7 +5003,7 @@ const UI = {
     setLog:"업데이트", setAbout:"정보", setStorageNote:"모든 기록은 이 기기에만 저장되며 어디로도 전송되지 않습니다.",
   },
   en:{
-    title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Proudly committed to scientifically accurate nonsense.", sub2:"Deeper than the textbook.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
+    title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Quality over quantity.", sub2:"Deeper than the textbook.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
     search:"Search elements…", tox:"☠ Toxic", dex:"Codex", quiz:"Quiz", safe:"Clean",
     tray:"Mix", trayPh:"Add some elements (max 200)", total:"Total",
     rand:"Random", clear:"Clear", mixBtn:"Combine", close:"Close",
@@ -8502,7 +8502,7 @@ function renderSettings(){
       <p>${L ? 'Kanit typeface (element symbols and formulas)' : 'Kanit 서체 (원소 기호·화학식)'} — Cadson Demak<br>
          <span class="dim">© 2020 The Kanit Project Authors · SIL Open Font License 1.1</span></p>
       <p class="dim">${t('setStorageNote')}</p>
-      <p class="smotto">${L ? 'Proudly committed to scientifically accurate nonsense.' : '과학적으로 정확한 헛소리를 지향합니다.'}</p>
+      <p class="smotto">${L ? 'Quality over quantity.' : '과학적으로 정확한 헛소리를 지향합니다.'}</p>
     </div>`;
 
   // 세그먼트
@@ -33977,7 +33977,7 @@ function rxFlashbang(soft){
         <div class="cr-what">${en ? 'Code · animation · sound' : '코드 · 애니메이션 · 사운드'}</div></div></div>
       <div class="cr-row"><div class="cr-role">${en ? 'Art help' : '아트 도움'}</div><div class="cr-who"><span class="cr-name gp">ChatGPT</span>
         <div class="cr-what">${en ? 'Mineral models · character illustrations · Astra rocks' : '광물 모델 제공 · 캐릭터 일러 제공 · Astra 짱짱'}</div></div></div>
-      <div class="cr-foot">© ${new Date().getFullYear()} GWASAN_2050 · ${en ? 'proudly committed to scientifically accurate nonsense' : '과학적으로 정확한 헛소리를 지향합니다'}</div>`;
+      <div class="cr-foot">© ${new Date().getFullYear()} GWASAN_2050 · ${en ? 'quality over quantity' : '과학적으로 정확한 헛소리를 지향합니다'}</div>`;
   }
   const _rs = renderSettings;
   renderSettings = function(){ const r = _rs.apply(this, arguments); try{ credits(); }catch(e){} return r; };
@@ -36655,11 +36655,11 @@ void main(){
         const x3 = x1 * cz - y2 * sz, y3 = x1 * sz + y2 * cz, k = F / (F + z2) * sc; return [x3 * k, y3 * k, k]; };
       const poly = (w, h) => { const c = [P(-w, -h), P(w, -h), P(w, h), P(-w, h)]; x.beginPath(); x.moveTo(c[0][0], c[0][1]); for(let q = 1; q < 4; q++) x.lineTo(c[q][0], c[q][1]); x.closePath(); };
       x.save(); x.globalAlpha = cl(prog * 2); x.lineJoin = 'miter';
-      poly(340, 235); x.strokeStyle = 'rgba(235,238,255,.95)'; x.lineWidth = 9 / U; x.shadowColor = PW; x.shadowBlur = 18 * DPR; x.stroke();
-      x.shadowBlur = 0; poly(372, 265); x.strokeStyle = pwl(.6); x.lineWidth = 1.6 / U; x.stroke();
+      poly(300, 300); x.strokeStyle = 'rgba(235,238,255,.95)'; x.lineWidth = 9 / U; x.shadowColor = PW; x.shadowBlur = 18 * DPR; x.stroke();
+      x.shadowBlur = 0; poly(332, 332); x.strokeStyle = pwl(.6); x.lineWidth = 1.6 / U; x.stroke();
       // 모서리 계단 (프레임과 같이 돈다)
       x.fillStyle = 'rgba(235,238,255,.9)';
-      for(let q = 0; q < 6; q++){ [P(-366 + q * 16, -275), P(366 - q * 16, 275)].forEach(([px, py, k]) => x.fillRect(px - 6 * k, py - 6 * k, 12 * k, 12 * k)); }
+      for(let q = 0; q < 6; q++){ [P(-326 + q * 16, -342), P(326 - q * 16, 342)].forEach(([px, py, k]) => x.fillRect(px - 6 * k, py - 6 * k, 12 * k, 12 * k)); }
       x.restore();
     }
     function pixelArc(r, a0, a1, prog, cell, col){
