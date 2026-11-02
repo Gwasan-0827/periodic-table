@@ -36512,10 +36512,18 @@ void main(){
     'Waiting for uranium\'s half-life… kidding', 'Making four carbons hold hands', 'Polishing the gold', 'Snapping oganesson before it vanishes', 'Moving the lanthanides downstairs', 'Keeping actinium in its seat', 'Counting to Avogadro\'s number', 'Lining up 118 cells',
     'Asking Mendeleev for permission', 'Snapping molecule balls together', 'Balancing ion charges', 'Turning on the lab lights', 'Waking up Asriel', 'Loading scientifically accurate nonsense', 'Fluffing the electron cloud', 'Calming fluorine down (stop reacting)', 'Stacking bismuth stairs',
     'Switching on the neon signs', 'Shaking the mercury thermometer', 'Rounding atomic masses', 'Fetching francium within 22 minutes', 'Writing an apology to chlorine', 'Painting it periwinkle', 'Sharpening the "//"'];
-  const TITLE = '페리오딕//테이블'.split('');
+  // 언어마다 로고가 다르다. 영어는 Pᴇʀɪᴏᴅɪᴄ // Tᴀʙʟᴇ (작은 대문자: 첫 글자 말고는 대문자를 작게)
+  let TITLE = [], SMALL = new Set();
+  const setTitle = () => {
+    const en = LANG === 'en';
+    TITLE = (en ? 'PERIODIC//TABLE' : '페리오딕//테이블').split('');
+    SMALL = new Set(en ? TITLE.map((c, i) => i).filter(i => TITLE[i] !== '/' && i > 0 && TITLE[i - 1] !== '/') : []);
+  };
+  setTitle();
   const SLANT = .3; // "/" 기울기 (가로/세로)
 
   rxIntro = function(force, forceFail){
+    setTitle();
     const prev = document.getElementById('rxIntro'); if(prev) prev.remove();
     if(!force && !rxIntroOn()){ rxTutMaybe(); return; }
     const box = document.createElement('div');
@@ -36723,10 +36731,13 @@ void main(){
     }
     function drawLogo(t, cam){
       const vis = seg(t, LOGO_AT, LOGO_AT + 380); if(vis <= 0) return null;
-      const F = fontPx() / U, sc = RX_REDUCED ? 1 : lerp(1.35, 1, oExpo(vis));
+      const F = fontPx() / U * (SMALL.size ? .82 : 1), sc = RX_REDUCED ? 1 : lerp(1.35, 1, oExpo(vis));
       x.save(); x.scale(sc, sc); x.globalAlpha = cl(vis * 1.6);
       x.font = `400 ${F}px Orbit, 'IBM Plex Sans KR', system-ui, sans-serif`; x.textBaseline = 'middle';
-      const ws = TITLE.map(c => x.measureText(c).width * (c === '/' ? .62 : 1.02)), total = ws.reduce((a, b) => a + b, 0);
+      const FN = x.font, FS = `400 ${F * .74}px Orbit, 'IBM Plex Sans KR', system-ui, sans-serif`;
+      const ws = TITLE.map((c, i) => { if(SMALL.has(i)){ x.font = FS; const w = x.measureText(c).width * 1.04; x.font = FN; return w; } return x.measureText(c).width * (c === '/' ? .62 : 1.02); }), total = ws.reduce((a, b) => a + b, 0);
+      // 영어 로고는 글자가 많아서 폰에선 화면 폭에 맞춰 줄인다
+      const lfit = Math.min(1, (W * .84 / U) / total); if(lfit < 1) x.scale(lfit, lfit);
       let px = -total / 2, sl = [];
       TITLE.forEach((c, i) => {
         const w = ws[i], mid = px + w / 2;
@@ -36734,7 +36745,8 @@ void main(){
           sl.push(mid);
           x.save(); x.shadowColor = charge ? '#fff' : PW; x.shadowBlur = (charge ? 40 : 22) * (DPR); x.fillStyle = charge ? '#fff' : PW_L; x.textAlign = 'center'; x.fillText('/', mid, 0); x.restore();
         } else if(glyph[i] === c){
-          x.fillStyle = '#f2f3ff'; x.textAlign = 'center'; x.fillText(c, mid, 0);
+          x.fillStyle = '#f2f3ff'; x.textAlign = 'center';
+          if(SMALL.has(i)){ x.save(); x.font = FS; x.textBaseline = 'alphabetic'; x.fillText(c, mid, F * .36); x.restore(); } else if(SMALL.size){ x.save(); x.textBaseline = 'alphabetic'; x.fillText(c, mid, F * .36); x.restore(); } else x.fillText(c, mid, 0);
         } else {
           x.save(); x.font = `600 ${F * (W < 700 ? .34 : .5)}px ui-monospace, Menlo, monospace`; x.fillStyle = PW; x.shadowColor = PW; x.shadowBlur = 12 * DPR; x.textAlign = 'center'; x.fillText(glyph[i], mid, 0); x.restore();
         }
@@ -36747,9 +36759,9 @@ void main(){
         for(let k = 1; k <= 6; k++){ const p = gx + k * 80; if(p > gx + ext) break; x.beginPath(); x.moveTo(sg * p, -(k % 3 ? 6 : 14)); x.lineTo(sg * p, k % 3 ? 6 : 14); x.stroke(); } });
       // 슬로건
       const sv = seg(t, LOGO_AT + LOGO_DUR - 200, LOGO_AT + LOGO_DUR + 300);
-      if(sv > 0){ x.globalAlpha = sv; x.font = `600 ${Math.max(11, Math.min(W * .013, 14)) / U}px system-ui, sans-serif`; try{ x.letterSpacing = `${.3 * 14 / U}px`; }catch(e){} x.fillStyle = pwl(.75); x.textAlign = 'center'; x.fillText(t_sub, 0, F * .85); try{ x.letterSpacing = '0px'; }catch(e){} }
+      if(sv > 0){ x.globalAlpha = sv; x.font = `600 ${Math.max(11, Math.min(W * .013, 14)) / U}px system-ui, sans-serif`; try{ x.letterSpacing = `${.3 * 14 / U}px`; }catch(e){} x.fillStyle = pwl(.75); x.textAlign = 'center'; { const sw = x.measureText(t_sub).width, room = W * .86 / (U * Math.max(1, cam && cam.z || 1)) / (sc * lfit); x.save(); if(sw > room) x.scale(room / sw, room / sw); x.fillText(t_sub, 0, F * .85 * (sw > room ? sw / room : 1)); x.restore(); } try{ x.letterSpacing = '0px'; }catch(e){} }
       x.restore();
-      return sl.length === 2 ? [(sl[0] + sl[1]) / 2 * sc, 0] : null;
+      return sl.length === 2 ? [(sl[0] + sl[1]) / 2 * sc * lfit, 0] : null;
     }
     const t_sub = t('sub');
 
