@@ -33900,6 +33900,8 @@ function rxFlashbang(soft){
   #rxUpdChk .uc-res button{margin-left:auto;font:700 12px/1 inherit;font-family:inherit;padding:7px 11px;border-radius:8px;border:0;background:#ffd43b;color:#1a1a1a;cursor:pointer}
   @media (prefers-reduced-motion:reduce){ #rxCredits .cr-name{animation:none;background-position:50% 0} }
   @media (max-width:700px){ #rxCredits .cr-role{flex-basis:74px} #rxCredits .cr-name{font-size:19px} }
+  #rxCredits .cr-yt{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:700;color:#c9d0ff;text-decoration:none;border-bottom:1px dashed rgba(201,208,255,.5);padding-bottom:1px}
+  #rxCredits .cr-yt:hover{color:#fff;border-bottom-color:#fff}
 </style>
 <script>
 (function(){
@@ -33938,7 +33940,7 @@ function rxFlashbang(soft){
     c.dataset.tab = 'info';
     c.innerHTML = `<h4>CREDITS //</h4><div class="cr-sub">${en ? 'The people (and two AIs) behind 페리오딕//테이블' : '페리오딕//테이블을 만든 사람들 (그리고 AI 둘)'}</div>
       <div class="cr-row"><div class="cr-role">${en ? 'Director' : '디렉터'}</div><div class="cr-who"><span class="cr-name pw">Gwasan_2050</span>
-        <div class="cr-what">${en ? 'Concept · design direction · element characters · testing &amp; bug hunting' : '기획 · 디자인 디렉팅 · 원소 캐릭터 · 테스트와 버그 사냥'}</div></div></div>
+        <div class="cr-what">${en ? 'Concept · design direction · element characters · testing &amp; bug hunting' : '기획 · 디자인 디렉팅 · 원소 캐릭터 · 테스트와 버그 사냥'}</div>${(typeof rxNative === 'function' && rxNative()) ? '' : `<a class="cr-yt" href="https://www.youtube.com/@%EA%B3%BC%EC%82%B02%EC%9D%B8%EB%8D%B0%EC%9A%94" target="_blank" rel="noopener">▶ ${en ? "The weird one's YouTube channel" : '이상한놈의 유튜브채널'}</a>`}</div></div>
       <div class="cr-row"><div class="cr-role">${en ? 'Dev help' : '개발 도움'}</div><div class="cr-who"><span class="cr-name cl">Claude</span>
         <div class="cr-what">${en ? 'Code · animation · sound' : '코드 · 애니메이션 · 사운드'}</div></div></div>
       <div class="cr-row"><div class="cr-role">${en ? 'Art help' : '아트 도움'}</div><div class="cr-who"><span class="cr-name gp">ChatGPT</span>
@@ -36255,6 +36257,49 @@ void main(){
     return r;
   };
   window.rxLiqGL = { off, get failed(){ return failed; } };
+})();
+</script>
+<script>
+/* ── 4.1 흑요석 · 선스톤: 특수 발견 (도감 540 유지) — 과산 친구 요청 ── */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const ADD = [
+    { nm: '흑요석', key: 'Fe3+O6+Si1', f: 'SiO₂ + Fe₃O₄', sub: '용암이 너무 빨리 식어서 결정이 못 된 화산 유리',
+      en: ['Obsidian', 'Volcanic glass: lava that cooled too fast to crystallise'], sym: 'Si', mix: [['Si', 1], ['O', 6], ['Fe', 3]],
+      hint: 'Si + O ×6 + Fe ×3',
+      tmi: '용암이 물이나 공기에 닿아 순식간에 식으면, 원자들이 줄 맞춰 결정을 만들 시간이 없어서 유리가 돼요. 그게 흑요석이에요. 까만색은 속에 아주 작게 흩어진 자철석(Fe₃O₄) 알갱이 때문이에요. 깨진 면이 조개껍데기처럼 둥글고 날카로워서, 석기 시대 사람들은 칼과 화살촉으로 썼어요. 잘 다듬은 흑요석 날은 원자 몇 개 두께까지 얇아져서 강철 수술칼보다 날카로워요.',
+      alias: 'obsidian 옵시디언 화산유리 volcanic glass',
+      min: { habit: 'lump', mat: { c: [30, 30, 38], fleck: [70, 68, 84] } }, gem: false },
+    { nm: '선스톤', key: 'Al1+Fe2+Na1+O11+Si3', f: 'NaAlSi₃O₈ + Fe₂O₃', sub: '속에 박힌 적철석 조각이 햇빛처럼 반짝이는 장석',
+      en: ['Sunstone', 'Feldspar sparkling with tiny flakes of hematite'], sym: 'Na', mix: [['Na', 1], ['Al', 1], ['Si', 3], ['O', 11], ['Fe', 2]],
+      hint: 'Na + Al + Si ×3 + O ×11 + Fe ×2',
+      tmi: '장석 속에 얇은 적철석(Fe₂O₃) 조각이 같은 방향으로 잔뜩 박혀 있어서, 돌을 기울이면 햇빛처럼 반짝 번쩍해요. 이 반짝임을 "어벤처레슨스"라고 불러요. 미국 오리건주에서 나는 선스톤은 적철석 대신 구리 조각이 들어 있어서 빨강, 초록으로 색이 바뀌기도 해요. 오리건주의 공식 보석이에요.',
+      alias: 'sunstone 일장석 태양석 장석 feldspar gem 보석',
+      min: { habit: 'lump', mat: { c: [226, 116, 60], fleck: [255, 216, 150] } }, gem: true },
+  ];
+  ADD.forEach(a => {
+    EXACT[a.key] = [a.f, a.nm, a.sub];
+    try{ REC_EN[a.nm] = a.en; }catch(e){}
+    try{ RX_TMI[a.nm] = a.tmi; }catch(e){}
+    try{ RX_DEX_ALIAS[a.nm] = a.alias; }catch(e){}
+    try{ if(a.gem && !GEMS.includes(a.nm)) GEMS.push(a.nm); }catch(e){}
+    try{ if(!RX_MINERALS[a.nm]) RX_MINERALS[a.nm] = a.min; }catch(e){}
+  });
+  const names = ADD.map(a => a.nm);
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => !names.includes(x.name)); };
+  const _sl = specialList;
+  specialList = function(){
+    const L = _sl.apply(this, arguments);
+    ADD.forEach(a => { if(!L.some(x => x.name === a.nm)) L.push({ sym: a.sym, lo: 1, hi: 1, formula: a.f, name: a.nm, sub: a.sub, hint: a.hint }); });
+    return L;
+  };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    const a = ADD.find(x => x.nm === name);
+    if(a) return { name, formula: a.f, sub: a.sub, key: a.key, exact: true, mix: a.mix };
+    return _en.apply(this, arguments);
+  };
 })();
 </script>
 <style>
