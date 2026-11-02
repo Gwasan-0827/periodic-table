@@ -16370,6 +16370,15 @@ async function rxSaveCard(theme){
   ctx.fillStyle = 'rgba(255,255,255,.06)';
   for(let y = py + 24; y < py + ph; y += 30) for(let x = px + 24; x < px + pw; x += 30){ ctx.fillRect(x, y, 2, 2); }
 
+  // WebGL 액체: SVG 밖의 캔버스에 그려지므로 따로 옮겨 그린다 (SVG 와 같은 자리·배율로)
+  try{
+    const gl = document.getElementById('mLiqGL'), sv = document.getElementById('mMol');
+    if(gl && gl.style.display !== 'none' && gl.width && sv && document.getElementById('mStage').classList.contains('liq-gl')){
+      const sr = sv.getBoundingClientRect(), s0 = Math.min(sr.width / 400, sr.height / 300), s = Math.min((pw - 40) / 400, (ph - 40) / 300), k = s / s0;
+      const dx = px + (pw - 400 * s) / 2 - (sr.width - 400 * s0) / 2 * k, dy = py + (ph - 300 * s) / 2 - (sr.height - 300 * s0) / 2 * k;
+      ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip(); ctx.drawImage(gl, dx, dy, sr.width * k, sr.height * k); ctx.restore();
+    }
+  }catch(e){}
   const svgText = rxInlineSvg(document.getElementById('mMol'));
   const url = URL.createObjectURL(new Blob([svgText], { type: 'image/svg+xml' }));
   await new Promise(res => {
@@ -36419,7 +36428,7 @@ void main(){
     if(cv && cv.isConnected && gl) return true;
     try{
       cv = document.createElement('canvas'); cv.id = 'mLiqGL'; cv.setAttribute('aria-hidden', 'true');
-      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: true });   // 카드 저장 때 그림을 그대로 가져가려고
       if(!gl) throw 0;
       // 폰마다 셰이더에 넘길 수 있는 점 개수가 달라서 맞춘다
       MAXP = Math.max(24, Math.min(120, (gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64) - 12));
@@ -38898,6 +38907,130 @@ function rxCardPreview(blob, file, name, tier, share){
     if(b.dataset.k === 'save') close();
   });
 }
+</script>
+<style>
+  /* ═══ 폭발 리워크: 캔버스 불덩이·충격파·불똥·잔해·연기 + 깨진 유리 화면 ═══ */
+  .rx-fx2{position:absolute;inset:0;pointer-events:none;z-index:5}
+  .rx-fx.v2 .fx-core,.rx-fx.v2 .fx-ring,.rx-fx.v2 .fx-spark,.rx-fx.v2 .fx-smoke{display:none}
+  .rx-crack2{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+  .rx-crack2 .sh{stroke:none}
+  .rx-crack2 .cl{fill:none;stroke:rgba(240,246,255,.78);stroke-width:1.1;stroke-linejoin:round;stroke-linecap:round}
+  .rx-crack2 .cd{fill:none;stroke:rgba(0,0,0,.55);stroke-width:3.2;stroke-linejoin:round;transform:translate(1.2px,1.6px)}
+  .rx-crack2 .gl{fill:none;stroke:rgba(255,255,255,.9);stroke-width:2;stroke-linecap:round;filter:blur(.3px);opacity:0;animation:ckGlint 1.6s .25s ease-out both}
+  @keyframes ckGlint{20%{opacity:1}100%{opacity:0}}
+  .rx-crack2 .fall{animation:ckFall 1.4s cubic-bezier(.5,0,.9,.6) forwards}
+  @keyframes ckFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--fx),110vh) rotate(var(--fr))}}
+  .rx-crack2{animation:ckIn .07s both}
+  @keyframes ckIn{from{opacity:0}}
+</style>
+<script>
+(function(){
+  /* ── 폭발 ── */
+  function boom(lv){
+    const st = document.getElementById('mStage'); if(!st) return;
+    st.querySelectorAll('.rx-fx2').forEach(c => c.remove());
+    const old = st.querySelector('.rx-fx'); if(old) old.classList.add('v2');
+    const q = typeof RX_FX !== 'undefined' ? RX_FX : 'hi', k = q === 'lo' ? .35 : q === 'mid' ? .65 : 1;
+    const r = st.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1), W = r.width, H = r.height;
+    const cv = document.createElement('canvas'); cv.className = 'rx-fx2'; cv.width = W * dpr; cv.height = H * dpr;
+    st.appendChild(cv);
+    const c = cv.getContext('2d'); c.scale(dpr, dpr);
+    const cx = W / 2, cy = H * .5, R = Math.min(W, H) * (.32 + lv * .1), rnd = (a, b) => a + Math.random() * (b - a);
+    const fire = [], sparks = [], debris = [], smoke = [], embers = [];
+    for(let i = 0; i < Math.round(26 * lv * k); i++){ const a = rnd(0, 6.283), s = rnd(.2, 1) * R * 2.2; fire.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s * .8 - R * .3, r: rnd(.12, .26) * R, life: rnd(.55, 1.1) }); }
+    for(let i = 0; i < Math.round(70 * lv * k); i++){ const a = rnd(0, 6.283), s = rnd(.8, 2.6) * R * 2.4; sparks.push({ x: cx, y: cy, px: cx, py: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s - R * .6, life: rnd(.4, 1.2), w: rnd(1, 2.4) }); }
+    for(let i = 0; i < Math.round(16 * lv * k); i++){ const a = rnd(0, 6.283), s = rnd(.6, 1.8) * R * 2; debris.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s - R * 1.2, rot: rnd(0, 6), vr: rnd(-12, 12), sz: rnd(3, 8), life: rnd(1.2, 2) }); }
+    for(let i = 0; i < Math.round(14 * lv * k); i++){ const a = rnd(0, 6.283), s = rnd(.1, .5) * R; smoke.push({ x: cx + Math.cos(a) * R * .2, y: cy + Math.sin(a) * R * .2, vx: Math.cos(a) * s, vy: Math.sin(a) * s * .6 - rnd(.2, .5) * R, r: rnd(.25, .45) * R, t0: rnd(.15, .45), life: rnd(1.6, 2.4) }); }
+    for(let i = 0; i < Math.round(26 * lv * k); i++) embers.push({ x: cx + rnd(-R, R) * .7, y: cy + rnd(-R, R) * .4, vx: rnd(-20, 20), vy: rnd(-70, -25), t0: rnd(.3, 1.1), life: rnd(1.2, 2.2), r: rnd(1, 2.2) });
+    const G = R * 3.2, T = 2.7, t0 = performance.now();
+    const frame = now => {
+      const t = (now - t0) / 1000; if(t > T || !cv.isConnected){ cv.remove(); return; }
+      const dt = 1 / 60;
+      c.clearRect(0, 0, W, H);
+      // 연기 (어두운 뭉게구름, 위로 피어오름)
+      c.globalCompositeOperation = 'source-over';
+      smoke.forEach(s => { const lt = t - s.t0; if(lt < 0 || lt > s.life) return; const p = lt / s.life;
+        s.x += s.vx * dt; s.y += s.vy * dt; s.vx *= .985; const rr = s.r * (1 + p * 1.6), a = Math.sin(Math.min(1, p * 3) * Math.PI / 2) * (1 - p) * .55;
+        const g = c.createRadialGradient(s.x, s.y, 0, s.x, s.y, rr); g.addColorStop(0, `rgba(40,34,32,${a})`); g.addColorStop(.6, `rgba(30,26,26,${a * .6})`); g.addColorStop(1, 'rgba(20,18,18,0)');
+        c.fillStyle = g; c.beginPath(); c.arc(s.x, s.y, rr, 0, 7); c.fill(); });
+      c.globalCompositeOperation = 'lighter';
+      // 섬광 핵
+      if(t < .55){ const p = t / .55, rr = R * (.25 + p * 1.1), a = (1 - p) * (1 - p);
+        const g = c.createRadialGradient(cx, cy, 0, cx, cy, rr); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.25, `rgba(255,240,180,${a * .9})`); g.addColorStop(.6, `rgba(255,140,40,${a * .55})`); g.addColorStop(1, 'rgba(255,60,0,0)');
+        c.fillStyle = g; c.beginPath(); c.arc(cx, cy, rr, 0, 7); c.fill(); }
+      // 충격파 고리 (두 겹)
+      [0, .08].forEach(d => { const lt = t - d; if(lt < 0 || lt > .6) return; const p = lt / .6, rr = R * (.2 + p * 2.1);
+        c.strokeStyle = `rgba(255,235,200,${(1 - p) * .55})`; c.lineWidth = (1 - p) * 10 + 1; c.beginPath(); c.ellipse(cx, cy, rr, rr * .82, 0, 0, 7); c.stroke(); });
+      // 불덩이: 밝은 주황 → 붉은빛 → 사라짐
+      fire.forEach(f => { if(t > f.life) return; const p = t / f.life; f.vx *= .9; f.vy = f.vy * .9 - R * .9 * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+        const rr = f.r * (1 + p * 1.8), a = (1 - p) * .75, col = p < .3 ? '255,220,140' : p < .6 ? '255,140,50' : '220,60,20';
+        const g = c.createRadialGradient(f.x, f.y, 0, f.x, f.y, rr); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
+        c.fillStyle = g; c.beginPath(); c.arc(f.x, f.y, rr, 0, 7); c.fill(); });
+      // 불똥: 꼬리를 그으며 날아가다 떨어진다
+      c.lineCap = 'round';
+      sparks.forEach(s => { if(t > s.life) return; const p = t / s.life; s.px = s.x; s.py = s.y; s.vx *= .97; s.vy = s.vy * .97 + G * dt; s.x += s.vx * dt; s.y += s.vy * dt;
+        c.strokeStyle = `rgba(255,${200 + 55 * (1 - p) | 0},${120 * (1 - p) | 0},${1 - p})`; c.lineWidth = s.w * (1 - p * .5);
+        c.beginPath(); c.moveTo(s.px - (s.x - s.px) * 1.6, s.py - (s.y - s.py) * 1.6); c.lineTo(s.x, s.y); c.stroke(); });
+      // 불씨: 천천히 떠오르며 깜빡
+      embers.forEach(e => { const lt = t - e.t0; if(lt < 0 || lt > e.life) return; const p = lt / e.life; e.x += (e.vx + Math.sin(t * 6 + e.r * 9) * 12) * dt; e.y += e.vy * dt;
+        c.fillStyle = `rgba(255,${150 + 80 * Math.random() | 0},60,${(1 - p) * (.6 + .4 * Math.sin(t * 20 + e.r * 7))})`; c.beginPath(); c.arc(e.x, e.y, e.r, 0, 7); c.fill(); });
+      // 잔해: 빙글빙글 떨어지는 검은 조각
+      c.globalCompositeOperation = 'source-over';
+      debris.forEach(d => { if(t > d.life) return; const p = t / d.life; d.vx *= .985; d.vy += G * dt; d.x += d.vx * dt; d.y += d.vy * dt; d.rot += d.vr * dt;
+        c.save(); c.translate(d.x, d.y); c.rotate(d.rot); c.globalAlpha = 1 - p * p; c.fillStyle = '#2a2420'; c.strokeStyle = 'rgba(255,140,60,.6)'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-d.sz, -d.sz * .6); c.lineTo(d.sz * .8, -d.sz * .9); c.lineTo(d.sz, d.sz * .5); c.lineTo(-d.sz * .4, d.sz); c.closePath(); c.fill(); c.stroke(); c.restore(); });
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+  const _bf = rxBoomFx;
+  rxBoomFx = function(lv){
+    _bf.apply(this, arguments);
+    if(typeof RX_FX !== 'undefined' && RX_FX === 'lo') return;
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try{ boom(lv); }catch(e){}
+  };
+
+  /* ── 깨진 유리: 충격점에서 뻗는 금 + 동심원 금 → 조각(다각형)마다 빛이 조금씩 다르게, 큰 폭발이면 가운데 조각이 떨어져 나간다 ── */
+  rxCrack = function(){
+    const W = innerWidth, H = innerHeight, f = v => v.toFixed(1);
+    const cx = W * (0.32 + Math.random() * 0.36), cy = H * (0.28 + Math.random() * 0.34);
+    const N = 11 + (Math.random() * 5 | 0), rings = [16, 42, 80, 135].map(r => r * (0.85 + Math.random() * .3) * Math.min(1.4, Math.max(W, H) / 900));
+    const ang = []; for(let i = 0; i < N; i++) ang.push((i + (Math.random() - .5) * .8) / N * Math.PI * 2);
+    // 고리마다 각 금 위의 점 (조금씩 흔들림)
+    const P = rings.map(r => ang.map(a => { const rr = r * (0.82 + Math.random() * .36), aa = a + (Math.random() - .5) * .12; return [cx + Math.cos(aa) * rr, cy + Math.sin(aa) * rr]; }));
+    let shards = '', lines = '', glint = '';
+    const center = [cx, cy];
+    for(let ri = 0; ri < P.length; ri++){
+      for(let i = 0; i < N; i++){
+        const j = (i + 1) % N;
+        const poly = ri === 0 ? [center, P[0][i], P[0][j]] : [P[ri - 1][i], P[ri][i], P[ri][j], P[ri - 1][j]];
+        const sh = (Math.random() * .05).toFixed(3), lit = Math.random() < .18;
+        const dx = ((Math.random() - .5) * (ri + 1) * .9).toFixed(1), dy = ((Math.random() - .5) * (ri + 1) * .9).toFixed(1);
+        const falls = ri <= 1 && Math.random() < .45;
+        shards += `<polygon class="sh${falls ? ' fall' : ''}" points="${poly.map(p => f(p[0]) + ',' + f(p[1])).join(' ')}" fill="rgba(${lit ? '210,225,255' : '255,255,255'},${lit ? (+sh + .07).toFixed(3) : sh})" style="transform:translate(${dx}px,${dy}px);${falls ? `--fx:${((Math.random() - .5) * 120).toFixed(0)}px;--fr:${((Math.random() - .5) * 220).toFixed(0)}deg;animation-delay:${(700 + Math.random() * 900).toFixed(0)}ms` : ''}"/>`;
+      }
+      // 고리 금 (지그재그)
+      // 고리 금은 군데군데 끊긴다 (거미줄처럼 보이지 않게)
+      for(let i = 0; i < N; i++){ if(Math.random() < (ri ? .38 : .15)) continue; const p = P[ri][i], q = P[ri][(i + 1) % N]; lines += `M${f(p[0])} ${f(p[1])}L${f((p[0] + q[0]) / 2 + (Math.random() - .5) * 6)} ${f((p[1] + q[1]) / 2 + (Math.random() - .5) * 6)}L${f(q[0])} ${f(q[1])}`; }
+    }
+    // 뻗어 나가는 긴 금: 고리 밖으로 화면 끝까지 갈라진다
+    ang.forEach((a, i) => {
+      let x = P[P.length - 1][i][0], y = P[P.length - 1][i][1], aa = a, d = `M${f(cx)} ${f(cy)}` + P.map(rr => `L${f(rr[i][0])} ${f(rr[i][1])}`).join('');
+      const L = Math.max(W, H) * (0.3 + Math.random() * .7);
+      for(let w = 0; w < L;){ const s = 16 + Math.random() * 36; aa += (Math.random() - .5) * .5; x += Math.cos(aa) * s; y += Math.sin(aa) * s; w += s; d += `L${f(x)} ${f(y)}`;
+        if(Math.random() < .1){ let bx = x, by = y, ba = aa + (Math.random() < .5 ? 1 : -1) * (.5 + Math.random() * .5); d += `M${f(bx)} ${f(by)}`; for(let q = 0; q < 3; q++){ const bl = 10 + Math.random() * 18; bx += Math.cos(ba) * bl; by += Math.sin(ba) * bl; d += `L${f(bx)} ${f(by)}`; } d += `M${f(x)} ${f(y)}`; } }
+      lines += d;
+      if(i % 3 === 0) glint += `M${f(P[1][i][0])} ${f(P[1][i][1])}L${f(P[3][i][0])} ${f(P[3][i][1])}`;
+    });
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'rx-crack rx-crack2'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = `${shards}<path class="cd" d="${lines}"/><path class="cl" d="${lines}"/><path class="gl" d="${glint}"/>` +
+      `<circle cx="${f(cx)}" cy="${f(cy)}" r="7" fill="rgba(255,255,255,.75)"/><circle cx="${f(cx)}" cy="${f(cy)}" r="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>`;
+    modal.appendChild(svg);
+    try{ rxNoise(.25, .12, 'highpass', 4200); rxNoise(.08, .2, 'bandpass', 2600, 2); }catch(e){}
+  };
+})();
 </script>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
