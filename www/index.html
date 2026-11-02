@@ -36818,6 +36818,91 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 안전 고지: 처음 실행할 때(또는 고지 내용이 바뀌었을 때) 한 번 ═══ */
+  #rxSafe{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(3,4,8,.82);backdrop-filter:blur(6px);animation:rxSfIn .3s ease both}
+  @keyframes rxSfIn{from{opacity:0}to{opacity:1}}
+  #rxSafe .sf{width:min(640px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#0b0e1a;border:1px solid rgba(154,168,255,.28);border-radius:16px;padding:18px 20px 16px;color:#e3e7f5;
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 40px rgba(154,168,255,.12);animation:rxSfUp .4s cubic-bezier(.2,.9,.3,1.1) both}
+  @keyframes rxSfUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+  #rxSafe .sf-top{display:flex;justify-content:space-between;align-items:center;font:700 11px/1 ui-monospace,monospace;letter-spacing:.06em;color:#9aa8ff;padding-bottom:12px;border-bottom:1px solid rgba(154,168,255,.18)}
+  #rxSafe .sf-top b{font-weight:700;color:#dfe3ff;background:rgba(154,168,255,.14);padding:4px 8px;border-radius:6px}
+  #rxSafe h3{display:flex;align-items:center;gap:8px;margin:16px 0 8px;font-size:17px;font-weight:800}
+  #rxSafe h3 i{font-style:normal;color:#ff6b7a}
+  #rxSafe p{margin:6px 0;font-size:13.5px;line-height:1.7;color:#cfd5e6;word-break:keep-all}
+  #rxSafe p small{font-size:11.5px;color:#8a93a8}
+  #rxSafe s{color:#8a93a8}
+  #rxSafe hr{border:0;border-top:1px solid rgba(154,168,255,.18);margin:14px 0 0}
+  #rxSafe .sf-z{margin:12px 0;padding:16px;border-radius:12px;background:#141a2c;text-align:center;font-weight:800;font-size:17px;line-height:1.55}
+  #rxSafe .sf-z em{font-style:normal;color:#ff6b7a}
+  #rxSafe .sf-z span{display:block;font-size:21px;letter-spacing:.4em;margin-top:2px}
+  #rxSafe label{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:14px;font-weight:650;cursor:pointer;user-select:none}
+  #rxSafe label input{appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid #8a93a8;display:grid;place-items:center;cursor:pointer;margin:0;flex:none}
+  #rxSafe label input:checked{border-color:#9aa8ff;background:#9aa8ff;box-shadow:0 0 12px rgba(154,168,255,.6)}
+  #rxSafe label input:checked::after{content:"✓";color:#141833;font-size:13px;font-weight:900}
+  #rxSafe .sf-go{width:100%;padding:12px;border-radius:10px;border:0;font:inherit;font-size:14px;font-weight:750;cursor:pointer;background:#1a2032;color:#6f7890;transition:all .2s}
+  #rxSafe .sf-go:not([disabled]){background:linear-gradient(90deg,#c9d0ff,#9aa8ff);color:#141833;box-shadow:0 0 18px rgba(154,168,255,.35)}
+  #rxSafe .sf-go[disabled]{cursor:not-allowed}
+  #rxSafe .sf-foot{text-align:center;font-size:11.5px;color:#7a8398;margin-top:10px}
+  #rxSafe.gone{animation:rxSfOut .3s ease both}
+  @keyframes rxSfOut{to{opacity:0}}
+  @media (max-width:520px){ #rxSafe .sf{padding:16px 14px 14px} #rxSafe p{font-size:13px} }
+</style>
+<script>
+(function(){
+  const VER = 1;   // 고지 내용을 바꾸면 숫자를 올린다 → 모두에게 다시 한 번 뜬다
+  const T = {
+    ko: { notice: 'SAFETY NOTICE', h1: '시작하기 전에!',
+      p: ['페리오딕//테이블은 과학 교육 및 가상 시뮬레이션을 목적으로 제작된 <s>프로그램</s> 게임입니다.',
+          '게임에 등장하는 화학물질, 화학 반응 및 실험 장면은 현실에서의 재현을 권장하거나 지시하는 것이 아닙니다.',
+          '사용자가 교육 목적을 벗어나 독자적으로 수행한 위험한 실험으로 발생한 사고 및 손해에 대해 제작자는 관련 법령이 허용하는 범위에서 책임을 지지 않습니다.'],
+      small: '본 고지는 제작자의 법적 책임을 부당하게 면제하지 않습니다.',
+      h2: '위반 시 안내', p2: '안전수칙을 어기고 현실에서 위험한 실험을 임의로 수행할 경우, 사고와 손해가 발생하거나 법적 책임을 질 수 있습니다.',
+      z: '현실에는 <em>Ctrl + Z</em>가', z2: '없어요.', ok: '위 안전수칙을 읽고 확인했습니다.', go: '확인하고 시작하기',
+      foot: '이 화면은 처음 실행할 때나 안전 고지가 바뀌었을 때만 표시돼요.' },
+    en: { notice: 'SAFETY NOTICE', h1: 'Before you start!',
+      p: ['Periodic//Table is a <s>program</s> game made for science education and virtual simulation.',
+          'The chemicals, reactions and experiments shown in the game are not an instruction or encouragement to try them in real life.',
+          'To the extent permitted by law, the creators are not responsible for accidents or damage from dangerous experiments users carry out on their own outside an educational setting.'],
+      small: 'This notice does not unfairly exempt the creators from legal responsibility.',
+      h2: 'If you ignore this', p2: 'Doing dangerous experiments in real life against safety rules can cause accidents and damage, and you may be held legally responsible.',
+      z: 'Real life has no <em>Ctrl + Z</em>.', z2: '', ok: 'I have read and understood the safety rules above.', go: 'Confirm and start',
+      foot: 'This screen only appears the first time, or when the safety notice changes.' },
+  };
+  const agreed = () => { try{ return +localStorage.getItem('pt_safety') >= VER; }catch(e){ return true; } };
+  function show(then){
+    if(document.getElementById('rxSafe')) return;
+    const L = T[LANG === 'en' ? 'en' : 'ko'];
+    const el = document.createElement('div'); el.id = 'rxSafe'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+    el.innerHTML = `<div class="sf">
+      <div class="sf-top"><span>PERIODIC//TABLE</span><b>${L.notice}</b></div>
+      <h3><i>⛉</i>${L.h1}</h3>
+      ${L.p.map(x => `<p>${x}</p>`).join('')}<p><small>${L.small}</small></p>
+      <hr><h3><i>⚠</i>${L.h2}</h3><p>${L.p2}</p>
+      <div class="sf-z">${L.z}${L.z2 ? `<span>${L.z2}</span>` : ''}</div>
+      <label><input type="checkbox" id="rxSafeChk">${L.ok}</label>
+      <button type="button" class="sf-go" id="rxSafeGo" disabled>${L.go}</button>
+      <div class="sf-foot">${L.foot}</div></div>`;
+    document.body.appendChild(el);
+    const chk = el.querySelector('#rxSafeChk'), go = el.querySelector('#rxSafeGo');
+    chk.addEventListener('change', () => { go.disabled = !chk.checked; try{ SFX.pick(); }catch(e){} });
+    go.addEventListener('click', () => {
+      if(!chk.checked) return;
+      try{ localStorage.setItem('pt_safety', String(VER)); }catch(e){}
+      el.classList.add('gone'); setTimeout(() => { el.remove(); if(then) then(); }, 280);
+    });
+  }
+  // 시작 화면이 끝난 뒤(튜토리얼보다 먼저) 한 번
+  const _tm = rxTutMaybe;
+  rxTutMaybe = function(){
+    if(agreed()) return _tm.apply(this, arguments);
+    show(() => _tm());
+  };
+  // 시작 화면을 꺼 둔 경우: 이미 지나갔으니 지금 바로 (튜토리얼보다 위에)
+  if(!agreed() && !document.getElementById('rxIntro')) setTimeout(() => { if(!agreed() && !document.getElementById('rxIntro')) show(); }, 60);
+  window.rxSafety = { show: () => show(), reset: () => { try{ localStorage.removeItem('pt_safety'); }catch(e){} } };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
