@@ -37391,7 +37391,8 @@ function rxSunGem(){
 <style>
   /* ═══ 학습 › 정전기 실험: 네온 전구에 불이 켜지는 까닭 ═══ */
   .hubt[data-h="stat"]::before{content:"⚡"}
-  .se .ah-stage canvas{height:330px;touch-action:none;cursor:grab}
+  .se .ah-stage{background:radial-gradient(120% 90% at 50% 20%,#141a2e 0%,#080b14 60%,#05070d 100%)}
+  .se .ah-stage canvas{height:340px;touch-action:none;cursor:grab}
   .se-steps{display:grid;gap:6px;margin-top:12px}
   .se-step{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:10px;border:1px solid rgba(154,168,255,.15);background:rgba(154,168,255,.04);font-size:13px;line-height:1.55;word-break:keep-all;transition:all .3s}
   .se-step i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:800 11px/1 ui-monospace,monospace;font-style:normal;border:1.5px solid rgba(154,168,255,.45);color:#9aa8ff;margin-top:1px}
@@ -37400,263 +37401,349 @@ function rxSunGem(){
   .se-step.done i{background:#9aa8ff;color:#141833;border-color:#9aa8ff}
   .se-step.done i::before{content:"✓"}
   .se-step.done i span{display:none}
-  .se-mode{position:absolute;right:8px;top:6px;display:flex;gap:4px}
-  .se-mode button{font:inherit;font-size:11px;padding:4px 8px;border-radius:7px;border:1px solid rgba(154,168,255,.35);background:rgba(10,12,22,.75);color:var(--dim);cursor:pointer}
-  .se-mode button.on{background:#c9d0ff;color:#141833;border-color:#c9d0ff;font-weight:700}
-  .se-msg{position:absolute;left:50%;top:32px;transform:translateX(-50%);max-width:92%;text-align:center;font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;background:rgba(5,7,13,.8);color:#dfe3ff;pointer-events:none;transition:opacity .3s;word-break:keep-all}
+  .se-msg{position:absolute;left:50%;top:30px;transform:translateX(-50%);max-width:92%;text-align:center;font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;background:rgba(5,7,13,.72);border:1px solid rgba(154,168,255,.2);color:#dfe3ff;pointer-events:none;transition:opacity .3s;word-break:keep-all;backdrop-filter:blur(4px)}
+  .se-meter{position:absolute;right:10px;top:8px;display:flex;gap:10px;font:700 10px/1 ui-monospace,monospace;color:rgba(201,208,255,.7);pointer-events:none}
+  .se-meter b{display:inline-block;width:38px;height:5px;border-radius:3px;background:rgba(154,168,255,.15);margin-left:5px;vertical-align:middle;overflow:hidden;position:relative}
+  .se-meter b i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#7fd4ff,#c9f0ff);box-shadow:0 0 6px #7fd4ff;transition:width .15s}
   .se-reset{margin-top:10px;width:100%;padding:9px;border-radius:10px;border:1px solid var(--line2);background:#0f131b;color:var(--dim);font:inherit;font-size:12.5px;cursor:pointer}
-  @media (max-width:700px){ .se .ah-stage canvas{height:300px} }
+  @media (max-width:700px){ .se .ah-stage canvas{height:310px} }
 </style>
 <script>
 (function(){
   const EN = () => LANG === 'en';
   const TX = {
     ko: { tab: '정전기 실험', title: '네온 전구에 불이 켜지는 까닭', goal: '마찰 전기로 네온 전구에 불을 켜 보고, 불이 켜지는 까닭을 전하의 이동으로 설명해 봐요.',
-      need: '준비물', items: '네온 전구, 알루미늄 컵, 플라스틱 컵, 고무풍선, 털가죽',
-      steps: ['플라스틱 컵을 눌러 뒤집고, 알루미늄 컵을 끌어다 그 위에 씌워요.',
-              '고무풍선을 끌어서 털가죽(또는 머리)에 여러 번 문질러요. 풍선이 (−) 전하로 대전돼요.',
-              '대전된 풍선을 알루미늄 컵에 대요. 여기저기 굴리듯 여러 번 대면 더 많이 모여요.',
+      need: '준비물', items: '네온 전구, 알루미늄 컵, 플라스틱 컵, 고무풍선, 털가죽', bal: '풍선', cup: '컵',
+      steps: ['플라스틱 컵을 눌러 뒤집어 놓고, 알루미늄 컵을 끌어다 그 위에 겹치게 씌워요.',
+              '고무풍선을 끌어서 털가죽에 여러 번 문질러요. 풍선이 (−) 전하로 대전돼요.',
+              '대전된 풍선을 알루미늄 컵에 대요. 여러 군데 대면 더 많이 모여요.',
               '네온 전구의 한쪽 극을 잡고(커서가 손이에요), 다른 쪽 극을 알루미늄 컵에 대요.'],
-      fur: '털가죽', hair: '내 머리', reset: '처음부터 다시 ↺', why: '왜 켜질까?',
-      exp: `<p><b>① 마찰</b> — 서로 다른 두 물체를 문지르면 전자가 한쪽에서 다른 쪽으로 옮겨 가요. 털이나 머리카락은 전자를 잃기 쉽고 고무는 전자를 얻기 쉬워서, 풍선은 <b>(−)</b>, 털가죽은 <b>(+)</b>로 대전돼요.</p>
+      fur: '털가죽', plastic: '플라스틱 컵', alu: '알루미늄 컵', neon: '네온 전구', hand: '손', reset: '처음부터 다시 ↺', why: '왜 켜질까?',
+      exp: `<p><b>① 마찰</b> — 서로 다른 두 물체를 문지르면 전자가 한쪽에서 다른 쪽으로 옮겨 가요. 털은 전자를 잃기 쉽고 고무는 전자를 얻기 쉬워서, 풍선은 <b>(−)</b>, 털가죽은 <b>(+)</b>로 대전돼요.</p>
         <p><b>② 알루미늄 컵</b> — 금속(도체)이라 풍선을 대면 전자가 컵으로 옮겨 가서 컵 전체에 고르게 퍼져요. 풍선은 고무(절연체)라 닿은 부분의 전자만 넘어가요. 그래서 여러 군데를 대야 많이 모여요.</p>
-        <p><b>③ 플라스틱 컵</b> — 절연체라서 컵에 모인 전자가 탁자로 빠져나가지 못하게 막아 줘요. 플라스틱 컵 없이 해 보면 차이를 알 수 있어요.</p>
+        <p><b>③ 플라스틱 컵</b> — 절연체라서 컵에 모인 전자가 탁자로 빠져나가지 못하게 막아 줘요. 알루미늄 컵을 탁자에 바로 놓고 해 보면 차이를 알 수 있어요.</p>
         <p><b>④ 네온 전구</b> — 전구를 대는 순간 컵에 모인 전자가 전구 → 손 → 몸으로 한꺼번에 이동해요. 이때 전압이 수천 볼트나 돼서 전구 속 네온 기체가 빛을 내요. 전자가 다 빠져나가면 바로 꺼져서 <b>반짝!</b> 하고 한 번만 켜져요.</p>`,
-      m: { flip: '플라스틱 컵을 눌러서 뒤집어 보세요', cup: '알루미늄 컵을 끌어다 플라스틱 컵 위에 올려요', rub: '풍선을 끌어서 털가죽에 문질러요', rubbing: '쓱쓱… 전자가 풍선으로 옮겨 가는 중', touch: '이제 풍선을 알루미늄 컵에 대 보세요',
+      m: { flip: '플라스틱 컵을 눌러서 뒤집어 보세요', cup: '알루미늄 컵을 끌어다 플라스틱 컵에 씌워요', rub: '풍선을 끌어서 털가죽에 문질러요', rubbing: '쓱쓱… 전자가 풍선으로 옮겨 가는 중', touch: '이제 풍선을 알루미늄 컵에 대 보세요',
         moved: '전자가 컵으로 옮겨 갔어요! 여러 군데 더 대 보세요', bulb: '네온 전구를 잡고 다른 쪽 극을 컵에 대 보세요', flash: '반짝! 전자가 전구를 지나 손으로 빠져나갔어요',
-        weak: '전자가 너무 적어요. 풍선을 더 문질러서 컵에 모아 봐요', leak: '플라스틱 컵이 없으니 전자가 탁자로 빠져나가요!', nobal: '풍선에 전자가 없어요. 먼저 문질러요', again: '한 번 더! 다시 모으면 또 켜져요' } },
+        weak: '전자가 너무 적어요. 풍선을 더 문질러서 컵에 모아 봐요', leak: '플라스틱 컵 위가 아니라서 전자가 탁자로 빠져나가요!', nobal: '풍선에 전자가 없어요. 먼저 문질러요', again: '한 번 더! 다시 모으면 또 켜져요' } },
     en: { tab: 'Static lab', title: 'Why does the neon bulb light up?', goal: 'Light a neon bulb with static electricity, and explain why it lights using the movement of charge.',
-      need: 'You need', items: 'neon bulb, aluminium cup, plastic cup, rubber balloon, fur',
-      steps: ['Tap the plastic cup to turn it upside down, then drag the aluminium cup on top of it.',
-              'Drag the balloon and rub it on the fur (or your hair) several times. It becomes negatively (−) charged.',
-              'Touch the charged balloon to the aluminium cup. Touch it in several places to collect more.',
+      need: 'You need', items: 'neon bulb, aluminium cup, plastic cup, rubber balloon, fur', bal: 'balloon', cup: 'cup',
+      steps: ['Tap the plastic cup to turn it upside down, then drag the aluminium cup over it so they overlap.',
+              'Drag the balloon and rub it on the fur several times. It becomes negatively (−) charged.',
+              'Touch the charged balloon to the aluminium cup. Touch several places to collect more.',
               'Hold one lead of the neon bulb (the cursor is your hand) and touch the other lead to the aluminium cup.'],
-      fur: 'Fur', hair: 'My hair', reset: 'Start over ↺', why: 'Why does it light?',
-      exp: `<p><b>① Rubbing</b> — rub two different materials together and electrons move from one to the other. Fur and hair give up electrons easily and rubber grabs them, so the balloon becomes <b>(−)</b> and the fur <b>(+)</b>.</p>
+      fur: 'fur', plastic: 'plastic cup', alu: 'aluminium cup', neon: 'neon bulb', hand: 'hand', reset: 'Start over ↺', why: 'Why does it light?',
+      exp: `<p><b>① Rubbing</b> — rub two different materials together and electrons move from one to the other. Fur gives up electrons easily and rubber grabs them, so the balloon becomes <b>(−)</b> and the fur <b>(+)</b>.</p>
         <p><b>② Aluminium cup</b> — metal is a conductor, so electrons that jump from the balloon spread evenly over the whole cup. Rubber is an insulator, so only the electrons at the touching spot move. That is why touching several places collects more.</p>
-        <p><b>③ Plastic cup</b> — an insulator, so the electrons on the metal cup cannot escape into the table. Try it without the plastic cup and see.</p>
+        <p><b>③ Plastic cup</b> — an insulator, so the electrons on the metal cup cannot escape into the table. Try it with the aluminium cup straight on the table and see.</p>
         <p><b>④ Neon bulb</b> — the moment the lead touches, the electrons rush from the cup through the bulb into your hand and body. The voltage is thousands of volts, enough to make the neon gas inside glow. Once the electrons have gone it goes out, so it lights with a single <b>flash!</b></p>`,
-      m: { flip: 'Tap the plastic cup to flip it', cup: 'Drag the aluminium cup onto the plastic cup', rub: 'Drag the balloon and rub it on the fur', rubbing: 'Rub rub… electrons moving to the balloon', touch: 'Now touch the balloon to the aluminium cup',
+      m: { flip: 'Tap the plastic cup to flip it', cup: 'Drag the aluminium cup over the plastic cup', rub: 'Drag the balloon and rub it on the fur', rubbing: 'Rub rub… electrons moving to the balloon', touch: 'Now touch the balloon to the aluminium cup',
         moved: 'Electrons moved to the cup! Touch a few more spots', bulb: 'Hold the neon bulb and touch its other lead to the cup', flash: 'Flash! Electrons ran through the bulb into your hand',
-        weak: 'Too few electrons. Rub the balloon more and collect them on the cup', leak: 'No plastic cup — the electrons leak into the table!', nobal: 'The balloon has no electrons. Rub it first', again: 'Again! Collect more and it lights again' } },
+        weak: 'Too few electrons. Rub the balloon more and collect them on the cup', leak: 'Not on the plastic cup — the electrons leak into the table!', nobal: 'The balloon has no electrons. Rub it first', again: 'Again! Collect more and it lights again' } },
   };
   const T = () => TX[EN() ? 'en' : 'ko'];
-  let raf = 0, S = null, src = 'fur';
+  let raf = 0, S = null;
   const stop = () => { if(raf) cancelAnimationFrame(raf); raf = 0; };
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const snd = f => { try{ f(); }catch(_){} };
 
-  function init(W, H){
-    const ty = H - 34;                                      // 탁자 윗면
-    return {
-      W, H, ty, t: 0, step: 0, msg: 'flip', msgT: 0,
-      pc: { x: W * .5, flip: 0, flipping: 0 },              // 플라스틱 컵 (flip 0 = 바로, 1 = 뒤집힘)
-      al: { x: W * .2, y: ty, on: false, q: 0, dots: [] }, // 알루미늄 컵: q 0..1 (전자 양)
-      bal: { x: W * .78, y: H * .4, q: 0, vx: 0, vy: 0, held: false, rest: { x: W * .78, y: H * .4 } },
-      fur: { x: W * .16, y: H * .4, q: 0 },                 // 털가죽(머리) (+ 전하)
-      bulb: { x: W * .9, y: ty - 4, held: false, glow: 0, rest: { x: W * .9, y: ty - 4 } },
-      drag: null, flow: [], sparks: [], rubAcc: 0, lastRub: 0, flashes: 0,
-    };
-  }
-  // 모양들
-  const PCH = 64, PCW1 = 30, PCW2 = 20;                     // 플라스틱 컵: 입구 반폭, 바닥 반폭
-  const ALH = 52, ALW1 = 27, ALW2 = 19;
-  const BR = 26;                                            // 풍선 반지름
-  const alTop = s => s.al.on ? s.ty - PCH - ALH : s.ty - ALH;
-  const alBox = s => ({ x0: s.al.x - ALW1, x1: s.al.x + ALW1, y0: alTop(s), y1: alTop(s) + ALH });
+  // ── 치수 (논리 좌표, 화면 크기에 맞춰 통째로 확대한다) ──
+  const PCH = 70, PCW_RIM = 31, PCW_BASE = 21;   // 플라스틱 컵: 높이, 입구 반폭, 바닥 반폭
+  const ALH = 56, ALW_RIM = 28, ALW_BASE = 20;   // 알루미늄 컵
+  const BR = 27;                                 // 풍선 반지름
+  const ER = .16;                                // 컵 타원 납작도
+  // 뒤집힌 플라스틱 컵 위에 뒤집힌 알루미늄 컵이 겹쳐 씌워진 자리: 입구 반폭이 맞는 높이에서 멈춘다
+  const SEAT = (ALW_RIM - 1.5 - PCW_BASE) / (PCW_RIM - PCW_BASE) * PCH;
+  const alRimY = s => s.al.on ? s.ty - PCH + SEAT : s.al.y;           // 알루미늄 컵 입구(아래쪽) 높이
+  const alBox = s => { const r = alRimY(s); return { x0: s.al.x - ALW_RIM, x1: s.al.x + ALW_RIM, y0: r - ALH - 4, y1: r + 2 }; };
   // 전구: 손으로 잡는 극 끝(=커서)에서 다른 극 끝까지
-  const bulbGeo = b => { const gx = b.x, gy = b.y - 64; return { glass: [gx + 9, gy], tipA: [b.x, b.y], tipB: [b.x + 18, b.y + 2], top: gy }; };
+  const bulbGeo = b => { const gx = b.x + 7, gy = b.y - 78; return { gx, gy, tipA: [b.x, b.y], tipB: [b.x + 15, b.y + 3] }; };
 
+  function init(W, H){
+    const ty = H - 42;
+    const s = {
+      W, H, ty, t: 0, step: 0, msg: 'flip', msgT: 0, idle: 0,
+      pc: { x: W * .52, flip: 0, flipping: 0 },
+      al: { x: W * .25, y: ty, on: false, q: 0, dots: [] },
+      bal: { x: W * .8, y: H * .42, q: 0, held: false, rest: { x: W * .8, y: H * .42 }, sw: 0, px: W * .8 },
+      fur: { x: W * .17, y: H * .4, q: 0 },
+      bulb: { x: W * .9, y: ty - 2, held: false, glow: 0, rest: { x: W * .9, y: ty - 2 } },
+      drag: null, flow: [], sparks: [], rubAcc: 0, flashes: 0,
+    };
+    s.furImg = furCanvas();
+    return s;
+  }
+  // 털가죽은 한 번만 그려 둔다 (털 수백 가닥)
+  let FUR = null;
+  function furCanvas(){
+    if(FUR) return FUR;
+    const k = 3, w = 110, h = 84, cv = document.createElement('canvas'); cv.width = w * k; cv.height = h * k;
+    const c = cv.getContext('2d'); c.scale(k, k); c.translate(w / 2, h / 2);
+    const base = c.createRadialGradient(-10, -10, 4, 0, 0, 46); base.addColorStop(0, '#a87a52'); base.addColorStop(1, '#4e3320');
+    c.fillStyle = base; c.beginPath(); c.ellipse(0, 0, 44, 32, -.15, 0, 7); c.fill();
+    let seed = 7; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for(let i = 0; i < 900; i++){
+      const a = R() * 6.283, rr = Math.sqrt(R()), x = Math.cos(a) * rr * 46, y = Math.sin(a) * rr * 34;
+      if((x / 46) ** 2 + (y / 34) ** 2 > 1.02) continue;
+      const len = 4 + R() * 6, dir = -.6 + (R() - .5) * .9, shade = 70 + R() * 110;
+      c.strokeStyle = `rgba(${shade + 60 | 0},${shade + 20 | 0},${shade - 25 | 0},${.35 + R() * .45})`; c.lineWidth = .5 + R() * .6;
+      c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(dir) * len * .5, y + Math.sin(dir) * len * .5 + 1, x + Math.cos(dir) * len, y + Math.sin(dir) * len); c.stroke();
+    }
+    // 가장자리 잔털
+    for(let i = 0; i < 160; i++){
+      const a = R() * 6.283, x = Math.cos(a) * 44, y = Math.sin(a) * 32, len = 3 + R() * 5;
+      c.strokeStyle = `rgba(190,150,105,${.3 + R() * .4})`; c.lineWidth = .5;
+      c.beginPath(); c.moveTo(x * .95, y * .95); c.lineTo(x + Math.cos(a + (R() - .5)) * len, y + Math.sin(a + (R() - .5)) * len); c.stroke();
+    }
+    FUR = { cv, w, h };
+    return FUR;
+  }
+
+  function say(s, k){ if(s.msg !== k){ s.msg = k; s.msgT = 0; } }
   function step(s, dt){
     s.t += dt; s.msgT += dt;
-    // 플라스틱 컵 뒤집기 애니메이션
-    if(s.pc.flipping){ s.pc.flip = clamp(s.pc.flip + dt * 3, 0, 1); if(s.pc.flip >= 1) s.pc.flipping = 0; }
-    // 풍선: 놓으면 제자리로 둥실
+    if(s.pc.flipping){ s.pc.flip = clamp(s.pc.flip + dt * 2.6, 0, 1); if(s.pc.flip >= 1) s.pc.flipping = 0; }
     const B = s.bal;
-    if(!B.held){ B.x += (B.rest.x - B.x) * Math.min(1, dt * 3); B.y += (B.rest.y + Math.sin(s.t * 1.6) * 3 - B.y) * Math.min(1, dt * 3); }
+    if(!B.held){ B.x += (B.rest.x - B.x) * Math.min(1, dt * 2.5); B.y += (B.rest.y + Math.sin(s.t * 1.5) * 3 - B.y) * Math.min(1, dt * 2.5); }
+    B.sw += ((B.x - B.px) * 1.4 - B.sw) * Math.min(1, dt * 6); B.px = B.x;           // 줄이 따라 흔들린다
     if(!s.bulb.held){ s.bulb.x += (s.bulb.rest.x - s.bulb.x) * Math.min(1, dt * 6); s.bulb.y += (s.bulb.rest.y - s.bulb.y) * Math.min(1, dt * 6); }
-    // 컵이 탁자에 바로 닿아 있으면 전자가 새어 나간다
-    if(!s.al.on && s.al.q > 0){ s.al.q = Math.max(0, s.al.q - dt * .9); if(s.al.q > .02 && s.msg !== 'leak'){ say(s, 'leak'); } }
-    // 풍선 전하도 공기 중으로 아주 천천히 빠진다
-    B.q = Math.max(0, B.q - dt * .004);
-    s.bulb.glow = Math.max(0, s.bulb.glow - dt * 2.6);
+    // 플라스틱 컵 위가 아니면 탁자로 샌다
+    if(!s.al.on && s.al.q > 0){ s.al.q = Math.max(0, s.al.q - dt * .9); if(s.al.q > .02) say(s, 'leak'); }
+    B.q = Math.max(0, B.q - dt * .003);
+    s.bulb.glow = Math.max(0, s.bulb.glow - dt * 1.7);
     s.flow = s.flow.filter(p => (p.t += dt) < p.d);
-    s.sparks = s.sparks.filter(p => (p.t += dt) < .5);
-    // 컵 위의 전자 점: 양에 맞춰 고르게
-    const want = Math.round(s.al.q * 22);
-    while(s.al.dots.length < want) s.al.dots.push({ u: Math.random(), w: Math.random() });
+    s.sparks = s.sparks.filter(p => (p.t += dt) < .35);
+    const want = Math.round(s.al.q * 20);
+    while(s.al.dots.length < want) s.al.dots.push({ u: Math.random(), w: Math.random(), born: s.t });
     while(s.al.dots.length > want) s.al.dots.pop();
-    // 단계
     const st = s.al.on ? (s.flashes ? 4 : s.al.q > .05 || s.step >= 3 ? 3 : B.q > .15 || s.step >= 2 ? 2 : 1) : 0;
     if(st > s.step) s.step = st;
+    s.idle = s.drag || s.flow.length || s.sparks.length || s.bulb.glow > 0 || s.pc.flipping ? 0 : s.idle + dt;
   }
-  function say(s, k){ s.msg = k; s.msgT = 0; }
 
-  function drawCupShape(c, x, yTop, h, wTop, wBot, flip){
-    // flip=false: 입구가 위 (위가 넓다). flip=true: 뒤집힘 (아래가 넓다)
-    const wt = flip ? wBot : wTop, wb = flip ? wTop : wBot;
-    c.beginPath(); c.moveTo(x - wt, yTop); c.lineTo(x + wt, yTop); c.lineTo(x + wb, yTop + h); c.lineTo(x - wb, yTop + h); c.closePath();
-  }
-  function draw(c, s){
-    const { W, H, ty } = s, L = T();
-    // 탁자
-    const tg = c.createLinearGradient(0, ty, 0, H); tg.addColorStop(0, '#2a2f44'); tg.addColorStop(1, '#141826');
-    c.fillStyle = tg; c.fillRect(0, ty, W, H - ty); c.fillStyle = 'rgba(201,208,255,.25)'; c.fillRect(0, ty, W, 1.5);
-    // 털가죽 / 머리
-    const F = s.fur;
-    if(src === 'fur'){
-      c.save(); c.translate(F.x, F.y);
-      const fg = c.createRadialGradient(-8, -8, 4, 0, 0, 46); fg.addColorStop(0, '#b98a5e'); fg.addColorStop(1, '#6b4a2e');
-      c.fillStyle = fg; c.beginPath(); c.ellipse(0, 0, 40, 30, -.2, 0, 7); c.fill();
-      c.strokeStyle = 'rgba(240,210,170,.35)'; c.lineWidth = 1;
-      for(let i = 0; i < 46; i++){ const a = i * 2.39, r = (i % 9) / 9 * 32, x = Math.cos(a) * r, y = Math.sin(a) * r * .72; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 4, y - 3 + Math.sin(i) * 2); c.stroke(); }
-      c.restore();
-    } else {
-      // 머리: 대전되면 머리카락이 풍선 쪽으로 선다
-      c.save(); c.translate(F.x, F.y + 18);
-      c.fillStyle = '#f0c9a8'; c.beginPath(); c.ellipse(0, 10, 24, 28, 0, 0, 7); c.fill();
-      c.fillStyle = '#2b2233'; c.beginPath(); c.ellipse(0, -6, 27, 20, 0, Math.PI, 0); c.fill();
-      const bx = s.bal.x - F.x, by = s.bal.y - F.y - 18, bd = Math.hypot(bx, by), pull = clamp(F.q * 2.2, 0, 1) * clamp(1.6 - bd / 120, 0, 1);
-      c.strokeStyle = '#2b2233'; c.lineWidth = 1.4;
-      for(let i = 0; i < 26; i++){
-        const a = Math.PI + i / 25 * Math.PI, rx = Math.cos(a) * 26, ry = Math.sin(a) * 19 - 6;
-        const nx = Math.cos(a), ny = Math.sin(a), len = 9 + F.q * 10;
-        const tx = nx * (1 - pull) + (bx / (bd || 1)) * pull, tyy = ny * (1 - pull) + (by / (bd || 1)) * pull;
-        c.beginPath(); c.moveTo(rx, ry); c.quadraticCurveTo(rx + nx * len * .6, ry + ny * len * .6, rx + tx * len + Math.sin(s.t * 3 + i) * F.q * 1.5, ry + tyy * len); c.stroke();
-      }
-      c.fillStyle = '#2b2233'; c.beginPath(); c.arc(-8, 10, 2, 0, 7); c.arc(8, 10, 2, 0, 7); c.fill();
-      c.restore();
-    }
-    // 털 쪽 (+) 표시
-    const np = Math.round(F.q * 10);
-    c.font = '800 12px ui-monospace,monospace'; c.textAlign = 'center';
-    for(let i = 0; i < np; i++){ const a = i * 2.1 + .5, r = 14 + (i % 3) * 7; c.fillStyle = '#ff8c9c'; c.fillText('+', F.x + Math.cos(a) * r, F.y + Math.sin(a) * r * .7 + 4); }
-    c.fillStyle = 'rgba(223,227,255,.75)'; c.font = '600 10.5px system-ui,sans-serif'; c.fillText(src === 'fur' ? L.fur : L.hair, F.x, F.y + (src === 'fur' ? 44 : 66));
-
-    // 플라스틱 컵
-    const fl = s.pc.flip, flipped = fl > .5;
-    c.save(); c.translate(s.pc.x, ty - PCH / 2); c.scale(1, Math.abs(Math.cos(fl * Math.PI)) * .9 + .1); c.translate(-s.pc.x, -(ty - PCH / 2));
-    drawCupShape(c, s.pc.x, ty - PCH, PCH, PCW1, PCW2, flipped);
-    c.fillStyle = 'rgba(190,220,255,.2)'; c.fill(); c.strokeStyle = 'rgba(210,230,255,.8)'; c.lineWidth = 1.4; c.stroke();
-    c.strokeStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.moveTo(s.pc.x - 12, ty - PCH + 8); c.lineTo(s.pc.x - 9, ty - 8); c.stroke();
+  // ── 그리기 도구 ──
+  const shadow = (c, x, y, rx, a) => { if(rx <= 0) return; const g = c.createRadialGradient(x, y / .22, 0, x, y / .22, rx); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)'); c.save(); c.scale(1, .22); c.fillStyle = g; c.beginPath(); c.arc(x, y / .22, rx, 0, 7); c.fill(); c.restore(); };
+  const charge = (c, x, y, neg, a = 1) => {
+    c.save(); c.globalAlpha = Math.max(0, Math.min(1, a));
+    const g = c.createRadialGradient(x, y, 0, x, y, 6); g.addColorStop(0, neg ? 'rgba(127,212,255,.55)' : 'rgba(255,140,160,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill();
+    c.fillStyle = neg ? '#bfe9ff' : '#ffc2cc'; c.beginPath(); c.arc(x, y, 3.3, 0, 7); c.fill();
+    c.strokeStyle = neg ? '#0b3550' : '#5a1020'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(x - 1.8, y); c.lineTo(x + 1.8, y); if(!neg){ c.moveTo(x, y - 1.8); c.lineTo(x, y + 1.8); } c.stroke();
     c.restore();
-    if(!flipped && !s.pc.flipping){ c.fillStyle = 'rgba(201,208,255,.6)'; c.font = '600 10px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(EN() ? 'tap ↻' : '눌러서 뒤집기 ↻', s.pc.x, ty - PCH - 8 - Math.sin(s.t * 3) * 2); }
+  };
+  const label = (c, txt, x, y, a = .65) => { c.fillStyle = `rgba(201,208,255,${a})`; c.font = '600 10px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(txt, x, y); };
+  // 원뿔대 컵 (rimY: 입구 높이, baseY: 바닥 높이). 입구가 아래면 뒤집힌 컵
+  function frustum(c, x, rimY, baseY, wr, wb){
+    const down = rimY > baseY;
+    c.beginPath();
+    c.moveTo(x - wb, baseY); c.lineTo(x - wr, rimY);
+    if(down) c.ellipse(x, rimY, wr, wr * ER, 0, Math.PI, 0, true);    // 아래쪽(앞) 반 타원
+    else c.lineTo(x + wr, rimY);
+    c.lineTo(x + wb, baseY);
+    if(down) c.lineTo(x - wb, baseY);
+    else c.ellipse(x, baseY, wb, wb * ER, 0, 0, Math.PI, false);
+    c.closePath();
+  }
 
-    // 알루미늄 컵 (입구가 위)
-    const A = s.al, at = alTop(s);
-    drawCupShape(c, A.x, at, ALH, ALW1, ALW2, false);
-    const ag = c.createLinearGradient(A.x - ALW1, 0, A.x + ALW1, 0);
-    ag.addColorStop(0, '#6d7486'); ag.addColorStop(.3, '#e9edf5'); ag.addColorStop(.55, '#a8afbf'); ag.addColorStop(.8, '#dfe4ee'); ag.addColorStop(1, '#5f6678');
-    c.fillStyle = ag; c.fill(); c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 1; c.stroke();
-    c.fillStyle = 'rgba(30,34,48,.75)'; c.beginPath(); c.ellipse(A.x, at, ALW1, 4, 0, 0, 7); c.fill(); c.strokeStyle = '#eef2fa'; c.stroke();
-    // 컵 위 전자 (−): 표면에 고르게
-    c.font = '800 12px ui-monospace,monospace'; c.textAlign = 'center';
+  function drawTable(c, s){
+    const { W, H, ty } = s;
+    const top = c.createLinearGradient(0, ty - 6, 0, ty + 10); top.addColorStop(0, '#3a3f56'); top.addColorStop(1, '#262a3c');
+    c.fillStyle = top; c.fillRect(0, ty, W, 10);
+    const fr = c.createLinearGradient(0, ty + 10, 0, H); fr.addColorStop(0, '#1a1d2b'); fr.addColorStop(1, '#0c0e16');
+    c.fillStyle = fr; c.fillRect(0, ty + 10, W, H - ty - 10);
+    c.fillStyle = 'rgba(220,226,255,.28)'; c.fillRect(0, ty, W, 1);
+    c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(0, ty + 10, W, 1.5);
+    // 전구 빛이 탁자에 비친다
+    if(s.bulb.glow > 0){ const g = bulbGeo(s.bulb), lg = c.createRadialGradient(g.gx, ty + 3, 0, g.gx, ty + 3, 120); lg.addColorStop(0, `rgba(255,120,50,${.28 * s.bulb.glow})`); lg.addColorStop(1, 'rgba(255,120,50,0)'); c.fillStyle = lg; c.fillRect(g.gx - 120, ty, 240, 12); }
+  }
+  function drawFur(c, s){
+    const F = s.fur, I = s.furImg;
+    c.save(); c.translate(F.x, F.y); c.rotate(Math.sin(s.t * .8) * .015);
+    c.drawImage(I.cv, -I.w / 2, -I.h / 2, I.w, I.h); c.restore();
+    const np = Math.round(F.q * 9);
+    for(let i = 0; i < np; i++){ const a = i * 2.2 + .4, r = 12 + (i % 3) * 9; charge(c, F.x + Math.cos(a) * r, F.y + Math.sin(a) * r * .65, false); }
+    label(c, T().fur, F.x, F.y + 48);
+  }
+  function drawPlastic(c, s){
+    const { ty } = s, x = s.pc.x, fl = s.pc.flip;
+    // 뒤집기: 위로 살짝 들렸다가 돌아 내려앉는다
+    const lift = Math.sin(fl * Math.PI) * 26, ang = fl * Math.PI;
+    shadow(c, x, ty + 1, 36 - lift * .4, .55);
+    c.save(); c.translate(x, ty - PCH / 2 - lift); c.rotate(ang); c.translate(-x, -(ty - PCH / 2));
+    // 회전 전 기준: 입구가 위. 다 돌면 입구가 아래로 간다
+    const rimY = ty - PCH, baseY = ty;
+    c.beginPath(); c.moveTo(x - PCW_BASE, baseY); c.lineTo(x - PCW_RIM, rimY); c.lineTo(x + PCW_RIM, rimY); c.lineTo(x + PCW_BASE, baseY); c.ellipse(x, baseY, PCW_BASE, PCW_BASE * ER, 0, 0, Math.PI, false); c.closePath();
+    const g = c.createLinearGradient(x - PCW_RIM, 0, x + PCW_RIM, 0);
+    g.addColorStop(0, 'rgba(170,205,255,.30)'); g.addColorStop(.18, 'rgba(230,242,255,.42)'); g.addColorStop(.32, 'rgba(170,205,255,.10)'); g.addColorStop(.75, 'rgba(170,205,255,.06)'); g.addColorStop(.9, 'rgba(230,242,255,.32)'); g.addColorStop(1, 'rgba(170,205,255,.22)');
+    c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(215,232,255,.75)'; c.lineWidth = 1.1; c.stroke();
+    // 입구 테두리(말린 가장자리)와 바닥
+    c.strokeStyle = 'rgba(240,248,255,.9)'; c.lineWidth = 2; c.beginPath(); c.ellipse(x, rimY, PCW_RIM, PCW_RIM * ER, 0, 0, 7); c.stroke();
+    c.fillStyle = 'rgba(200,225,255,.12)'; c.beginPath(); c.ellipse(x, baseY, PCW_BASE, PCW_BASE * ER, 0, 0, 7); c.fill();
+    // 세로 하이라이트
+    c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 2.2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x - PCW_RIM * .62, rimY + 8); c.lineTo(x - PCW_BASE * .62, baseY - 6); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.2)'; c.lineWidth = 1; c.beginPath(); c.moveTo(x + PCW_RIM * .7, rimY + 10); c.lineTo(x + PCW_BASE * .7, baseY - 8); c.stroke();
+    c.restore();
+    if(fl < .5 && !s.pc.flipping) label(c, EN() ? 'tap to flip ↻' : '눌러서 뒤집기 ↻', x, ty - PCH - 14 - Math.sin(s.t * 3) * 2, .8);
+    else if(!s.al.on && fl >= 1) label(c, T().plastic, x, ty + 26);
+  }
+  function drawAlu(c, s){
+    const A = s.al, x = A.x, rimY = alRimY(s), baseY = rimY - ALH;    // 뒤집힘: 입구가 아래
+    if(!A.on && rimY >= s.ty - 1) shadow(c, x, s.ty + 1, 34, .6);
+    frustum(c, x, rimY, baseY, ALW_RIM, ALW_BASE);
+    const g = c.createLinearGradient(x - ALW_RIM, 0, x + ALW_RIM, 0);
+    g.addColorStop(0, '#4c5263'); g.addColorStop(.14, '#9aa1b2'); g.addColorStop(.3, '#f4f6fb'); g.addColorStop(.42, '#b9bfcc'); g.addColorStop(.62, '#8a90a0'); g.addColorStop(.8, '#d9dde7'); g.addColorStop(1, '#505667');
+    c.fillStyle = g; c.fill();
+    // 세로 결 (얇은 알루미늄 주름)
+    c.save(); frustum(c, x, rimY, baseY, ALW_RIM, ALW_BASE); c.clip();
+    for(let i = -9; i <= 9; i++){ const u = i / 9.5; c.strokeStyle = i % 2 ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.10)'; c.lineWidth = 1; c.beginPath(); c.moveTo(x + u * ALW_BASE, baseY); c.lineTo(x + u * ALW_RIM, rimY + 4); c.stroke(); }
+    if(A.q > .02){ c.fillStyle = `rgba(127,212,255,${.18 * A.q})`; c.fillRect(x - ALW_RIM, baseY - 6, ALW_RIM * 2, ALH + 12); }
+    c.restore();
+    // 막힌 바닥(위)과 말린 입구(아래)
+    const cap = c.createLinearGradient(x - ALW_BASE, 0, x + ALW_BASE, 0); cap.addColorStop(0, '#9ca3b3'); cap.addColorStop(.4, '#f5f7fb'); cap.addColorStop(1, '#a2a8b6');
+    c.fillStyle = cap; c.beginPath(); c.ellipse(x, baseY, ALW_BASE, ALW_BASE * ER, 0, 0, 7); c.fill();
+    c.strokeStyle = 'rgba(255,255,255,.6)'; c.lineWidth = .8; c.stroke();
+    c.strokeStyle = '#eef1f7'; c.lineWidth = 2.2; c.beginPath(); c.ellipse(x, rimY, ALW_RIM, ALW_RIM * ER, 0, 0, Math.PI); c.stroke();
+    c.strokeStyle = 'rgba(60,64,80,.8)'; c.lineWidth = 1; c.beginPath(); c.ellipse(x, rimY + 1.5, ALW_RIM, ALW_RIM * ER, 0, .1, Math.PI - .1); c.stroke();
+    // 전자: 표면에 고르게 퍼져 살짝 떨린다
     A.dots.forEach((d, i) => {
-      const yy = at + 6 + d.u * (ALH - 10), half = ALW1 - (ALW1 - ALW2) * ((yy - at) / ALH);
-      const xx = A.x + (d.w * 2 - 1) * (half - 4) + Math.sin(s.t * 4 + i) * .8;
-      c.fillStyle = '#7fd4ff'; c.fillText('−', xx, yy + 4);
+      const yy = baseY + 6 + d.u * (ALH - 12), half = ALW_BASE + (ALW_RIM - ALW_BASE) * ((yy - baseY) / ALH);
+      const xx = x + (d.w * 2 - 1) * (half - 5) + Math.sin(s.t * 5 + i * 1.7) * .7;
+      charge(c, xx, yy + Math.cos(s.t * 4 + i) * .6, true, (s.t - d.born) * 4);
     });
-    if(A.q > .02){ c.fillStyle = `rgba(127,212,255,${.15 * A.q})`; c.beginPath(); c.ellipse(A.x, at + ALH / 2, ALW1 + 10, ALH / 2 + 10, 0, 0, 7); c.fill(); }
-
-    // 풍선
-    const B = s.bal;
-    c.strokeStyle = 'rgba(223,227,255,.4)'; c.lineWidth = 1; c.beginPath(); c.moveTo(B.x, B.y + BR + 6);
-    c.bezierCurveTo(B.x - 8, B.y + BR + 22, B.x + 8, B.y + BR + 34, B.x + (B.held ? 0 : Math.sin(s.t) * 4), B.y + BR + 48); c.stroke();
-    const bg = c.createRadialGradient(B.x - 9, B.y - 11, 3, B.x, B.y, BR * 1.15);
-    bg.addColorStop(0, '#ffb3c6'); bg.addColorStop(.35, '#ff4f7b'); bg.addColorStop(1, '#a3123c');
-    c.fillStyle = bg; c.beginPath(); c.ellipse(B.x, B.y, BR * .92, BR, 0, 0, 7); c.fill();
-    c.fillStyle = '#a3123c'; c.beginPath(); c.moveTo(B.x - 4, B.y + BR + 6); c.lineTo(B.x + 4, B.y + BR + 6); c.lineTo(B.x, B.y + BR - 1); c.fill();
-    c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.ellipse(B.x - 9, B.y - 11, 4, 7, -.5, 0, 7); c.fill();
+    if(A.q > .02){ c.save(); c.globalCompositeOperation = 'lighter'; const gg = c.createRadialGradient(x, rimY - ALH / 2, 4, x, rimY - ALH / 2, ALH); gg.addColorStop(0, `rgba(80,170,255,${.12 * A.q})`); gg.addColorStop(1, 'rgba(80,170,255,0)'); c.fillStyle = gg; c.beginPath(); c.arc(x, rimY - ALH / 2, ALH, 0, 7); c.fill(); c.restore(); }
+    if(!A.on && !s.drag) label(c, T().alu, x, s.ty + 26);
+  }
+  function drawBalloon(c, s){
+    const B = s.bal, x = B.x, y = B.y;
+    if(!B.held) shadow(c, x, s.ty + 1, 22, .25);
+    c.strokeStyle = 'rgba(223,227,255,.45)'; c.lineWidth = 1; c.beginPath(); c.moveTo(x, y + BR + 7);
+    c.bezierCurveTo(x - B.sw * .4 - 6, y + BR + 24, x - B.sw * .8 + 6, y + BR + 40, x - B.sw + Math.sin(s.t * 1.3) * 3, y + BR + 56); c.stroke();
+    // 몸통: 아래가 살짝 좁은 물방울 모양
+    const body = () => { c.beginPath(); c.moveTo(x, y - BR); c.bezierCurveTo(x + BR * 1.28, y - BR, x + BR * 1.1, y + BR * .8, x, y + BR + 3); c.bezierCurveTo(x - BR * 1.1, y + BR * .8, x - BR * 1.28, y - BR, x, y - BR); c.closePath(); };
+    const g = c.createRadialGradient(x - 10, y - 12, 2, x, y, BR * 1.3);
+    g.addColorStop(0, '#ffc2d2'); g.addColorStop(.25, '#ff5d86'); g.addColorStop(.75, '#c7194b'); g.addColorStop(1, '#6e0a26');
+    body(); c.fillStyle = g; c.fill();
+    c.save(); body(); c.clip();
+    c.fillStyle = 'rgba(255,255,255,.75)'; c.beginPath(); c.ellipse(x - 10, y - 13, 4.5, 8, -.55, 0, 7); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(x - 3, y - 19, 2, 2.5, 0, 0, 7); c.fill();
+    c.strokeStyle = 'rgba(255,180,200,.35)'; c.lineWidth = 3; c.beginPath(); c.arc(x + 4, y + 4, BR * .95, -.3, 1.4); c.stroke();
+    c.restore();
+    c.fillStyle = '#9b1238'; c.beginPath(); c.moveTo(x - 4.5, y + BR + 8); c.quadraticCurveTo(x, y + BR + 4, x + 4.5, y + BR + 8); c.lineTo(x, y + BR + 1); c.closePath(); c.fill();
     const nm = Math.round(B.q * 12);
-    c.font = '800 12px ui-monospace,monospace';
-    for(let i = 0; i < nm; i++){ const a = i * 2.4, r = 6 + (i % 4) * 4.5; c.fillStyle = '#d8f2ff'; c.fillText('−', B.x + Math.cos(a) * r, B.y + Math.sin(a) * r + 4); }
-
-    // 전자가 흐르는 길 (풍선→컵, 컵→전구→손)
-    s.flow.forEach(p => { if(p.t < 0) return; const k = p.t / p.d, x = p.x0 + (p.x1 - p.x0) * k, y = p.y0 + (p.y1 - p.y0) * k; c.fillStyle = `rgba(127,212,255,${1 - k * .5})`; c.beginPath(); c.arc(x, y, 2, 0, 7); c.fill(); });
-    s.sparks.forEach(p => { const k = p.t / .5; c.strokeStyle = `rgba(200,235,255,${1 - k})`; c.lineWidth = 1.5; c.beginPath(); c.moveTo(p.x, p.y);
-      for(let j = 1; j < 5; j++) c.lineTo(p.x + Math.cos(p.a) * j * 4 + (Math.random() - .5) * 4, p.y + Math.sin(p.a) * j * 4 + (Math.random() - .5) * 4); c.stroke(); });
-
-    // 네온 전구
-    const Bu = s.bulb, g = bulbGeo(Bu), gx = g.glass[0], gy = g.glass[1];
-    c.strokeStyle = '#c9b98a'; c.lineWidth = 1.4;
-    c.beginPath(); c.moveTo(g.tipA[0], g.tipA[1]); c.lineTo(gx - 3, gy + 30); c.stroke();
-    c.beginPath(); c.moveTo(g.tipB[0], g.tipB[1]); c.lineTo(gx + 3, gy + 30); c.stroke();
+    for(let i = 0; i < nm; i++){ const a = i * 2.4 + .3, r = 5 + (i % 4) * 4.5; charge(c, x + Math.cos(a) * r, y + Math.sin(a) * r * 1.05 + 2, true); }
+    if(B.q > .05){ c.save(); c.globalCompositeOperation = 'lighter'; const gg = c.createRadialGradient(x, y, BR * .6, x, y, BR * 1.6); gg.addColorStop(0, `rgba(80,170,255,${.15 * B.q})`); gg.addColorStop(1, 'rgba(80,170,255,0)'); c.fillStyle = gg; c.beginPath(); c.arc(x, y, BR * 1.6, 0, 7); c.fill(); c.restore(); }
+  }
+  function drawBulb(c, s){
+    const Bu = s.bulb, g = bulbGeo(Bu), { gx, gy } = g, L = T();
+    const GW = 6.5, GH = 30;
+    if(!Bu.held) shadow(c, Bu.x + 8, s.ty + 1, 16, .45);
+    c.lineCap = 'round';
+    [[g.tipA, gx - 2.2], [g.tipB, gx + 2.2]].forEach(([tp, sx]) => {
+      c.strokeStyle = '#8a7a4e'; c.lineWidth = 1.6; c.beginPath(); c.moveTo(sx, gy + GH + 2); c.quadraticCurveTo(sx, gy + GH + 20, tp[0], tp[1]); c.stroke();
+      c.strokeStyle = 'rgba(255,240,190,.55)'; c.lineWidth = .6; c.beginPath(); c.moveTo(sx - .4, gy + GH + 2); c.quadraticCurveTo(sx - .4, gy + GH + 20, tp[0] - .4, tp[1]); c.stroke();
+    });
     if(Bu.glow > 0){
-      // 네온 특유의 주황빛: 전구 안이 먼저 빛나고 주변으로 번진다
       c.save(); c.globalCompositeOperation = 'lighter';
-      const R = 26 + 60 * Bu.glow, gl = c.createRadialGradient(gx, gy + 12, 1, gx, gy + 12, R);
-      gl.addColorStop(0, `rgba(255,170,90,${Bu.glow})`); gl.addColorStop(.25, `rgba(255,110,40,${.6 * Bu.glow})`); gl.addColorStop(1, 'rgba(255,70,20,0)');
+      const R = 30 + 70 * Bu.glow, gl = c.createRadialGradient(gx, gy + 12, 1, gx, gy + 12, R);
+      gl.addColorStop(0, `rgba(255,170,90,${Bu.glow})`); gl.addColorStop(.2, `rgba(255,110,40,${.6 * Bu.glow})`); gl.addColorStop(1, 'rgba(255,70,20,0)');
       c.fillStyle = gl; c.beginPath(); c.arc(gx, gy + 12, R, 0, 7); c.fill(); c.restore();
     }
-    c.fillStyle = 'rgba(220,235,240,.22)'; c.strokeStyle = 'rgba(230,240,245,.7)'; c.lineWidth = 1;
-    c.beginPath(); c.roundRect ? c.roundRect(gx - 7, gy - 4, 14, 34, [7, 7, 3, 3]) : c.rect(gx - 7, gy - 4, 14, 34); c.fill(); c.stroke();
-    // 전극 두 개 (빛나면 주황)
-    c.fillStyle = Bu.glow > .05 ? `rgb(255,${150 + 80 * (1 - Bu.glow) | 0},90)` : '#9aa0a8';
-    c.fillRect(gx - 4, gy + 3, 2.2, 15); c.fillRect(gx + 1.8, gy + 3, 2.2, 15);
-    if(Bu.glow > .05){ c.fillStyle = `rgba(255,120,40,${Bu.glow})`; c.fillRect(gx - 5, gy + 2, 10, 17); }
-    c.strokeStyle = '#c0392b'; c.lineWidth = 2; c.beginPath(); c.moveTo(gx - 6, gy + 27); c.lineTo(gx + 6, gy + 25); c.stroke();
-    // 손 (커서가 잡은 극)
-    if(Bu.held){ c.fillStyle = 'rgba(240,201,168,.95)'; c.beginPath(); c.ellipse(g.tipA[0] - 3, g.tipA[1] + 8, 9, 12, -.3, 0, 7); c.fill();
-      c.fillStyle = 'rgba(223,227,255,.8)'; c.font = '600 9.5px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(EN() ? 'hand' : '손', g.tipA[0] - 3, g.tipA[1] + 32); }
-    else { c.fillStyle = 'rgba(223,227,255,.7)'; c.font = '600 10px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(EN() ? 'neon bulb' : '네온 전구', gx, ty + 16); }
+    const glass = () => { c.beginPath(); c.moveTo(gx - GW, gy + 4); c.arc(gx, gy + 4, GW, Math.PI, 0); c.lineTo(gx + GW, gy + GH - 4); c.quadraticCurveTo(gx + GW, gy + GH + 2, gx + 2.5, gy + GH + 3); c.lineTo(gx - 2.5, gy + GH + 3); c.quadraticCurveTo(gx - GW, gy + GH + 2, gx - GW, gy + GH - 4); c.closePath(); };
+    const gg = c.createLinearGradient(gx - GW, 0, gx + GW, 0);
+    gg.addColorStop(0, 'rgba(210,230,235,.35)'); gg.addColorStop(.3, 'rgba(240,250,255,.12)'); gg.addColorStop(.7, 'rgba(240,250,255,.06)'); gg.addColorStop(1, 'rgba(210,230,235,.3)');
+    glass(); c.fillStyle = gg; c.fill();
+    const lit = Bu.glow > .03;
+    c.fillStyle = lit ? `rgb(255,${150 + 70 * (1 - Bu.glow) | 0},90)` : '#6f757e';
+    c.fillRect(gx - 3.2, gy + 6, 1.9, 19); c.fillRect(gx + 1.3, gy + 6, 1.9, 19);
+    if(lit){ c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = `rgba(255,110,30,${.9 * Bu.glow})`; c.beginPath(); c.ellipse(gx - 2.25, gy + 15, 3.6, 11.5, 0, 0, 7); c.fill(); c.fillStyle = `rgba(255,200,140,${Bu.glow})`; c.fillRect(gx - 2.9, gy + 7, 1.3, 17); c.restore(); }
+    c.fillStyle = 'rgba(200,215,220,.35)'; c.fillRect(gx - 3.5, gy + GH - 2, 7, 5);
+    c.strokeStyle = '#c0392b'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(gx - 3.5, gy + GH + 4); c.lineTo(gx - 1.6, gy + GH + 10); c.moveTo(gx + 3.5, gy + GH + 4); c.lineTo(gx + 1.6, gy + GH + 10); c.stroke();
+    glass(); c.strokeStyle = 'rgba(235,245,250,.75)'; c.lineWidth = 1; c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 1.3; c.beginPath(); c.moveTo(gx - GW + 1.8, gy + 3); c.lineTo(gx - GW + 1.8, gy + GH - 6); c.stroke();
+    if(Bu.held){
+      const [hx, hy] = g.tipA;
+      c.fillStyle = '#f0c9a8'; c.strokeStyle = 'rgba(120,80,60,.5)'; c.lineWidth = .8;
+      c.beginPath(); c.ellipse(hx - 6, hy + 16, 12, 9, .2, 0, 7); c.fill();
+      c.beginPath(); c.ellipse(hx - 7, hy + 3, 7, 4.2, -.4, 0, 7); c.fill(); c.stroke();
+      c.beginPath(); c.ellipse(hx + 2, hy + 8, 8, 5, .5, 0, 7); c.fill(); c.stroke();
+      label(c, L.hand, hx - 6, hy + 36, .8);
+    } else label(c, L.neon, gx, s.ty + 26);
+  }
+  function draw(c, s){
+    drawTable(c, s);
+    drawFur(c, s);
+    drawPlastic(c, s);
+    drawAlu(c, s);
+    const bg = bulbGeo(s.bulb), ab = alBox(s), mid = [bg.gx, bg.gy + 14];
+    s.flow.forEach(p => {
+      if(p.k === 'c2b'){ p.x0 = s.al.x + p.ox; p.y0 = ab.y0 + p.oy; p.x1 = bg.tipB[0]; p.y1 = bg.tipB[1]; }
+      else if(p.k === 'b2m'){ p.x0 = bg.tipB[0]; p.y0 = bg.tipB[1]; p.x1 = mid[0]; p.y1 = mid[1]; }
+      else if(p.k === 'm2h'){ p.x0 = mid[0]; p.y0 = mid[1]; p.x1 = bg.tipA[0]; p.y1 = bg.tipA[1] + 8; }
+    });
+    s.flow.forEach(p => { if(p.t < 0) return; const k = p.t / p.d, x = p.x0 + (p.x1 - p.x0) * k, y = p.y0 + (p.y1 - p.y0) * k + Math.sin(k * Math.PI) * (p.arc || 0); charge(c, x, y, true, 1 - k * .4); });
+    drawBalloon(c, s);
+    drawBulb(c, s);
+    s.sparks.forEach(p => { const k = p.t / .35; c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(190,235,255,${1 - k})`; c.lineWidth = 1.4; c.beginPath(); c.moveTo(p.x, p.y);
+      let x = p.x, y = p.y; for(let j = 0; j < 5; j++){ x += Math.cos(p.a) * 4 + (Math.random() - .5) * 5; y += Math.sin(p.a) * 4 + (Math.random() - .5) * 5; c.lineTo(x, y); } c.stroke(); c.restore(); });
   }
 
-  // 조작
+  // ── 조작 ──
   function down(s, x, y){
     const B = s.bal, Bu = s.bulb, g = bulbGeo(Bu);
-    if(Math.hypot(x - B.x, y - B.y) < BR + 8){ s.drag = { o: 'bal', dx: B.x - x, dy: B.y - y, px: x, py: y }; B.held = true; return; }
-    if(x > g.glass[0] - 22 && x < g.glass[0] + 30 && y > g.top - 12 && y < Bu.y + 12){ s.drag = { o: 'bulb' }; Bu.held = true; Bu.x = x; Bu.y = y; return; }
+    if(Math.hypot(x - B.x, (y - B.y) * .9) < BR + 10){ s.drag = { o: 'bal', dx: B.x - x, dy: B.y - y }; B.held = true; return; }
+    if(x > g.gx - 20 && x < g.gx + 26 && y > g.gy - 12 && y < Bu.y + 14){ s.drag = { o: 'bulb' }; Bu.held = true; Bu.x = x; Bu.y = y; snd(() => SFX.pick()); return; }
     const ab = alBox(s);
-    if(!s.al.on && x > ab.x0 - 8 && x < ab.x1 + 8 && y > ab.y0 - 8 && y < ab.y1 + 4){ s.drag = { o: 'al', dx: s.al.x - x }; return; }
-    if(Math.abs(x - s.pc.x) < PCW1 + 8 && y > s.ty - PCH - 20 && y < s.ty && s.pc.flip < .5 && !s.pc.flipping){ s.pc.flipping = 1; snd(() => SFX.pick()); say(s, 'cup'); return; }
+    if(!s.al.on && x > ab.x0 - 8 && x < ab.x1 + 8 && y > ab.y0 - 8 && y < ab.y1 + 6){ s.drag = { o: 'al', dx: s.al.x - x, dy: s.al.y - y }; return; }
+    if(Math.abs(x - s.pc.x) < PCW_RIM + 10 && y > s.ty - PCH - 24 && y < s.ty + 4 && s.pc.flip < .5 && !s.pc.flipping){ s.pc.flipping = 1; snd(() => rxTone(300, .12, 'triangle', .05, 0, 420)); say(s, 'cup'); }
   }
   function move(s, x, y){
     const d = s.drag; if(!d) return;
     if(d.o === 'bal'){
-      const B = s.bal, nx = clamp(x + d.dx, BR, s.W - BR), ny = clamp(y + d.dy, BR, s.ty - BR);
+      const B = s.bal, nx = clamp(x + d.dx, BR, s.W - BR), ny = clamp(y + d.dy, BR, s.ty - BR - 6);
       const mv = Math.hypot(nx - B.x, ny - B.y); B.x = nx; B.y = ny;
-      // 털가죽에 문지르기
-      const F = s.fur, onFur = Math.abs(B.x - F.x) < 44 && Math.abs(B.y - F.y) < (src === 'fur' ? 36 : 44);
+      const F = s.fur, onFur = Math.abs(B.x - F.x) < 46 && Math.abs(B.y - F.y) < 38;
       if(onFur && mv > .5){
         const k = mv / 900; B.q = clamp(B.q + k, 0, 1); F.q = clamp(F.q + k * .9, 0, 1);
-        if(s.msg !== 'rubbing') say(s, 'rubbing');
-        s.rubAcc += mv; if(s.rubAcc > 60){ s.rubAcc = 0; snd(() => rxNoise(.07, .05, 'bandpass', 2400 + Math.random() * 900, 2)); }
-        if(Math.random() < .3) s.flow.push({ x0: F.x + (Math.random() - .5) * 40, y0: F.y + (Math.random() - .5) * 20, x1: B.x, y1: B.y, t: 0, d: .35 });
+        say(s, 'rubbing');
+        s.rubAcc += mv; if(s.rubAcc > 55){ s.rubAcc = 0; snd(() => rxNoise(.08, .045, 'bandpass', 2200 + Math.random() * 1200, 1.6)); }
+        if(Math.random() < .35) s.flow.push({ x0: F.x + (Math.random() - .5) * 50, y0: F.y + (Math.random() - .5) * 30, x1: B.x + (Math.random() - .5) * 10, y1: B.y + (Math.random() - .5) * 10, t: 0, d: .3, arc: -6 });
       } else if(!onFur && s.msg === 'rubbing' && B.q > .15) say(s, s.al.on ? 'touch' : 'cup');
-      // 알루미늄 컵에 대기: 닿은 곳의 전자만 넘어간다
       const ab = alBox(s);
-      const touch = B.x + BR * .8 > ab.x0 && B.x - BR * .8 < ab.x1 && B.y + BR > ab.y0 && B.y - BR < ab.y1;
-      if(touch){
-        if(!d.inCup){
-          d.inCup = true;
-          if(B.q < .02){ say(s, 'nobal'); }
-          else {
-            const tr = B.q * .35; B.q -= tr; s.al.q = clamp(s.al.q + tr * 1.3, 0, 1);
-            for(let i = 0; i < 8; i++) s.flow.push({ x0: B.x + (Math.random() - .5) * 14, y0: B.y + (Math.random() - .5) * 14, x1: s.al.x + (Math.random() - .5) * 30, y1: alTop(s) + Math.random() * ALH, t: 0, d: .25 + Math.random() * .2 });
-            s.sparks.push({ x: (B.x + s.al.x) / 2, y: B.y, t: 0, a: Math.random() * 6 });
-            snd(() => { rxNoise(.05, .07, 'highpass', 3500); rxTone(1800, .06, 'square', .015); });
-            if(s.al.on) say(s, s.al.q > .3 ? 'bulb' : 'moved');
-          }
+      const touch = B.x + BR * .85 > ab.x0 && B.x - BR * .85 < ab.x1 && B.y + BR > ab.y0 && B.y - BR < ab.y1;
+      if(touch && !d.inCup){
+        d.inCup = true;
+        if(B.q < .02) say(s, 'nobal');
+        else {
+          const tr = B.q * .35; B.q -= tr; s.al.q = clamp(s.al.q + tr * 1.3, 0, 1);
+          const cx = clamp(B.x, ab.x0 + 6, ab.x1 - 6), cy = clamp(B.y, ab.y0 + 6, ab.y1 - 6);
+          for(let i = 0; i < 9; i++) s.flow.push({ x0: cx + (Math.random() - .5) * 8, y0: cy + (Math.random() - .5) * 8, x1: s.al.x + (Math.random() - .5) * 34, y1: ab.y0 + 8 + Math.random() * (ALH - 12), t: -i * .02, d: .28 + Math.random() * .15 });
+          s.sparks.push({ x: cx, y: cy, t: 0, a: Math.random() * 6 }, { x: cx, y: cy, t: 0, a: Math.random() * 6 });
+          snd(() => { rxNoise(.05, .08, 'highpass', 3600); rxTone(1900, .05, 'square', .012); });
+          say(s, s.al.on ? (s.al.q > .3 ? 'bulb' : 'moved') : 'leak');
         }
-      } else if(d.inCup && Math.hypot(B.x - s.al.x, B.y - alTop(s)) > BR + 30) d.inCup = false;
-      else if(!touch) d.inCup = false;
+      } else if(!touch) d.inCup = false;
     } else if(d.o === 'bulb'){
-      const Bu = s.bulb; Bu.x = clamp(x, 10, s.W - 30); Bu.y = clamp(y, 70, s.H - 4);
+      const Bu = s.bulb; Bu.x = clamp(x, 14, s.W - 30); Bu.y = clamp(y, 90, s.H - 4);
       const g = bulbGeo(Bu), ab = alBox(s);
       const touch = g.tipB[0] > ab.x0 - 3 && g.tipB[0] < ab.x1 + 3 && g.tipB[1] > ab.y0 - 3 && g.tipB[1] < ab.y1 + 3;
       if(touch && !d.inCup){
         d.inCup = true;
         if(s.al.q > .08){
-          // 방전: 컵 → 전구 → 손
-          const q = s.al.q; Bu.glow = clamp(.35 + q * .9, 0, 1); s.al.q = 0; s.flashes++;
-          for(let i = 0; i < 18; i++){ s.flow.push({ x0: g.tipB[0], y0: g.tipB[1], x1: g.glass[0], y1: g.glass[1] + 15, t: -i * .015, d: .12 }); s.flow.push({ x0: g.glass[0], y0: g.glass[1] + 15, x1: g.tipA[0], y1: g.tipA[1] + 10, t: -i * .015 - .1, d: .12 }); }
-          s.sparks.push({ x: g.tipB[0], y: g.tipB[1], t: 0, a: -1.2 }, { x: g.tipB[0], y: g.tipB[1], t: 0, a: 2 });
-          snd(() => { rxNoise(.09, .16, 'highpass', 2600); rxTone(90, .12, 'sawtooth', .04, 0, 50); rxTone(2400, .05, 'square', .02); });
+          const q = s.al.q; Bu.glow = clamp(.4 + q * .8, 0, 1); s.al.q = 0; s.flashes++;
+          for(let i = 0; i < 16; i++){
+            // 전구를 계속 움직여도 길이 전구를 따라가도록, 끝점은 그릴 때 다시 계산한다
+            const ox = (Math.random() - .5) * 30, oy = 10 + Math.random() * 30;
+            s.flow.push({ k: 'c2b', ox, oy, t: -i * .012, d: .1 }, { k: 'b2m', t: -i * .012 - .1, d: .1 }, { k: 'm2h', t: -i * .012 - .2, d: .12 });
+          }
+          s.sparks.push({ x: g.tipB[0], y: g.tipB[1], t: 0, a: -1.2 }, { x: g.tipB[0], y: g.tipB[1], t: 0, a: 2.2 }, { x: g.tipB[0], y: g.tipB[1], t: 0, a: .4 });
+          snd(() => { rxNoise(.1, .16, 'highpass', 2600); rxTone(95, .14, 'sawtooth', .04, 0, 50); rxTone(2600, .05, 'square', .02); });
           say(s, s.flashes > 1 ? 'again' : 'flash');
         } else say(s, s.al.on ? 'weak' : 'leak');
       } else if(!touch) d.inCup = false;
     } else if(d.o === 'al'){
-      s.al.x = clamp(x + d.dx, ALW1, s.W - ALW1);
+      s.al.x = clamp(x + d.dx, ALW_RIM, s.W - ALW_RIM);
+      s.al.y = clamp(y + d.dy, 70, s.ty);
     }
   }
   function up(s){
@@ -37665,8 +37752,9 @@ function rxSunGem(){
     if(d.o === 'bal') s.bal.held = false;
     if(d.o === 'bulb') s.bulb.held = false;
     if(d.o === 'al'){
-      if(s.pc.flip >= 1 && Math.abs(s.al.x - s.pc.x) < 30){ s.al.x = s.pc.x; s.al.on = true; snd(() => rxTone(520, .08, 'triangle', .05)); say(s, 'rub'); }
-      else if(Math.abs(s.al.x - s.pc.x) < 30){ s.al.x = s.pc.x - 70; say(s, 'flip'); }
+      const near = Math.abs(s.al.x - s.pc.x) < 34;
+      if(near && s.pc.flip >= 1){ s.al.x = s.pc.x; s.al.on = true; snd(() => { rxTone(620, .06, 'triangle', .05); rxTone(930, .08, 'triangle', .03, .05); }); say(s, 'rub'); }
+      else { if(near){ s.al.x = s.pc.x - 74; say(s, 'flip'); } s.al.y = s.ty; }
     }
   }
 
@@ -37679,7 +37767,7 @@ function rxSunGem(){
       <div class="dk-t" style="margin-bottom:6px">${L.title}</div>
       <div class="ah-sec" style="margin-top:0"><h4>${EN() ? 'GOAL' : '무엇을 알아볼까?'}</h4>${L.goal}<br><span style="color:var(--dim)">${L.need}: ${L.items}</span></div>
       <div class="ah-stage" style="margin-top:12px"><canvas id="seCv"></canvas><span class="ah-tag">STATIC LAB</span>
-        <div class="se-mode"><button data-s="fur" class="${src === 'fur' ? 'on' : ''}">${L.fur}</button><button data-s="hair" class="${src === 'hair' ? 'on' : ''}">${L.hair}</button></div>
+        <div class="se-meter"><span>${L.bal}<b><i id="seQb" style="width:0"></i></b></span><span>${L.cup}<b><i id="seQc" style="width:0"></i></b></span></div>
         <div class="se-msg" id="seMsg"></div></div>
       <div class="se-steps">${L.steps.map((t, i) => `<div class="se-step" data-i="${i}"><i><span>${i + 1}</span></i><div>${t}</div></div>`).join('')}</div>
       <button class="dk-why" id="seWhy">${L.why}</button>
@@ -37687,28 +37775,33 @@ function rxSunGem(){
       <button class="se-reset" id="seReset">${L.reset}</button>
     </div>`;
     const cv = document.getElementById('seCv'), dpr = Math.min(2, window.devicePixelRatio || 1);
-    const W = cv.clientWidth || 480, H = cv.clientHeight || 330;
+    const W = cv.clientWidth || 480, H = cv.clientHeight || 340;
+    // 넓은 화면에서는 장면 전체를 키운다 (논리 좌표 = 화면 좌표 / K)
+    const K = clamp(Math.min(W / 380, H / 300), .85, 1.5);
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-    S = init(W, H);
-    const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-    cv.addEventListener('pointerdown', e => { cv.setPointerCapture && cv.setPointerCapture(e.pointerId); const [x, y] = pos(e); down(S, x, y); });
+    const c = cv.getContext('2d'); c.setTransform(dpr * K, 0, 0, dpr * K, 0, 0);
+    S = init(W / K, H / K);
+    const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / K, (e.clientY - r.top) / K]; };
+    cv.addEventListener('pointerdown', e => { try{ cv.setPointerCapture(e.pointerId); }catch(_){} const [x, y] = pos(e); down(S, x, y); });
     cv.addEventListener('pointermove', e => { const [x, y] = pos(e); move(S, x, y); });
     ['pointerup', 'pointercancel'].forEach(k => cv.addEventListener(k, () => up(S)));
-    qBodyEl.querySelectorAll('.se-mode button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); src = b.dataset.s; qBodyEl.querySelectorAll('.se-mode button').forEach(x => x.classList.toggle('on', x === b)); S.fur.q = 0; snd(() => SFX.pick()); }));
     document.getElementById('seWhy').addEventListener('click', e => { document.getElementById('seAns').classList.toggle('open'); e.currentTarget.classList.toggle('open'); snd(() => SFX.pick()); });
-    document.getElementById('seReset').addEventListener('click', () => { S = init(W, H); snd(() => SFX.pick()); });
-    const msgEl = document.getElementById('seMsg'), stepEls = [...qBodyEl.querySelectorAll('.se-step')];
-    let lastMsg = '', lastStep = -1, last = performance.now();
+    let lastMsg = '', lastStep = -1, last = performance.now(), skip = 0;
+    document.getElementById('seReset').addEventListener('click', () => { S = init(W / K, H / K); lastStep = -1; snd(() => SFX.pick()); });
+    const msgEl = document.getElementById('seMsg'), stepEls = [...qBodyEl.querySelectorAll('.se-step')], qb = document.getElementById('seQb'), qc = document.getElementById('seQc');
     const loop = now => {
       if(!cv.isConnected || HUB !== 'stat' || !quizEl.classList.contains('on')){ raf = 0; return; }
-      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      const dt = Math.min(.05, (now - last) / 1000);
+      // 가만히 있을 때는 덜 자주 그린다 (폰 발열)
+      if(S.idle > 1.5 && (skip = (skip + 1) % 3)){ raf = requestAnimationFrame(loop); return; }
+      last = now;
       step(S, dt);
-      c.clearRect(0, 0, W, H);
+      c.clearRect(0, 0, W / K, H / K);
       draw(c, S);
       const m = T().m[S.msg] || '';
       if(m !== lastMsg){ msgEl.textContent = m; lastMsg = m; }
       msgEl.style.opacity = S.msgT > 6 && S.msg !== 'flip' ? .35 : 1;
+      qb.style.width = (S.bal.q * 100) + '%'; qc.style.width = (S.al.q * 100) + '%';
       if(S.step !== lastStep){ lastStep = S.step; stepEls.forEach((el, i) => { el.classList.toggle('done', i < S.step); el.classList.toggle('now', i === S.step); }); }
       raf = requestAnimationFrame(loop);
     };
