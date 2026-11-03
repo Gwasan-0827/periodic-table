@@ -36935,15 +36935,88 @@ void main(){
   const NS = 'http://www.w3.org/2000/svg';
   // 2D(교과서처럼 평평하게) ↔ 3D(돌아가는 구조식)
   let S2D = !!rxLS.get('pt_struct2d', false);
+  /* 2D 구조식 배치 (4.2.5+): 무거운 원자는 '그래프 거리'에 맞춰 펼치고(스트레스 배치),
+     고리는 정다각형 모양을 목표로, 수소는 마지막에 빈 쪽으로 붙인다. 시작점은 3D 모양을 눕힌 것 */
+  function layout2d(atoms, bonds){
+    const n = atoms.length;
+    const Q0 = flatten(atoms, bonds);
+    const isH = i => atoms[i].s === 'H';
+    let heavy = []; for(let i = 0; i < n; i++) if(!isH(i)) heavy.push(i);
+    if(heavy.length < 3) return Q0;
+    const hid = new Map(heavy.map((g, k) => [g, k])), N = heavy.length;
+    const adj = heavy.map(() => []);
+    bonds.forEach(([i, j]) => { if(hid.has(i) && hid.has(j)){ adj[hid.get(i)].push(hid.get(j)); adj[hid.get(j)].push(hid.get(i)); } });
+    // 결합 길이 기준: 3D 무거운 원자 결합의 중앙값
+    const L3 = bonds.filter(([i, j]) => !isH(i) && !isH(j)).map(([i, j]) => Math.hypot(atoms[i].x - atoms[j].x, atoms[i].y - atoms[j].y, (atoms[i].z || 0) - (atoms[j].z || 0))).sort((a, b) => a - b);
+    const L = L3[L3.length >> 1] || 30;
+    // 그래프 거리 (BFS)
+    const G = heavy.map((_, s) => { const d = new Array(N).fill(Infinity); d[s] = 0; const q = [s]; for(let h = 0; h < q.length; h++){ const u = q[h]; adj[u].forEach(v => { if(d[v] === Infinity){ d[v] = d[u] + 1; q.push(v); } }); } return d; });
+    // 목표 거리: 한 칸 = L, 두 칸 = 120° (√3·L), 그 이상은 지그재그 사슬 길이에 가깝게
+    const T = G.map(row => row.map(g => g === Infinity ? null : g === 0 ? 0 : g === 1 ? L : g === 2 ? L * 1.732 : L * (0.87 * g + 0.25)));
+    // 작은 고리(≤8): 가장 짧은 고리를 결합마다 찾아 정다각형 거리로 덮어쓴다
+    const rings = [], seen = new Set();
+    for(let u = 0; u < N; u++) for(const v of adj[u]){ if(v < u) continue;
+      // u–v 결합을 뺀 가장 짧은 길
+      const prev = new Array(N).fill(-1), dist = new Array(N).fill(-1); dist[u] = 0; const q = [u];
+      for(let h = 0; h < q.length; h++){ const a = q[h]; if(dist[a] >= 7) continue; for(const b of adj[a]){ if((a === u && b === v) || dist[b] >= 0) continue; dist[b] = dist[a] + 1; prev[b] = a; q.push(b); } }
+      if(dist[v] < 0) continue;
+      const path = [v]; let c = v; while(c !== u){ c = prev[c]; path.push(c); }
+      if(path.length < 3 || path.length > 8) continue;
+      const key = path.slice().sort((a, b) => a - b).join(',');
+      if(!seen.has(key)){ seen.add(key); rings.push(path); }
+    }
+    rings.forEach(R => { const k = R.length, s0 = Math.sin(Math.PI / k);
+      for(let a = 0; a < k; a++) for(let b = a + 1; b < k; b++){ const m = Math.min(b - a, k - b + a), d = L * Math.sin(Math.PI * m / k) / s0; T[R[a]][R[b]] = T[R[b]][R[a]] = d; } });
+    // 시작점: 3D를 눕힌 것
+    const X = heavy.map(g => [Q0[g].x, Q0[g].y]);
+    // 확률적 경사 하강 스트레스 배치 (가까운 쌍일수록 강하게)
+    const pairs = []; for(let i = 0; i < N; i++) for(let j = i + 1; j < N; j++) if(T[i][j]) pairs.push([i, j, T[i][j]]);
+    let wmin = Infinity, wmax = 0; pairs.forEach(p => { const w = 1 / (p[2] * p[2]); wmin = Math.min(wmin, w); wmax = Math.max(wmax, w); });
+    const IT = 45, eMax = 1 / wmin, eMin = 0.02 / wmax, lam = Math.log(eMax / eMin) / (IT - 1);
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for(let t = 0; t < IT; t++){
+      const eta = eMax * Math.exp(-lam * t);
+      for(let k = pairs.length - 1; k > 0; k--){ const r = Math.floor(rnd() * (k + 1)); const tmp = pairs[k]; pairs[k] = pairs[r]; pairs[r] = tmp; }
+      for(const [i, j, d] of pairs){
+        const w = 1 / (d * d), mu = Math.min(1, w * eta);
+        const dx = X[i][0] - X[j][0], dy = X[i][1] - X[j][1], m = Math.hypot(dx, dy) || 1e-3, r = mu * (m - d) / 2 / m;
+        X[i][0] -= dx * r; X[i][1] -= dy * r; X[j][0] += dx * r; X[j][1] += dy * r;
+      }
+    }
+    const Q = new Array(n);
+    heavy.forEach((g, k) => Q[g] = { x: X[k][0], y: X[k][1] });
+    // 수소: 붙은 원자의 이웃 방향을 피해 가장 넓게 빈 쪽으로
+    const nbH = atoms.map(() => []), nbA = atoms.map(() => []);
+    bonds.forEach(([i, j]) => { nbA[i].push(j); nbA[j].push(i); if(isH(i) && !isH(j)) nbH[j].push(i); if(isH(j) && !isH(i)) nbH[i].push(j); });
+    heavy.forEach(g => {
+      const hs = nbH[g]; if(!hs.length) return;
+      const angs = nbA[g].filter(x => !isH(x)).map(x => Math.atan2(Q[x].y - Q[g].y, Q[x].x - Q[g].x)).sort((a, b) => a - b);
+      let dirs = [];
+      if(!angs.length) dirs = hs.map((_, k) => k * 2 * Math.PI / hs.length);
+      else {
+        // 가장 큰 빈 틈에 고르게 나눠 놓는다
+        let best = 0, bs = 0; for(let k = 0; k < angs.length; k++){ const a = angs[k], b = k + 1 < angs.length ? angs[k + 1] : angs[0] + 2 * Math.PI; if(b - a > best){ best = b - a; bs = a; } }
+        if(angs.length === 1) best = 2 * Math.PI;
+        dirs = hs.map((_, k) => bs + best * (k + 1) / (hs.length + 1));
+      }
+      hs.forEach((h, k) => Q[h] = { x: Q[g].x + Math.cos(dirs[k]) * L * .8, y: Q[g].y + Math.sin(dirs[k]) * L * .8 });
+    });
+    for(let i = 0; i < n; i++) if(!Q[i]) Q[i] = { x: Q0[i].x, y: Q0[i].y };
+    // 겹침 가볍게 밀기 (수소만 움직인다)
+    for(let it = 0; it < 40; it++) for(let i = 0; i < n; i++){ if(!isH(i)) continue; for(let j = 0; j < n; j++){ if(i === j) continue;
+      const dx = Q[i].x - Q[j].x, dy = Q[i].y - Q[j].y, d = Math.hypot(dx, dy) || .01, m = L * .62;
+      if(d < m){ const f = (m - d) / d * .5; Q[i].x += dx * f; Q[i].y += dy * f; } } }
+    return Q;
+  }
   function flat2(m){
     if(m.flat2) return m.flat2;
-    const Q = flatten(m.atoms, m.sbonds.map(b => [b[0], b[1]]));
+    let Q; try{ Q = layout2d(m.atoms, m.sbonds.map(b => [b[0], b[1]])); }catch(e){ Q = flatten(m.atoms, m.sbonds.map(b => [b[0], b[1]])); }
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; Q.forEach(q => { x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y); });
     // 가로가 더 길게 눕힌다
     let P = Q.map(q => ({ x: q.x - (x0 + x1) / 2, y: q.y - (y0 + y1) / 2 }));
     if(y1 - y0 > x1 - x0) P = P.map(q => ({ x: q.y, y: -q.x }));
     let hw = 1, hh = 1; P.forEach(q => { hw = Math.max(hw, Math.abs(q.x)); hh = Math.max(hh, Math.abs(q.y)); });
-    const sc = Math.min(140 / hw, 92 / hh, 2.6);   // 위 탭·아래 버튼에 안 닿게
+    const sc = Math.min(128 / hw, 82 / hh, 2.1);   // 위 탭·아래 버튼에 안 닿게
     const bl = m.sbonds.map(([i, j]) => Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y)).sort((p, q) => p - q)[m.sbonds.length >> 1] || 30;
     return (m.flat2 = { P, sc, fs: Math.max(9, Math.min(22, bl * sc * .42)) });
   }
