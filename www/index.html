@@ -40715,6 +40715,17 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
   try{ ['color', 'body'].forEach(k => { if(RX_TAGSET[k]) RX_TAGSET[k].add(NM); }); }catch(e){}
 })();
 </script>
+<script>
+/* 뉴트로늄 칸 기호 크기를 옆 헬륨 칸 기호와 똑같이 (폰에서 혼자 커 보이던 것) */
+(function(){
+  const sync = () => { try{ const s = document.querySelector('.cell[data-n="2"] .sym');
+    document.querySelectorAll('.ghost-nu .gn-sym').forEach(g => { if(s) g.style.fontSize = getComputedStyle(s).fontSize; }); }catch(e){} };
+  const grid = document.getElementById('grid');
+  if(grid) try{ new MutationObserver(() => requestAnimationFrame(sync)).observe(grid, { childList: true }); }catch(e){}
+  addEventListener('resize', () => requestAnimationFrame(sync));
+  sync();
+})();
+</script>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
