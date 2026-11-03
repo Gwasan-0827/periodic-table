@@ -39213,6 +39213,103 @@ function rxCardPreview(blob, file, name, tier, share){
 })();
 </script>
 <style>
+  /* 육중결합 Mo₂: 결합 6개를 종류별 색으로 */
+  .mol-bonds line.mo6{stroke-width:3.2;opacity:.95;stroke-linecap:round}
+  .mol-bonds line.mo6.sg{stroke:#ffffff}
+  .mol-bonds line.mo6.pi{stroke:#7fe0ff}
+  .mol-bonds line.mo6.dl{stroke:#ff8fd0}
+  .mol-bonds line.mo6.s5{stroke:#ffe29a}
+  #mo6Leg{position:absolute;left:10px;top:50px;z-index:5;display:flex;flex-direction:column;gap:3px;padding:7px 9px;border-radius:10px;
+    background:rgba(14,16,40,.72);border:1px solid rgba(185,193,255,.25);font:700 11px/1.25 inherit;font-family:inherit;color:#dfe3ff;pointer-events:none;
+    animation:mo6In .5s .3s ease-out both}
+  #mo6Leg span{display:flex;align-items:center;gap:6px}
+  #mo6Leg i{width:16px;height:3px;border-radius:2px;display:inline-block}
+  #mo6Leg b{font-size:12px;margin-bottom:2px;color:#fff}
+  @media (max-width:900px){
+    #mo6Leg{top:auto;bottom:59px;left:8px;display:grid;grid-template-columns:auto auto;column-gap:8px;row-gap:1px;padding:5px 7px;font-size:9.5px}
+    #mo6Leg b{grid-column:1/-1;font-size:10px;margin:0}
+    #mo6Leg i{width:10px}
+  }
+  @keyframes mo6In{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+<script>
+/* ── 몰리브데넘 이량체 Mo₂: 결합이 6개 (육중결합, 특수 발견 · 도감 540 유지) ──
+   4d 오비탈로 σ 1 + π 2 + δ 2, 5s 오비탈로 σ 1. 기체 상태에서만 잠깐 존재 */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const A = { nm: '육중결합', key: 'Mo2', f: 'Mo₂', sub: '원자 두 개가 결합을 여섯 개나 함. 화학 결합 최다 기록',
+    en: ['Hextuple bond', 'Two atoms sharing six bonds at once. The record for the most bonds between two atoms'], sym: 'Mo', mix: [['Mo', 2]],
+    hint: 'Mo ×2',
+    tmi: '보통 결합은 많아야 삼중(N≡N)인데, 몰리브데넘 두 개는 결합을 여섯 개나 만들어요. 4d 오비탈끼리 σ 하나, π 둘, δ 둘을 만들고, 5s 오비탈끼리 σ를 하나 더 만들어요. δ 결합은 오비탈이 네 갈래로 겹치는 특이한 결합이에요. 다만 이 분자는 아주 뜨거운 기체 상태에서만 잠깐 존재해요. 평소의 몰리브데넘은 그냥 단단한 금속이에요.',
+    tmiEn: 'Most bonds stop at triple (N≡N), but two molybdenum atoms make six. Their 4d orbitals form one σ, two π and two δ bonds, and their 5s orbitals add one more σ. A δ bond is an odd one where orbitals overlap in four lobes. This molecule only exists briefly as a very hot gas. Normal molybdenum is just a hard metal.',
+    alias: 'molybdenum 몰리브데넘 몰리브덴 hextuple bond 육중 결합 6중 dimer' };
+  EXACT[A.key] = [A.f, A.nm, A.sub];
+  try{ REC_EN[A.nm] = A.en; }catch(e){}
+  try{ RX_TMI[A.nm] = A.tmi; }catch(e){}
+  try{ if(typeof RX_TMI_EN !== 'undefined') RX_TMI_EN[A.nm] = A.tmiEn; }catch(e){}
+  try{ RX_DEX_ALIAS[A.nm] = A.alias; }catch(e){}
+  const _ae = allEntries;
+  allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== A.nm); };
+  const _sl = specialList;
+  specialList = function(){ const L = _sl.apply(this, arguments); if(!L.some(x => x.name === A.nm)) L.push({ sym: A.sym, lo: 1, hi: 1, formula: A.f, name: A.nm, sub: A.sub, hint: A.hint }); return L; };
+  const _en = rxEntry;
+  rxEntry = function(name){ if(name === A.nm) return { name, formula: A.f, sub: A.sub, key: A.key, exact: true, mix: A.mix }; return _en.apply(this, arguments); };
+
+  // 모형: 금속 격자 대신 원자 두 개 + 결합선 여섯 개
+  const _cr = rxCrystal;
+  rxCrystal = function(formula, name){
+    if(name === A.nm){
+      const r = 20;
+      const m = { atoms: [{ s: 'Mo', x: -36, y: 0, z: 0, r }, { s: 'Mo', x: 36, y: 0, z: 0, r }], bonds: [[0, 1, 6]], maxScale: 1.6 };
+      m.mo6 = true;
+      return m;
+    }
+    return _cr.apply(this, arguments);
+  };
+  // 결합선 여섯 개: 가운데부터 바깥으로 σ(5s) · σ · π · π · δ · δ
+  const LINES = [['s5', -0.5], ['sg', 0.5], ['pi', -1.5], ['pi', 1.5], ['dl', -2.5], ['dl', 2.5]];
+  const _mt = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _mt.apply(this, arguments);
+    try{
+      if(model && model.mo6){
+        const svg = svgEl || document.getElementById('mMol');
+        const g = svg.querySelector('.mol-bonds');
+        if(model.lines && model.lines[0]) model.lines[0].style.opacity = '0';
+        LINES.forEach(([c, side]) => {
+          const el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          el.setAttribute('class', 'bx mo6 ' + c);
+          g.appendChild(el);
+          model.extra.push({ el, k: 0, side: side * 1.15, o: 3 });
+        });
+      }
+    }catch(e){}
+    return r;
+  };
+
+  // 범례 + 소리
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{
+      const st = document.getElementById('mStage');
+      const old = document.getElementById('mo6Leg'); if(old) old.remove();
+      if(st && RX && RX.raw === A.nm){
+        const en = LANG === 'en';
+        const leg = document.createElement('div'); leg.id = 'mo6Leg';
+        leg.innerHTML = `<b>${en ? '6 bonds' : '결합 6개'}</b>` +
+          `<span><i style="background:#fff"></i>σ (4d)</span><span><i style="background:#ffe29a"></i>σ (5s)</span>` +
+          `<span><i style="background:#7fe0ff"></i>π ×2</span><span><i style="background:#ff8fd0"></i>δ ×2</span>`;
+        st.appendChild(leg);
+        st.style.setProperty('--glow', '#b9a4ff');
+        [0, 1, 2, 3, 4, 5].forEach(i => setTimeout(() => { try{ rxTone(520 + i * 90, .12, 'triangle', .035, .01, 560 + i * 90); }catch(e){} }, 280 + i * 70));
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
