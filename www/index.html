@@ -40238,6 +40238,39 @@ void main(){
   .hx-go:hover{transform:translateY(-1px)}
   .hx-note{font-size:10.5px;color:var(--dim);text-align:center}
   @media (prefers-reduced-motion:reduce){ .hx-step.new{animation:none} }
+  /* 힌트 창 여는 연출: 누른 카드 자리에서 튀어나오고, 단서 칸이 차례로 올라온다 */
+  #rxPanel.hx-pop{animation:hxBg .3s ease-out}
+  #rxPanel.hx-pop .rp-box{animation:hxBox .55s cubic-bezier(.2,1.25,.4,1) both}
+  @keyframes hxBg{from{background-color:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}}
+  @keyframes hxBox{0%{transform:translate(var(--hdx,0px),var(--hdy,0px)) scale(.16) rotate(-4deg);opacity:0;border-radius:40px}55%{opacity:1}100%{transform:none}}
+  #rxPanel.hx-pop .hx > *{animation:hxRise .45s cubic-bezier(.2,1.2,.4,1) both}
+  #rxPanel.hx-pop .hx > :nth-child(1){animation-delay:.18s}
+  #rxPanel.hx-pop .hx > :nth-child(2){animation-delay:.26s}
+  #rxPanel.hx-pop .hx > :nth-child(3){animation-delay:.33s}
+  #rxPanel.hx-pop .hx > :nth-child(4){animation-delay:.4s}
+  #rxPanel.hx-pop .hx > :nth-child(n+5){animation-delay:.46s}
+  @keyframes hxRise{from{transform:translateY(16px) scale(.97);opacity:0}}
+  #rxPanel.hx-pop .hx-top .q{animation:hxQ .9s .2s cubic-bezier(.2,1.1,.3,1) both}
+  @keyframes hxQ{0%{transform:rotateY(-540deg) scale(.4);opacity:0}70%{transform:rotateY(20deg) scale(1.08);opacity:1}100%{transform:none}}
+  .hx-top .q{animation:hxQGlow 2.6s 1.1s ease-in-out infinite}
+  @keyframes hxQGlow{50%{box-shadow:0 0 18px rgba(154,168,255,.45);color:#c9d0ff}}
+  #rxPanel.hx-pop .hx-top .bar .hx-dots i{animation:hxDot .35s cubic-bezier(.2,1.6,.4,1) both}
+  #rxPanel.hx-pop .hx-top .bar .hx-dots i:nth-child(1){animation-delay:.5s}#rxPanel.hx-pop .hx-top .bar .hx-dots i:nth-child(2){animation-delay:.58s}#rxPanel.hx-pop .hx-top .bar .hx-dots i:nth-child(3){animation-delay:.66s}
+  @keyframes hxDot{from{transform:scale(0)}}
+  /* 새로 연 단서: 뒤집히며 열리고 빛이 한 번 지나가고, 타일이 하나씩 톡톡 */
+  .hx-step{overflow:hidden}
+  .hx-step.new::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.22) 45%,rgba(255,154,213,.12) 52%,transparent 66%);transform:translateX(-110%);animation:hxSweep .9s .25s ease-out forwards}
+  @keyframes hxSweep{to{transform:translateX(110%)}}
+  .hx-step.new .n{animation:hxNum .5s .1s cubic-bezier(.2,1.6,.4,1) both}
+  @keyframes hxNum{from{transform:scale(.2) rotate(-90deg)}}
+  .hx-step.new .hx-t{animation:hxTile .4s cubic-bezier(.2,1.6,.4,1) both}
+  .hx-step.new .hx-t:nth-child(1){animation-delay:.3s}.hx-step.new .hx-t:nth-child(2){animation-delay:.38s}.hx-step.new .hx-t:nth-child(3){animation-delay:.46s}.hx-step.new .hx-t:nth-child(4){animation-delay:.54s}.hx-step.new .hx-t:nth-child(n+5){animation-delay:.62s}
+  @keyframes hxTile{from{transform:translateY(-14px) scale(.3);opacity:0}}
+  .hx-step.new .hx-go{animation:hxRise .45s .7s cubic-bezier(.2,1.2,.4,1) both}
+  /* 누른 카드: 살짝 눌렸다가 */
+  #dexList .dx.locked.hx-tap{animation:hxTap .3s ease-out}
+  @keyframes hxTap{40%{transform:scale(.94);border-color:#c9d0ff;box-shadow:0 0 18px rgba(154,168,255,.4)}}
+  @media (prefers-reduced-motion:reduce){ #rxPanel.hx-pop, #rxPanel.hx-pop *, .hx-step.new, .hx-step.new *, .hx-top .q, #dexList .dx.locked.hx-tap{animation:none!important} .hx-step.new::after{display:none} }
 </style>
 <script>
 (function(){
@@ -40294,6 +40327,18 @@ void main(){
       ${step(3, P('전체 조합', 'Full recipe'), s3, P('사실상 정답이에요. 그래도 볼래요?', 'This is basically the answer. Still want it?'))}
       <div class="hx-note">${P('힌트를 봐도 도감에는 똑같이 기록돼요', 'Hints never affect your codex')}</div></div>`;
     const b = rxPanel(P('힌트', 'Hint'), '', body);
+    // 처음 열 때만: 누른 카드 자리에서 튀어나오게
+    if(!fresh) try{
+      const pn = document.getElementById('rxPanel'), box = pn.querySelector('.rp-box');
+      pn.classList.remove('hx-pop'); void pn.offsetWidth;
+      if(card){ const cr = card.getBoundingClientRect(), br = box.getBoundingClientRect();
+        box.style.setProperty('--hdx', ((cr.left + cr.width / 2) - (br.left + br.width / 2)).toFixed(0) + 'px');
+        box.style.setProperty('--hdy', ((cr.top + cr.height / 2) - (br.top + br.height / 2)).toFixed(0) + 'px');
+        card.classList.remove('hx-tap'); void card.offsetWidth; card.classList.add('hx-tap'); setTimeout(() => card.classList.remove('hx-tap'), 350); }
+      pn.classList.add('hx-pop');
+      clearTimeout(pn._hxT); pn._hxT = setTimeout(() => pn.classList.remove('hx-pop'), 1400);
+      try{ SFX.pick(); }catch(e){}
+    }catch(e){}
     b.querySelectorAll('.hx-open').forEach(btn => btn.addEventListener('click', () => {
       const k = +btn.dataset.k, hs = get(); hs[nm] = Math.max(hs[nm] || 0, k); rxLS.set('pt_hint', hs);
       try{ rxEvt('hint'); }catch(e){}
