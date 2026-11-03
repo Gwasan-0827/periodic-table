@@ -40116,7 +40116,11 @@ void main(){
   body:not(.w95) #dexPane #dexList .dx.locked::before{content:"?";position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font:800 54px/1 Kanit,system-ui,sans-serif;color:rgba(154,168,255,.1);pointer-events:none}
   body:not(.w95) #dexPane #dexList .dx.locked .f{display:none}
   body:not(.w95) #dexPane #dexList .dx.locked .n{color:rgba(201,208,255,.4);letter-spacing:.3em}
-  body:not(.w95) #dexPane #dexList .dx.locked .tg{position:absolute;left:10px;top:9px;font-size:10px;color:rgba(201,208,255,.55);padding:2px 7px;border-radius:999px;border:1px solid rgba(154,168,255,.18)}
+  body:not(.w95) #dexPane #dexList .dx.locked .tg{order:-1;align-self:flex-start;margin:0 0 auto;font-size:10px;line-height:1.3;color:rgba(201,208,255,.6);padding:2px 7px;border-radius:999px;border:1px solid rgba(154,168,255,.2);max-width:calc(100% - 52px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 단서가 열린 카드는 큰 ? 를 지워서 글자와 안 겹치게 */
+  body:not(.w95) #dexPane #dexList .dx.locked:has(.hx-c1)::before, body:not(.w95) #dexPane #dexList .dx.locked:has(.hx-tiles)::before{display:none}
+  body:not(.w95) #dexPane #dexList .dx.locked .n{margin-top:6px}
+  body:not(.w95) #dexPane #dexList .dx.locked .hint.hx{text-align:left;display:flex;flex-direction:column;align-items:flex-start}
   body:not(.w95) #dexPane #dexList .dx.locked .hint{margin-top:6px}
   body:not(.w95) #dexPane #dexList .dx.locked .hbtn{border-radius:999px;padding:4px 11px;border:1px solid rgba(154,168,255,.3);background:rgba(154,168,255,.08);color:#c9d0ff;font-size:11px;cursor:pointer;transition:all .15s}
   body:not(.w95) #dexPane #dexList .dx.locked .hbtn:hover{background:rgba(154,168,255,.2);border-color:#c9d0ff}
@@ -40207,7 +40211,7 @@ void main(){
   .hx-dots i{width:6px;height:6px;border-radius:50%;background:rgba(154,168,255,.2)}
   .hx-dots i.on{background:#c9d0ff;box-shadow:0 0 5px #9aa8ff}
   .hx-c1{font-size:11px;line-height:1.45;color:rgba(214,220,255,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;margin-bottom:5px}
-  .hx-tiles{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+  .hx-tiles{display:flex;flex-wrap:wrap;gap:8px 7px;margin:4px 0 6px}
   .hx-t{position:relative;display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border-radius:6px;border:1px solid var(--c,#9aa8ff);
     background:color-mix(in srgb,var(--c,#9aa8ff) 14%,transparent);font:600 12px/1 Kanit,system-ui,sans-serif;color:#fff}
   .hx-t i{position:absolute;right:-5px;top:-6px;font:700 9px/1 ui-monospace,monospace;font-style:normal;padding:2px 3px;border-radius:5px;background:#1a1f38;border:1px solid rgba(154,168,255,.35);color:#c9d0ff}
