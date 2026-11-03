@@ -16399,8 +16399,10 @@ async function rxSaveCard(theme){
 
   // WebGL 액체: SVG 밖의 캔버스에 그려지므로 따로 옮겨 그린다 (SVG 와 같은 자리·배율로)
   try{
-    const gl = document.getElementById('mLiqGL'), sv = document.getElementById('mMol');
-    if(gl && gl.style.display !== 'none' && gl.width && sv && document.getElementById('mStage').classList.contains('liq-gl')){
+    const sv = document.getElementById('mMol'), stc = document.getElementById('mStage').classList;
+    // 액체(mLiqGL) 또는 오팔(mOpalGL) 캔버스
+    const gl = stc.contains('liq-gl') ? document.getElementById('mLiqGL') : stc.contains('opal-gl') ? document.getElementById('mOpalGL') : null;
+    if(gl && gl.style.display !== 'none' && gl.width && sv){
       const sr = sv.getBoundingClientRect(), s0 = Math.min(sr.width / 400, sr.height / 300), s = Math.min((pw - 40) / 400, (ph - 40) / 300), k = s / s0;
       const dx = px + (pw - 400 * s) / 2 - (sr.width - 400 * s0) / 2 * k, dy = py + (ph - 300 * s) / 2 - (sr.height - 300 * s0) / 2 * k;
       ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip(); ctx.drawImage(gl, dx, dy, sr.width * k, sr.height * k); ctx.restore();
@@ -39314,6 +39316,181 @@ function rxCardPreview(blob, file, name, tier, share){
     }catch(e){}
     return r;
   };
+})();
+</script>
+<style>
+  #mOpalGL{position:absolute;pointer-events:none;z-index:1}
+</style>
+<script>
+/* ── 오팔: WebGL로 매끈하게 그린다 ──
+   타원체에 광선을 쏴서 픽셀마다 면을 구하고, 겉면을 3D 보로노이 조각으로 나눠
+   조각마다 정해진 '격자 방향'과 반사 방향이 맞을 때 무지갯빛이 번쩍(유색 효과).
+   WebGL이 안 되면 기존 SVG 면 모형이 그대로 보인다 */
+(function(){
+  const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const FS = `precision highp float;
+uniform vec2 R;uniform vec4 MAP;uniform vec3 CEN;uniform vec3 AX;uniform mat3 M;uniform vec3 L;uniform float SC;uniform float T;uniform float LOW;uniform vec3 OC;
+vec3 h3(vec3 p){p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));return fract(sin(p)*43758.5453);}
+vec3 spec(float h){return clamp(abs(mod(h*6.+vec3(0.,4.,2.),6.)-3.)-1.,0.,1.);}
+// 3D 보로노이: 가장 가까운 칸 id, 두 번째와의 거리 차
+void vor(vec3 p,out vec3 id,out float edge){
+  vec3 b=floor(p),f=fract(p);float d1=9.,d2=9.;id=vec3(0.);
+  for(int k=-1;k<=1;k++)for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){
+    vec3 g=vec3(float(i),float(j),float(k));vec3 o=h3(b+g);vec3 r=g+o*.85-f;float d=dot(r,r);
+    if(d<d1){d2=d1;d1=d;id=b+g;}else if(d<d2){d2=d;}
+  }
+  edge=sqrt(d2)-sqrt(d1);
+}
+void main(){
+  // 화면 픽셀 → viewBox 좌표 → 모형 좌표계의 화면(카메라는 z=420)
+  vec2 fc=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
+  vec2 vb=(fc/MAP.w-MAP.xy)/MAP.z;
+  vec2 uv=(vb-CEN.xy)/SC;
+  vec3 ro=vec3(0.,0.,420.),rd=normalize(vec3(uv,-420.));
+  // 보기 좌표 → 물체 좌표 (회전의 역 = 전치)
+  mat3 Mi=mat3(M[0][0],M[1][0],M[2][0],M[0][1],M[1][1],M[2][1],M[0][2],M[1][2],M[2][2]);
+  vec3 o=Mi*ro,d=Mi*rd;
+  o-=OC;vec3 os=o/AX,ds=d/AX;
+  float a=dot(ds,ds),b=dot(os,ds),c=dot(os,os)-1.;
+  float disc=b*b-a*c;
+  // 가장자리 부드럽게: 단위구 기준 최근접 거리
+  float dmin=sqrt(max(0.,c+1.-b*b/a));
+  float px=1.6/(SC*MAP.z*MAP.w*min(AX.x,min(AX.y,AX.z)));
+  float alpha=smoothstep(1.,1.-px,dmin);
+  if(alpha<=0.){gl_FragColor=vec4(0.);return;}
+  float t=(-b-sqrt(max(disc,0.)))/a;
+  vec3 P=o+d*t;
+  vec3 Nm=normalize(P/(AX*AX));
+  vec3 N=normalize(M*Nm);                 // 보기 좌표의 법선
+  vec3 V=normalize(ro-(M*(P+OC)));             // 보는 방향
+  float ndv=max(0.,dot(N,V));
+  float fres=pow(1.-ndv,3.);
+  float dif=max(0.,dot(N,L));
+  // 젖빛 몸통: 속에서 번지는 우윳빛, 가장자리는 푸르스름하고 살짝 비침
+  vec3 body=mix(vec3(.50,.58,.72),vec3(.80,.85,.93),pow(ndv,.8));
+  body*=.70+.30*dif;
+  body=mix(body,vec3(.40,.52,.80),fres*.6);
+  // 유색 효과: 조각마다 격자 방향 g, 반사 방향과 맞으면 번쩍
+  vec3 Rv=reflect(-V,N);vec3 Rm=Mi*Rv;
+  vec3 q=P/AX;
+  // 조각 모양이 반듯한 다각형이 되지 않게 좌표를 비틀어 준다
+  vec3 w=vec3(sin(q.y*5.1+q.z*3.7),sin(q.z*4.3+q.x*6.2),sin(q.x*5.7+q.y*4.1));
+  vec3 sp=q*3.2+w*.38;
+  vec3 id;float ed;vor(sp,id,ed);
+  vec3 r1=h3(id+7.1),r2=h3(id+3.3);
+  vec3 g=normalize(r1*2.-1.+Nm*1.1);
+  float al=dot(Rm,g);
+  float sharp=mix(3.,14.,r2.x);
+  float fl=pow(max(0.,al),sharp);
+  float hue=r2.y+al*.7+dot(Nm,vec3(.25,.15,.1));
+  vec3 col=spec(fract(hue));
+  float edgeM=smoothstep(.0,.07,ed);
+  float on=step(.12,r2.z);
+  // 조각 안에서도 결이 보이게 (가는 줄무늬)
+  float grain=.75+.25*sin(dot(sp,g*7.)+r1.x*6.);
+  // 작은 핀파이어 반짝이 (두 번째 겹)
+  vec3 id2;float ed2;vor(sp*2.4+11.,id2,ed2);
+  vec3 q1=h3(id2+1.7),q2=h3(id2+5.9);
+  vec3 g2=normalize(q1*2.-1.+Nm*.6);
+  float fl2=pow(max(0.,dot(Rm,g2)),30.)*smoothstep(.0,.12,ed2)*(LOW>.5?0.:1.);
+  vec3 col2=spec(fract(q2.y+dot(Rm,g2)*.6));
+  vec3 C=body;
+  float k=clamp(fl*on*edgeM*grain*1.25,0.,1.);
+  C=mix(C,col*(.65+.45*ndv),k);
+  C+=col*.06*on;                    // 꺼져 있어도 은은하게 비치는 색
+  C+=col2*fl2*.8;
+  // 반사광: 또렷한 점광 + 넓고 약한 창문 빛 + 가장자리 반사
+  vec3 H=normalize(L+V);
+  float s1=pow(max(0.,dot(N,H)),160.)*1.2;
+  vec3 L2=normalize(vec3(.55,-.55,.63));vec3 H2=normalize(L2+V);
+  float s2=pow(max(0.,dot(N,H2)),40.)*.18;
+  C+=vec3(1.)*(s1+s2)+vec3(.8,.88,1.)*fres*.22;
+  gl_FragColor=vec4(C*alpha,alpha);
+}`;
+  let cv = null, gl = null, prog = null, U = {}, failed = false;
+  function init(){
+    if(failed) return false;
+    if(cv && gl) return true;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'mOpalGL'; cv.setAttribute('aria-hidden', 'true');
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: true });
+      if(!gl) throw 0;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw gl.getProgramInfoLog(prog);
+      gl.useProgram(prog);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['R', 'MAP', 'CEN', 'AX', 'M', 'L', 'SC', 'T', 'LOW', 'OC'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
+      return true;
+    }catch(e){ failed = true; cv = null; gl = null; return false; }
+  }
+  function faceLayers(on){
+    document.querySelectorAll('#mMol .mol-faces').forEach(g => { g.style.display = on ? '' : 'none'; });
+  }
+  function off(){
+    const st = document.getElementById('mStage'); if(st) st.classList.remove('opal-gl');
+    if(cv) cv.style.display = 'none';
+    faceLayers(true);
+  }
+  // 면 모형에서 타원체 크기를 잰다 (한 번만)
+  function axes(m){
+    if(m._oax) return m._oax;
+    let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+    m.faces.forEach(f => f.p.forEach(q => { for(let k = 0; k < 3; k++){ if(q[k] < mn[k]) mn[k] = q[k]; if(q[k] > mx[k]) mx[k] = q[k]; } }));
+    m._oax = { c: [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2], a: [(mx[0] - mn[0]) / 2, (mx[1] - mn[1]) / 2, (mx[2] - mn[2]) / 2] };
+    return m._oax;
+  }
+  function render(m, yaw, pitch){
+    const st = document.getElementById('mStage'), svg = document.getElementById('mMol');
+    if(!st || !svg || !init()) return false;
+    if(!cv.isConnected) st.insertBefore(cv, svg);
+    st.classList.add('opal-gl'); cv.style.display = '';
+    faceLayers(false);
+    const sr = svg.getBoundingClientRect(), tr = st.getBoundingClientRect();
+    const lowp = !!window.RX_LOWPOW, dpr = Math.min(lowp ? 1 : 1.5, devicePixelRatio || 1);
+    const W = Math.max(1, Math.round(sr.width * dpr)), H = Math.max(1, Math.round(sr.height * dpr));
+    cv.style.left = (sr.left - tr.left - st.clientLeft) + 'px'; cv.style.top = (sr.top - tr.top - st.clientTop) + 'px';
+    cv.style.width = sr.width + 'px'; cv.style.height = sr.height + 'px';
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    const s = Math.min(sr.width / 400, sr.height / 300), ox = (sr.width - 400 * s) / 2, oy = (sr.height - 300 * s) / 2;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+    // 물체 → 보기: x1 = x cY + z sY, z1 = -x sY + z cY, y1 = y cX - z1 sX, z2 = y sX + z1 cX  (열 우선으로 넘김)
+    // 열 우선: 각 열 = 물체의 x·y·z 축이 보기 좌표에서 가는 곳
+    const col = (x, y, z) => { const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const c0 = col(1, 0, 0), c1 = col(0, 1, 0), c2 = col(0, 0, 1);
+    const ax = axes(m);
+    const L = (typeof RX_LIGHT !== 'undefined' && RX_LIGHT.L) ? RX_LIGHT.L : [-0.4, -0.6, 0.7];
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(U.R, W, H);
+    gl.uniform4f(U.MAP, ox, oy, s, dpr);
+    // 물체 중심이 원점이 아니면 화면 중심을 옮겨 준다 (면 모형은 이미 가운데 맞춤)
+    gl.uniform3f(U.CEN, m.cx, m.cy, 0);
+    gl.uniform3f(U.AX, ax.a[0], ax.a[1], ax.a[2]);
+    gl.uniformMatrix3fv(U.M, false, new Float32Array([...c0, ...c1, ...c2]));
+    gl.uniform3f(U.L, L[0], L[1], L[2]);
+    gl.uniform1f(U.SC, m.sc);
+    gl.uniform1f(U.T, performance.now() / 1000);
+    gl.uniform1f(U.LOW, lowp ? 1 : 0);
+    gl.uniform3f(U.OC, ax.c[0], ax.c[1], ax.c[2]);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    return true;
+  }
+  const _d = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _d.apply(this, arguments);
+    try{
+      const m = mm || RX_M;
+      if(!mm && m && m.opalGL && m === RX_M){ if(!render(m, yaw, pitch)) off(); }
+      else if(!mm && cv && cv.style.display !== 'none') off();
+    }catch(e){ failed = true; off(); }
+    return r;
+  };
+  // 오팔 모형에 표시
+  const _om = rxOpalMin;
+  rxOpalMin = function(){ const m = _om.apply(this, arguments); m.opalGL = true; return m; };
+  window.rxOpalGL = { off, get failed(){ return failed; } };
 })();
 </script>
 <style>
