@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 547종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 548종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 547종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 548종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -40532,23 +40532,23 @@ void main(){
 <style>
   /* ═══ 조합 바 리워크 (4.2.5+): 담은 원소를 주기율표 칸처럼 · 개수 배지 · 총량 막대 · 담을 때 날아 들어오는 연출 ═══ */
   #tray #chips{gap:8px;align-items:center;padding-top:9px!important;padding-bottom:7px!important}
-  #tray #chips .chip{position:relative;display:inline-grid;grid-template-columns:17px minmax(24px,auto) 17px;align-items:stretch;height:42px;padding:0;margin:0;
+  :is(#tray #chips, .tr-ghost) .chip{position:relative;display:inline-grid;grid-template-columns:17px minmax(24px,auto) 17px;align-items:stretch;height:42px;padding:0;margin:0;
     border-radius:11px;border:1px solid color-mix(in srgb,currentColor 50%,transparent);
     background:linear-gradient(170deg,color-mix(in srgb,currentColor 20%,rgba(10,13,24,.9)),color-mix(in srgb,currentColor 5%,rgba(10,13,24,.9)));
     box-shadow:0 0 12px color-mix(in srgb,currentColor 18%,transparent),inset 0 1px 0 rgba(255,255,255,.07);
     font:600 16px/1 Kanit,system-ui,sans-serif;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .12s}
-  #tray #chips .chip .sy{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:9px 1px 0;pointer-events:none}
-  #tray #chips .chip .z{position:absolute;left:50%;top:4px;transform:translateX(-50%);font:600 8px/1 ui-monospace,monospace;color:color-mix(in srgb,currentColor 70%,#fff);opacity:.8;pointer-events:none}
-  #tray #chips .chip .n{position:absolute;right:-7px;top:-8px;z-index:2;min-width:18px;height:17px;padding:0 5px;border-radius:9px;display:grid;place-items:center;
+  :is(#tray #chips, .tr-ghost) .chip .sy{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:9px 1px 0;pointer-events:none}
+  :is(#tray #chips, .tr-ghost) .chip .z{position:absolute;left:50%;top:4px;transform:translateX(-50%);font:600 8px/1 ui-monospace,monospace;color:color-mix(in srgb,currentColor 70%,#fff);opacity:.8;pointer-events:none}
+  :is(#tray #chips, .tr-ghost) .chip .n{position:absolute;right:-7px;top:-8px;z-index:2;min-width:18px;height:17px;padding:0 5px;border-radius:9px;display:grid;place-items:center;
     font:800 10px/1 ui-monospace,monospace;color:#141833;background:#c9d0ff;box-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none}
-  #tray #chips .chip.one .n{display:none}
-  #tray #chips .chip .mi,#tray #chips .chip .pl{position:static;display:grid;place-items:center;width:auto;height:auto;margin:0;border:0;border-radius:0;background:transparent;
+  :is(#tray #chips, .tr-ghost) .chip.one .n{display:none}
+  :is(#tray #chips, .tr-ghost) .chip .mi,:is(#tray #chips, .tr-ghost) .chip .pl{position:static;display:grid;place-items:center;width:auto;height:auto;margin:0;border:0;border-radius:0;background:transparent;
     font:700 12px/1 system-ui,sans-serif;color:color-mix(in srgb,currentColor 55%,#8e99ad);opacity:.75;transition:background .15s,color .15s,opacity .15s}
-  #tray #chips .chip .mi{grid-column:1;grid-row:1;border-radius:10px 0 0 10px}
-  #tray #chips .chip .pl{grid-column:3;grid-row:1;border-radius:0 10px 10px 0}
-  #tray #chips .chip .mi:hover{background:rgba(255,135,135,.2);color:#ff8787;opacity:1}
-  #tray #chips .chip .pl:hover{background:rgba(154,168,255,.22);color:#c9d0ff;opacity:1}
-  #tray #chips .chip:active{transform:scale(.95)}
+  :is(#tray #chips, .tr-ghost) .chip .mi{grid-column:1;grid-row:1;border-radius:10px 0 0 10px}
+  :is(#tray #chips, .tr-ghost) .chip .pl{grid-column:3;grid-row:1;border-radius:0 10px 10px 0}
+  :is(#tray #chips, .tr-ghost) .chip .mi:hover{background:rgba(255,135,135,.2);color:#ff8787;opacity:1}
+  :is(#tray #chips, .tr-ghost) .chip .pl:hover{background:rgba(154,168,255,.22);color:#c9d0ff;opacity:1}
+  :is(#tray #chips, .tr-ghost) .chip:active{transform:scale(.95)}
   /* 총량: 숫자 + 막대 */
   #tray #chips .cnt{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;min-width:62px;height:42px;padding:0 10px;margin-left:2px;border-radius:11px;
     border:1px solid rgba(154,168,255,.18);background:rgba(154,168,255,.05);font:700 11px/1 ui-monospace,monospace;color:#c9d0ff;white-space:nowrap;flex-shrink:0}
@@ -40570,10 +40570,14 @@ void main(){
   .tr-out{position:fixed;z-index:119;pointer-events:none}
   @media (max-width:700px){
     footer#tray #chips{-webkit-mask:linear-gradient(90deg,#000 calc(100% - 22px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 22px),transparent);padding-right:22px!important;min-height:52px}
-    #tray #chips .chip{height:40px}
+    :is(#tray #chips, .tr-ghost) .chip{height:40px}
     #tray #chips .cnt{height:40px}
   }
   @media (prefers-reduced-motion:reduce){ #tray #chips .ph::before{animation:none} }
+  .tr-ghost{position:fixed;inset:0;z-index:119;pointer-events:none}
+  #tray #chips .ph{animation:trPhIn .35s .2s ease-out both}
+  @keyframes trPhIn{from{opacity:0;transform:translateX(-6px)}}
+  .tr-ghost .chip{position:absolute!important;margin:0!important}
 </style>
 <script>
 (function(){
@@ -40654,22 +40658,46 @@ void main(){
     return r;
   };
 
-  // ── 비우기: 칸들이 아래로 우수수 떨어진다 ──
+  // ── 비우기: 끝에서부터 칸이 하나씩 '톡' 부풀었다 줄어들며 작은 빛으로 흩어진다 (진짜 칸을 그대로 복제) ──
   const cb = document.getElementById('clearBtn');
   if(cb) cb.addEventListener('click', () => {
     if(RX_REDUCED || !chipsEl2) return;
-    chipsEl2.querySelectorAll('.chip[data-n]').forEach((c, i) => {
+    const L = [...chipsEl2.querySelectorAll('.chip[data-n]')].reverse();
+    if(!L.length) return;
+    const box = document.createElement('div'); box.className = 'tr-ghost'; document.body.appendChild(box);
+    let left = 0;
+    L.forEach((c, i) => {
       const r = c.getBoundingClientRect(); if(!visible(r)) return;
-      const g = document.createElement('div'); g.className = 'tr-fly tr-out'; g.textContent = (c.querySelector('.sy') || c).textContent.trim();
-      g.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;color:${c.style.color}`;
-      document.body.appendChild(g);
-      const dx = (Math.random() - .5) * 120, rot = (Math.random() - .5) * 120;
-      g.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${dx * .4}px,-26px) rotate(${rot * .3}deg)`, opacity: 1, offset: .25 },
-                 { transform: `translate(${dx}px,${180 + Math.random() * 80}px) rotate(${rot}deg)`, opacity: 0 }],
-                { duration: 650 + i * 40, easing: 'cubic-bezier(.5,0,.9,.6)', delay: i * 25 }).onfinish = () => g.remove();
+      const g = c.cloneNode(true); g.classList.remove('bump'); g.style.visibility = '';
+      g.style.left = r.left + 'px'; g.style.top = r.top + 'px'; g.style.width = r.width + 'px'; g.style.height = r.height + 'px';
+      box.appendChild(g); left++;
+      const d = i * 55;
+      g.animate([{ transform: 'scale(1)', opacity: 1, filter: 'brightness(1)' }, { transform: 'scale(1.1)', opacity: 1, filter: 'brightness(1.6)', offset: .4 }, { transform: 'scale(0.15)', opacity: 0, filter: 'brightness(2)' }],
+                { duration: 300, delay: d, easing: 'cubic-bezier(.5,0,.75,.4)', fill: 'both' }).onfinish = () => { g.remove(); if(--left <= 0) box.remove(); };
+      const col = c.style.color;
+      setTimeout(() => { for(let k = 0; k < 7; k++){ const p = document.createElement('i'); p.className = 'tr-spark'; p.style.color = col;
+        p.style.left = (r.left + r.width / 2) + 'px'; p.style.top = (r.top + r.height / 2) + 'px'; document.body.appendChild(p);
+        const a = k / 7 * 6.283 + Math.random() * .5, dd = 16 + Math.random() * 16;
+        p.animate([{ transform: 'translate(0,0) scale(1)', opacity: .9 }, { transform: `translate(${Math.cos(a) * dd}px,${Math.sin(a) * dd}px) scale(.2)`, opacity: 0 }], { duration: 380, easing: 'ease-out' }).onfinish = () => p.remove(); } }, d + 200);
     });
+    if(!left) box.remove();
   }, true);
   try{ shape(); }catch(e){}
+})();
+</script>
+<script>
+/* ── 업적 그림: 포기를 모르는 사람 (과산 그림) ── */
+try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,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'; }catch(e){}
+/* ── 멜라닌 (도감 548번째): 피부·머리카락·눈동자를 어둡게 만드는 색소 ── */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const NM = '멜라닌', KEY = 'C18+H10+N2+O4';
+  EXACT[KEY] = ['C₁₈H₁₀N₂O₄', NM, '피부·머리카락·눈동자를 어둡게 만드는 색소'];
+  try{ REC_EN[NM] = ['Melanin', 'The pigment that darkens your skin, hair and eyes']; }catch(e){}
+  try{ RX_SMILES[NM] = 'CC1=C2C3=C(C4=CNC5=C(C(=O)C(=O)C(=C45)C3=CN2)C)C(=O)C1=O'; }catch(e){}
+  try{ RX_TMI[NM] = '햇빛의 자외선을 흡수해서 피부 속 DNA를 지켜 줘요. 햇볕에 타면 까매지는 것도 몸이 멜라닌을 더 만들어서예요. 멜라닌은 사실 작은 조각들이 길게 엉겨 붙은 덩어리라 정확한 분자식이 하나로 정해져 있지 않은데, 이건 그 조각 하나를 나타낸 거예요. 문어 먹물의 검은색도 멜라닌이에요.'; }catch(e){}
+  try{ if(typeof RX_DEX_ALIAS !== 'undefined') RX_DEX_ALIAS[NM] = 'melanin 멜라닌 색소 피부 머리카락 pigment eumelanin'; }catch(e){}
+  try{ ['color', 'body'].forEach(k => { if(RX_TAGSET[k]) RX_TAGSET[k].add(NM); }); }catch(e){}
 })();
 </script>
 <style>
