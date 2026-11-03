@@ -40415,6 +40415,11 @@ void main(){
   body:not(.w95) #achRow .achchip .bdg::before{content:"";position:absolute;inset:0;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:rgba(154,168,255,.08);border-radius:4px}
   body:not(.w95) #achRow .achchip .bdg > *{position:relative}
   body:not(.w95) #achRow .achchip .bdg img{width:46px;height:46px;object-fit:contain;border-radius:8px;image-rendering:auto}
+  /* 손그림 업적: 그림을 육각형 안쪽에 꽉 채워서 테두리와 모양을 맞춘다 */
+  body:not(.w95) #achRow .achchip .bdg.drawn{font-size:0}
+  body:not(.w95) #achRow .achchip .bdg.drawn img{position:absolute;left:4px;top:4px;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:0;object-fit:cover;background:#fff;
+    clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);z-index:2}
+  body:not(.w95) #achRow .achchip.on .bdg.drawn::after{display:none}
   body:not(.w95) #achRow .achchip:not(.on) .bdg{filter:grayscale(1) brightness(.55);opacity:.55}
   body:not(.w95) #achRow .achchip:not(.on) .bdg .lk{filter:none}
   body:not(.w95) #achRow .achchip.on{border-color:rgba(255,212,59,.45);background:radial-gradient(90% 70% at 50% 0%,rgba(255,212,59,.16),transparent 70%),rgba(8,10,16,.45);box-shadow:0 0 18px rgba(255,212,59,.08)}
@@ -40487,7 +40492,7 @@ void main(){
       if(isOn && typeof RX_ACH_IMG !== 'undefined' && RX_ACH_IMG[a.id]) ic = `<img alt="" src="${RX_ACH_IMG[a.id]}">`;
       else if(!isOn && a.secret) ic = '<span class="lk">🔒</span>';
       else ic = `<span>${(typeof RX_ACH_IC !== 'undefined' && RX_ACH_IC[a.id]) || (a.bad ? '💢' : '⭐')}</span>`;
-      c.insertAdjacentHTML('afterbegin', `<span class="kd">${a.secret ? P('숨은', 'SECRET') : a.bad ? P('실패', 'FAIL') : ''}</span>${isOn ? '<span class="ck">✓</span>' : ''}<div class="bdg">${ic}</div>`);
+      c.insertAdjacentHTML('afterbegin', `<span class="kd">${a.secret ? P('숨은', 'SECRET') : a.bad ? P('실패', 'FAIL') : ''}</span>${isOn ? '<span class="ck">✓</span>' : ''}<div class="bdg${ic.startsWith('<img') ? ' drawn' : ''}">${ic}</div>`);
       if(!isOn && a.prog && !a.secret){ try{ const [x, n] = a.prog(); if(n > 0) c.insertAdjacentHTML('beforeend', `<div class="pg"><i style="width:${Math.min(100, x / n * 100).toFixed(1)}%"></i></div>`); }catch(e){} }
     });
     row.querySelectorAll('.dx2-hero').forEach(h => h.remove());
