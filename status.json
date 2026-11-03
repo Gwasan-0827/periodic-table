@@ -1,5 +1,23 @@
 {
   "maintenance": false,
   "message": "",
-  "until": ""
+  "until": "",
+  "latest": "4.2.5",
+  "title": {
+    "ko": "퀄리티 오버 퀀티티",
+    "en": "Quality over Quantity"
+  },
+  "notes": {
+    "ko": [
+      "학습 탭·오늘의 원소·외우기 새 단장",
+      "새 카드·폭발·깨진 화면 연출",
+      "도감 547종, 더 가벼워졌어요"
+    ],
+    "en": [
+      "Rebuilt Learn, Element of the day and Memorise",
+      "New cards, explosions and broken-screen effect",
+      "547 entries, and lighter on your phone"
+    ]
+  },
+  "store": ""
 }

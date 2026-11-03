@@ -6169,7 +6169,7 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '4.1';
+const APP_VER = '4.2.5';
 
 /* 버전 표기 (시대 구분): αV = 1.x / βV = 2.0 ~ 4.x / ΔV = 5.0 부터. 뒷자리는 아래 첨자 (3.2 → βV.3.₂) */
 function verLabel(v){
@@ -6180,6 +6180,48 @@ function verLabel(v){
   return `${era}V.${a}.${sub}`;
 }
 const CHANGELOG = [
+  {
+    v: '4.2.5', date: '2026-11-03',
+    title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
+    items: {
+      ko: ['학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
+           '오늘의 원소를 새로 만들었어요. 전자 껍질 그림, 오늘의 운세 카드, 며칠 연속으로 들어왔는지 기록이 생겼고, 이제 매일 아침 9시에 바뀌어요',
+           '외우기도 새로 만들었어요. 작은 주기율표를 끌어서 범위를 고르고, 원소마다 얼마나 외웠는지 고리로 보여 줘요. 자꾸 틀리는 원소만 따로 복습할 수 있고, 플래시카드는 뒤집고 밀어서 넘겨요',
+           '빈칸 채우기를 누르면 원소 칸이 펑 터져요. 몇 개는 화면에 철썩 붙었다가 스르르… 툭 떨어져요. 빠진 칸은 카드 묶음이 되어 아래에서 올라오고, 한 장씩 끌어다 빈칸에 놓으면 돼요',
+           '학습에 "💡 알고 계셨나요?" 탭이 생겼어요. 지구와 달 사이에 행성이 전부 들어간다, 전자는 놀랄 만큼 동그랗다, 바나나는 살짝 방사능이 있다 같은 이야기 5개를 직접 움직여 보며 알아봐요',
+           '물질 카드를 새로 만들었어요. 위험도·희귀도·쓸모·스타일 스탯과 PWR 점수, 홀로그램 띠가 생겼어요. 저장하면 카드가 빙글 날아오고, 기울이면 빛이 지나가요. 앱에서는 갤러리에 바로 저장돼요',
+           '액체도 이제 카드에 제대로 나와요',
+           '폭발을 새로 그렸어요. 섬광, 충격파, 불덩이, 불똥, 파편, 연기까지 터져요',
+           '화면이 깨지는 효과도 새로 만들었어요. 진짜 유리처럼 금이 가고 조각이 떨어져요. 쨍그랑 소리도 바꿨고, 가끔 화면이 지지직 어긋나요',
+           '오팔을 새로 그렸어요. 반지에 박히는 매끈한 타원형이고, 돌리면 조각마다 다른 각도에서 무지갯빛이 번쩍여요',
+           '일장석(전에는 선스톤)에 깎아 다듬은 모양이 생겼어요. 겉이 반투명해서 속 구리 조각이 비쳐요. "원석" 버튼으로 원래 돌과 바꿔 볼 수 있어요. 원석의 반짝이 조각에는 어두운 것도 섞였어요',
+           '도감이 547종이 됐어요. 특수 발견이던 제올라이트 A, 탄자나이트, 흑요석, 일장석, 생수가 도감으로 들어왔어요',
+           '새 물질 2종: 프랑슘을 물에 넣으면? "폭발 전에 증발". 몰리브데넘 두 개는 결합을 여섯 개나 만들어요, "육중결합"',
+           '분자 보기의 구조식에 2D / 3D 전환이 생겼어요. 2D로 하면 교과서처럼 납작하게 펼쳐서 보여 줘요',
+           '앱 아이콘이 바뀌었어요. 시작 화면을 닮은 빛나는 마름모와 Pt예요',
+           '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
+           '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
+           '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
+      en: ['The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
+           'Element of the day is new: an electron shell drawing, a fortune card and a visit streak. It now changes every morning at 9',
+           'Memorise is new too. Drag across a mini periodic table to pick a range, see how well you know each element as a ring, review only the ones you keep missing, and flip and swipe the flashcards',
+           'Starting Fill in the blanks blows the cells apart. Some splat onto the screen, slide… then drop. The missing cells come back up as a deck of cards: drag each one onto its blank',
+           'New "💡 Did you know?" tab in Learn: five hands-on stories, like all the planets fitting between Earth and the Moon, how surprisingly round an electron is, and why bananas are a little radioactive',
+           'Substance cards are new: danger, rarity, use and style stats, a PWR score and a holo band. Saved cards spin in and catch the light as you tilt them, and the app saves straight to your gallery',
+           'Liquids now show up properly on cards',
+           'Explosions are redrawn: flash, shockwaves, fireballs, sparks, debris and smoke',
+           'The broken-screen effect is new: it cracks and sheds shards like real glass, with a new shatter sound and the odd glitch',
+           'Opal is redrawn as a smooth polished oval that flashes rainbow colours from different angles as it turns',
+           'Sunstone now has a cut and polished form with a see-through body that shows the copper flakes inside. Switch back with the "Rough" button. The rough stone has some dark flakes too',
+           'The codex now holds 547 entries: zeolite A, tanzanite, obsidian, sunstone and mineral water moved in from special finds',
+           'Two new substances: drop francium in water for "Gone before the bang", and two molybdenum atoms make six bonds at once in "Hextuple bond"',
+           'The structural view can now switch between 2D and 3D. 2D lays the molecule flat like a textbook',
+           'New app icon: a glowing diamond and Pt, like the start screen',
+           'The credits now have a team name: K ɑ ɪ ɴ i x // X',
+           'Lighter: drawing opal, crystals and liquids in the result view takes far less work, phones draw very detailed models a little less often, and the model stops spinning after 20 seconds untouched',
+           'Fixed: ball-and-stick models flickering in the app, rotaxane showing the nanocar structure, a blue box flashing on tap, the ding that kept playing after visiting Atom history, and amethyst sitting off-centre'],
+    },
+  },
   {
     v: '4.1', date: '2026-11-02',
     title: { ko: '얼음과 청개구리', en: 'Ice and Frogs' },
