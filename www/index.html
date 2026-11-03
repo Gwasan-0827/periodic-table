@@ -3176,6 +3176,12 @@
 
 
 <script>
+/* 캔버스 방어: 반지름이 음수·NaN 이면 그라디언트가 예외를 던져 그 프레임 그림이 통째로 멈춘다. 0으로 잡아 준다 */
+(function(){ try{ const P = CanvasRenderingContext2D.prototype, f = P.createRadialGradient;
+  P.createRadialGradient = function(x0, y0, r0, x1, y1, r1){ const c = v => (v > 0 && isFinite(v)) ? v : 0, z = v => isFinite(v) ? v : 0;
+    return f.call(this, z(x0), z(y0), c(r0), z(x1), z(y1), c(r1)); }; }catch(e){} })();
+</script>
+<script>
 /* ═══ 저전력 (폰·앱): 발열 줄이기 ═══
    1) 화면 갱신을 초당 30번으로 (모든 애니메이션 루프가 requestAnimationFrame 을 쓰므로 여기서 한 번에)
    2) 창(결과·도감·설정·학습)이 화면을 덮고 있으면 그 뒤 배경 애니메이션은 멈춤 (body.ovl)
