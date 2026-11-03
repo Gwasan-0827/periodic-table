@@ -40196,6 +40196,145 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 도감 힌트 리워크: 카드엔 단서 요약, 누르면 3단계 힌트 창 (설명 → 원소 하나 → 전체 조합 → 바로 담기) ═══ */
+  .hx-dots{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}
+  .hx-dots i{width:6px;height:6px;border-radius:50%;background:rgba(154,168,255,.2)}
+  .hx-dots i.on{background:#c9d0ff;box-shadow:0 0 5px #9aa8ff}
+  .hx-c1{font-size:11px;line-height:1.45;color:rgba(214,220,255,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;margin-bottom:5px}
+  .hx-tiles{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+  .hx-t{position:relative;display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border-radius:6px;border:1px solid var(--c,#9aa8ff);
+    background:color-mix(in srgb,var(--c,#9aa8ff) 14%,transparent);font:600 12px/1 Kanit,system-ui,sans-serif;color:#fff}
+  .hx-t i{position:absolute;right:-5px;top:-6px;font:700 9px/1 ui-monospace,monospace;font-style:normal;padding:2px 3px;border-radius:5px;background:#1a1f38;border:1px solid rgba(154,168,255,.35);color:#c9d0ff}
+  .hx-t.q{--c:rgba(154,168,255,.35);color:rgba(201,208,255,.5);border-style:dashed}
+  .hx-any{font-size:10px;color:#ffe8a3;margin-left:2px;align-self:center}
+  /* 힌트 창 */
+  #rxPanel .hx{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;max-width:520px;margin:0 auto;text-align:left}
+  .hx-top{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px dashed rgba(154,168,255,.3);
+    background:repeating-linear-gradient(135deg,rgba(154,168,255,.05) 0 6px,transparent 6px 12px),rgba(10,13,24,.6)}
+  .hx-top .q{flex:none;width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font:800 30px/1 Kanit,system-ui,sans-serif;color:rgba(201,208,255,.55);border:1px solid rgba(154,168,255,.25);background:rgba(154,168,255,.06)}
+  .hx-top .no{font:700 10px/1 ui-monospace,monospace;letter-spacing:.12em;color:rgba(201,208,255,.6)}
+  .hx-top .tt{margin-top:5px;font-size:15px;font-weight:800;letter-spacing:.2em;color:rgba(214,220,255,.7)}
+  .hx-top .tg{display:inline-block;margin-top:6px;font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid rgba(154,168,255,.25);color:#c9d0ff}
+  .hx-top .bar{margin-left:auto;text-align:right;font:700 11px/1 ui-monospace,monospace;color:var(--dim)}
+  .hx-top .bar .hx-dots{margin:6px 0 0}
+  .hx-step{position:relative;padding:12px 14px 12px 46px;border-radius:14px;border:1px solid rgba(154,168,255,.16);background:rgba(154,168,255,.04);transition:all .25s}
+  .hx-step .n{position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font:800 12px/1 Kanit,system-ui,sans-serif;color:#c9d0ff;border:1px solid rgba(154,168,255,.35);background:rgba(154,168,255,.08)}
+  .hx-step .h{font-size:12px;font-weight:750;color:var(--text)}
+  .hx-step .b{margin-top:7px;font-size:13px;line-height:1.55;word-break:keep-all}
+  .hx-step.on{border-color:rgba(201,208,255,.4);background:linear-gradient(160deg,rgba(154,168,255,.14),rgba(154,168,255,.03))}
+  .hx-step.on .n{background:#c9d0ff;color:#141833;border-color:#c9d0ff}
+  .hx-step.new{animation:hxIn .5s cubic-bezier(.2,1.3,.4,1)}
+  @keyframes hxIn{from{transform:rotateX(70deg) scale(.96);opacity:0}}
+  .hx-step.off{opacity:.55}
+  .hx-step.off .b{color:var(--dim);font-size:11.5px}
+  .hx-open{margin-top:8px;padding:7px 13px;border-radius:999px;border:1px solid rgba(154,168,255,.45);background:rgba(154,168,255,.12);color:#c9d0ff;font:inherit;font-size:12px;font-weight:750;cursor:pointer;transition:all .15s}
+  .hx-open:hover{background:rgba(154,168,255,.24);border-color:#c9d0ff;transform:translateY(-1px)}
+  .hx-step.next{opacity:1;border-style:dashed;border-color:rgba(154,168,255,.35)}
+  .hx-step .hx-tiles{margin:2px 0 0;gap:6px}
+  .hx-step .hx-t{min-width:36px;height:36px;font-size:15px;border-radius:9px}
+  .hx-step .hx-t i{font-size:10px}
+  .hx-last{margin-top:8px;font-size:11.5px;color:var(--dim)}
+  .hx-go{margin-top:10px;width:100%;padding:11px;border-radius:12px;border:0;font:inherit;font-size:13.5px;font-weight:800;cursor:pointer;color:#141833;background:linear-gradient(90deg,#fff,#c9d0ff 45%,#9aa8ff);box-shadow:0 0 18px rgba(154,168,255,.35);transition:transform .15s}
+  .hx-go:hover{transform:translateY(-1px)}
+  .hx-note{font-size:10.5px;color:var(--dim);text-align:center}
+  @media (prefers-reduced-motion:reduce){ .hx-step.new{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof openDex !== 'function') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  const get = () => rxLS.get('pt_hint', {});
+  const lvOf = nm => get()[nm] || 0;
+  const entry = nm => { const x = allEntries().find(e => e.name === nm); if(!x) return null; const r = locRec([x.formula, x.name, x.sub]); return { ...x, sub: r[2] }; };
+  const noOf = nm => { const L = allEntries(); const i = L.findIndex(e => e.name === nm); return i >= 0 ? 'No.' + String(i + 1).padStart(3, '0') : ''; };
+  const parts = key => String(key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+  const col = s => { try{ const e = rxSym(s); return e && CAT[e.c] ? cssv(CAT[e.c].v) : '#9aa8ff'; }catch(e){ return '#9aa8ff'; } };
+  const tile = (s, n, showN) => `<span class="hx-t" style="--c:${col(s)}"><b>${s}</b>${showN && n > 1 ? `<i>×${n}</i>` : ''}</span>`;
+  const qTile = () => '<span class="hx-t q">?</span>';
+  const dots = lv => `<span class="hx-dots">${[1, 2, 3].map(k => `<i class="${lv >= k ? 'on' : ''}"></i>`).join('')}</span>`;
+  const tagName = c => { const t = (c && c.dataset.tags || '').split(/\s+/).filter(Boolean)[0]; if(!t) return ''; const b = document.querySelector(`#dexTags button[data-t="${t}"]`); return b ? (b.childNodes[0] && b.childNodes[0].textContent || '').trim().replace(/^[^\p{L}\p{N}]+/u, '') : ''; };
+
+  // 카드에 들어가는 단서 요약
+  function cardHTML(x, lv){
+    const ps = parts(x.key);
+    let h = '';
+    if(lv >= 1 && x.sub) h += `<div class="hx-c1">${x.sub}</div>`;
+    if(lv === 2 && ps.length) h += `<div class="hx-tiles">${tile(ps[0][0], 1, false)}${ps.slice(1).map(qTile).join('')}</div>`;
+    if(lv >= 3) h += `<div class="hx-tiles">${ps.map(([s, n]) => tile(s, n, x.exact)).join('')}${x.exact ? '' : `<span class="hx-any">${t('anyRatio')}</span>`}</div>`;
+    h += `<button type="button" class="hbtn" data-name="${String(x.name).replace(/"/g, '&quot;')}">${lv >= 3 ? P('힌트 보기', 'View') : lv ? rt('hintMore') : rt('hint')}${dots(lv)}</button>`;
+    return h;
+  }
+  function paintCard(c){
+    const x = entry(c.dataset.name); if(!x) return;
+    const h = c.querySelector('.hint') || (() => { const d = document.createElement('div'); d.className = 'hint steps'; c.appendChild(d); return d; })();
+    h.className = 'hint steps hx'; h.innerHTML = cardHTML(x, lvOf(x.name));
+  }
+  function paintAll(){ document.querySelectorAll('#dexList .dx.locked').forEach(c => { try{ paintCard(c); }catch(e){} }); }
+
+  // 힌트 창
+  function sheet(nm, fresh){
+    const x = entry(nm); if(!x) return;
+    const lv = lvOf(nm), ps = parts(x.key), card = [...document.querySelectorAll('#dexList .dx')].find(c => c.dataset.name === nm);
+    const tg = tagName(card);
+    const step = (k, title, body, lockText) => {
+      const on = lv >= k, next = lv === k - 1;
+      return `<div class="hx-step ${on ? 'on' : next ? 'next' : 'off'}${fresh === k ? ' new' : ''}"><span class="n">${k}</span><div class="h">${title}</div>
+        <div class="b">${on ? body : next ? `${lockText}<br><button type="button" class="hx-open" data-k="${k}">${P('단서 열기', 'Reveal')}</button>` : P('앞 단서를 먼저 열어요', 'Reveal the one before first')}</div></div>`;
+    };
+    const s1 = x.sub || P('(설명이 없는 물질이에요)', '(No description)');
+    const s2 = `<div class="hx-tiles">${ps.length ? tile(ps[0][0], 1, false) + ps.slice(1).map(qTile).join('') : ''}</div><div class="hx-last">${P(`원소 ${ps.length}가지가 들어가요. 하나는 이거예요`, `${ps.length} elements. Here is one of them`)}</div>`;
+    const s3 = `<div class="hx-tiles">${ps.map(([s, n]) => tile(s, n, x.exact)).join('')}</div>
+      <div class="hx-last">${x.exact ? P('개수까지 딱 맞춰야 해요', 'The counts have to match exactly') : P('비율은 상관없어요. 원소만 맞으면 돼요', 'Any ratio works, just these elements')} · ${rt('hintLast')}</div>
+      <button type="button" class="hx-go">${P('이 조합 담으러 가기', 'Load this mix')}</button>`;
+    const body = `<div class="hx">
+      <div class="hx-top"><div class="q">?</div><div><div class="no">${noOf(nm)}</div><div class="tt">? ? ?</div>${tg ? `<span class="tg">${tg}</span>` : ''}</div>
+        <div class="bar">${P('단서', 'CLUES')} ${lv} / 3<br>${dots(lv)}</div></div>
+      ${step(1, P('어떤 물질일까?', 'What is it?'), s1, P('물질 설명 한 줄을 보여 줘요', 'Shows its one-line description'))}
+      ${step(2, P('들어가는 원소 하나', 'One ingredient'), s2, P('들어가는 원소 하나와 원소 가짓수를 보여 줘요', 'Shows one element and how many kinds there are'))}
+      ${step(3, P('전체 조합', 'Full recipe'), s3, P('사실상 정답이에요. 그래도 볼래요?', 'This is basically the answer. Still want it?'))}
+      <div class="hx-note">${P('힌트를 봐도 도감에는 똑같이 기록돼요', 'Hints never affect your codex')}</div></div>`;
+    const b = rxPanel(P('힌트', 'Hint'), '', body);
+    b.querySelectorAll('.hx-open').forEach(btn => btn.addEventListener('click', () => {
+      const k = +btn.dataset.k, hs = get(); hs[nm] = Math.max(hs[nm] || 0, k); rxLS.set('pt_hint', hs);
+      try{ rxEvt('hint'); }catch(e){}
+      try{ SFX.pick(); }catch(e){}
+      if(card) paintCard(card);
+      sheet(nm, k);
+    }));
+    const go = b.querySelector('.hx-go');
+    if(go) go.addEventListener('click', () => {
+      mix = [];
+      ps.forEach(([s, n]) => { const e = rxSym(s); if(e) for(let i = 0; i < n; i++) mix.push(e.n); });
+      if(mix.length > MIX_MAX) mix.length = MIX_MAX;
+      try{ renderChips(); SFX.pick(); }catch(e){}
+      rxPanelClose();
+      try{ dexEl.classList.remove('on'); }catch(e){}
+      try{ rxMiniToast(P('담았어요. 이제 조합하기를 눌러 보세요', 'Loaded. Now hit Mix')); }catch(e){}
+    });
+  }
+
+  // 잠긴 카드나 힌트 버튼을 누르면 창을 연다 (예전처럼 도감 전체를 다시 그리지 않는다)
+  document.addEventListener('click', e => {
+    const c = e.target.closest && e.target.closest('#dexList .dx.locked');
+    if(!c) return;
+    e.preventDefault(); e.stopPropagation();
+    sheet(c.dataset.name);
+  }, true);
+  document.addEventListener('keydown', e => {
+    const c = e.target.closest && e.target.closest('#dexList .dx.locked');
+    if(c && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); sheet(c.dataset.name); }
+  }, true);
+
+  const _od = openDex;
+  openDex = function(){
+    const r = _od.apply(this, arguments);
+    try{ paintAll(); document.querySelectorAll('#dexList .dx.locked').forEach(c => { c.tabIndex = 0; c.style.cursor = 'pointer'; }); }catch(e){ console.warn('hintx', e); }
+    return r;
+  };
+  window.rxHintSheet = sheet;
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
