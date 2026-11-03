@@ -33137,8 +33137,8 @@ Object.assign(RX_SMILES_PRE, {"C1CC2CCCC(C1)CCC2":{"a":[["C",-0.0,-45.5,-35.1,16
   if(/[?&]dev\b/.test(location.search)) return;
   const SITE = 'https://gwasan-0827.github.io/periodic-table/';
   const T = {
-    ko: { top: '[ 새 버전이 발견되었습니다!! ]', go: '지금 업데이트', later: '나중에', appGo: '새 버전 받기', appNone: '앱 스토어에서 업데이트해 주세요', webNote: '누르면 새로고침돼요. 저장된 기록은 그대로예요' },
-    en: { top: '[ A new version has been found!! ]', go: 'Update now', later: 'Later', appGo: 'Get the new version', appNone: 'Please update from the app store', webNote: 'The page will reload. Your progress stays saved' } };
+    ko: { top: '[ 새 버전이 발견되었습니다!! ]', go: '지금 업데이트', later: '나중에', appGo: '새 버전 받기', appNone: '스토어에서 업데이트해 주세요', webNote: '누르면 새로고침돼요. 저장된 기록은 그대로예요' },
+    en: { top: '[ A new version has been found!! ]', go: 'Update now', later: 'Later', appGo: 'Get the new version', appNone: 'Please update from the store', webNote: 'The page will reload. Your progress stays saved' } };
   const esc = s => String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
   const newer = (a, b) => {   // a 가 b 보다 새 버전인가 ("4.10" > "4.9")
     const x = String(a).split('.').map(n => parseInt(n, 10) || 0), y = String(b).split('.').map(n => parseInt(n, 10) || 0);
