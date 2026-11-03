@@ -40520,6 +40520,149 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 조합 바 리워크 (4.2.5+): 담은 원소를 주기율표 칸처럼 · 개수 배지 · 총량 막대 · 담을 때 날아 들어오는 연출 ═══ */
+  #tray #chips{gap:8px;align-items:center;padding-top:9px!important;padding-bottom:7px!important}
+  #tray #chips .chip{position:relative;display:inline-grid;grid-template-columns:17px minmax(24px,auto) 17px;align-items:stretch;height:42px;padding:0;margin:0;
+    border-radius:11px;border:1px solid color-mix(in srgb,currentColor 50%,transparent);
+    background:linear-gradient(170deg,color-mix(in srgb,currentColor 20%,rgba(10,13,24,.9)),color-mix(in srgb,currentColor 5%,rgba(10,13,24,.9)));
+    box-shadow:0 0 12px color-mix(in srgb,currentColor 18%,transparent),inset 0 1px 0 rgba(255,255,255,.07);
+    font:600 16px/1 Kanit,system-ui,sans-serif;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .12s}
+  #tray #chips .chip .sy{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:9px 1px 0;pointer-events:none}
+  #tray #chips .chip .z{position:absolute;left:50%;top:4px;transform:translateX(-50%);font:600 8px/1 ui-monospace,monospace;color:color-mix(in srgb,currentColor 70%,#fff);opacity:.8;pointer-events:none}
+  #tray #chips .chip .n{position:absolute;right:-7px;top:-8px;z-index:2;min-width:18px;height:17px;padding:0 5px;border-radius:9px;display:grid;place-items:center;
+    font:800 10px/1 ui-monospace,monospace;color:#141833;background:#c9d0ff;box-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none}
+  #tray #chips .chip.one .n{display:none}
+  #tray #chips .chip .mi,#tray #chips .chip .pl{position:static;display:grid;place-items:center;width:auto;height:auto;margin:0;border:0;border-radius:0;background:transparent;
+    font:700 12px/1 system-ui,sans-serif;color:color-mix(in srgb,currentColor 55%,#8e99ad);opacity:.75;transition:background .15s,color .15s,opacity .15s}
+  #tray #chips .chip .mi{grid-column:1;grid-row:1;border-radius:10px 0 0 10px}
+  #tray #chips .chip .pl{grid-column:3;grid-row:1;border-radius:0 10px 10px 0}
+  #tray #chips .chip .mi:hover{background:rgba(255,135,135,.2);color:#ff8787;opacity:1}
+  #tray #chips .chip .pl:hover{background:rgba(154,168,255,.22);color:#c9d0ff;opacity:1}
+  #tray #chips .chip:active{transform:scale(.95)}
+  /* 총량: 숫자 + 막대 */
+  #tray #chips .cnt{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;min-width:62px;height:42px;padding:0 10px;margin-left:2px;border-radius:11px;
+    border:1px solid rgba(154,168,255,.18);background:rgba(154,168,255,.05);font:700 11px/1 ui-monospace,monospace;color:#c9d0ff;white-space:nowrap;flex-shrink:0}
+  #tray #chips .cnt::after{content:"";display:block;height:3px;border-radius:2px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff) 0 0/var(--p,0%) 100% no-repeat,rgba(154,168,255,.15)}
+  #tray #chips .cnt.full{color:#ff8787;border-color:rgba(255,135,135,.5)}
+  /* 비었을 때: 점선 빈칸 세 개 + 안내 */
+  #tray #chips .ph{display:inline-flex;align-items:center;gap:10px}
+  #tray #chips .ph::before{content:"";flex:none;width:96px;height:34px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='34'%3E%3Cg fill='none' stroke='%239aa8ff' stroke-opacity='.45' stroke-dasharray='3 3'%3E%3Crect x='1' y='1' width='28' height='32' rx='7'/%3E%3Crect x='34' y='1' width='28' height='32' rx='7'/%3E%3Crect x='67' y='1' width='28' height='32' rx='7'/%3E%3C/g%3E%3Ctext x='15' y='22' font-size='13' fill='%239aa8ff' fill-opacity='.5' text-anchor='middle' font-family='sans-serif'%3E%2B%3C/text%3E%3C/svg%3E") no-repeat;animation:trPh 2.4s ease-in-out infinite}
+  @keyframes trPh{50%{opacity:.5}}
+  /* 조합하기 버튼: 재료 수 표시 */
+  #tray #mixBtn{position:relative}
+  #tray #mixBtn[data-k]:not(:disabled)::after{content:attr(data-k);position:absolute;right:-6px;top:-8px;min-width:18px;height:17px;padding:0 5px;border-radius:9px;display:grid;place-items:center;
+    font:800 10px/1 ui-monospace,monospace;color:#141833;background:#ffe29a;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  /* 날아 들어오는 칸 */
+  .tr-fly{position:fixed;z-index:120;pointer-events:none;display:grid;place-items:center;border-radius:10px;border:1px solid currentColor;
+    background:color-mix(in srgb,currentColor 22%,rgba(10,13,24,.92));box-shadow:0 0 18px color-mix(in srgb,currentColor 55%,transparent);font:600 17px/1 Kanit,system-ui,sans-serif}
+  .tr-spark{position:fixed;z-index:121;pointer-events:none;width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
+  /* 비울 때 칸들이 흩어진다 */
+  .tr-out{position:fixed;z-index:119;pointer-events:none}
+  @media (max-width:700px){
+    footer#tray #chips{-webkit-mask:linear-gradient(90deg,#000 calc(100% - 22px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 22px),transparent);padding-right:22px!important;min-height:52px}
+    #tray #chips .chip{height:40px}
+    #tray #chips .cnt{height:40px}
+  }
+  @media (prefers-reduced-motion:reduce){ #tray #chips .ph::before{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof renderChips !== 'function' || typeof addToMix !== 'function') return;
+  const chipsEl2 = document.getElementById('chips');
+  // 칸 모양으로: 기호를 감싸고, 원자 번호를 위에, 개수 하나면 배지 숨김
+  function shape(){
+    if(!chipsEl2) return;
+    const cnt = {}; mix.forEach(n => cnt[n] = (cnt[n] || 0) + 1);
+    chipsEl2.querySelectorAll('.chip[data-n]').forEach(c => {
+      const n = +c.dataset.n;
+      if(!c.querySelector('.sy')){
+        // 기호 글자(텍스트 노드)를 감싼다
+        [...c.childNodes].forEach(nd => { if(nd.nodeType === 3 && nd.textContent.trim()){ const s = document.createElement('span'); s.className = 'sy'; s.textContent = nd.textContent.trim(); nd.replaceWith(s); } else if(nd.nodeType === 3) nd.remove(); });
+        if(!c.querySelector('.z')){ const z = document.createElement('i'); z.className = 'z'; z.textContent = n; c.prepend(z); }
+      }
+      c.classList.toggle('one', (cnt[n] || 0) <= 1);
+      const e = byNum[n]; if(e) c.title = `${elName(e)} ×${cnt[n] || 0}`;
+    });
+    const t = chipsEl2.querySelector('.cnt');
+    if(t) t.style.setProperty('--p', Math.min(100, mix.length / MIX_MAX * 100).toFixed(1) + '%');
+    const mb = document.getElementById('mixBtn');
+    if(mb){ if(mix.length) mb.dataset.k = mix.length; else delete mb.dataset.k; }
+  }
+  const _rc = renderChips;
+  renderChips = function(){ const r = _rc.apply(this, arguments); try{ shape(); }catch(e){} return r; };
+
+  // ── 담을 때: 누른 칸에서 조합 바로 날아 들어간다 ──
+  let src = null, srcT = 0;
+  addEventListener('pointerdown', e => {
+    const c = e.target.closest && e.target.closest('.cell[data-n], #addBtn, .tbl-cell');
+    if(c){ src = c; srcT = performance.now(); }
+  }, true);
+  const visible = r => r && r.width > 4 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+  function fly(n){
+    if(RX_REDUCED || !src || performance.now() - srcT > 900) return;
+    let from = src;
+    if(from.id === 'addBtn'){ from = document.querySelector(`.cell[data-n="${n}"]`) || document.querySelector('#info .bigsym') || from; }
+    const fr = from.getBoundingClientRect();
+    const tg = chipsEl2 && chipsEl2.querySelector(`.chip[data-n="${n}"]`);
+    if(!tg || !visible(fr)) return;
+    // 담긴 칸이 줄 밖으로 밀려 있으면 그쪽으로 굴려서 보이게
+    try{ const cr = chipsEl2.getBoundingClientRect(), r0 = tg.getBoundingClientRect();
+      if(r0.right > cr.right - 8) chipsEl2.scrollLeft += r0.right - cr.right + 40; else if(r0.left < cr.left) chipsEl2.scrollLeft -= cr.left - r0.left + 20; }catch(_){}
+    const tr = tg.getBoundingClientRect(); if(!visible(tr)) return;
+    const e = byNum[n]; if(!e) return;
+    const col = cssv(CAT[e.c].v) || '#9aa8ff';
+    const g = document.createElement('div'); g.className = 'tr-fly'; g.textContent = e.s; g.style.color = col;
+    const w = Math.min(fr.width, 64), h = Math.min(fr.height, 64);
+    g.style.cssText += `left:${fr.left + (fr.width - w) / 2}px;top:${fr.top + (fr.height - h) / 2}px;width:${w}px;height:${h}px`;
+    document.body.appendChild(g);
+    const dx = tr.left + tr.width / 2 - (fr.left + fr.width / 2), dy = tr.top + tr.height / 2 - (fr.top + fr.height / 2);
+    const s = Math.max(.5, Math.min(1.2, tr.height / h));
+    const lift = -Math.min(160, Math.abs(dx) * .25 + 60);
+    try{
+      const an = g.animate([
+        { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+        { transform: `translate(${dx * .5}px,${dy * .5 + lift}px) scale(1.15) rotate(${dx > 0 ? 12 : -12}deg)`, opacity: 1, offset: .45 },
+        { transform: `translate(${dx}px,${dy}px) scale(${s}) rotate(0deg)`, opacity: .9 }
+      ], { duration: 520, easing: 'cubic-bezier(.45,.05,.35,1)' });
+      tg.style.visibility = 'hidden';
+      an.onfinish = () => {
+        g.remove(); tg.style.visibility = '';
+        tg.classList.remove('bump'); void tg.offsetWidth; tg.classList.add('bump');
+        for(let i = 0; i < 8; i++){ const p = document.createElement('i'); p.className = 'tr-spark'; p.style.color = col;
+          p.style.left = (tr.left + tr.width / 2) + 'px'; p.style.top = (tr.top + tr.height / 2) + 'px'; document.body.appendChild(p);
+          const a = Math.random() * 6.283, d = 18 + Math.random() * 22;
+          p.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.2)`, opacity: 0 }], { duration: 420, easing: 'ease-out' }).onfinish = () => p.remove(); }
+      };
+    }catch(_){ g.remove(); tg.style.visibility = ''; }
+    src = null;
+  }
+  const _add = addToMix;
+  addToMix = function(n){
+    const before = mix.length;
+    const r = _add.apply(this, arguments);
+    try{ if(mix.length > before) fly(n); }catch(e){}
+    return r;
+  };
+
+  // ── 비우기: 칸들이 아래로 우수수 떨어진다 ──
+  const cb = document.getElementById('clearBtn');
+  if(cb) cb.addEventListener('click', () => {
+    if(RX_REDUCED || !chipsEl2) return;
+    chipsEl2.querySelectorAll('.chip[data-n]').forEach((c, i) => {
+      const r = c.getBoundingClientRect(); if(!visible(r)) return;
+      const g = document.createElement('div'); g.className = 'tr-fly tr-out'; g.textContent = (c.querySelector('.sy') || c).textContent.trim();
+      g.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;color:${c.style.color}`;
+      document.body.appendChild(g);
+      const dx = (Math.random() - .5) * 120, rot = (Math.random() - .5) * 120;
+      g.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${dx * .4}px,-26px) rotate(${rot * .3}deg)`, opacity: 1, offset: .25 },
+                 { transform: `translate(${dx}px,${180 + Math.random() * 80}px) rotate(${rot}deg)`, opacity: 0 }],
+                { duration: 650 + i * 40, easing: 'cubic-bezier(.5,0,.9,.6)', delay: i * 25 }).onfinish = () => g.remove();
+    });
+  }, true);
+  try{ shape(); }catch(e){}
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
