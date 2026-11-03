@@ -40380,6 +40380,141 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 도감 리워크 2: 업적 = 뱃지 진열장, 특수 발견 = 조합과 같은 카드 ═══ */
+  .dx2-hero{position:relative;display:flex;align-items:center;gap:16px;margin:12px 0 12px;padding:16px;border-radius:18px;overflow:hidden;
+    border:1px solid rgba(154,168,255,.24);background:radial-gradient(110% 150% at 0% 0%,rgba(154,168,255,.22),transparent 60%),rgba(10,13,24,.7)}
+  .dx2-hero.gold{border-color:rgba(255,212,59,.28);background:radial-gradient(110% 150% at 0% 0%,rgba(255,212,59,.18),transparent 60%),rgba(10,13,24,.7)}
+  .dx2-hero .rg{position:relative;flex:none;width:84px;height:84px}
+  .dx2-hero .rg svg{width:84px;height:84px;transform:rotate(-90deg)}
+  .dx2-hero .rg circle{fill:none;stroke-width:7}
+  .dx2-hero .rg .bg{stroke:rgba(154,168,255,.14)}
+  .dx2-hero .rg .fg{stroke:url(#dxGrad2);stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.2,.9,.25,1)}
+  .dx2-hero.gold .rg .fg{stroke:url(#dxGold)}
+  .dx2-hero .rg b{position:absolute;inset:0;display:grid;place-items:center;font:800 17px/1 Kanit,system-ui,sans-serif}
+  .dx2-hero .k{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.75)}
+  .dx2-hero.gold .k{color:rgba(255,226,154,.8)}
+  .dx2-hero .big{margin-top:6px;font:800 24px/1 Kanit,system-ui,sans-serif}
+  .dx2-hero .big span{font-size:14px;color:var(--dim);font-weight:600;margin-left:4px}
+  .dx2-hero .sub{margin-top:7px;font-size:11.5px;color:var(--dim);word-break:keep-all}
+  .dx2-hero .sts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .dx2-hero .st{min-width:66px;padding:8px 10px;border-radius:12px;text-align:center;background:rgba(154,168,255,.06);border:1px solid rgba(154,168,255,.15)}
+  .dx2-hero .st b{display:block;font:800 16px/1 Kanit,system-ui,sans-serif}
+  .dx2-hero .st span{display:block;margin-top:4px;font-size:10px;color:var(--dim);white-space:nowrap}
+  .dx2-hero .st.bad b{color:#ff8787} .dx2-hero .st.sec b{color:#d0bfff} .dx2-hero .st.ok b{color:#ffd43b}
+  @media (max-width:700px){ .dx2-hero{flex-wrap:wrap;padding:14px;gap:12px} .dx2-hero .rg,.dx2-hero .rg svg{width:70px;height:70px} .dx2-hero .sts{margin-left:0;width:100%;justify-content:flex-start} .dx2-hero .st{flex:1;min-width:0} }
+  body:not(.w95) #dexPane #spRow > .shellTitle{display:none}
+  body:not(.w95) #dexPane[data-cur="ach"] > .dxh, body:not(.w95) #dexPane[data-cur="sp"] > .dxh{display:none!important}
+  body.w95 .dx2-hero{display:none}
+
+  /* 업적 뱃지 */
+  body:not(.w95) #achRow .achrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+  body:not(.w95) #achRow .achchip{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;padding:14px 10px 12px;min-height:138px;border-radius:16px;overflow:hidden;cursor:pointer;
+    border:1px solid rgba(154,168,255,.14);background:rgba(8,10,16,.42);transition:transform .18s,border-color .2s,box-shadow .2s;max-width:none;flex:none}
+  body:not(.w95) #achRow .achchip:hover{transform:translateY(-2px);border-color:rgba(201,208,255,.4)}
+  body:not(.w95) #achRow .achchip .bdg{position:relative;width:60px;height:60px;margin-bottom:9px;display:grid;place-items:center;font-size:30px;line-height:1;flex:none}
+  body:not(.w95) #achRow .achchip .bdg::before{content:"";position:absolute;inset:0;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:rgba(154,168,255,.08);border-radius:4px}
+  body:not(.w95) #achRow .achchip .bdg > *{position:relative}
+  body:not(.w95) #achRow .achchip .bdg img{width:46px;height:46px;object-fit:contain;border-radius:8px;image-rendering:auto}
+  body:not(.w95) #achRow .achchip:not(.on) .bdg{filter:grayscale(1) brightness(.55);opacity:.55}
+  body:not(.w95) #achRow .achchip:not(.on) .bdg .lk{filter:none}
+  body:not(.w95) #achRow .achchip.on{border-color:rgba(255,212,59,.45);background:radial-gradient(90% 70% at 50% 0%,rgba(255,212,59,.16),transparent 70%),rgba(8,10,16,.45);box-shadow:0 0 18px rgba(255,212,59,.08)}
+  body:not(.w95) #achRow .achchip.on .bdg::before{background:conic-gradient(from 200deg,#ffe29a,#ffb347,#ff9ad5,#ffe29a);opacity:.9}
+  body:not(.w95) #achRow .achchip.on .bdg::after{content:"";position:absolute;inset:5px;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:#141833}
+  body:not(.w95) #achRow .achchip.on .bdg > *{z-index:1}
+  body:not(.w95) #achRow .achchip.on::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.14) 45%,rgba(255,226,154,.08) 52%,transparent 64%);background-size:260% 100%;background-position:120% 0;transition:background-position .8s}
+  body:not(.w95) #achRow .achchip.on:hover::before{background-position:-40% 0}
+  body:not(.w95) #achRow .achchip.bad.on{border-color:rgba(255,107,107,.45);background:radial-gradient(90% 70% at 50% 0%,rgba(255,107,107,.14),transparent 70%),rgba(8,10,16,.45)}
+  body:not(.w95) #achRow .achchip.bad.on .bdg::before{background:conic-gradient(from 200deg,#ff8787,#ff6b6b,#ffa94d,#ff8787)}
+  body:not(.w95) #achRow .achchip.sec:not(.on) .bdg::before{background:repeating-linear-gradient(135deg,rgba(208,191,255,.14) 0 4px,transparent 4px 8px)}
+  body:not(.w95) #achRow .achchip .achn{font-size:12.5px;font-weight:800;line-height:1.25;word-break:keep-all}
+  body:not(.w95) #achRow .achchip:not(.on) .achn{color:rgba(201,208,255,.4);letter-spacing:.12em}
+  body:not(.w95) #achRow .achchip .achs{margin-top:4px;font-size:10.5px;line-height:1.4;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;white-space:normal}
+  body:not(.w95) #achRow .achchip .pg{width:80%;height:4px;margin-top:8px;border-radius:3px;background:rgba(154,168,255,.12);overflow:hidden}
+  body:not(.w95) #achRow .achchip .pg i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff)}
+  body:not(.w95) #achRow .achchip.bad .pg i{background:linear-gradient(90deg,#ffa8a8,#ff6b6b)}
+  body:not(.w95) #achRow .achchip .kd{position:absolute;left:8px;top:7px;font:700 9px/1 ui-monospace,monospace;letter-spacing:.08em;color:rgba(201,208,255,.4)}
+  body:not(.w95) #achRow .achchip.bad .kd{color:rgba(255,135,135,.55)}
+  body:not(.w95) #achRow .achchip .ck{position:absolute;right:8px;top:7px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:900;color:#141833;background:#ffd43b}
+  body:not(.w95) #achRow .achchip.bad .ck{background:#ff8787}
+  @media (max-width:700px){ body:not(.w95) #achRow .achrow{grid-template-columns:repeat(3,1fr);gap:7px} body:not(.w95) #achRow .achchip{min-height:118px;padding:12px 6px 10px} body:not(.w95) #achRow .achchip .bdg{width:48px;height:48px;font-size:24px} body:not(.w95) #achRow .achchip .bdg img{width:36px;height:36px} body:not(.w95) #achRow .achchip .achs{display:none} body:not(.w95) #achRow .achchip .achn{font-size:11.5px} }
+
+  /* 특수 발견 카드 */
+  body:not(.w95) #spRow .sprow{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
+  body:not(.w95) #spRow .sp{position:relative;overflow:hidden;min-height:104px;padding:12px;border-radius:14px;display:flex;flex-direction:column;justify-content:flex-end;opacity:1;
+    border:1px dashed rgba(154,168,255,.18);background:repeating-linear-gradient(135deg,rgba(154,168,255,.035) 0 6px,transparent 6px 12px),rgba(8,10,16,.38);transition:transform .18s,border-color .2s}
+  body:not(.w95) #spRow .sp::after{content:attr(data-no);position:absolute;right:10px;top:9px;font:700 9.5px/1 ui-monospace,monospace;color:rgba(201,208,255,.45)}
+  body:not(.w95) #spRow .sp:not(.on)::before{content:"?";position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);font:800 48px/1 Kanit,system-ui,sans-serif;color:rgba(154,168,255,.1)}
+  body:not(.w95) #spRow .sp:not(.on) .spf{display:none}
+  body:not(.w95) #spRow .sp:not(.on) .spn{color:rgba(201,208,255,.4);letter-spacing:.3em}
+  body:not(.w95) #spRow .sp:not(.on) .sps{display:inline-flex;align-self:flex-start;margin-top:6px;padding:3px 8px;border-radius:999px;border:1px solid rgba(154,168,255,.25);background:rgba(154,168,255,.07);font:600 11px/1.2 Kanit,system-ui,sans-serif;color:#c9d0ff}
+  body:not(.w95) #spRow .sp.on{border-style:solid;border-color:rgba(158,231,255,.4);background:radial-gradient(90% 80% at 50% 0%,rgba(158,231,255,.14),transparent 70%),rgba(8,10,16,.45)}
+  body:not(.w95) #spRow .sp.on .spf{font:600 22px/1.1 Kanit,system-ui,sans-serif;color:#9ee7ff;text-shadow:0 0 14px rgba(158,231,255,.4);margin-bottom:auto}
+  body:not(.w95) #spRow .sp.on .spn{font-size:13.5px;font-weight:800;margin-top:10px}
+  body:not(.w95) #spRow .sp.on .sps{font-size:10.5px;color:var(--dim);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body:not(.w95) #spRow .sp.on:hover{transform:translateY(-2px);border-color:#9ee7ff}
+  @media (max-width:700px){ body:not(.w95) #spRow .sprow{grid-template-columns:1fr 1fr;gap:7px} body:not(.w95) #spRow .sp{min-height:90px;padding:10px} }
+  /* 들어올 때 차례로 */
+  #dexPane.d-anim #achRow .achchip:nth-child(-n+30), #dexPane.d-anim #spRow .sp:nth-child(-n+24){animation:dx2In .4s cubic-bezier(.2,1.2,.4,1) both}
+  #dexPane.d-anim #achRow .achchip:nth-child(n+7), #dexPane.d-anim #spRow .sp:nth-child(n+7){animation-delay:.06s}
+  #dexPane.d-anim #achRow .achchip:nth-child(n+13), #dexPane.d-anim #spRow .sp:nth-child(n+13){animation-delay:.12s}
+  #dexPane.d-anim #achRow .achchip:nth-child(n+19), #dexPane.d-anim #spRow .sp:nth-child(n+19){animation-delay:.18s}
+  @keyframes dx2In{from{transform:translateY(12px) scale(.96);opacity:0}}
+  @media (prefers-reduced-motion:reduce){ #dexPane.d-anim #achRow .achchip, #dexPane.d-anim #spRow .sp{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof openDex !== 'function' || typeof ACH === 'undefined') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  const DEFS = '<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="dxGrad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#c9d0ff"/><stop offset="1" stop-color="#9aa8ff"/></linearGradient><linearGradient id="dxGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3bf"/><stop offset=".5" stop-color="#ffd43b"/><stop offset="1" stop-color="#ff9ad5"/></linearGradient></defs></svg>';
+  const hero = (cls, k, got, tot, sub, stats) => {
+    const R = 34, C = 2 * Math.PI * R, f = tot ? got / tot : 0;
+    return `<div class="dx2-hero ${cls}">${DEFS}<div class="rg"><svg viewBox="0 0 80 80"><circle class="bg" cx="40" cy="40" r="${R}"/><circle class="fg" cx="40" cy="40" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" data-to="${(C * (1 - f)).toFixed(1)}"/></svg><b>${Math.round(f * 100)}%</b></div>
+      <div><div class="k">${k}</div><div class="big">${got}<span>/ ${tot}</span></div><div class="sub">${sub}</div></div>
+      ${stats ? `<div class="sts">${stats}</div>` : ''}</div>`;
+  };
+  const fill = el => requestAnimationFrame(() => requestAnimationFrame(() => { el.querySelectorAll('.dx2-hero .fg').forEach(c => c.setAttribute('stroke-dashoffset', c.dataset.to)); }));
+  function achDeco(){
+    const row = document.getElementById('achRow'); if(!row) return;
+    const got = loadAch();
+    const all = ACH.length, on = ACH.filter(a => got.has(a.id));
+    const bad = ACH.filter(a => a.bad), sec = ACH.filter(a => a.secret);
+    row.querySelectorAll('.achchip').forEach(c => {
+      if(c.querySelector('.bdg')) return;
+      const a = ACH.find(x => x.id === c.dataset.id); if(!a) return;
+      const isOn = got.has(a.id);
+      c.classList.toggle('sec', !!a.secret);
+      let ic;
+      if(isOn && typeof RX_ACH_IMG !== 'undefined' && RX_ACH_IMG[a.id]) ic = `<img alt="" src="${RX_ACH_IMG[a.id]}">`;
+      else if(!isOn && a.secret) ic = '<span class="lk">🔒</span>';
+      else ic = `<span>${(typeof RX_ACH_IC !== 'undefined' && RX_ACH_IC[a.id]) || (a.bad ? '💢' : '⭐')}</span>`;
+      c.insertAdjacentHTML('afterbegin', `<span class="kd">${a.secret ? P('숨은', 'SECRET') : a.bad ? P('실패', 'FAIL') : ''}</span>${isOn ? '<span class="ck">✓</span>' : ''}<div class="bdg">${ic}</div>`);
+      if(!isOn && a.prog && !a.secret){ try{ const [x, n] = a.prog(); if(n > 0) c.insertAdjacentHTML('beforeend', `<div class="pg"><i style="width:${Math.min(100, x / n * 100).toFixed(1)}%"></i></div>`); }catch(e){} }
+    });
+    row.querySelectorAll('.dx2-hero').forEach(h => h.remove());
+    const n = (L) => L.filter(a => got.has(a.id)).length;
+    row.insertAdjacentHTML('afterbegin', hero('gold', `ACHIEVEMENTS // ${P('업적', 'BADGES')}`, on.length, all,
+      P('뱃지를 누르면 자세히 보여요', 'Tap a badge for details'),
+      `<div class="st ok"><b>${n(ACH.filter(a => !a.bad && !a.secret))}</b><span>${P('업적', 'Normal')}</span></div><div class="st bad"><b>${n(bad)}</b><span>${P('실패', 'Fail')}</span></div><div class="st sec"><b>${n(sec)}</b><span>${P('숨은', 'Secret')}</span></div>`));
+    fill(row);
+  }
+  function spDeco(){
+    const row = document.getElementById('spRow'); if(!row) return;
+    const L = (typeof specialList === 'function') ? specialList() : [];
+    const cards = row.querySelectorAll('.sp');
+    cards.forEach((c, i) => { c.dataset.no = 'SP.' + String(i + 1).padStart(2, '0'); });
+    row.querySelectorAll('.dx2-hero').forEach(h => h.remove());
+    const got = L.filter(x => found.has(x.name)).length;
+    row.insertAdjacentHTML('afterbegin', hero('', `SPECIAL // ${P('특수 발견', 'FINDS')}`, got, L.length,
+      P('원소 하나를 아주 많이(또는 딱 맞게) 모으면 나와요. 카드에 들어갈 개수가 적혀 있어요', 'Stack one element a lot (or just right). The count is on each card')));
+    fill(row);
+  }
+  function deco(){ try{ achDeco(); }catch(e){ console.warn('dexx2 ach', e); } try{ spDeco(); }catch(e){ console.warn('dexx2 sp', e); } }
+  const _od = openDex;
+  openDex = function(){ const r = _od.apply(this, arguments); deco(); return r; };
+  document.addEventListener('click', e => { if(e.target && e.target.closest && e.target.closest('#dexNav .dn')) setTimeout(deco, 0); });
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
