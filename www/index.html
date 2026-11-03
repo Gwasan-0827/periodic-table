@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 540종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 547종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 540종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 547종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -39548,6 +39548,28 @@ void main(){
     }
     return _loop.apply(this, arguments);
   };
+})();
+</script>
+<script>
+/* ── 4.2.5: 특수 발견 7개를 메인 도감으로 (540 → 547) ──
+   제올라이트 A · 탄자나이트 · 흑요석 · 선스톤(일장석) · 생수 · 폭발 전에 증발 · 육중결합 */
+(function(){
+  if(typeof allEntries !== 'function' || typeof EXACT === 'undefined') return;
+  const MOVE = ['제올라이트 A', '탄자나이트', '흑요석', '선스톤', '생수', '폭발 전에 증발', '육중결합'];
+  const keyOf = nm => { for(const k in EXACT){ const v = EXACT[k]; if(v && v[1] === nm) return k; } return null; };
+  const _ae = allEntries;
+  allEntries = function(){
+    const L = _ae.apply(this, arguments);
+    MOVE.forEach(nm => {
+      if(L.some(x => x.name === nm)) return;
+      const k = keyOf(nm); if(!k) return;
+      const v = EXACT[k];
+      L.push({ name: nm, formula: v[0], sub: v[2], key: k, exact: true });
+    });
+    return L.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  };
+  const _sl = specialList;
+  specialList = function(){ return _sl.apply(this, arguments).filter(x => !MOVE.includes(x.name)); };
 })();
 </script>
 <style>
