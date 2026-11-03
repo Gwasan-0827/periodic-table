@@ -40047,6 +40047,155 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 도감 리워크 (4.2.5+): 진행 고리 히어로 · 수집 카드 · 잠긴 카드 · 최근 찾은 것 ═══ */
+  body:not(.w95) #dexPane[data-cur="cmp"] > .dxh{display:none!important}
+  #dexPane[data-cur="cmp"] > #dxHero{display:flex!important}
+  body.w95 #dexPane > #dxHero{display:none!important}
+  #dxHero{position:relative;align-items:center;gap:16px;margin:12px 0 4px;padding:16px;border-radius:18px;overflow:hidden;
+    border:1px solid rgba(154,168,255,.24);background:radial-gradient(110% 150% at 0% 0%,rgba(154,168,255,.22),transparent 60%),rgba(10,13,24,.7)}
+  #dxHero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(201,208,255,.05) 0 1px,transparent 1px 22px),repeating-linear-gradient(0deg,rgba(201,208,255,.04) 0 1px,transparent 1px 22px);
+    -webkit-mask:linear-gradient(90deg,transparent,#000 60%);mask:linear-gradient(90deg,transparent,#000 60%);pointer-events:none}
+  #dxHero .rg{position:relative;flex:none;width:92px;height:92px}
+  #dxHero .rg svg{width:92px;height:92px;transform:rotate(-90deg)}
+  #dxHero .rg circle{fill:none;stroke-width:7}
+  #dxHero .rg .bg{stroke:rgba(154,168,255,.14)}
+  #dxHero .rg .fg{stroke:url(#dxGrad);stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.2,.9,.25,1)}
+  #dxHero .rg b{position:absolute;inset:0;display:grid;place-items:center;font:800 19px/1 Kanit,system-ui,sans-serif}
+  #dxHero .tx{position:relative;min-width:0;flex:1}
+  #dxHero .k{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.75)}
+  #dxHero .big{margin-top:6px;font:800 26px/1 Kanit,system-ui,sans-serif}
+  #dxHero .big span{font-size:15px;color:var(--dim);font-weight:600;margin-left:4px}
+  #dxHero .goal{margin-top:8px;font-size:11.5px;color:var(--dim);word-break:keep-all}
+  #dxHero .goal b{color:#c9d0ff}
+  #dxHero .gbar{margin-top:6px;height:5px;border-radius:3px;background:rgba(154,168,255,.12);overflow:hidden;max-width:320px}
+  #dxHero .gbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff);box-shadow:0 0 8px #9aa8ff;transition:width 1s cubic-bezier(.2,.9,.25,1)}
+  #dxHero .rec{position:relative;flex:none;max-width:44%;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+  #dxHero .rec small{font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;color:rgba(201,208,255,.6)}
+  #dxHero .rec .chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+  #dxHero .rec button{display:inline-flex;align-items:baseline;gap:5px;padding:5px 9px;border-radius:9px;border:1px solid rgba(154,168,255,.25);background:rgba(154,168,255,.08);color:var(--text);font:inherit;font-size:11.5px;cursor:pointer;transition:all .15s;max-width:100%}
+  #dxHero .rec button:hover{border-color:#c9d0ff;background:rgba(154,168,255,.18);transform:translateY(-1px)}
+  #dxHero .rec button b{font:600 12px/1 Kanit,system-ui,sans-serif;color:#c9d0ff;white-space:nowrap}
+  #dxHero .rec button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:700px){ #dxHero{flex-wrap:wrap;gap:12px;padding:14px} #dxHero .rg,#dxHero .rg svg{width:74px;height:74px} #dxHero .big{font-size:22px} #dxHero .rec{max-width:100%;width:100%;align-items:flex-start} #dxHero .rec .chips{justify-content:flex-start} }
+
+  /* 진행 막대 줄: 히어로가 있으니 막대는 얇게 */
+  body:not(.w95) #dexPane #dexProg .pb{height:4px;background:rgba(154,168,255,.12)}
+  body:not(.w95) #dexPane #dexProg .pb b{background:linear-gradient(90deg,#c9d0ff,#9aa8ff)}
+  body:not(.w95) #dexPane #dexProg select{border-radius:9px;background:rgba(154,168,255,.08);border-color:rgba(154,168,255,.25)}
+  body:not(.w95) #dexPane #dexSearch input{border-radius:10px}
+
+  /* 카드 */
+  body:not(.w95) #dexPane #dexList{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+  body:not(.w95) #dexPane #dexList .dx{position:relative;overflow:hidden;border-radius:14px;padding:12px 12px 11px;
+    border:1px solid rgba(154,168,255,.16);background:linear-gradient(170deg,rgba(154,168,255,.07),rgba(8,10,16,.45) 55%);transition:transform .18s,border-color .2s,box-shadow .2s}
+  body:not(.w95) #dexPane #dexList .dx::after{content:attr(data-no);position:absolute;right:10px;top:9px;font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.06em;color:rgba(201,208,255,.45)}
+  /* 찾은 카드: 위에 모형 그림, 아래 글자 */
+  body:not(.w95) #dexPane #dexList .dx.open{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  body:not(.w95) #dexPane #dexList .dx.open .dxth{order:-1;width:auto;height:92px;margin:-4px -4px 8px;border-radius:10px;align-self:stretch;
+    background:radial-gradient(70% 90% at 50% 45%,rgba(154,168,255,.18),rgba(10,13,20,.25) 70%),rgba(8,10,16,.3)}
+  body:not(.w95) #dexPane #dexList .dx.open .f{font:600 15px/1.15 Kanit,system-ui,sans-serif;color:#c9d0ff}
+  body:not(.w95) #dexPane #dexList .dx.open .n{font-size:14px;font-weight:750}
+  body:not(.w95) #dexPane #dexList .dx.open .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body:not(.w95) #dexPane #dexList .dx.open .dxk{margin-top:6px}
+  body:not(.w95) #dexPane #dexList .dx.open:hover{transform:translateY(-2px);border-color:rgba(201,208,255,.5);box-shadow:0 10px 26px rgba(80,90,200,.22),0 0 0 1px rgba(201,208,255,.08) inset}
+  body:not(.w95) #dexPane #dexList .dx.open::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.13) 45%,rgba(255,154,213,.08) 50%,rgba(158,231,255,.08) 55%,transparent 65%);background-size:260% 100%;background-position:120% 0;transition:background-position .7s ease}
+  body:not(.w95) #dexPane #dexList .dx.open:hover::before{background-position:-40% 0}
+  /* 방금 찾은 카드 */
+  body:not(.w95) #dexPane #dexList .dx.dx-new{border-color:rgba(255,226,154,.55)}
+  body:not(.w95) #dexPane #dexList .dx.dx-new::after{content:"NEW";color:#0b0d11;background:linear-gradient(90deg,#ffe29a,#ff9ad5);padding:3px 6px;border-radius:6px;top:7px;right:7px;letter-spacing:.08em;font-size:9px}
+  /* 잠긴 카드 */
+  body:not(.w95) #dexPane #dexList .dx.locked{opacity:1;min-height:104px;display:flex;flex-direction:column;justify-content:flex-end;
+    border-style:dashed;border-color:rgba(154,168,255,.18);background:repeating-linear-gradient(135deg,rgba(154,168,255,.035) 0 6px,transparent 6px 12px),rgba(8,10,16,.38)}
+  body:not(.w95) #dexPane #dexList .dx.locked::before{content:"?";position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font:800 54px/1 Kanit,system-ui,sans-serif;color:rgba(154,168,255,.1);pointer-events:none}
+  body:not(.w95) #dexPane #dexList .dx.locked .f{display:none}
+  body:not(.w95) #dexPane #dexList .dx.locked .n{color:rgba(201,208,255,.4);letter-spacing:.3em}
+  body:not(.w95) #dexPane #dexList .dx.locked .tg{position:absolute;left:10px;top:9px;font-size:10px;color:rgba(201,208,255,.55);padding:2px 7px;border-radius:999px;border:1px solid rgba(154,168,255,.18)}
+  body:not(.w95) #dexPane #dexList .dx.locked .hint{margin-top:6px}
+  body:not(.w95) #dexPane #dexList .dx.locked .hbtn{border-radius:999px;padding:4px 11px;border:1px solid rgba(154,168,255,.3);background:rgba(154,168,255,.08);color:#c9d0ff;font-size:11px;cursor:pointer;transition:all .15s}
+  body:not(.w95) #dexPane #dexList .dx.locked .hbtn:hover{background:rgba(154,168,255,.2);border-color:#c9d0ff}
+  body:not(.w95) #dexPane #dexList .dx.locked:hover{border-color:rgba(201,208,255,.35)}
+  @media (max-width:700px){
+    body:not(.w95) #dexPane #dexList{grid-template-columns:1fr 1fr;gap:7px}
+    body:not(.w95) #dexPane #dexList .dx{padding:10px 10px 9px;border-radius:12px}
+    body:not(.w95) #dexPane #dexList .dx.open .dxth{height:70px}
+    body:not(.w95) #dexPane #dexList .dx.open .f{font-size:13px}
+    body:not(.w95) #dexPane #dexList .dx.open .n{font-size:12.5px}
+    body:not(.w95) #dexPane #dexList .dx.open .s{font-size:10.5px}
+    body:not(.w95) #dexPane #dexList .dx.locked{min-height:88px}
+    body:not(.w95) #dexPane #dexList .dx.locked::before{font-size:40px}
+    body:not(.w95) #dexPane #dexList .dx.locked .tg{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ body:not(.w95) #dexPane #dexList .dx.open::before{display:none} }
+</style>
+<script>
+(function(){
+  if(typeof openDex !== 'function') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  const MILE = [10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+  const GRAD = '<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="dxGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#c9d0ff"/><stop offset="1" stop-color="#9aa8ff"/></linearGradient></defs></svg>';
+  // 지난번에 도감을 열었을 때 이후로 새로 찾은 것에 NEW (한 번 열면 다음엔 사라짐)
+  let fresh = new Set();
+  const loadSeen = () => { try{ const v = localStorage.getItem('pt_dexseen'); return v ? new Set(JSON.parse(v)) : null; }catch(e){ return null; } };
+  const saveSeen = () => { try{ localStorage.setItem('pt_dexseen', JSON.stringify([...found])); }catch(e){} };
+  const TAGN = () => { const m = {}; document.querySelectorAll('#dexTags button[data-t]').forEach(b => { if(b.dataset.t !== 'all') m[b.dataset.t] = (b.childNodes[0] && b.childNodes[0].textContent || '').trim(); }); return m; };
+  function decorate(){
+    const pane = document.getElementById('dexPane'), list = document.getElementById('dexList');
+    if(!pane || !list) return;
+    const all = allEntries(), idx = new Map(all.map((x, i) => [x.name, i + 1]));
+    const tot = all.length, got = all.filter(x => found.has(x.name)).length;
+    // 카드 번호 · 잠긴 카드 분류 표시 · 새로 찾은 표시
+    const tn = TAGN();
+    list.querySelectorAll('.dx').forEach(c => {
+      const no = idx.get(c.dataset.name); if(no) c.dataset.no = 'No.' + String(no).padStart(3, '0');
+      c.classList.toggle('dx-new', fresh.has(c.dataset.name));
+      if(c.classList.contains('locked') && !c.querySelector('.tg')){
+        const t = (c.dataset.tags || '').split(/\s+/).filter(Boolean)[0];
+        if(t && tn[t]){ const s = document.createElement('span'); s.className = 'tg'; s.textContent = tn[t].replace(/^[^\p{L}\p{N}]+/u, ''); c.appendChild(s); }
+      }
+    });
+    // 히어로
+    let h = document.getElementById('dxHero');
+    if(!h){ h = document.createElement('div'); h.id = 'dxHero'; }
+    const ds = document.getElementById('dexSearch');
+    if(ds && h.nextSibling !== ds) ds.before(h); else if(!ds && h.parentNode !== pane) pane.prepend(h);
+    const R = 38, C = 2 * Math.PI * R, pct = tot ? got / tot : 0;
+    const next = MILE.find(m => m > got) || tot, prevM = [...MILE].reverse().find(m => m <= got) || 0;
+    const gp = next > prevM ? (got - prevM) / (next - prevM) : 1;
+    const recent = [...found].reverse().filter(n => idx.has(n)).slice(0, 4);
+    const fOf = n => { const e = all.find(x => x.name === n); return e ? String(e.formula || '').replace(/<[^>]+>/g, '') : ''; };
+    h.innerHTML = GRAD + `
+      <div class="rg"><svg viewBox="0 0 88 88"><circle class="bg" cx="44" cy="44" r="${R}"/><circle class="fg" cx="44" cy="44" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}"/></svg><b>${Math.round(pct * 100)}%</b></div>
+      <div class="tx"><div class="k">CODEX // ${P('조합 도감', 'COMPOUNDS')}</div>
+        <div class="big">${got}<span>/ ${tot}</span></div>
+        <div class="goal">${got >= tot ? P('<b>전부 찾았어요!</b> 진짜 대단해요', '<b>All found!</b> Seriously impressive') : P(`<b>${next}종</b>까지 ${next - got}개 남았어요`, `<b>${next - got}</b> more to reach <b>${next}</b>`)}</div>
+        <div class="gbar"><i style="width:0%"></i></div></div>
+      ${recent.length ? `<div class="rec"><small>${P('최근 찾은 것', 'RECENT')}</small><div class="chips">${recent.map(n => `<button type="button" data-n="${String(n).replace(/"/g, '&quot;')}"><b>${fOf(n)}</b><span>${n}</span></button>`).join('')}</div></div>` : ''}`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const fg = h.querySelector('.fg'); if(fg) fg.setAttribute('stroke-dashoffset', (C * (1 - pct)).toFixed(1));
+      const gb = h.querySelector('.gbar i'); if(gb) gb.style.width = (gp * 100).toFixed(1) + '%';
+    }));
+    h.querySelectorAll('.rec button').forEach(b => b.addEventListener('click', () => {
+      const c = [...list.querySelectorAll('.dx.open')].find(x => x.dataset.name === b.dataset.n);
+      if(c){ c.hidden = false; c.scrollIntoView({ block: 'center', behavior: 'smooth' }); setTimeout(() => c.click(), 380); }
+      else try{ rxShowEntry(b.dataset.n); }catch(e){}
+    }));
+  }
+  const _od = openDex;
+  openDex = function(){
+    const dex = document.getElementById('dex'), wasOn = dex && dex.classList.contains('on');
+    const r = _od.apply(this, arguments);
+    if(!wasOn){ const sv = loadSeen(); fresh = sv ? new Set([...found].filter(n => !sv.has(n))) : new Set(); saveSeen(); }
+    try{ decorate(); }catch(e){ console.warn('dexx', e); }
+    return r;
+  };
+  // 정렬이 바뀌면 카드가 다시 놓이므로 번호를 다시 붙인다
+  document.addEventListener('change', e => { if(e.target && e.target.closest && e.target.closest('#dexProg')) setTimeout(() => { try{ decorate(); }catch(_){} }, 0); });
+  // 도감 탭을 오갈 때도
+  document.addEventListener('click', e => { if(e.target && e.target.closest && e.target.closest('#dexNav .dn')) setTimeout(() => { try{ decorate(); }catch(_){} }, 0); });
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
