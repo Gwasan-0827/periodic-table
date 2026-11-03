@@ -3179,7 +3179,10 @@
 /* 캔버스 방어: 반지름이 음수·NaN 이면 그라디언트가 예외를 던져 그 프레임 그림이 통째로 멈춘다. 0으로 잡아 준다 */
 (function(){ try{ const P = CanvasRenderingContext2D.prototype, f = P.createRadialGradient;
   P.createRadialGradient = function(x0, y0, r0, x1, y1, r1){ const c = v => (v > 0 && isFinite(v)) ? v : 0, z = v => isFinite(v) ? v : 0;
-    return f.call(this, z(x0), z(y0), c(r0), z(x1), z(y1), c(r1)); }; }catch(e){} })();
+    return f.call(this, z(x0), z(y0), c(r0), z(x1), z(y1), c(r1)); };
+  const fa = P.arc; P.arc = function(x, y, r){ const a = [...arguments]; if(!(r >= 0)) a[2] = 0; return fa.apply(this, a); };
+  const fe = P.ellipse; P.ellipse = function(x, y, rx, ry){ const a = [...arguments]; if(!(rx >= 0)) a[2] = 0; if(!(ry >= 0)) a[3] = 0; return fe.apply(this, a); };
+  }catch(e){} })();
 </script>
 <script>
 /* ═══ 저전력 (폰·앱): 발열 줄이기 ═══
