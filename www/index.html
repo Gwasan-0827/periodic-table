@@ -4461,7 +4461,7 @@ function fuseLoop(now){
       fctx.globalAlpha = 1;
 
       // 본체
-      const rad = 20 * (1 - k*0.45);
+      const rad = Math.max(0.5, 20 * (1 - k*0.45));
       const gg = fctx.createRadialGradient(x,y,0,x,y,rad*2);
       gg.addColorStop(0, it.col);
       gg.addColorStop(1, 'rgba(0,0,0,0)');
@@ -13648,7 +13648,7 @@ function fuseLoop(now){
       }
       fctx.globalAlpha = 1;
 
-      const rad = 20 * (1 - Math.max(0,kk)*0.45);
+      const rad = Math.max(0.5, 20 * (1 - Math.max(0,kk)*0.45));
       const gg = fctx.createRadialGradient(x, y, 0, x, y, rad*2);
       gg.addColorStop(0, it.col);
       gg.addColorStop(1, 'rgba(0,0,0,0)');
@@ -31648,7 +31648,7 @@ function rxGaCube(){
     fctx.globalAlpha = 1;
   }
   function chip(x, y, r, col, sym, a){
-    if(a <= .01) return;
+    if(a <= .01 || !(r > 0)) return;
     fctx.globalAlpha = a * .4;
     const gg = fctx.createRadialGradient(x, y, 0, x, y, r * 1.9);
     gg.addColorStop(0, col); gg.addColorStop(1, 'rgba(0,0,0,0)');
@@ -39614,6 +39614,363 @@ void main(){
   };
   const _sl = specialList;
   specialList = function(){ return _sl.apply(this, arguments).filter(x => !MOVE.includes(x.name)); };
+})();
+</script>
+<style>
+  /* ═══ 학습 › 원소 퀴즈 리워크 (4.2.5+): 유형 카드 · 난이도 범위 · 진행 칸 · 정답 연출 · 결과 등급 ═══ */
+  .qzx{--lp:#9aa8ff;--lp2:#c9d0ff;gap:0!important}
+  .qz-hero{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;border:1px solid rgba(154,168,255,.22);
+    background:radial-gradient(100% 140% at 0% 0%,rgba(154,168,255,.2),transparent 60%),rgba(10,13,24,.85);overflow:hidden;position:relative}
+  .qz-hero::after{content:"";position:absolute;right:-30px;top:-40px;width:160px;height:160px;border-radius:50%;
+    background:conic-gradient(from 0deg,transparent,rgba(201,208,255,.14),transparent 30%);animation:qzSpin 9s linear infinite;pointer-events:none}
+  @keyframes qzSpin{to{transform:rotate(360deg)}}
+  .qz-hero .k{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.7)}
+  .qz-hero h3{margin:6px 0 0;font-size:19px;font-weight:800;word-break:keep-all;display:flex;align-items:center;gap:8px}
+  .qz-hero h3 svg{width:22px;height:22px;stroke:#c9d0ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .qz-hero .sub{margin-top:5px;font-size:12px;color:var(--dim);word-break:keep-all}
+  .qz-ring{flex:none;margin-left:auto;position:relative;width:64px;height:64px;z-index:1}
+  .qz-ring svg{width:64px;height:64px;transform:rotate(-90deg)}
+  .qz-ring circle{fill:none;stroke-width:5}
+  .qz-ring .bg{stroke:rgba(154,168,255,.14)}
+  .qz-ring .fg{stroke:url(#qzGrad);stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.2,.9,.25,1)}
+  .qz-ring b{position:absolute;inset:0;display:grid;place-items:center;font:800 15px/1 Kanit,system-ui,sans-serif}
+  .qz-ring small{position:absolute;left:-10px;right:-10px;bottom:-14px;text-align:center;font-size:9.5px;color:var(--dim);white-space:nowrap}
+  .qz-k{margin:20px 2px 8px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:var(--lp)}
+  .qz-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #qBody .qz-mode{position:relative;text-align:left;padding:11px 12px;border-radius:12px!important;border:1px solid rgba(154,168,255,.16);background:rgba(154,168,255,.035);color:var(--text);font:inherit;cursor:pointer;transition:all .2s}
+  #qBody .qz-mode:hover{border-color:rgba(201,208,255,.45);transform:translateY(-1px);color:var(--text)}
+  #qBody .qz-mode.on{border-color:var(--lp2);background:linear-gradient(160deg,rgba(154,168,255,.24),rgba(154,168,255,.05));box-shadow:0 0 18px rgba(154,168,255,.18);color:var(--text)}
+  .qz-mode svg{width:22px;height:22px;stroke:#c9d0ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+  .qz-mode.on svg{stroke:#fff;transform:scale(1.1) rotate(-6deg)}
+  .qz-mode .t{display:block;margin-top:7px;font-size:13px;font-weight:750;word-break:keep-all}
+  .qz-mode .d{display:block;margin-top:3px;font-size:10.5px;color:var(--dim);line-height:1.45;word-break:keep-all;font-weight:500}
+  .qz-mode .bst{position:absolute;right:9px;top:9px;font:700 9.5px/1 ui-monospace,monospace;color:#ffe8a3;opacity:.85}
+  .qz-diff{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  #qBody .qz-df{padding:10px 12px;border-radius:12px!important;text-align:left;border:1px solid rgba(154,168,255,.16);background:rgba(154,168,255,.035);color:var(--text);font:inherit;cursor:pointer;transition:all .2s}
+  #qBody .qz-df.on{border-color:var(--lp2);background:linear-gradient(160deg,rgba(154,168,255,.22),rgba(154,168,255,.05));box-shadow:0 0 16px rgba(154,168,255,.16);color:var(--text)}
+  .qz-df .t{display:block;font-size:13px;font-weight:750}
+  .qz-df .r{display:block;margin-top:3px;font:700 10px/1 ui-monospace,monospace;color:var(--dim)}
+  .qz-df .bar{display:block;margin-top:8px;height:4px;border-radius:3px;background:rgba(154,168,255,.12);overflow:hidden}
+  .qz-df .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff)}
+  .qz-df.on .bar i{box-shadow:0 0 8px #9aa8ff}
+  .qz-len{display:flex;gap:8px;align-items:center}
+  #qBody .qz-len .qpick{min-width:58px;text-align:center;font:800 14px/1 Kanit,system-ui,sans-serif;padding:9px 12px}
+  .qz-len .eta{margin-left:auto;font-size:11px;color:var(--dim)}
+  #qBody .qzx .qbestline{margin:18px 0 0}
+  #qBody .qzx #qGo{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+  #qBody .qzx #qGo svg{width:16px;height:16px;fill:#0b0d11}
+  @media (max-width:640px){ .qz-modes{grid-template-columns:repeat(2,1fr)} .qz-mode .d{display:none} .qz-diff{grid-template-columns:repeat(3,1fr)} .qz-df{padding:9px 10px} .qz-df .t{font-size:12px} }
+
+  /* 문제 화면 */
+  .qz-prog{display:flex;gap:3px;margin:0 0 14px}
+  .qz-prog i{flex:1;height:6px;border-radius:3px;background:rgba(154,168,255,.12);transition:background .3s}
+  .qz-prog i.ok{background:#69db7c;box-shadow:0 0 6px rgba(105,219,124,.5)}
+  .qz-prog i.no{background:#ff6b6b;box-shadow:0 0 6px rgba(255,107,107,.45)}
+  .qz-prog i.cur{background:#c9d0ff;animation:qzCur 1.2s ease-in-out infinite}
+  @keyframes qzCur{50%{opacity:.4}}
+  .qz-card{position:relative;padding:18px 14px 6px;margin-bottom:16px;border-radius:18px;border:1px solid rgba(154,168,255,.2);
+    background:radial-gradient(120% 90% at 50% 0%,rgba(154,168,255,.16),transparent 70%),rgba(10,13,24,.6);animation:qzIn .4s cubic-bezier(.2,1.2,.4,1)}
+  .qz-card .no{position:absolute;left:12px;top:10px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.12em;color:rgba(201,208,255,.65)}
+  .qz-card .mt{position:absolute;right:12px;top:9px;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--dim)}
+  .qz-card .mt svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .qz-card .qlabel{margin-top:8px}
+  .qz-card .qprompt.big{font-family:Kanit,system-ui,sans-serif;font-weight:600;text-shadow:0 0 24px rgba(154,168,255,.5)}
+  .qz-card.shake{animation:qzShake .4s}
+  .qz-card.good{border-color:rgba(105,219,124,.55);box-shadow:0 0 26px rgba(105,219,124,.18)}
+  @keyframes qzIn{from{transform:translateY(12px) scale(.97);opacity:0}}
+  @keyframes qzShake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+  .qz-run .qopts{display:grid;grid-template-columns:1fr 1fr;gap:8px;counter-reset:qo}
+  .qz-run .qopt{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;border-radius:12px!important;border-color:rgba(154,168,255,.18)!important;background:rgba(154,168,255,.04)!important;
+    transition:transform .15s,border-color .2s,background .2s;animation:qzOpt .35s cubic-bezier(.2,1.2,.4,1) both;word-break:keep-all}
+  .qz-run .qopt::before{counter-increment:qo;content:counter(qo,upper-alpha);flex:none;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+    font:700 11px/1 ui-monospace,monospace;color:#c9d0ff;border:1px solid rgba(154,168,255,.3);background:rgba(154,168,255,.08)}
+  .qz-run .qopt:nth-child(2){animation-delay:.05s}.qz-run .qopt:nth-child(3){animation-delay:.1s}.qz-run .qopt:nth-child(4){animation-delay:.15s}
+  @keyframes qzOpt{from{transform:translateY(10px);opacity:0}}
+  .qz-run .qopt:hover:not(:disabled){transform:translateY(-1px);border-color:rgba(201,208,255,.55)!important;background:rgba(154,168,255,.1)!important}
+  .qz-run .qopt:active:not(:disabled){transform:scale(.97)}
+  .qz-run .qopt.right{border-color:#69db7c!important;background:rgba(105,219,124,.14)!important;color:#b2f2bb}
+  .qz-run .qopt.right::before{content:"✓";color:#0b0d11;background:#69db7c;border-color:#69db7c}
+  .qz-run .qopt.bad{border-color:#ff6b6b!important;background:rgba(255,107,107,.13)!important;color:#ffa8a8}
+  .qz-run .qopt.bad::before{content:"✕";color:#fff;background:#ff6b6b;border-color:#ff6b6b}
+  .qz-run .qopt:disabled:not(.right):not(.bad){opacity:.4}
+  .qz-run .qfeed{margin-top:14px;padding:10px 12px;border-radius:12px;background:rgba(154,168,255,.06);border:1px solid rgba(154,168,255,.14);animation:qzIn .3s ease-out}
+  .qz-run .qfeed:empty{display:none}
+  .qz-run #qNext{border-radius:10px;padding:9px 16px;font-weight:800;background:linear-gradient(135deg,#c9d0ff,#9aa8ff);color:#0b0d11}
+  .qz-run .qfeed .kb{font:600 10px/1 ui-monospace,monospace;color:var(--dim);opacity:.7}
+  @media (max-width:520px){ .qz-run .qopts{grid-template-columns:1fr} .qz-run .qfeed .kb{display:none} }
+  @media (hover:none){ .qz-run .qfeed .kb{display:none} }
+  /* 맞혔을 때 튀는 조각 · +1 */
+  .qz-pop{position:fixed;z-index:80;pointer-events:none;width:7px;height:7px;border-radius:2px;background:var(--c);animation:qzPop .7s cubic-bezier(.15,.8,.3,1) forwards}
+  @keyframes qzPop{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.3);opacity:0}}
+  .qz-plus{position:fixed;z-index:81;pointer-events:none;font:800 18px/1 Kanit,system-ui,sans-serif;color:#8ce99a;text-shadow:0 0 12px rgba(105,219,124,.7);animation:qzPlus .8s ease-out forwards}
+  @keyframes qzPlus{to{transform:translateY(-38px);opacity:0}}
+  .qz-toast{position:absolute;left:50%;top:6px;transform:translateX(-50%);z-index:5;padding:6px 12px;border-radius:999px;white-space:nowrap;
+    font:800 12px/1 inherit;font-family:inherit;color:#0b0d11;background:linear-gradient(90deg,#ffe29a,#ff9ad5);box-shadow:0 6px 20px rgba(255,154,213,.4);animation:qzToast 1.6s ease-out forwards;pointer-events:none}
+  @keyframes qzToast{0%{transform:translate(-50%,8px) scale(.8);opacity:0}15%{transform:translate(-50%,0) scale(1.05);opacity:1}25%{transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-6px)}}
+  #qHead .qst.hot b{color:#ffb86b;text-shadow:0 0 10px rgba(255,140,60,.7)}
+  #qHead .qst.hot::after{content:"🔥";margin-left:3px}
+
+  /* 결과 */
+  .qz-res .qscore,.qz-res .qpct,.qz-res .qmeta{display:none}
+  .qz-rh{display:flex;align-items:center;gap:18px;padding:16px;border-radius:18px;border:1px solid rgba(154,168,255,.22);
+    background:radial-gradient(120% 120% at 0% 0%,rgba(154,168,255,.22),transparent 60%),rgba(10,13,24,.75);position:relative;overflow:hidden}
+  .qz-big{position:relative;width:118px;height:118px;flex:none}
+  .qz-big svg{width:118px;height:118px;transform:rotate(-90deg)}
+  .qz-big circle{fill:none;stroke-width:8}
+  .qz-big .bg{stroke:rgba(154,168,255,.13)}
+  .qz-big .fg{stroke:url(#qzGrad);stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.9,.25,1)}
+  .qz-big .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .qz-big .num b{font:800 34px/1 Kanit,system-ui,sans-serif}
+  .qz-big .num span{font-size:11px;color:var(--dim);margin-top:3px}
+  .qz-gr{font:800 46px/1 Kanit,system-ui,sans-serif;background:linear-gradient(135deg,#fff,#c9d0ff 40%,#9aa8ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 14px rgba(154,168,255,.55));animation:qzGr .7s .5s cubic-bezier(.2,1.6,.4,1) both}
+  .qz-gr.s{background:linear-gradient(135deg,#ffe29a,#ff9ad5 50%,#9ee7ff);-webkit-background-clip:text;background-clip:text}
+  @keyframes qzGr{from{transform:scale(2.2) rotate(-12deg);opacity:0}}
+  .qz-msg{margin-top:6px;font-size:14px;font-weight:750;word-break:keep-all}
+  .qz-nb{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;color:#0b0d11;background:linear-gradient(90deg,#ffe29a,#ffd43b);animation:qzGr .6s 1s cubic-bezier(.2,1.6,.4,1) both}
+  .qz-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .qz-chip{padding:10px;border-radius:12px;background:rgba(154,168,255,.05);border:1px solid rgba(154,168,255,.14);text-align:center}
+  .qz-chip b{display:block;font:800 18px/1 Kanit,system-ui,sans-serif}
+  .qz-chip span{display:block;margin-top:4px;font-size:10.5px;color:var(--dim)}
+  .qz-res .qwlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+  .qz-res .qw{border-radius:10px;border-color:rgba(255,140,160,.25);background:rgba(255,120,140,.05);align-items:center;animation:qzOpt .35s both}
+  .qz-res .qw .s{font:600 17px/1 Kanit,system-ui,sans-serif;width:auto;min-width:30px}
+  .qz-res .qw .a{color:#8ce99a}
+  .qz-res .qbtns .btn{border-radius:12px}
+  .qz-res .qbtns #qAgain{background:linear-gradient(135deg,#c9d0ff,#9aa8ff);font-weight:800}
+  .qz-conf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .qz-conf i{position:absolute;top:-10px;width:7px;height:11px;border-radius:2px;background:var(--c);animation:qzFall var(--t) var(--d) linear forwards}
+  @keyframes qzFall{to{transform:translate(var(--dx),220px) rotate(var(--r));opacity:0}}
+  @media (max-width:520px){ .qz-rh{flex-direction:column;text-align:center;gap:10px} .qz-big{width:104px;height:104px} .qz-big svg{width:104px;height:104px} }
+
+  /* 표에서 찾기 배너 */
+  #qBar.on{background:linear-gradient(90deg,rgba(20,24,48,.97),rgba(16,20,27,.97));border-bottom-color:rgba(154,168,255,.35)}
+  #qBar .qbq b{color:#c9d0ff}
+  @media (prefers-reduced-motion:reduce){ .qz-hero::after,.qz-prog i.cur{animation:none} .qz-card,.qz-run .qopt,.qz-gr,.qz-nb{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof qHome !== 'function' || typeof renderQ !== 'function') return;
+  const en = () => LANG === 'en';
+  const P = (ko, enT) => en() ? enT : ko;
+  const IC = {
+    mixed: '<path d="M4 7h3c4 0 6 10 10 10h3M4 17h3c4 0 6-10 10-10h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+    sym2name: '<rect x="3" y="5" width="9" height="12" rx="2"/><path d="M15 9h6M15 13h4"/>',
+    name2sym: '<path d="M3 9h6M3 13h4"/><rect x="12" y="5" width="9" height="12" rx="2"/>',
+    num: '<path d="M10 4 8 20M16 4l-2 16M5 9h15M4 15h15"/>',
+    cat: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="16.5" cy="16.5" r="3.5"/>',
+    find: '<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/>',
+    compare: '<path d="M5 20V12M10 20V5M15 20v-7M20 20V9"/>',
+    cfg: '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"/>',
+  };
+  const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k] || IC.mixed}</svg>`;
+  const DESC = {
+    mixed: ['모든 유형이 골고루 섞여요', 'Every type, shuffled'],
+    sym2name: ['기호를 보고 이름 고르기', 'See the symbol, pick the name'],
+    name2sym: ['이름을 보고 기호 고르기', 'See the name, pick the symbol'],
+    num: ['몇 번 원소일까?', 'Which atomic number?'],
+    cat: ['금속? 비활성 기체? 분류 맞히기', 'Metal? Noble gas? Name the group'],
+    find: ['주기율표에서 직접 눌러 찾기', 'Tap it on the real table'],
+    compare: ['넷 중 가장 크거나 작은 것', 'Biggest or smallest of four'],
+    cfg: ['전자 배치를 보고 원소 맞히기', 'Name it from its electron configuration'],
+  };
+  const MODES = ['mixed', 'sym2name', 'name2sym', 'num', 'cat', 'find', 'compare', 'cfg'];
+  const DIFFS = [['easy', 20], ['normal', 56], ['hard', 118]];
+  const DNAME = { easy: ['쉬움', 'Easy'], normal: ['보통', 'Normal'], hard: ['어려움', 'Hard'] };
+  const GRAD = '<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="qzGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#c9d0ff"/><stop offset="1" stop-color="#9aa8ff"/></linearGradient></defs></svg>';
+  const bestOf = (mode, diff, len) => { try{ return +(localStorage.getItem(`pt_qbest_${mode}_${diff}_${len}`) || 0); }catch(e){ return 0; } };
+  const ring = (v, max, r, cls) => { const C = 2 * Math.PI * r, f = max ? Math.min(1, v / max) : 0; return `<circle class="bg" cx="${r + 6}" cy="${r + 6}" r="${r}"/><circle class="fg${cls ? ' ' + cls : ''}" cx="${r + 6}" cy="${r + 6}" r="${r}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - f)).toFixed(1)}"/>`; };
+
+  /* ── 시작 화면 ── */
+  function build(){
+    const set = qBodyEl.querySelector('.qset'); if(!set) return;
+    const best = getBest(), modeT = t('qm_' + QZ.mode);
+    const R = 26;
+    set.className = 'qset qzx';
+    set.innerHTML = GRAD + `
+      <div class="qz-hero">
+        <div><div class="k">QUIZ // ${P('원소 퀴즈', 'ELEMENT QUIZ')}</div>
+          <h3 id="qzT">${svg(QZ.mode)}<span>${modeT}</span></h3>
+          <div class="sub" id="qzS">${P(DESC[QZ.mode][0], DESC[QZ.mode][1])}</div></div>
+        <div class="qz-ring"><svg viewBox="0 0 64 64">${ring(best, QZ.len, R)}</svg><b id="qzRb">${best}/${QZ.len}</b><small>${t('qBest')}</small></div>
+      </div>
+      <div class="qz-k">${t('qMode').toUpperCase()}</div>
+      <div class="qz-modes" id="qModeRow">${MODES.map(k => {
+        const b = Math.max(...DIFFS.map(([d]) => [5, 10, 20].map(n => bestOf(k, d, n) / n)).flat());
+        return `<button class="qpick qz-mode${QZ.mode === k ? ' on' : ''}" data-k="${k}">${svg(k)}<span class="t">${t('qm_' + k)}</span><span class="d">${P(DESC[k][0], DESC[k][1])}</span>${b >= 1 ? '<span class="bst">★</span>' : ''}</button>`;
+      }).join('')}</div>
+      <div class="qz-k">${t('qDiff').toUpperCase()}</div>
+      <div class="qz-diff" id="qDiffRow">${DIFFS.map(([k, n]) => `<button class="qpick qz-df${QZ.diff === k ? ' on' : ''}" data-k="${k}"><span class="t">${P(DNAME[k][0], DNAME[k][1])}</span><span class="r">${n === 118 ? P('전체 118', 'all 118') : '1 – ' + n}</span><span class="bar"><i style="width:${(n / 118 * 100).toFixed(1)}%"></i></span></button>`).join('')}</div>
+      <div class="qz-k">${t('qLen').toUpperCase()}</div>
+      <div class="qz-len" id="qLenRow">${[5, 10, 20].map(v => `<button class="qpick${QZ.len === v ? ' on' : ''}" data-k="${v}">${v}</button>`).join('')}<span class="eta" id="qzEta"></span></div>
+      <div class="qbestline" id="qBestLine">${t('qBest')} — ${best} / ${QZ.len}</div>
+      <button class="btn" id="qGo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>${t('qStart')}</button>`;
+    const sync = () => {
+      const b = getBest();
+      const rb = document.getElementById('qzRb'); if(rb) rb.textContent = `${b}/${QZ.len}`;
+      const fg = set.querySelector('.qz-ring .fg'); if(fg){ const C = 2 * Math.PI * R; fg.setAttribute('stroke-dashoffset', (C * (1 - Math.min(1, b / QZ.len))).toFixed(1)); }
+      const bl = document.getElementById('qBestLine'); if(bl) bl.textContent = `${t('qBest')} — ${b} / ${QZ.len}`;
+      const tt = document.getElementById('qzT'); if(tt) tt.innerHTML = svg(QZ.mode) + `<span>${t('qm_' + QZ.mode)}</span>`;
+      const ss = document.getElementById('qzS'); if(ss) ss.textContent = P(DESC[QZ.mode][0], DESC[QZ.mode][1]);
+      const eta = document.getElementById('qzEta'); if(eta) eta.textContent = P(`약 ${Math.max(1, Math.round(QZ.len * 8 / 60))}분`, `about ${Math.max(1, Math.round(QZ.len * 8 / 60))} min`);
+    };
+    const wire = (id, key, cast) => {
+      const row = document.getElementById(id);
+      row.querySelectorAll('.qpick').forEach(b => b.addEventListener('click', () => {
+        QZ[key] = cast ? cast(b.dataset.k) : b.dataset.k;
+        row.querySelectorAll('.qpick').forEach(x => x.classList.toggle('on', x === b));
+        try{ SFX.pick(); }catch(e){}
+        sync();
+      }));
+    };
+    wire('qModeRow', 'mode'); wire('qDiffRow', 'diff'); wire('qLenRow', 'len', Number);
+    document.getElementById('qGo').addEventListener('click', qStartRun);
+    sync();
+  }
+  const _qh = qHome;
+  qHome = function(){ const r = _qh.apply(this, arguments); try{ build(); }catch(e){ console.warn('quizx', e); } return r; };
+
+  /* ── 문제마다 맞음/틀림 기록 (진행 칸용) ── */
+  const _sr = qStartRun;
+  qStartRun = function(){ QZ.hist = []; QZ.used = new Set(); return _sr.apply(this, arguments); };
+  // 한 판 안에서는 같은 원소가 또 나오지 않게 (몇 번 다시 뽑아 본다)
+  const _gq = genQ;
+  genQ = function(){
+    let q = _gq.apply(this, arguments);
+    const used = QZ.used || (QZ.used = new Set());
+    for(let k = 0; k < 8 && q && q.e && used.has(q.e.n); k++) q = _gq.apply(this, arguments);
+    if(q && q.e) used.add(q.e.n);
+    return q;
+  };
+  const _ms = markScore;
+  markScore = function(ok){ (QZ.hist || (QZ.hist = [])).push(!!ok); return _ms.apply(this, arguments); };
+
+  const progHTML = () => {
+    const h = QZ.hist || [];
+    let s = '';
+    for(let i = 0; i < QZ.len; i++) s += `<i class="${i < h.length ? (h[i] ? 'ok' : 'no') : i === h.length ? 'cur' : ''}"></i>`;
+    return `<div class="qz-prog">${s}</div>`;
+  };
+  const hotHead = () => { const s = qHeadEl.querySelector('.qst'); if(s) s.classList.toggle('hot', QZ.streak >= 3); };
+
+  /* ── 문제 화면 ── */
+  const _rq = renderQ;
+  renderQ = function(){
+    const r = _rq.apply(this, arguments);
+    try{
+      const q = QZ.q;
+      if(q && q.mode !== 'find'){
+        qBodyEl.classList.add('qz-run');
+        const lab = qBodyEl.querySelector('.qlabel'), pr = qBodyEl.querySelector('.qprompt');
+        const card = document.createElement('div'); card.className = 'qz-card';
+        card.innerHTML = `<span class="no">Q.${String(QZ.i).padStart(2, '0')}</span><span class="mt">${svg(q.mode)}${t('qm_' + q.mode)}</span>`;
+        if(lab){ lab.before(card); card.appendChild(lab); }
+        if(pr) card.appendChild(pr);
+        if(!lab && !pr) qBodyEl.prepend(card);
+        card.insertAdjacentHTML('beforebegin', progHTML());
+        hotHead();
+      }
+    }catch(e){ console.warn('quizx', e); }
+    return r;
+  };
+
+  /* ── 답 고른 뒤: 연출 ── */
+  const COLS = ['#c9d0ff', '#9aa8ff', '#8ce99a', '#ffe29a', '#ff9ad5', '#9ee7ff'];
+  const burst = (el) => {
+    if(RX_REDUCED) return;
+    const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+    for(let i = 0; i < 14; i++){
+      const p = document.createElement('i'); p.className = 'qz-pop';
+      const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 60;
+      p.style.cssText = `left:${cx}px;top:${cy}px;--c:${COLS[i % COLS.length]};--dx:${(Math.cos(a) * d).toFixed(0)}px;--dy:${(Math.sin(a) * d).toFixed(0)}px;--r:${(Math.random() * 360).toFixed(0)}deg`;
+      document.body.appendChild(p); setTimeout(() => p.remove(), 800);
+    }
+    const pl = document.createElement('div'); pl.className = 'qz-plus'; pl.textContent = '+1';
+    pl.style.cssText = `left:${b.right - 34}px;top:${b.top - 4}px`;
+    document.body.appendChild(pl); setTimeout(() => pl.remove(), 900);
+  };
+  const toast = msg => {
+    const card = qBodyEl.querySelector('.qz-card'); if(!card) return;
+    const d = document.createElement('div'); d.className = 'qz-toast'; d.textContent = msg; card.appendChild(d); setTimeout(() => d.remove(), 1700);
+  };
+  const _ac = answerChoice;
+  answerChoice = function(picked, btn){
+    const was = QZ.answered;
+    const r = _ac.apply(this, arguments);
+    if(was) return r;
+    try{
+      const ok = (QZ.hist || []).slice(-1)[0];
+      const card = qBodyEl.querySelector('.qz-card');
+      const pg = qBodyEl.querySelector('.qz-prog'); if(pg) pg.outerHTML = progHTML();
+      if(ok){ if(card) card.classList.add('good'); if(btn) burst(btn);
+        if([3, 5, 10, 15, 20].includes(QZ.streak)) toast(P(`${QZ.streak}연속 정답!`, `${QZ.streak} in a row!`)); }
+      else if(card){ card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); }
+      hotHead();
+      const nx = document.getElementById('qNext');
+      if(nx && !nx.parentNode.querySelector('.kb')) nx.insertAdjacentHTML('beforebegin', '<span class="kb">Enter ↵</span>');
+      if(nx) setTimeout(() => { try{ if(matchMedia('(hover:hover)').matches) nx.focus({ preventScroll: true }); }catch(e){} }, 30);
+    }catch(e){ console.warn('quizx', e); }
+    return r;
+  };
+  // 키보드: 1~4 / A~D 로 고르기, Enter 로 다음
+  addEventListener('keydown', e => {
+    if(!QZ.on || !quizEl.classList.contains('on') || !QZ.q || QZ.q.mode === 'find') return;
+    if(e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase();
+    const idx = '1234'.indexOf(k) >= 0 ? '1234'.indexOf(k) : 'abcd'.indexOf(k);
+    if(!QZ.answered && idx >= 0 && k.length === 1){ const o = qBodyEl.querySelectorAll('.qopt')[idx]; if(o){ e.preventDefault(); o.click(); } }
+    else if(QZ.answered && (e.key === 'Enter' || e.key === ' ')){ const n = document.getElementById('qNext'); if(n && document.activeElement !== n){ e.preventDefault(); n.click(); } }
+  });
+
+  /* ── 결과 화면 ── */
+  const _res = qShowResult;
+  qShowResult = function(){
+    const prev = getBest();
+    const r = _res.apply(this, arguments);
+    try{
+      qBodyEl.classList.remove('qz-run');
+      qBodyEl.classList.add('qz-res');
+      const pct = Math.round(QZ.score / QZ.len * 100);
+      const g = pct === 100 ? 'S' : pct >= 80 ? 'A' : pct >= 60 ? 'B' : pct >= 40 ? 'C' : 'D';
+      const MSG = { S: ['완벽해요. 주기율표가 머릿속에 있네요', 'Flawless. The table lives in your head'],
+                    A: ['거의 다 맞혔어요!', 'Almost all of them!'],
+                    B: ['좋아요, 조금만 더!', 'Nice, a little more!'],
+                    C: ['절반은 넘었어요', 'Over halfway there'],
+                    D: ['괜찮아요, 외우기 탭에서 연습해 봐요', 'No worries. Try the Memorise tab'] }[g];
+      const isBest = QZ.score > prev;
+      const R = 50, C = 2 * Math.PI * R;
+      const acc = QZ.hist && QZ.hist.length ? Math.round(QZ.hist.filter(Boolean).length / QZ.hist.length * 100) : pct;
+      const top = document.createElement('div');
+      top.innerHTML = GRAD + `
+        <div class="qz-rh">${pct === 100 && !RX_REDUCED ? `<div class="qz-conf">${Array.from({ length: 36 }, (_, i) => `<i style="left:${(Math.random() * 100).toFixed(1)}%;--c:${COLS[i % COLS.length]};--t:${(1.6 + Math.random()).toFixed(2)}s;--d:${(Math.random() * .6).toFixed(2)}s;--dx:${((Math.random() - .5) * 80).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg"></i>`).join('')}</div>` : ''}
+          <div class="qz-big"><svg viewBox="0 0 112 112"><circle class="bg" cx="56" cy="56" r="${R}"/><circle class="fg" cx="56" cy="56" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}"/></svg>
+            <div class="num"><b id="qzCnt">0</b><span>/ ${QZ.len}</span></div></div>
+          <div><div class="qz-gr${g === 'S' ? ' s' : ''}">${g}</div>
+            <div class="qz-msg">${P(MSG[0], MSG[1])}</div>
+            ${isBest ? `<span class="qz-nb">${t('qNewBest')}</span>` : ''}</div>
+        </div>
+        <div class="qz-chips">
+          <div class="qz-chip"><b>${acc}%</b><span>${P('정답률', 'Accuracy')}</span></div>
+          <div class="qz-chip"><b>${QZ.bestStreak}</b><span>${P('최고 연속', 'Best streak')}</span></div>
+          <div class="qz-chip"><b>${Math.max(prev, QZ.score)}</b><span>${t('qBest')}</span></div>
+        </div>`;
+      const sc = qBodyEl.querySelector('.qscore');
+      if(sc) sc.before(...top.childNodes); else qBodyEl.prepend(...top.childNodes);
+      // 고리가 차오르며 숫자가 올라간다
+      const fg = qBodyEl.querySelector('.qz-big .fg'), cnt = document.getElementById('qzCnt');
+      requestAnimationFrame(() => requestAnimationFrame(() => { if(fg) fg.setAttribute('stroke-dashoffset', (C * (1 - QZ.score / QZ.len)).toFixed(1)); }));
+      const t0 = performance.now(), dur = RX_REDUCED ? 1 : 1100;
+      const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); if(cnt) cnt.textContent = Math.round(QZ.score * e); if(k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+      qBodyEl.querySelectorAll('.qw').forEach((w, i) => w.style.animationDelay = (0.4 + i * 0.04).toFixed(2) + 's');
+    }catch(e){ console.warn('quizx', e); }
+    return r;
+  };
+  // 다른 화면으로 가면 꾸밈 클래스 정리
+  const _oh = openHub;
+  openHub = function(){ qBodyEl.classList.remove('qz-run', 'qz-res'); return _oh.apply(this, arguments); };
+  const _qe = qEnd;
+  qEnd = function(){ qBodyEl.classList.remove('qz-run', 'qz-res'); return _qe.apply(this, arguments); };
 })();
 </script>
 <style>
