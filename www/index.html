@@ -6222,6 +6222,7 @@ const CHANGELOG = [
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '폰에서 조합 결과 창이 덜 뜨거워졌어요. 결과 창이 떠 있으면 뒤 원자 모형과 장식 애니메이션은 쉬고, 물결과 모형은 가만히 두면 천천히 그리다가 멈춰요',
+           '고친 것: 업적 이름이 길면 칸 밖으로 잘리던 문제, 업적을 눌렀을 때 폰에서 화면이 깜빡이던 문제',
            '고친 것: 결과 창에서 막대·구조식 보기로 바꿀 때마다 아래 설명이 깜빡이던 문제',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
@@ -6270,6 +6271,7 @@ const CHANGELOG = [
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
            'The result card runs cooler on phones: the atom model and decorations behind it rest, and the waves and model slow down and stop when left alone',
+           'Fixed: long achievement names were cut off, and the achievement card flickered on phones',
            'Fixed: the text under the result card flickered every time you switched to the stick or structure view',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
@@ -43695,6 +43697,30 @@ void main(){
     tm = setTimeout(() => card.classList.add('rx-done'), 1800);   // 등장 애니메이션이 다 끝난 뒤
     return r;
   };
+})();
+</script>
+<style>
+  /* ═══ 업적 칸 이름 잘림 · 업적 카드 깜빡임 (4.2.5+) ═══ */
+  /* 이름이 길면 두 줄까지 접고, 그래도 길면 글자를 조금 줄인다 */
+  body:not(.w95) #achRow .achchip .achn{white-space:normal!important;overflow-wrap:anywhere;word-break:keep-all;max-width:100%;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+  body:not(.w95) #achRow .achchip .achn.long{font-size:11px;letter-spacing:-.01em}
+  /* 업적 카드가 떠 있는 동안: 뒤에서 도는 애니메이션과 흐림 효과를 멈춰서 폰에서 화면이 깜빡이지 않게 */
+  body.ach-open #dex, body.ach-open #dex *, body.ach-open #dex::after, body.ach-open #dex::before,
+  body.ach-open #tray *, body.ach-open #grid *{animation-play-state:paused!important}
+  body.ach-open #dexBox, body.ach-open #dex{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  #achBig.on{isolation:isolate}
+  #achBig.on #achCard{will-change:transform;transform:translateZ(0)}
+</style>
+<script>
+(function(){
+  const big = document.getElementById('achBig');
+  if(big) try{ new MutationObserver(() => document.body.classList.toggle('ach-open', big.classList.contains('on'))).observe(big, { attributes: true, attributeFilter: ['class'] }); }catch(e){}
+  // 긴 이름 표시
+  const mark = () => document.querySelectorAll('#achRow .achchip .achn').forEach(n => { const L = (n.textContent || '').length; n.classList.toggle('long', L > 9); });
+  const row = document.getElementById('achRow');
+  if(row) try{ new MutationObserver(() => requestAnimationFrame(mark)).observe(row, { childList: true, subtree: true }); }catch(e){}
+  mark();
 })();
 </script>
 <style>
