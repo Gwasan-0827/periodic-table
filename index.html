@@ -4316,7 +4316,8 @@ mixBtn.addEventListener('click', () => {
   // 이성질체: 아직 못 찾은 모양이 있으면 그걸 보여준다
   // 물(H₂O)은 반반: 물 아니면 다이하이드로젠 모노옥사이드 (같은 물질, 무서운 이름)
   if(r && exKey === 'H2+O1' && RX_ISOMERS[exKey]){
-    if(Math.random() < 0.5){ r = RX_ISOMERS[exKey][0]; setTimeout(() => { try{ rxToast('⇄', LANG === 'en' ? 'Same stuff, scarier name!' : '같은 물질, 무서운 이름!'); }catch(e){} }, 1400); }
+    // 튜토리얼 중이거나 물을 처음 만들 땐 무조건 그냥 물
+    if(!document.getElementById('rxTut') && found.has('물') && window.RX_WANT !== '물' && (window.RX_WANT === RX_ISOMERS[exKey][0][1] || Math.random() < 0.5)){ r = RX_ISOMERS[exKey][0]; setTimeout(() => { try{ rxToast('⇄', LANG === 'en' ? 'Same stuff, scarier name!' : '같은 물질, 무서운 이름!'); }catch(e){} }, 1400); }
   } else if(r && RX_ISOMERS[exKey]){
     const all = [r].concat(RX_ISOMERS[exKey]);
     const pick = all.find(x => !found.has(x[1])) || all[Math.floor(Math.random() * all.length)];
@@ -6213,6 +6214,21 @@ const CHANGELOG = [
            '힌트를 새로 만들었어요. 못 찾은 카드를 누르면 힌트 창이 튀어나오고, 설명 → 원소 하나 → 전체 조합 순서로 하나씩 열어요. 마지막엔 그 조합을 바로 담을 수 있어요',
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
+           'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
+           '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
+           'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
+           '실패하거나 개수가 틀리면 결과 창에 "이렇게 고쳐 봐요"가 떠요. H 하나 빼기처럼 고칠 방법을 보여 주고, 누르면 그대로 고쳐서 다시 섞어요. 도감 줄엔 진행 막대도 생겼어요',
+           '설정 창을 새로 꾸몄어요. 탭마다 아이콘이 생기고, 고르는 버튼은 한 덩어리로 묶였고, 스위치와 버튼도 페리윙클로 바뀌었어요',
+           '검색이 똑똑해졌어요. 원소 이름·기호·번호에, 찾은 물질 이름과 화학식까지 드롭다운으로 바로 떠요. H2O, NaCl처럼 화학식을 치면 그대로 조합 칸에 담을 수 있어요',
+           '원자 모형 칸도 카드로 바꿨어요. 페리윙클 탭, 유리 느낌 도구 버튼, 양성자·중성자·전자 칩이 생겼어요',
+           '보기 줄(표준 · 히트맵 · 온도 · 발견의 역사)을 헤더와 맞췄어요. 탭은 페리윙클로 빛나고, 분류 칩은 한 줄로 밀어 보게 바뀌었어요',
+           '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 뒤로 그 원소 블록의 오비탈(s 공 · p 아령 · d 네잎 · f 여섯 잎) 모양 전자 구름이 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
+           '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
+           '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
+           '처음 하는 사람을 위한 첫걸음 미션 8개가 생겼어요. 소금·이산화탄소·암모니아·메테인 만들기 등, 눌러야 할 칸이 반짝여요',
+           '“주기율표 읽는 법”이 생겼어요. 칸 하나 읽기, 주기·족·색깔을 움직이는 그림으로 보여 줘요 (설정 › 튜토리얼)',
+           '결과 창 뒤 물결을 새로 만들었어요. 원근이 들어간 격자 바다가 만든 물질 색으로 물들고, 창이 열릴 때마다 가운데서 물결이 한 번 퍼져요. 폭발하면 크게 출렁여요',
            '폰에서 원자 모형 도구 버튼이 화면 밖으로 잘리던 걸 위쪽 한 줄로 옮기고, 조합 바를 두 줄로 줄였어요',
            '앱 아이콘이 바뀌었어요. 시작 화면을 닮은 빛나는 마름모와 Pt예요',
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
@@ -6238,6 +6254,21 @@ const CHANGELOG = [
            'Hints are new: tap a missing card and a hint sheet pops out. Reveal a description, then one element, then the whole recipe, and load it straight into your mix',
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
+           'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'Collect all 550 entries and…? (find out yourself)',
+           '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
+           'The desktop tray buttons now match too, with icons on Random and Clear',
+           'Fail or get the counts wrong and the result card now suggests small fixes, like removing one H. Tap one to fix the tray and mix again. The codex line also gets a progress bar',
+           'Settings are redesigned: icons on every tab, option buttons grouped into one control, and periwinkle switches and buttons',
+           'Search is smarter: elements by name, symbol or number, plus the substances you have found and formulas, all in a dropdown. Type a formula like H2O or NaCl to load it straight into the tray',
+           'The atom model panel is now a card too, with periwinkle tabs, glassy tool buttons and proton, neutron and electron chips',
+           'The view bar (Standard, Heatmap, Temperature, Discovery) now matches the header: glowing periwinkle tabs and chips in a single swipeable row',
+           'The element card is redesigned: a table-cell tile with an electron cloud behind it shaped like the orbital of its block (s sphere, p dumbbell, d clover, f six lobes), category and block chips, a quote box and stat tiles for group, period and state',
+           'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
+           'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
+           '8 first-step missions for newcomers: make salt, CO₂, ammonia, methane and more, with the cells to tap glowing',
+           'New "How to read the table": one cell, periods, groups and colours as animated diagrams (Settings › Tutorial)',
+           'The waves behind the result card are new: a perspective grid sea tinted with the colour of what you made, with a ripple spreading out each time the card opens, and a big swell on explosions',
            'On phones, the atom model tool buttons no longer get cut off at the edge, and the mix tray is down to two rows',
            'New app icon: a glowing diamond and Pt, like the start screen',
            'The credits now have a team name: K ɑ ɪ ɴ i x // X',
@@ -29786,7 +29817,9 @@ document.addEventListener('animationend', e => {
           dex.style.setProperty('--dox', (g.left + g.width / 2 - bx.left) + 'px'); dex.style.setProperty('--doy', (g.top + g.height / 2 - bx.top) + 'px');
         }catch(e){}
         dex.classList.remove('opening'); void dex.offsetWidth; dex.classList.add('opening');
-        clearTimeout(dex._ot); dex._ot = setTimeout(() => dex.classList.remove('opening'), 680);
+        clearTimeout(dex._ot); cancelAnimationFrame(dex._or);
+        // 뒤따르는 도감 꾸미기가 오래 걸려도 애니메이션이 화면에 나온 뒤부터 잰다
+        dex._or = requestAnimationFrame(() => { dex._ot = setTimeout(() => dex.classList.remove('opening'), 700); });
         anim();
       }
     }catch(e){}
@@ -30642,7 +30675,7 @@ function rxVerPop(force){
     requestAnimationFrame(frame);
     const dt = Math.min(50, now - last); last = now;
     if(!document.body.classList.contains('bg-on') || document.hidden){ ctx.clearRect(0,0,W,H); return; }
-    if(window.RX_LOWPOW && document.body.classList.contains('ovl')) return;
+    if(window.RX_LOWPOW && (document.body.classList.contains('ovl') || document.documentElement.classList.contains('idle'))) return;   // 15초 안 만지면 배경 입자도 쉰다
     colT = ccRGB(); for(let i = 0; i < 3; i++) col[i] += (colT[i] - col[i]) * .06;
     const [r,g,b] = col.map(Math.round);
     ctx.clearRect(0,0,W,H);
@@ -40305,8 +40338,10 @@ void main(){
   const P = (ko, en) => LANG === 'en' ? en : ko;
   const get = () => rxLS.get('pt_hint', {});
   const lvOf = nm => get()[nm] || 0;
-  const entry = nm => { const x = allEntries().find(e => e.name === nm); if(!x) return null; const r = locRec([x.formula, x.name, x.sub]); return { ...x, sub: r[2] }; };
-  const noOf = nm => { const L = allEntries(); const i = L.findIndex(e => e.name === nm); return i >= 0 ? 'No.' + String(i + 1).padStart(3, '0') : ''; };
+  // 카드마다 allEntries() 를 새로 만들면 도감 열 때 1초 넘게 걸려서, 한 번에 한 번만 만들어 둔다
+  let AE = null; const aeMap = () => { if(!AE){ const L = allEntries(); AE = new Map(L.map((e, i) => [e.name, [e, i]])); setTimeout(() => AE = null, 0); } return AE; };
+  const entry = nm => { const h = aeMap().get(nm), x = h && h[0]; if(!x) return null; const r = locRec([x.formula, x.name, x.sub]); return { ...x, sub: r[2] }; };
+  const noOf = nm => { const h = aeMap().get(nm); return h ? 'No.' + String(h[1] + 1).padStart(3, '0') : ''; };
   const parts = key => String(key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
   const col = s => { try{ const e = rxSym(s); return e && CAT[e.c] ? cssv(CAT[e.c].v) : '#9aa8ff'; }catch(e){ return '#9aa8ff'; } };
   const tile = (s, n, showN) => `<span class="hx-t" style="--c:${col(s)}"><b>${s}</b>${showN && n > 1 ? `<i>×${n}</i>` : ''}</span>`;
@@ -40786,7 +40821,7 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
     footer#tray #clearBtn{grid-row:2;grid-column:4}
     footer#tray #mixBtn{grid-row:2;grid-column:5}
     footer#tray .btn{height:38px;min-width:0;padding:0 6px!important;font-size:12.5px!important;border-radius:11px!important}
-    footer#tray #randBtn, footer#tray #clearBtn{font-size:0!important;padding:0!important;display:grid;place-items:center}
+    footer#tray #randBtn, footer#tray #clearBtn{font-size:0!important;line-height:0!important;padding:0!important;display:flex;align-items:center;justify-content:center}
     footer#tray #randBtn::before{content:"";width:19px;height:19px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;
       --ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='4'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='15.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='8.5' cy='15.5' r='1.3' fill='%23000'/%3E%3C/svg%3E")}
     footer#tray #clearBtn::before{content:"";width:19px;height:19px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;
@@ -40814,6 +40849,2304 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
   if(box) try{ new MutationObserver(() => { if(IDS.some(id => { const b = document.getElementById(id); return b && b.parentNode === box; }) || !mq.matches) gather(); }).observe(box, { childList: true }); }catch(e){}
   try{ mq.addEventListener('change', gather); }catch(e){}
   gather(); setTimeout(gather, 600);
+})();
+</script>
+<style>
+  /* 발열 줄이기 (폰·앱 저전력): 흐림 효과가 걸린 배경 빛은 모양을 바꾸면 매 프레임 다시 그려야 해서 무겁다 → 모양 변형은 멈추고 천천히 떠다니기만.
+     15초 동안 안 만지면 배경 파형도 멈춘다 */
+  html.lowpow #glow i{animation-name:gdrift1!important;animation-duration:60s!important;border-radius:50%!important;will-change:auto!important}
+  html.lowpow #glow i:nth-child(2){animation-name:gdrift2!important}
+  html.lowpow.idle #glow i, html.lowpow.idle #waves svg{animation-play-state:paused!important}
+  html.lowpow #waves svg{will-change:auto}
+</style>
+<style>
+  /* ═══ 분자 오비탈 보기 (4.2.5+): 에너지 도표 + WebGL 오비탈 모양 ═══ */
+  #mStage.mo-on #mMol .mol-atoms, #mStage.mo-on #mMol .mol-bonds, #mStage.mo-on #mMol .mol-shadow, #mStage.mo-on #mMol .struct-g{display:none}
+  #mOrbGL{position:absolute;pointer-events:none;z-index:1}
+  #moPanel{position:absolute;left:8px;top:44px;bottom:52px;z-index:4;width:178px;display:flex;flex-direction:column;gap:6px;pointer-events:auto;
+    padding:8px 8px 7px;border-radius:14px;background:rgba(10,12,28,.72);border:1px solid rgba(154,168,255,.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    font-family:inherit;color:#e6e9ff;animation:moIn .45s cubic-bezier(.2,1.2,.4,1)}
+  @keyframes moIn{from{transform:translateX(-14px);opacity:0}}
+  #moPanel .hd{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+  #moPanel .hd b{font:700 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:rgba(201,208,255,.75)}
+  #moPanel .hd span{font:600 10px/1 ui-monospace,monospace;color:var(--dim)}
+  #moPanel svg.dg{flex:1;min-height:0;width:100%;display:block;overflow:visible}
+  #moPanel .lv{cursor:pointer}
+  #moPanel .lv rect.hit{fill:transparent}
+  #moPanel .lv:hover line.ml{stroke:#fff}
+  #moPanel .lv.sel line.ml{stroke:#ffe29a;stroke-width:3}
+  #moPanel .lv.sel text.ml{fill:#ffe29a}
+  #moPanel .ft{font-size:10.5px;line-height:1.45;color:#c9d0ff;word-break:keep-all}
+  #moPanel .ft b{color:#fff}
+  #moPanel .ft .mag{display:inline-block;margin-top:3px;padding:2px 7px;border-radius:999px;background:rgba(255,154,213,.16);border:1px solid rgba(255,154,213,.45);color:#ffc2e2;font-weight:700}
+  #moCap{position:absolute;right:10px;top:46px;z-index:4;text-align:right;pointer-events:none;animation:moIn .45s .1s both}
+  #moCap b{display:block;font:600 20px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 14px rgba(154,168,255,.6)}
+  #moCap span{display:block;margin-top:4px;font-size:10.5px;color:#c9d0ff;max-width:150px;margin-left:auto;word-break:keep-all}
+  #moCap .kd{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:999px;font-weight:800;font-size:10.5px}
+  #mStage.mo-on #mHint{display:none!important}
+  #moCap b.an{color:#ffc2e2} #moCap b.bd{color:#c9f0ff}
+  #moCap .kd.bd{color:#0b1530;background:linear-gradient(90deg,#c9f0ff,#9ee7ff)} #moCap .kd.an{color:#2a0b1e;background:linear-gradient(90deg,#ffd0ea,#ff9ad5)} #moCap .kd.nb{color:#1a1a2a;background:#c9d0ff}
+  #moCap .ph{display:inline-flex;gap:8px;margin-top:6px;font:700 9.5px/1 ui-monospace,monospace;color:var(--dim)}
+  #moCap .ph i{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:3px}
+  @media (max-width:700px){
+    #moPanel{top:40px;bottom:48px;width:146px;padding:6px 6px 5px;gap:4px}
+    #moPanel .ft{font-size:9.5px}
+    #moCap{top:42px;right:8px} #moCap b{font-size:17px} #moCap > span:not(.ph){display:none}
+    #moPanel{width:132px;top:38px;bottom:44px}
+    #moPanel .hd b{font-size:0} #moPanel .hd b::after{content:"MO";font-size:9.5px}
+    #moPanel .ft{font-size:9.5px} #moPanel .ft .nt{display:none}
+    #mStage.mo-on #mHint{display:none!important}
+    /* 탭이 많아지면 옆으로 밀어서 보기 (글자가 세로로 쪼개지던 것) */
+    #mTabs{max-width:calc(100% - 12px);overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
+    #mTabs::-webkit-scrollbar{display:none}
+    #mTabs button{white-space:nowrap;flex:none}
+  }
+</style>
+<script>
+(function(){
+  if(typeof rxRender !== 'function' || typeof rxSetView !== 'function') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  /* ── 분자 데이터: 원자가 오비탈만. 에너지는 그림용 상대값 ── */
+  // 기저: s(구) · p(결합 방향, x) · q(결합에 수직, y)
+  const L = (lab, star, kA, kB, cA, cB, e, deg) => ({ lab, star, kA, kB, cA, cB, e, deg });
+  // 주기 2 같은 원소끼리: N₂까지는 π2p가 σ2p보다 낮고, O₂·F₂는 반대
+  const homo = (swap) => [
+    L('σ2s', 0, 's', 's', 1, 1, 0, 1), L('σ*2s', 1, 's', 's', 1, -1, 1.2, 1),
+    swap ? L('σ2p', 0, 'p', 'p', 1, -1, 2.4, 1) : L('π2p', 0, 'q', 'q', 1, 1, 2.4, 2),
+    swap ? L('π2p', 0, 'q', 'q', 1, 1, 3.0, 2) : L('σ2p', 0, 'p', 'p', 1, -1, 3.0, 1),
+    L('π*2p', 1, 'q', 'q', 1, -1, 4.1, 2), L('σ*2p', 1, 'p', 'p', 1, 1, 5.0, 1)];
+  const MOL = {
+    H2:  { A: 'H', B: 'H', d: 25, ne: 2, ao: [['1s', 1.4]], lv: [L('σ1s', 0, 's', 's', 1, 1, 0, 1), L('σ*1s', 1, 's', 's', 1, -1, 2.8, 1)], zA: 1, zB: 1 },
+    N2:  { A: 'N', B: 'N', d: 37, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: homo(false), zA: 1.25, zB: 1.25 },
+    O2:  { A: 'O', B: 'O', d: 41, ne: 12, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.3, zB: 1.3 },
+    F2:  { A: 'F', B: 'F', d: 48, ne: 14, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.35, zB: 1.35 },
+    Cl2: { A: 'Cl', B: 'Cl', d: 66, ne: 14, ao: [['3s', .6], ['3p', 2.7]], lv: homo(true).map(x => ({ ...x, lab: x.lab.replace('2', '3') })), zA: .95, zB: .95 },
+    CO:  { A: 'C', B: 'O', d: 38, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: [
+           L('σ2s', 0, 's', 's', .55, .85, 0, 1), L('σ*2s', 1, 's', 's', .85, -.55, 1.2, 1),
+           L('π2p', 0, 'q', 'q', .6, .8, 2.4, 2), L('σ2p', 0, 'p', 'p', .85, -.5, 3.0, 1),
+           L('π*2p', 1, 'q', 'q', .8, -.6, 4.1, 2), L('σ*2p', 1, 'p', 'p', .6, .8, 5.0, 1)], zA: 1.15, zB: 1.3 },
+    NO:  { A: 'N', B: 'O', d: 39, ne: 11, ao: [['2s', .6], ['2p', 2.7]], lv: [
+           L('σ2s', 0, 's', 's', .6, .8, 0, 1), L('σ*2s', 1, 's', 's', .8, -.6, 1.2, 1),
+           L('π2p', 0, 'q', 'q', .65, .76, 2.4, 2), L('σ2p', 0, 'p', 'p', .8, -.6, 3.0, 1),
+           L('π*2p', 1, 'q', 'q', .76, -.65, 4.1, 2), L('σ*2p', 1, 'p', 'p', .6, .8, 5.0, 1)], zA: 1.25, zB: 1.3 },
+    HF:  { A: 'H', B: 'F', d: 31, ne: 8, ao: null, lv: [
+           L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
+           L('n (2p)', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
+  };
+  const KEYOF = { 'H2': 'H2', 'N2': 'N2', 'O2': 'O2', 'F2': 'F2', 'Cl2': 'Cl2', 'C1O1': 'CO', 'N1O1': 'NO', 'F1H1': 'HF', 'H1F1': 'HF', 'O1C1': 'CO', 'O1N1': 'NO' };
+  function molKey(){
+    try{
+      const c = RX && RX.comp; if(!c || c.length > 2) return null;
+      const tot = c.reduce((s, [, n]) => s + n, 0); if(tot !== 2) return null;
+      const k = c.length === 1 ? c[0][0] + '2' : c.map(([s, n]) => s + n).join('');
+      return KEYOF[k] || null;
+    }catch(e){ return null; }
+  }
+  // 전자 채우기 (아우프바우 + 훈트)
+  function fill(M){
+    const lv = M.lv.slice().sort((a, b) => a.e - b.e).map(x => ({ ...x, n: 0 }));
+    let left = M.ne;
+    lv.forEach(x => { const take = Math.min(left, x.deg * 2); x.n = take; left -= take; });
+    let b = 0, a = 0; lv.forEach(x => { if(x.lab.startsWith('n') || x.lab === '2s' && M.hf) return; if(x.star) a += x.n; else b += x.n; });
+    const unp = lv.reduce((s, x) => s + (x.deg === 2 && x.n > 0 && x.n < 4 ? (x.n === 2 ? 2 : x.n === 1 ? 1 : 1) : x.deg === 1 && x.n === 1 ? 1 : 0), 0);
+    return { lv, bo: (b - a) / 2, unp };
+  }
+  const COLOR = s => { try{ return rxCpk(s); }catch(e){ return '#9aa8ff'; } };
+
+  /* ── 에너지 도표 (SVG) ── */
+  function diagram(M, F, sel){
+    const W = 160, H = 200, top = 12, bot = 176;
+    const es = F.lv.map(x => x.e), e0 = Math.min(...es), e1 = Math.max(...es);
+    const y = e => bot - (e - e0) / ((e1 - e0) || 1) * (bot - top);
+    const cx = 80, w = 34;
+    let s = '';
+    // 원자 오비탈 (양옆)
+    const aoY = [];
+    if(M.ao){
+      M.ao.forEach(([lab, e]) => {
+        const yy = y(e0 + (e1 - e0) * (e / 5.0)); aoY.push([lab, yy]);
+        s += `<line x1="6" x2="34" y1="${yy}" y2="${yy}" stroke="#8e99ad" stroke-width="2"/><line x1="126" x2="154" y1="${yy}" y2="${yy}" stroke="#8e99ad" stroke-width="2"/>`;
+        s += `<text x="20" y="${yy - 4}" font-size="8" fill="#8e99ad" text-anchor="middle">${lab}</text><text x="140" y="${yy - 4}" font-size="8" fill="#8e99ad" text-anchor="middle">${lab}</text>`;
+      });
+    }
+    s += `<text x="20" y="${H + 4}" font-size="9" fill="#c9d0ff" text-anchor="middle" font-weight="700">${M.A}</text><text x="140" y="${H + 4}" font-size="9" fill="#c9d0ff" text-anchor="middle" font-weight="700">${M.B}</text>`;
+    s += `<text x="${cx}" y="${H + 4}" font-size="9" fill="#c9d0ff" text-anchor="middle" font-weight="700">${P('분자', 'MO')}</text>`;
+    // 분자 오비탈 (가운데)
+    let ei = 0;
+    F.lv.forEach((x, i) => {
+      const yy = y(x.e);
+      // 이어 주는 점선
+      if(aoY.length){ const a = aoY[x.lab.includes('s') ? 0 : aoY.length - 1]; if(a){ s += `<line x1="34" x2="${cx - w}" y1="${a[1]}" y2="${yy}" stroke="rgba(154,168,255,.25)" stroke-dasharray="2 2"/><line x1="126" x2="${cx + w}" y1="${a[1]}" y2="${yy}" stroke="rgba(154,168,255,.25)" stroke-dasharray="2 2"/>`; } }
+      const segs = x.deg === 2 ? [[cx - w, cx - 3], [cx + 3, cx + w]] : [[cx - w * .55, cx + w * .55]];
+      const col = x.star ? '#ff9ad5' : '#9ee7ff';
+      let g = `<g class="lv${i === sel ? ' sel' : ''}" data-i="${i}"><rect class="hit" x="${cx - w - 4}" y="${yy - 9}" width="${w * 2 + 8}" height="18"/>`;
+      if(i === sel) g += `<rect x="${cx - w - 6}" y="${yy - 10}" width="${w * 2 + 12}" height="20" rx="10" fill="rgba(255,226,154,.12)" stroke="rgba(255,226,154,.55)"/>`;
+      segs.forEach(([a, b]) => g += `<line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-width="6" stroke-linecap="round" opacity=".25" filter="url(#moBl)"/><line class="ml" x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-width="2.6" stroke-linecap="round"/>`);
+      g += `<text class="ml" x="${cx + w + 4}" y="${yy + 3}" font-size="9" font-weight="700" fill="${col}">${x.lab}</text>`;
+      // 전자 화살표
+      let n = x.n;
+      const put = [];
+      segs.forEach(() => put.push(0));
+      for(let k = 0; k < n; k++) put[k % segs.length]++;
+      segs.forEach(([a, b], k) => {
+        const m = (a + b) / 2;
+        for(let j = 0; j < put[k]; j++){
+          const xx = m + (put[k] === 2 ? (j ? 4 : -4) : 0), up = j === 0;
+          const d = (ei++ * 0.06).toFixed(2);
+          g += `<path d="${up ? `M${xx} ${yy + 6}V${yy - 7}m-2.6 2.8 2.6-2.8 2.6 2.8` : `M${xx} ${yy - 6}V${yy + 7}m-2.6-2.8 2.6 2.8 2.6-2.8`}" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" filter="url(#moGl)" style="opacity:0;animation:moE .3s ${d}s ease-out forwards"/>`;
+        }
+      });
+      s += g + '</g>';
+    });
+    const ax = `<line x1="${cx - w - 12}" x2="${cx - w - 12}" y1="${bot + 4}" y2="${top - 2}" stroke="rgba(201,208,255,.35)" stroke-width="1"/><path d="M${cx - w - 15} ${top + 2}l3-5 3 5" fill="none" stroke="rgba(201,208,255,.5)"/>`;
+    return `<svg class="dg" viewBox="0 -2 ${W} ${H + 10}" preserveAspectRatio="xMidYMid meet"><defs><filter id="moBl" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="2"/></filter><filter id="moGl"><feDropShadow dx="0" dy="0" stdDeviation="1" flood-color="#c9d0ff"/></filter></defs><style>@keyframes moE{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}</style>${ax}${s}</svg>`;
+  }
+  const NOTE = {
+    H2: ['전자 두 개가 결합 오비탈에 같이 들어가요. 결합 하나', 'Two electrons share the bonding orbital. One bond'],
+    N2: ['결합 오비탈에만 전자가 꽉. 그래서 엄청 튼튼한 삼중 결합', 'Bonding orbitals are packed, so the triple bond is very strong'],
+    O2: ['π* 오비탈에 짝 없는 전자가 2개! 그래서 산소는 자석에 끌려요', 'Two unpaired electrons in π*! That is why oxygen sticks to magnets'],
+    F2: ['반결합 오비탈까지 차서 결합이 하나뿐이라 약해요', 'Antibonding orbitals fill up too, leaving a single weak bond'],
+    Cl2: ['3s·3p로 만들어지지만 모양은 F₂와 같아요', 'Built from 3s and 3p, but the same pattern as F₂'],
+    CO: ['N₂와 전자 수가 같아요. 그래서 이것도 삼중 결합', 'Same electron count as N₂, so also a triple bond'],
+    NO: ['전자가 홀수라 π*에 하나가 혼자 남아요', 'An odd electron count leaves one alone in π*'],
+    HF: ['플루오린이 전자를 세게 당겨서 σ 오비탈이 F 쪽으로 쏠려요', 'Fluorine pulls hard, so the σ orbital leans toward F'],
+  };
+
+  /* ── WebGL: 선택한 오비탈의 등위면 (부호에 따라 두 색) ── */
+  const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const FS = `precision highp float;
+uniform vec2 R;uniform vec2 CEN;uniform float SC;uniform mat3 M;uniform vec3 L;uniform float D;uniform vec4 K;uniform vec2 C;uniform vec2 Z;uniform float ISO;uniform float STEPS;
+float basis(float k,vec3 q,float z){float r=length(q);float e=exp(-z*r);
+  if(k<.5) return e*1.6;                 // s
+  if(k<1.5) return q.x*e*z*.9;           // p (결합 방향)
+  if(k<2.5) return q.y*e*z*.9;           // q (수직)
+  return 0.;}
+float psi(vec3 p){ vec3 a=p-vec3(-D*.5,0.,0.), b=p-vec3(D*.5,0.,0.); return C.x*basis(K.x,a/18.,Z.x)+C.y*basis(K.y,b/18.,Z.y); }
+vec3 nrm(vec3 p){float e=.5;return normalize(vec3(
+  pow(psi(p+vec3(e,0,0)),2.)-pow(psi(p-vec3(e,0,0)),2.),
+  pow(psi(p+vec3(0,e,0)),2.)-pow(psi(p-vec3(0,e,0)),2.),
+  pow(psi(p+vec3(0,0,e)),2.)-pow(psi(p-vec3(0,0,e)),2.)));}
+void main(){
+  vec2 fc=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
+  vec2 uv=(fc-CEN)/SC;
+  vec3 ro=vec3(0.,0.,420.),rd=normalize(vec3(uv,-420.));
+  mat3 Mi=mat3(M[0][0],M[1][0],M[2][0],M[0][1],M[1][1],M[2][1],M[0][2],M[1][2],M[2][2]);
+  vec3 o=Mi*ro,d=Mi*rd;
+  vec3 PA=vec3(.55,.72,1.), PB=vec3(1.,.5,.78);   // + 하늘 · − 분홍
+  vec3 col=vec3(0.);float a=0.;
+  float Rb=D*.5+95.;float b=dot(o,d),c=dot(o,o)-Rb*Rb,h=b*b-c;
+  if(h>0.){
+    h=sqrt(h);float t0=-b-h,t1=-b+h,dt=(t1-t0)/STEPS,t=t0;
+    float v0=psi(o+d*t),prev=v0*v0-ISO*ISO;int hits=0;
+    for(int i=0;i<160;i++){ if(float(i)>=STEPS||a>.97) break; t+=dt; vec3 q=o+d*t; float v=psi(q); float f=v*v-ISO*ISO;
+      // 안개처럼 비치는 속 (부호 색)
+      float dens=clamp(v*v/(ISO*ISO)-.15,0.,3.)*dt*.012;
+      vec3 vc=(v>0.?PA:PB)*1.15; col+=vc*dens*(1.-a); a+=dens*(1.-a)*.7;
+      if((f>0.)!=(prev>0.)){
+        float ta=t-dt,tb=t; for(int j=0;j<5;j++){ float tm=(ta+tb)*.5; float vm=psi(o+d*tm); if((vm*vm-ISO*ISO>0.)==(f>0.)) tb=tm; else ta=tm; }
+        vec3 hp=o+d*tb; float s=psi(hp); vec3 n=-nrm(hp); if(f<0.) n=-n;
+        vec3 N=M*n, V=normalize(ro-M*hp);
+        float ndv=abs(dot(N,V)); float fr=pow(1.-ndv,2.2);
+        float dif=max(0.,dot(N,L))*.55+.25;
+        float sp=pow(max(0.,dot(N,normalize(L+V))),60.)*.9;
+        // 홀로그램 등고선
+        float band=smoothstep(.0,.08,abs(fract(length(hp)/9.+atan(hp.y,hp.z)*.0)-.5)-.42);
+        vec3 base=s>0.?PA:PB;
+        vec3 sc=base*(dif*.55)+base*fr*1.6+vec3(1.)*sp+base*band*.25;
+        float al=(f>0.?.42:.22)+fr*.45;   // 앞면은 진하게, 뒷면은 옅게
+        col+=sc*al*(1.-a); a+=al*(1.-a); hits++;
+      }
+      prev=f; }
+  }
+  // 결합 축 (점선)과 원자핵 빛
+  vec3 nA=vec3(-D*.5,0.,0.),nB=vec3(D*.5,0.,0.);
+  for(int k=0;k<2;k++){ vec3 nn=k==0?nA:nB; float dd=length(cross(nn-o,d)); float g=exp(-dd*dd*.35)+.35*exp(-dd*.25);
+    col+=vec3(1.,.96,.86)*g*(1.-a*.6); a=max(a,min(1.,g)); }
+  gl_FragColor=vec4(col,clamp(a,0.,1.));
+}`;
+  let cv = null, gl = null, U = {}, failed = false, cur = null;
+  function init(){
+    if(failed) return false; if(cv && gl) return true;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'mOrbGL';
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: false }); if(!gl) throw 0;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw gl.getProgramInfoLog(pr); gl.useProgram(pr);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['R', 'CEN', 'SC', 'M', 'L', 'D', 'K', 'C', 'Z', 'ISO', 'STEPS'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; });
+      return true;
+    }catch(e){ failed = true; cv = gl = null; console.warn('mo gl', e); return false; }
+  }
+  const KN = { s: 0, p: 1, q: 2, x: 3 };
+  function render(yaw, pitch){
+    const st = document.getElementById('mStage'), svg = document.getElementById('mMol');
+    if(!cur || !st || !svg || !init()) return;
+    if(!cv.isConnected) st.insertBefore(cv, svg);
+    cv.style.display = '';
+    const sr = svg.getBoundingClientRect(), tr = st.getBoundingClientRect();
+    const lowp = !!window.RX_LOWPOW, dpr = Math.min(lowp ? .9 : 1.5, devicePixelRatio || 1);
+    const W = Math.max(1, Math.round(sr.width * dpr)), H = Math.max(1, Math.round(sr.height * dpr));
+    cv.style.left = (sr.left - tr.left - st.clientLeft) + 'px'; cv.style.top = (sr.top - tr.top - st.clientTop) + 'px';
+    cv.style.width = sr.width + 'px'; cv.style.height = sr.height + 'px';
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    const pan = document.getElementById('moPanel'), pw = pan ? pan.getBoundingClientRect().width : 0;
+    const cx = (pw + 8 + (sr.width - pw - 8) / 2) * dpr, cy = sr.height * .55 * dpr;
+    const sc = Math.min((sr.width - pw - 16) / (Math.max(cur.M.d, 36) + 150), sr.height / 200) * dpr;
+    const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+    const col = (x, y, z) => { const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const x = cur.lv;
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.uniform2f(U.R, W, H); gl.uniform2f(U.CEN, cx, cy); gl.uniform1f(U.SC, sc);
+    gl.uniformMatrix3fv(U.M, false, new Float32Array([...col(1, 0, 0), ...col(0, 1, 0), ...col(0, 0, 1)]));
+    const Lv = [-.45, -.6, .66], ln = Math.hypot(...Lv); gl.uniform3f(U.L, Lv[0] / ln, Lv[1] / ln, Lv[2] / ln);
+    gl.uniform1f(U.D, cur.M.d);
+    gl.uniform4f(U.K, KN[x.kA], KN[x.kB], 0, 0);
+    gl.uniform2f(U.C, x.cA, x.cB);
+    gl.uniform2f(U.Z, cur.M.zA * (x.kA === 's' ? 1 : .72), cur.M.zB * (x.kB === 's' ? 1 : .72));
+    gl.uniform1f(U.ISO, .16);
+    gl.uniform1f(U.STEPS, lowp ? 70 : 120);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function off(){
+    const st = document.getElementById('mStage'); if(st) st.classList.remove('mo-on');
+    if(cv) cv.style.display = 'none';
+    ['moPanel', 'moCap'].forEach(id => { const e = document.getElementById(id); if(e) e.remove(); });
+    cur = null;
+  }
+  function panel(key){
+    const M = MOL[key], F = fill(M);
+    // 처음엔 맨 위에 전자가 든 오비탈 (HOMO)
+    let sel = 0; F.lv.forEach((x, i) => { if(x.n > 0) sel = i; });
+    const st = document.getElementById('mStage');
+    ['moPanel', 'moCap'].forEach(id => { const e = document.getElementById(id); if(e) e.remove(); });
+    const p = document.createElement('div'); p.id = 'moPanel';
+    const bo = F.bo, boTxt = Number.isInteger(bo) ? String(bo) : bo.toFixed(1);
+    const draw = () => {
+      p.innerHTML = `<div class="hd"><b>MO // ${P('분자 오비탈', 'ORBITALS')}</b><span>e⁻ ${M.ne}</span></div>${diagram(M, F, sel)}
+        <div class="ft">${P('결합 차수', 'Bond order')} <b>${boTxt}</b>${F.unp ? `<br><span class="mag">🧲 ${P('짝 없는 전자', 'Unpaired')} ${F.unp}</span>` : ''}<span class="nt"><br>${P(NOTE[key][0], NOTE[key][1])}</span></div>`;
+      p.querySelectorAll('.lv').forEach(g => g.addEventListener('click', e => { e.stopPropagation(); sel = +g.dataset.i; pick(); try{ SFX.tick(); }catch(_){} }));
+    };
+    const cap = document.createElement('div'); cap.id = 'moCap';
+    const pick = () => {
+      const x = F.lv[sel]; cur = { M, lv: x };
+      p.querySelectorAll('.lv').forEach(g => g.classList.toggle('sel', +g.dataset.i === sel));
+      cap.innerHTML = `<b class="${x.star ? 'an' : 'bd'}">${x.lab}</b><span class="kd ${x.star ? 'an' : x.lab.startsWith('n') ? 'nb' : 'bd'}">${x.star ? P('반결합 · 결합을 약하게', 'Antibonding') : x.lab.startsWith('n') ? P('비결합', 'Non-bonding') : P('결합 · 원자를 붙임', 'Bonding')}</span><span>e⁻ ${x.n} / ${x.deg * 2}${x.deg === 2 ? P(' · 쌍둥이 중 하나', ' · one of a pair') : ''}</span><span class="ph"><span><i style="background:#9ee7ff"></i>+</span><span><i style="background:#ff9ad5"></i>−</span></span>`;
+      if(RX_M) RX_M._moKey = '';
+      try{ rxDraw(RX_YAW, RX_PITCH); }catch(_){}
+    };
+    p.addEventListener('pointerdown', e => e.stopPropagation());
+    draw(); st.appendChild(p); st.appendChild(cap); pick();
+  }
+  // 보기 등록
+  const _rr = rxRender;
+  rxRender = function(){
+    off();
+    const r = _rr.apply(this, arguments);
+    try{
+      const key = molKey();
+      const tabs = document.getElementById('mTabs');
+      let b = document.getElementById('mTabMO');
+      if(!b){
+        b = document.createElement('button'); b.type = 'button'; b.id = 'mTabMO'; b.setAttribute('role', 'tab'); b.dataset.v = 'mo';
+        b.addEventListener('click', e => { e.stopPropagation(); rxSetView('mo'); });
+        tabs.appendChild(b);
+      }
+      b.textContent = P('오비탈', 'Orbitals');
+      const ok = !!(key && RX && RX.views && RX.molTabs && MOL[key]);
+      b.hidden = !ok;
+      if(ok){ RX.views.mo = { atoms: [{ s: MOL[key].A, x: -MOL[key].d / 2, y: 0, z: 0, r: 10 }, { s: MOL[key].B, x: MOL[key].d / 2, y: 0, z: 0, r: 10 }], bonds: [], crystal: true, moGL: key, noLabel: true, maxScale: 1, tilt: -.35, yaw0: .5 }; tabs.hidden = false; }
+      rxTabsSync();
+    }catch(e){ console.warn('mo', e); }
+    return r;
+  };
+  const _sv = rxSetView;
+  rxSetView = function(v){
+    const was = RX_VIEW;
+    const r = _sv.apply(this, arguments);
+    try{
+      if(RX_VIEW === 'mo' && was !== 'mo'){ document.getElementById('mStage').classList.add('mo-on'); panel(RX_M.moGL); }
+      else if(RX_VIEW !== 'mo' && was === 'mo') off();
+    }catch(e){ console.warn('mo', e); }
+    return r;
+  };
+  const _d = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _d.apply(this, arguments);
+    try{
+      const m = mm || RX_M;
+      if(!mm && m && m.moGL && m === RX_M && cur){
+        const k = yaw.toFixed(3) + ',' + pitch.toFixed(3) + ',' + (cur.lv.lab);
+        if(k !== m._moKey || !cv || cv.style.display === 'none'){ m._moKey = k; render(yaw, pitch); }
+      } else if(!mm && cv && cv.style.display !== 'none' && !(m && m.moGL)) cv.style.display = 'none';
+    }catch(e){ failed = true; }
+    return r;
+  };
+  // 카드 저장 때 같이 찍히게
+  window.rxGLLastMO = () => { if(cur) render(RX_YAW, RX_PITCH); };
+})();
+</script>
+<style>
+  /* ═══ 분자 오비탈 전용 화면 (오비탈 탭 → 전체 화면) ═══ */
+  #moBig{position:fixed;inset:0;z-index:75;display:none;color:#e8ebff;font-family:inherit;
+    background:radial-gradient(90% 70% at 70% 40%,#2c2f86 0%,#17194a 45%,#0a0b22 100%)}
+  #moBig.on{display:block;animation:moBgIn .35s ease-out}
+  @keyframes moBgIn{from{opacity:0}}
+  #moBig::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(201,208,255,.05) 0 1px,transparent 1px 48px),repeating-linear-gradient(0deg,rgba(201,208,255,.04) 0 1px,transparent 1px 48px);
+    -webkit-mask:radial-gradient(70% 60% at 65% 45%,#000,transparent);mask:radial-gradient(70% 60% at 65% 45%,#000,transparent)}
+  #moBig .mb-wrap{position:absolute;inset:0;display:grid;grid-template-columns:minmax(300px,380px) 1fr;grid-template-rows:auto 1fr;gap:0}
+  #moBig .mb-top{grid-column:1 / -1;display:flex;align-items:center;gap:14px;padding:14px 18px 6px}
+  #moBig .mb-top .k{font:700 11px/1 ui-monospace,monospace;letter-spacing:.18em;color:rgba(201,208,255,.7)}
+  #moBig .mb-top h2{margin:5px 0 0;font:600 30px/1 Kanit,system-ui,sans-serif;background:linear-gradient(90deg,#fff,#c9d0ff 60%,#9aa8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #moBig .mb-top h2 small{font:600 15px/1 inherit;font-family:inherit;color:#c9d0ff;-webkit-text-fill-color:#c9d0ff;margin-left:10px}
+  #moBig .mb-x{margin-left:auto;width:40px;height:40px;border-radius:12px;border:1px solid rgba(201,208,255,.3);background:rgba(10,12,30,.5);color:#fff;font-size:18px;cursor:pointer}
+  #moBig .mb-side{grid-row:2;grid-column:1;overflow-y:auto;padding:6px 14px 18px 18px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+  #moBig .mb-card{border-radius:16px;border:1px solid rgba(154,168,255,.22);background:rgba(10,12,32,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  #moBig .mb-dg{padding:10px 10px 6px}
+  #moBig .mb-dg svg{display:block;width:100%;height:auto}
+  #moBig .mb-dg .lv{cursor:pointer}
+  #moBig .mb-dg .lv:hover .bar{opacity:1}
+  #moBig .mb-hint{font-size:11px;color:var(--dim);text-align:center;margin-top:2px}
+  #moBig .mb-info{padding:14px}
+  #moBig .mb-info .nm{display:flex;align-items:center;gap:10px}
+  #moBig .mb-info .nm b{font:600 26px/1 Kanit,system-ui,sans-serif}
+  #moBig .mb-info .pill{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:800}
+  #moBig .mb-info .pill.bd{color:#0b1530;background:linear-gradient(90deg,#d6f4ff,#9ee7ff)}
+  #moBig .mb-info .pill.an{color:#2a0b1e;background:linear-gradient(90deg,#ffd6ec,#ff9ad5)}
+  #moBig .mb-info .pill.nb{color:#141833;background:#c9d0ff}
+  #moBig .mb-info p{margin:9px 0 0;font-size:13px;line-height:1.6;color:#d6dbff;word-break:keep-all}
+  #moBig .mb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  #moBig .mb-st{padding:10px 8px;text-align:center}
+  #moBig .mb-st b{display:block;font:700 22px/1 Kanit,system-ui,sans-serif}
+  #moBig .mb-st span{display:block;margin-top:5px;font-size:10.5px;color:var(--dim)}
+  #moBig .mb-st.mag b{color:#ff9ad5}
+  #moBig .mb-note{padding:12px 14px;font-size:12.5px;line-height:1.6;color:#d6dbff;word-break:keep-all}
+  #moBig .mb-note b{color:#ffe29a}
+  #moBig .mb-view{grid-row:2;grid-column:2;position:relative;min-height:0}
+  #moBig .mb-view canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+  #moBig .mb-leg{position:absolute;right:16px;bottom:14px;display:flex;gap:12px;font:700 11px/1 ui-monospace,monospace;color:#c9d0ff;pointer-events:none}
+  #moBig .mb-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;box-shadow:0 0 8px currentColor}
+  #moBig .mb-tip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:11px;color:var(--dim);pointer-events:none;white-space:nowrap}
+  #moBig .mb-lab{position:absolute;pointer-events:none;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff6e0;box-shadow:0 0 10px 3px rgba(255,240,200,.9),0 0 28px 8px rgba(201,208,255,.5)}
+  #moBig .mb-lab::after{content:attr(data-s);position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:700 14px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 8px #000,0 0 14px rgba(154,168,255,.9)}
+  @media (max-width:760px){
+    #moBig .mb-wrap{grid-template-columns:1fr;grid-template-rows:auto minmax(220px,42vh) 1fr}
+    #moBig .mb-top{padding:10px 12px 4px} #moBig .mb-top h2{font-size:24px}
+    #moBig .mb-view{grid-row:2;grid-column:1}
+    #moBig .mb-side{grid-row:3;grid-column:1;padding:6px 10px 16px}
+    #moBig .mb-tip{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ #moBig.on{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof rxRender !== 'function') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  const L = (lab, star, kA, kB, cA, cB, e, deg) => ({ lab, star, kA, kB, cA, cB, e, deg });
+  const homo = (swap) => [
+    L('σ2s', 0, 's', 's', 1, 1, 0, 1), L('σ*2s', 1, 's', 's', 1, -1, 1.2, 1),
+    swap ? L('σ2p', 0, 'p', 'p', 1, -1, 2.4, 1) : L('π2p', 0, 'q', 'q', 1, 1, 2.4, 2),
+    swap ? L('π2p', 0, 'q', 'q', 1, 1, 3.0, 2) : L('σ2p', 0, 'p', 'p', 1, -1, 3.0, 1),
+    L('π*2p', 1, 'q', 'q', 1, -1, 4.1, 2), L('σ*2p', 1, 'p', 'p', 1, 1, 5.0, 1)];
+  const het = (a, b) => [
+    L('σ2s', 0, 's', 's', a, b, 0, 1), L('σ*2s', 1, 's', 's', b, -a, 1.2, 1),
+    L('π2p', 0, 'q', 'q', a, b, 2.4, 2), L('σ2p', 0, 'p', 'p', b, -a, 3.0, 1),
+    L('π*2p', 1, 'q', 'q', b, -a, 4.1, 2), L('σ*2p', 1, 'p', 'p', a, b, 5.0, 1)];
+  const MOL = {
+    H2:  { A: 'H', B: 'H', f: 'H₂', d: 25, ne: 2, ao: [['1s', 1.4]], lv: [L('σ1s', 0, 's', 's', 1, 1, 0, 1), L('σ*1s', 1, 's', 's', 1, -1, 2.8, 1)], zA: 1, zB: 1 },
+    N2:  { A: 'N', B: 'N', f: 'N₂', d: 37, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: homo(false), zA: 1.25, zB: 1.25 },
+    O2:  { A: 'O', B: 'O', f: 'O₂', d: 41, ne: 12, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.3, zB: 1.3 },
+    F2:  { A: 'F', B: 'F', f: 'F₂', d: 48, ne: 14, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.35, zB: 1.35 },
+    Cl2: { A: 'Cl', B: 'Cl', f: 'Cl₂', d: 66, ne: 14, ao: [['3s', .6], ['3p', 2.7]], lv: homo(true).map(x => ({ ...x, lab: x.lab.replace('2', '3') })), zA: .95, zB: .95 },
+    CO:  { A: 'C', B: 'O', f: 'CO', d: 38, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: het(.55, .84), zA: 1.15, zB: 1.3 },
+    NO:  { A: 'N', B: 'O', f: 'NO', d: 39, ne: 11, ao: [['2s', .6], ['2p', 2.7]], lv: het(.62, .78), zA: 1.25, zB: 1.3 },
+    HF:  { A: 'H', B: 'F', f: 'HF', d: 31, ne: 8, ao: null, lv: [
+           L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
+           L('n', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
+  };
+  // 벤젠: 고리 탄소 6개의 2p(고리면에 수직)로 만든 π 오비탈 6개 (휘켈 근사)
+  const TH = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3);
+  const RL = (lab, star, e, deg, c, c2) => ({ lab, star, e, deg, c, c2, kA: 'z', kB: 'z' });
+  MOL.C6H6 = { A: 'C', B: 'C', f: 'C₆H₆', d: 0, ring: 47, ne: 6, ao: null, zA: 1.4, zB: 1.4, pi: true, lv: [
+    RL('π₁', 0, 0, 1, TH.map(() => 1)),
+    RL('π₂ · π₃', 0, 1.4, 2, TH.map(a => Math.cos(a)), TH.map(a => Math.sin(a))),
+    RL('π₄* · π₅*', 1, 3.0, 2, TH.map(a => Math.cos(2 * a)), TH.map(a => Math.sin(2 * a))),
+    RL('π₆*', 1, 4.4, 1, TH.map((a, k) => k % 2 ? -1 : 1))] };
+  const NOTE = {
+    C6H6: ['탄소 6개의 p 오비탈이 고리 위아래로 하나로 이어져서, π 전자 6개가 고리 전체를 빙글빙글 돌아다녀요. 결합 오비탈 3개(π₁~π₃)만 딱 차서 아주 안정해요. 이걸 <b>방향족</b>이라고 불러요. 그래서 벤젠의 탄소-탄소 결합 6개는 길이가 다 똑같아요.', 'The six carbon p orbitals join into one ring above and below the plane, so six π electrons roam the whole ring. Only the three bonding orbitals (π₁–π₃) are filled, which makes it very stable. This is called <b>aromaticity</b>, and it is why all six C–C bonds are the same length.'],
+    H2: ['전자 두 개가 결합 오비탈 하나에 같이 들어가요. 그래서 결합이 하나예요.', 'Two electrons share one bonding orbital, so there is one bond.'],
+    N2: ['전자가 결합 오비탈에만 꽉 차 있어요. 그래서 질소는 아주 튼튼한 <b>삼중 결합</b>이에요. 공기 중 질소가 잘 반응 안 하는 이유예요.', 'Only bonding orbitals are filled, giving a very strong <b>triple bond</b>. That is why nitrogen in air barely reacts.'],
+    O2: ['맨 위 π* 오비탈 두 칸에 전자가 하나씩 따로 들어가요. 짝 없는 전자가 2개라서 <b>산소는 자석에 끌려요</b>. 액체 산소를 자석 사이에 부으면 진짜 붙어요!', 'The top two π* orbitals each hold one lone electron. With two unpaired electrons, <b>oxygen is pulled by magnets</b>. Liquid oxygen really sticks between magnet poles!'],
+    F2: ['반결합 오비탈까지 거의 다 차서 결합이 하나뿐이에요. 그래서 F₂는 쉽게 쪼개지고 엄청 잘 반응해요.', 'Antibonding orbitals fill up too, leaving one weak bond. That is why F₂ splits easily and reacts so violently.'],
+    Cl2: ['3s·3p 오비탈로 만들어지지만 순서와 모양은 F₂와 같아요. 결합 하나.', 'Built from 3s and 3p, but the same pattern as F₂. One bond.'],
+    CO: ['N₂와 전자 수가 같아서 이것도 <b>삼중 결합</b>이에요. 다만 산소 쪽으로 전자가 살짝 쏠려 있어요.', 'Same electron count as N₂, so also a <b>triple bond</b>, but leaning a little toward oxygen.'],
+    NO: ['전자가 11개라 홀수예요. π*에 전자 하나가 혼자 남아서 결합 차수가 2.5예요. 그래서 NO는 반응을 잘해요.', 'With 11 electrons, one is left alone in π*. Bond order 2.5, and that lone electron makes NO reactive.'],
+    HF: ['플루오린이 전자를 세게 당겨서 σ 오비탈이 F 쪽으로 쏠려요. F의 나머지 전자들은 결합에 안 끼는 비결합(n) 오비탈에 있어요.', 'Fluorine pulls hard, so the σ orbital leans toward F. F’s other electrons sit in non-bonding (n) orbitals.'],
+  };
+  const KEYOF = { H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
+  function molKey(){
+    try{ if(RX && RX.raw === '벤젠') return 'C6H6'; const c = RX && RX.comp; if(!c || c.length > 2) return null;
+      if(c.reduce((s, [, n]) => s + n, 0) !== 2) return null;
+      return KEYOF[c.length === 1 ? c[0][0] + '2' : c.map(([s, n]) => s + n).join('')] || null; }catch(e){ return null; }
+  }
+  function fill(M){
+    const lv = M.lv.slice().sort((a, b) => a.e - b.e).map(x => ({ ...x, n: 0 }));
+    let left = M.ne; lv.forEach(x => { const k = Math.min(left, x.deg * 2); x.n = k; left -= k; });
+    let b = 0, a = 0; lv.forEach(x => { if(x.lab === 'n' || (M.hf && x.lab === '2s')) return; if(x.star) a += x.n; else b += x.n; });
+    const unp = lv.reduce((s, x) => s + (x.deg === 2 ? (x.n === 1 || x.n === 3 ? 1 : x.n === 2 ? 2 : 0) : (x.n === 1 ? 1 : 0)), 0);
+    return { lv, bo: (b - a) / 2, unp };
+  }
+  const kind = x => x.star ? 'an' : x.lab === 'n' || x.lab === '2s' ? 'nb' : 'bd';
+  const KTXT = { bd: ['결합', 'Bonding'], an: ['반결합', 'Antibonding'], nb: ['비결합', 'Non-bonding'] };
+  const KDESC = {
+    bd: ['원자 사이 공간에 전자가 모여서 두 원자를 끌어당겨 붙여 줘요.', 'Electrons gather between the atoms and pull them together.'],
+    an: ['원자 사이 한가운데에 전자가 하나도 없는 면(마디)이 있어요. 여기 든 전자는 결합을 약하게 해요.', 'There is an empty plane (node) right between the atoms. Electrons here weaken the bond.'],
+    nb: ['한쪽 원자에만 머물러서 결합에 거의 영향을 안 줘요.', 'It stays on one atom and barely affects the bond.'],
+  };
+
+  /* ── 오비탈 함수 (화면 단위: 18 = 보어 반지름 1) ── */
+  const basis = (k, x, y, z, Z) => { const r = Math.hypot(x, y, z), e = Math.exp(-Z * r);
+    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 : 0; };
+  const psi = (M, o, x, y, z) => {
+    if(M.ring){ const s = 1 / 18, Z = M.zA * 1.4, cc = o.alt && o.c2 ? o.c2 : o.c; let v = 0;
+      for(let k = 0; k < 6; k++){ const ax = Math.cos(TH[k]) * M.ring, ay = Math.sin(TH[k]) * M.ring;
+        const dx = (x - ax) * s, dy = (y - ay) * s, dz = z * s; v += cc[k] * dz * Math.exp(-Z * Math.hypot(dx, dy, dz)) * Z * .9; }
+      return v; }
+    const s = 1 / 18, xa = (x + M.d / 2) * s, xb = (x - M.d / 2) * s, ys = y * s, zs = z * s;
+    return o.cA * basis(o.kA, xa, ys, zs, M.zA * (o.kA === 's' ? 1.55 : 1.4)) + o.cB * basis(o.kB, xb, ys, zs, M.zB * (o.kB === 's' ? 1.55 : 1.4));
+  };
+  // |ψ|² 에 비례하게 점을 뿌린다 (전자 구름)
+  function sample(M, o, N){
+    const R = 50, X = M.ring ? M.ring + 48 : M.d / 2 + R;
+    let mx = 0; for(let i = 0; i < 6000; i++){ const v = psi(M, o, (Math.random() * 2 - 1) * X, (Math.random() * 2 - 1) * (M.ring ? X : R), (Math.random() * 2 - 1) * R); mx = Math.max(mx, v * v); }
+    const out = new Float32Array(N * 4); let n = 0, tries = 0;
+    while(n < N && tries < N * 400){ tries++;
+      const x = (Math.random() * 2 - 1) * X, y = (Math.random() * 2 - 1) * (M.ring ? X : R), z = (Math.random() * 2 - 1) * R;
+      const v = psi(M, o, x, y, z), p = v * v / mx;
+      if(Math.random() < Math.pow(p, 1.35) * 1.2){ out[n * 4] = x; out[n * 4 + 1] = y; out[n * 4 + 2] = z; out[n * 4 + 3] = v >= 0 ? 1 : -1; n++; } }
+    return out.subarray(0, n * 4);
+  }
+
+  /* ── WebGL 점 구름 ── */
+  const VS = `attribute vec4 a;uniform mat3 M;uniform vec2 R;uniform float S;uniform float PS;uniform float T;varying float sg;varying float dz;
+void main(){ vec3 p=M*a.xyz; float f=420./(420.-p.z); vec2 s=p.xy*f*S; gl_Position=vec4(s.x/R.x*2.,-s.y/R.y*2.,0.,1.); gl_PointSize=PS*f*(.8+.4*fract(sin(dot(a.xyz,vec3(12.9,78.2,37.7)))*437.)); sg=a.w; dz=clamp((p.z+90.)/180.,0.,1.); }`;
+  const FS = `precision mediump float;varying float sg;varying float dz;
+void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.0,r); g=g*g;
+  vec3 A=vec3(.55,.75,1.), B=vec3(1.,.5,.78); vec3 col=(sg>0.?A:B)*(.55+.75*dz)+vec3(.35)*smoothstep(.18,0.,r);
+  gl_FragColor=vec4(col*g*(.55+.75*dz),g*(.5+.5*dz)); }`;
+  const VS2 = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+  let G = null;
+  function glInit(cv){
+    const gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: true }); if(!gl) return null;
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    const buf = gl.createBuffer();
+    const U = {}; ['M', 'R', 'S', 'PS', 'T'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+    return { gl, pr, buf, U, loc: gl.getAttribLocation(pr, 'a'), n: 0 };
+  }
+  let st = null, raf = 0;
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!st || !G) return;
+    const cv = st.cv, gl = G.gl, dpr = Math.min(window.RX_LOWPOW ? 1.25 : 2, devicePixelRatio || 1);
+    const w = cv.clientWidth, h = cv.clientHeight; if(!w || !h) return;
+    if(cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    if(!st.drag && !RX_REDUCED) st.yaw += (now - (st.last || now)) * 0.00025;
+    st.last = now;
+    // 새 오비탈로 바뀔 때: 점들이 퍼졌다 모이며 바뀐다
+    const k = Math.min(1, (now - st.t0) / 650), e = 1 - Math.pow(1 - k, 3);
+    const cY = Math.cos(st.yaw), sY = Math.sin(st.yaw), cX = Math.cos(st.pitch), sX = Math.sin(st.pitch);
+    const col = (x, y, z) => { const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const S = (st.M.ring ? Math.min(w, h) / (st.M.ring * 2 + 110) : Math.min(w / (st.M.d + 120), h / 125)) * dpr * (.85 + .15 * e);
+    gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(G.pr); gl.bindBuffer(gl.ARRAY_BUFFER, G.buf); gl.enableVertexAttribArray(G.loc); gl.vertexAttribPointer(G.loc, 4, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix3fv(G.U.M, false, new Float32Array([...col(1, 0, 0), ...col(0, 1, 0), ...col(0, 0, 1)]));
+    gl.uniform2f(G.U.R, cv.width, cv.height); gl.uniform1f(G.U.S, S); gl.uniform1f(G.U.PS, 3.4 * dpr * (window.RX_LOWPOW ? 1.25 : 1));
+    gl.drawArrays(gl.POINTS, 0, Math.round(G.n * e));
+    // 원자 이름표 위치
+    st.nuc.forEach(([x, y, el]) => { const p = col(x, y, 0), f = 420 / (420 - p[2]);
+      el.style.left = (w / 2 + p[0] * f * S / dpr) + 'px'; el.style.top = (h / 2 + p[1] * f * S / dpr) + 'px'; el.style.opacity = .55 + .45 * Math.min(1, (p[2] + 60) / 120); });
+  }
+  function choose(i, fresh){
+    st.sel = i; const o = st.F.lv[i];
+    const pts = sample(st.M, o, window.RX_LOWPOW ? 9000 : 18000);
+    G.gl.bindBuffer(G.gl.ARRAY_BUFFER, G.buf); G.gl.bufferData(G.gl.ARRAY_BUFFER, pts, G.gl.STATIC_DRAW); G.n = pts.length / 4;
+    st.t0 = performance.now();
+    diag(); info();
+    if(!fresh) try{ SFX.tick(); }catch(e){}
+  }
+  /* ── 큰 에너지 도표 ── */
+  function diag(){
+    const M = st.M, F = st.F, W = 340, H = 330, top = 26, bot = 290, cx = 170, w = 46;
+    const es = F.lv.map(x => x.e), e0 = Math.min(...es), e1 = Math.max(...es);
+    const Y = e => bot - (e - e0) / ((e1 - e0) || 1) * (bot - top);
+    let s = `<defs><filter id="mbGl" x="-30%" y="-300%" width="160%" height="700%"><feGaussianBlur stdDeviation="3"/></filter></defs>`;
+    s += `<line x1="18" x2="18" y1="${bot + 6}" y2="${top - 10}" stroke="rgba(201,208,255,.35)"/><path d="M14 ${top - 4}l4-7 4 7" fill="none" stroke="rgba(201,208,255,.6)" stroke-width="1.4"/><text x="24" y="${top - 6}" font-size="10" fill="rgba(201,208,255,.65)">${P('에너지', 'Energy')}</text>`;
+    const aoY = [];
+    if(M.ao) M.ao.forEach(([lab, e]) => { const yy = Y(e0 + (e1 - e0) * (e / 5)); aoY.push(yy);
+      s += `<line x1="38" x2="78" y1="${yy}" y2="${yy}" stroke="#aab3d6" stroke-width="2.5" stroke-linecap="round"/><line x1="262" x2="302" y1="${yy}" y2="${yy}" stroke="#aab3d6" stroke-width="2.5" stroke-linecap="round"/>`;
+      s += `<text x="58" y="${yy - 7}" font-size="11" fill="#aab3d6" text-anchor="middle">${lab}</text><text x="282" y="${yy - 7}" font-size="11" fill="#aab3d6" text-anchor="middle">${lab}</text>`; });
+    s += `<text x="58" y="${H - 6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle" font-family="Kanit,sans-serif">${M.A}</text><text x="282" y="${H - 6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle" font-family="Kanit,sans-serif">${M.B}</text><text x="${cx}" y="${H - 6}" font-size="12" font-weight="700" fill="#c9d0ff" text-anchor="middle">${M.f}</text>`;
+    let ei = 0;
+    F.lv.forEach((x, i) => {
+      const yy = Y(x.e), K = kind(x), c = K === 'an' ? '#ff9ad5' : K === 'nb' ? '#c9d0ff' : '#9ee7ff';
+      if(aoY.length){ const a = aoY[/s/.test(x.lab) && !/p/.test(x.lab) ? 0 : aoY.length - 1];
+        s += `<path d="M78 ${a}L${cx - w} ${yy}M262 ${a}L${cx + w} ${yy}" stroke="rgba(154,168,255,.28)" stroke-dasharray="3 3"/>`; }
+      const segs = x.deg === 2 ? [[cx - w, cx - 4], [cx + 4, cx + w]] : [[cx - w * .5, cx + w * .5]];
+      let g = `<g class="lv" data-i="${i}"><rect x="${cx - w - 12}" y="${yy - 15}" width="${w * 2 + 74}" height="30" rx="15" fill="${i === st.sel ? 'rgba(255,226,154,.13)' : 'transparent'}" stroke="${i === st.sel ? 'rgba(255,226,154,.7)' : 'none'}"/>`;
+      segs.forEach(([a, b]) => g += `<line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${c}" stroke-width="9" opacity=".35" filter="url(#mbGl)" stroke-linecap="round"/><line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/>`);
+      g += `<text x="${cx + w + 10}" y="${yy + 4.5}" font-size="13" font-weight="700" fill="${i === st.sel ? '#ffe29a' : c}" font-family="Kanit,sans-serif">${x.lab}</text>`;
+      const put = segs.map(() => 0); for(let k = 0; k < x.n; k++) put[k % segs.length]++;
+      segs.forEach(([a, b], k) => { const m = (a + b) / 2;
+        for(let j = 0; j < put[k]; j++){ const xx = m + (put[k] === 2 ? (j ? 5.5 : -5.5) : 0), up = j === 0, d = (ei++ * .07).toFixed(2);
+          g += `<path d="${up ? `M${xx} ${yy + 8}V${yy - 9}m-3.4 3.6 3.4-3.6 3.4 3.6` : `M${xx} ${yy - 8}V${yy + 9}m-3.4-3.6 3.4 3.6 3.4-3.6`}" stroke="#fff" stroke-width="1.9" fill="none" stroke-linecap="round" style="opacity:0;animation:mbE .35s ${d}s ease-out forwards"/>`; } });
+      s += g + '</g>';
+    });
+    const box = st.el.querySelector('.mb-dg');
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}"><style>@keyframes mbE{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}</style>${s}</svg><div class="mb-hint">${P('칸을 누르면 그 오비탈 모양이 보여요', 'Tap a level to see its shape')}</div>`;
+    if(!st.animOnce){ st.animOnce = true; } else box.querySelectorAll('path[style]').forEach(p => p.style.animation = 'none');
+    box.querySelectorAll('.lv').forEach(g => g.addEventListener('click', () => { const lv = st.F.lv[+g.dataset.i]; if(+g.dataset.i === st.sel && lv.c2){ lv.alt = !lv.alt; choose(st.sel); return; } if(+g.dataset.i !== st.sel){ choose(+g.dataset.i); box.querySelectorAll('path[style]').forEach(p => { p.style.animation = 'none'; p.style.opacity = 1; }); } }));
+  }
+  function info(){
+    const x = st.F.lv[st.sel], K = kind(x), M = st.M, F = st.F;
+    const bo = Number.isInteger(F.bo) ? F.bo : F.bo.toFixed(1);
+    st.el.querySelector('.mb-info').innerHTML = `<div class="nm"><b>${x.lab}</b><span class="pill ${K}">${P(KTXT[K][0], KTXT[K][1])}</span></div>
+      <p>${P(KDESC[K][0], KDESC[K][1])} ${x.deg === 2 ? (x.c2 ? P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요. 이 칸을 한 번 더 누르면 쌍둥이 모양이 보여요.', 'It has a twin with the same energy. Tap this level again to see the twin.') : P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요(90° 돌린 모양).', 'It has a twin with the same energy, turned 90°.')) : ''}${M.pi && x.lab !== 'π₁' ? P(` 위에서 보면 마디(색이 바뀌는 선)가 ${['π₂ · π₃'].includes(x.lab) ? 1 : x.lab === 'π₆*' ? 3 : 2}개 있어요.`, ` Seen from above it has ${['π₂ · π₃'].includes(x.lab) ? 1 : x.lab === 'π₆*' ? 3 : 2} node line(s).`) : ''} ${P(`전자 <b>${x.n}</b> / ${x.deg * 2}개`, `<b>${x.n}</b> / ${x.deg * 2} electrons`)}</p>`;
+    st.el.querySelector('.mb-stats').innerHTML = M.pi ? `<div class="mb-card mb-st"><b>6</b><span>${P('π 전자', 'π electrons')}</span></div><div class="mb-card mb-st"><b>1.5</b><span>${P('C–C 결합 차수', 'C–C bond order')}</span></div>` : `<div class="mb-card mb-st"><b>${bo}</b><span>${P('결합 차수', 'Bond order')}</span></div><div class="mb-card mb-st"><b>${M.ne}</b><span>${P('원자가 전자', 'Valence e⁻')}</span></div>`;
+    st.el.querySelector('.mb-stats').innerHTML += `<div class="mb-card mb-st${F.unp ? ' mag' : ''}"><b>${F.unp}${F.unp ? ' 🧲' : ''}</b><span>${P('짝 없는 전자', 'Unpaired')}</span></div>`;
+  }
+  function open(key){
+    const M = MOL[key]; if(!M) return;
+    let el = document.getElementById('moBig');
+    if(!el){
+      el = document.createElement('div'); el.id = 'moBig'; el.setAttribute('role', 'dialog');
+      el.innerHTML = `<div class="mb-wrap"><div class="mb-top"><div><div class="k">MOLECULAR ORBITALS // ${P('분자 오비탈', 'MO')}</div><h2></h2></div><button class="mb-x" aria-label="close">✕</button></div>
+        <div class="mb-side"><div class="mb-card mb-dg"></div><div class="mb-card mb-info"></div><div class="mb-stats"></div><div class="mb-card mb-note"></div></div>
+        <div class="mb-view"><canvas></canvas><span class="mb-lab a"></span><span class="mb-lab b"></span><div class="mb-leg"><span><i style="background:#9ee7ff;color:#9ee7ff"></i>+</span><span><i style="background:#ff9ad5;color:#ff9ad5"></i>−</span></div><div class="mb-tip">${P('드래그해서 돌려 보기 · 점이 많을수록 전자가 있을 확률이 높아요', 'Drag to rotate · denser dots = electron more likely')}</div></div></div>`;
+      document.body.appendChild(el);
+      el.querySelector('.mb-x').addEventListener('click', close);
+      addEventListener('keydown', e => { if(e.key === 'Escape' && el.classList.contains('on')) close(); });
+      const cv = el.querySelector('canvas');
+      cv.addEventListener('pointerdown', e => { if(!st) return; st.drag = { x: e.clientX, y: e.clientY }; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+      cv.addEventListener('pointermove', e => { if(!st || !st.drag) return; st.yaw += (e.clientX - st.drag.x) * .01; st.pitch = Math.max(-1.4, Math.min(1.4, st.pitch + (e.clientY - st.drag.y) * .01)); st.drag = { x: e.clientX, y: e.clientY }; });
+      ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => { if(st) st.drag = null; }));
+    }
+    const cv = el.querySelector('canvas');
+    if(!G || G.cv !== cv){ try{ G = glInit(cv); if(G) G.cv = cv; }catch(e){ console.warn('mo', e); G = null; } }
+    if(!G) return;
+    const F = fill(M);
+    el.querySelector('h2').innerHTML = `${M.f}<small>${RX && RX.raw ? (LANG === 'en' && typeof REC_EN !== 'undefined' && REC_EN[RX.raw] ? REC_EN[RX.raw][0] : RX.raw) : ''}</small>`;
+    el.querySelector('.mb-note').innerHTML = P(NOTE[key][0], NOTE[key][1]);
+    const la = el.querySelector('.mb-lab.a'), lb = el.querySelector('.mb-lab.b'); la.dataset.s = M.A; lb.dataset.s = M.B;
+    let sel = 0; F.lv.forEach((x, i) => { if(x.n > 0) sel = i; });
+    el.querySelectorAll('.mb-lab.x').forEach(e => e.remove());
+    let nuc = [[-M.d / 2, 0, la], [M.d / 2, 0, lb]];
+    la.style.display = lb.style.display = M.ring ? 'none' : '';
+    if(M.ring){ nuc = TH.map(a => { const s = document.createElement('span'); s.className = 'mb-lab x'; s.dataset.s = 'C'; el.querySelector('.mb-view').appendChild(s); return [Math.cos(a) * M.ring, Math.sin(a) * M.ring, s]; }); }
+    st = { el, cv, M, F, sel, yaw: M.ring ? 0 : .6, pitch: M.ring ? -.62 : -.35, la, lb, nuc, animOnce: false };
+    el.classList.add('on');
+    requestAnimationFrame(() => { choose(sel, true); if(!raf) raf = requestAnimationFrame(frame); });
+    try{ rxEvt && rxEvt('mo'); }catch(e){}
+  }
+  function close(){
+    const el = document.getElementById('moBig'); if(el) el.classList.remove('on');
+    cancelAnimationFrame(raf); raf = 0; st = null;
+  }
+  window.rxMOOpen = () => { const k = molKey(); if(k) open(k); };
+  // 결과 창 탭: 누르면 전용 화면을 연다 (결과 창의 보기는 그대로)
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{
+      const old = document.getElementById('mTabMO');
+      const key = molKey(), ok = !!(key && RX && RX.views && RX.molTabs);
+      if(RX && RX.views) delete RX.views.mo;
+      let b = document.getElementById('mTabMO2');
+      if(old) old.hidden = true;
+      if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'mTabMO2'; b.setAttribute('role', 'tab');
+        b.addEventListener('click', e => { e.stopPropagation(); window.rxMOOpen(); });
+        document.getElementById('mTabs').appendChild(b); }
+      b.textContent = P('오비탈 ⤢', 'Orbitals ⤢'); b.hidden = !ok;
+    }catch(e){ console.warn('mo2', e); }
+    return r;
+  };
+})();
+</script>
+<style>
+  /* ═══ 결과 창 뒤 웨이브 리워크: 원근 격자 바다 (WebGL) — 결과 색으로 물들고, 열릴 때 물결이 퍼진다 ═══ */
+  #rxWaves2{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity .6s ease}
+  #modal.on #rxWaves2.on{opacity:1}
+  #modal.on #rxWaves.v2off{display:none!important}
+</style>
+<script>
+(function(){
+  if(typeof rxwStart !== 'function') return;
+  const modalEl = document.getElementById('modal'); if(!modalEl) return;
+  const VS = `attribute vec2 g;uniform float T;uniform vec2 R;uniform vec3 C1;uniform vec3 C2;uniform float K;uniform float RT;uniform vec2 MP;uniform float NZ;
+varying vec3 col;varying float al;
+float H(vec2 p){ // 바닷물결: 여러 겹의 사인 + 결과 창에서 퍼지는 물결
+  float h=sin(p.x*.9+T*.7)*.22+sin(p.y*1.3-T*.9+p.x*.4)*.18+sin((p.x+p.y)*2.1+T*1.6)*.06+sin(p.x*3.4-p.y*2.2-T*2.)*.035;
+  float d=length(p-vec2(0.,2.2)); float ring=RT*3.2; h+=K*exp(-pow((d-ring)*1.6,2.))*.75*exp(-RT*.5);
+  return h; }
+void main(){
+  vec2 p=vec2(g.x*7.,g.y*9.+.6);                  // 바닥 격자 (x 좌우, y 앞뒤)
+  float h=H(p);
+  vec3 w=vec3(p.x+MP.x*.6,h-1.25+MP.y*.15,-p.y);  // 카메라 앞쪽이 -z
+  float z=-w.z+1.2; float f=1.25/max(z,.25);
+  vec2 s=vec2(w.x*f*R.y/R.x,(w.y+.05)*f*1.9-.12);
+  gl_Position=vec4(s,0.,1.);
+  gl_PointSize=1.;
+  float t=clamp(p.y/9.,0.,1.);
+  col=mix(C1,C2,t)*(.75+h*.9);
+  al=(1.-t)*(1.-t)*.9*smoothstep(1.,.75,abs(g.x))*(.55+.45*smoothstep(-.2,.35,h))+exp(-pow((length(p-vec2(0.,2.2))-RT*3.2)*1.6,2.))*K*.5;
+}`;
+  const FS = `precision mediump float;varying vec3 col;varying float al;void main(){gl_FragColor=vec4(col*al,al);}`;
+  let cv, gl, pr, buf, U = {}, NV = 0, raf = 0, t0 = 0, rip = -9, kick = 0, col1 = [0.6, 0.66, 1], col2 = [0.35, 0.3, 0.85], failed = false, mx = 0, my = 0, cx = 0, cy = 0, last = 0;
+  function init(){
+    if(cv || failed) return !!cv;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'rxWaves2'; cv.setAttribute('aria-hidden', 'true');
+      const old = document.getElementById('rxWaves');
+      if(old && old.parentNode) old.parentNode.insertBefore(cv, old); else modalEl.prepend(cv);
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: true }); if(!gl) throw 0;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw gl.getProgramInfoLog(pr);
+      // 격자 선: 가로줄(앞뒤로 여러 줄) + 세로줄 → 선 조각으로
+      const lowp = !!window.RX_LOWPOW, NX = lowp ? 60 : 110, NY = lowp ? 26 : 44, CX = lowp ? 18 : 30;
+      const v = [];
+      for(let j = 0; j < NY; j++){ const y = j / (NY - 1); for(let i = 0; i < NX; i++){ const a = i / NX * 2 - 1, b = (i + 1) / NX * 2 - 1; v.push(a, y, b, y); } }
+      for(let i = 0; i <= CX; i++){ const x = i / CX * 2 - 1; for(let j = 0; j < NY * 2; j++){ const a = j / (NY * 2), b = (j + 1) / (NY * 2); v.push(x, a, x, b); } }
+      NV = v.length / 2;
+      buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW);
+      ['T', 'R', 'C1', 'C2', 'K', 'RT', 'MP'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; stop(); });
+      return true;
+    }catch(e){ failed = true; if(cv) cv.remove(); cv = null; return false; }
+  }
+  const hex = c => { c = String(c || '').trim(); if(c.startsWith('rgb')){ const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(v => v / 255) : null; }
+    if(c[0] !== '#') return null; if(c.length === 4) c = '#' + [...c.slice(1)].map(x => x + x).join(''); const n = parseInt(c.slice(1, 7), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  function tint(){
+    try{ const st = document.getElementById('mStage'); const g = st && getComputedStyle(st).getPropertyValue('--glow');
+      const c = hex(g) || [.6, .66, 1];
+      // 결과 색과 페리윙클을 섞어서 너무 튀지 않게
+      col1 = [c[0] * .7 + .25, c[1] * .7 + .28, c[2] * .7 + .32];
+      col2 = [.33, .3, .82];
+      if(document.getElementById('card') && document.getElementById('card').classList.contains('is-fail')){ col1 = [1, .45, .5]; col2 = [.5, .15, .3]; }
+    }catch(e){}
+  }
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!modalEl.classList.contains('on') || document.hidden){ stop(); return; }
+    if(window.RX_LOWPOW && now - last < 45) return;   // 폰: 초당 22번 정도
+    last = now;
+    const dpr = Math.min(window.RX_LOWPOW ? 1 : 1.5, devicePixelRatio || 1);
+    const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr); if(!W || !H) return;
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    cx += (mx - cx) * .04; cy += (my - cy) * .04;
+    kick *= .97;
+    const t = (now - t0) / 1000;
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(pr); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    const loc = gl.getAttribLocation(pr, 'g'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(U.T, RX_REDUCED ? 0 : t); gl.uniform2f(U.R, W, H);
+    gl.uniform3f(U.C1, ...col1); gl.uniform3f(U.C2, ...col2);
+    const rt = t - rip; gl.uniform1f(U.RT, rt); gl.uniform1f(U.K, (rt >= 0 && rt < 6 ? 1 : 0) * (1 + kick * 2.5));
+    gl.uniform2f(U.MP, cx, cy);
+    gl.drawArrays(gl.LINES, 0, NV);
+  }
+  function start(){
+    if(RX_FX === 'lo' || !init()) return false;
+    tint();
+    const old = document.getElementById('rxWaves'); if(old) old.classList.add('v2off');
+    cv.classList.add('on');
+    if(!raf){ t0 = performance.now(); last = 0; raf = requestAnimationFrame(frame); }
+    rip = (performance.now() - t0) / 1000;   // 열릴 때마다 물결 한 번
+    return true;
+  }
+  function stop(){ cancelAnimationFrame(raf); raf = 0; if(cv) cv.classList.remove('on'); }
+  const _ws = rxwStart;
+  rxwStart = function(){ if(start()) return; return _ws.apply(this, arguments); };
+  // 결과가 바뀔 때(같은 창에서 다시 보기 등)도 색과 물결을 새로
+  const _rr = rxRender;
+  rxRender = function(){ const r = _rr.apply(this, arguments); try{ if(modalEl.classList.contains('on')) setTimeout(() => { if(start()){} }, 60); }catch(e){} return r; };
+  // 폭발 충격: 기존 RXW.kick 을 따라 더 크게 출렁
+  try{ Object.defineProperty(RXW, 'kick', { configurable: true, get(){ return this._k || 0; }, set(v){ this._k = v; if(v > kick) kick = Math.min(3, v); } }); }catch(e){}
+  addEventListener('pointermove', e => { if(!raf) return; mx = (e.clientX / innerWidth) * 2 - 1; my = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
+})();
+</script>
+<style>
+  /* ═══ 초보자 도우미 (4.2.5+): 튜토리얼 강화 · 첫걸음 미션 · 주기율표 읽는 법 ═══ */
+  /* 튜토리얼 챕터 표시 */
+  .tu-chap{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:10.5px;font-weight:800;letter-spacing:.04em;color:#b8c2ff}
+  .tu-chap .bar{flex:1;height:4px;border-radius:9px;background:rgba(160,170,255,.16);overflow:hidden;position:relative}
+  .tu-chap .bar i{position:absolute;inset:0 auto 0 0;width:0;border-radius:9px;background:linear-gradient(90deg,#8f9bff,#c9a8ff,#ffd166);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .tu-chap .c{padding:2px 7px;border-radius:999px;background:rgba(143,155,255,.16);border:1px solid rgba(143,155,255,.35);white-space:nowrap}
+  /* 튜토리얼 끝 축하 */
+  #tuWin{position:fixed;inset:0;z-index:2147482990;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(30,26,70,.55),rgba(4,6,14,.72));opacity:0;transition:opacity .35s}
+  #tuWin.on{opacity:1;pointer-events:auto}
+  #tuWin .w{position:relative;width:min(340px,86vw);padding:26px 22px 18px;border-radius:22px;text-align:center;color:#eef0ff;
+    background:linear-gradient(160deg,rgba(40,44,96,.96),rgba(18,20,44,.97));border:1px solid rgba(170,180,255,.35);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset;
+    transform:translateY(18px) scale(.92);transition:transform .5s cubic-bezier(.2,1.4,.3,1)}
+  #tuWin.on .w{transform:none}
+  #tuWin .medal{width:84px;height:84px;margin:-62px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;line-height:1;color:#c08a10;
+    background:conic-gradient(from 200deg,#ffd166,#ffe9a8,#c9a8ff,#8f9bff,#ffd166);box-shadow:0 0 0 5px rgba(255,209,102,.18),0 0 34px rgba(255,209,102,.55);animation:tuMedal 2.4s ease-in-out infinite}
+  #tuWin .medal span{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#fff7dc}
+  @keyframes tuMedal{50%{box-shadow:0 0 0 10px rgba(255,209,102,.08),0 0 46px rgba(255,209,102,.75)}}
+  #tuWin h3{margin:0 0 6px;font-size:19px;font-weight:900}
+  #tuWin p{margin:0 0 14px;font-size:13px;line-height:1.55;color:#c8ccf0}
+  #tuWin .lst{display:grid;gap:6px;margin:0 0 16px;text-align:left}
+  #tuWin .lst div{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:7px 10px;border-radius:11px;background:rgba(255,255,255,.05);opacity:0;transform:translateX(-8px);animation:tuLi .4s forwards}
+  #tuWin .lst div b{color:#ffd166}
+  @keyframes tuLi{to{opacity:1;transform:none}}
+  #tuWin .bt{display:flex;gap:8px}
+  #tuWin .bt button{flex:1;padding:11px 8px;border-radius:12px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;border:1px solid rgba(170,180,255,.35);background:rgba(255,255,255,.06);color:#dfe2ff}
+  #tuWin .bt button.go{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;border-color:transparent}
+
+  /* 첫걸음 미션 알약 */
+  #qsPill{position:fixed;left:10px;z-index:60;display:flex;align-items:center;gap:8px;max-width:min(320px,calc(100vw - 20px));padding:6px 12px 6px 6px;border-radius:999px;cursor:pointer;
+    font:inherit;color:#e9ecff;background:rgba(22,24,52,.88);border:1px solid rgba(150,160,255,.38);box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 18px rgba(143,155,255,.18);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s,transform .35s cubic-bezier(.2,1.2,.3,1);text-align:left}
+  #qsPill.off{opacity:0;pointer-events:none;transform:translateY(10px) scale(.96)}
+  #qsPill .rg{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:900;color:#fff;
+    background:conic-gradient(#ffd166 calc(var(--p,0)*1%),rgba(150,160,255,.2) 0);position:relative}
+  #qsPill .rg::before{content:"";position:absolute;inset:3px;border-radius:50%;background:#1a1c40}
+  #qsPill .rg span{position:relative}
+  #qsPill .tx{min-width:0;display:grid;line-height:1.2}
+  #qsPill .tx small{font-size:9.5px;font-weight:800;color:#a9b2ff;letter-spacing:.05em}
+  #qsPill .tx b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #qsPill .ch{flex:none;opacity:.6;font-size:12px;transition:transform .3s}
+  #qsPill.open .ch{transform:rotate(180deg)}
+  #qsPill.win{border-color:#ffd166;box-shadow:0 0 0 4px rgba(255,209,102,.2),0 0 30px rgba(255,209,102,.6);animation:qsWin .7s cubic-bezier(.2,1.6,.3,1)}
+  #qsPill.win .rg{background:#ffd166}
+  @keyframes qsWin{30%{transform:scale(1.12)}}
+  #qsPill.nudge{animation:qsNudge 1.6s ease-in-out 2}
+  @keyframes qsNudge{0%,100%{transform:none}20%{transform:translateY(-4px)}40%{transform:none}55%{transform:translateY(-2px)}}
+  .qs-spark{position:fixed;z-index:61;width:6px;height:6px;border-radius:50%;pointer-events:none;background:#ffd166;box-shadow:0 0 8px #ffd166;animation:qsSp .7s ease-out forwards}
+  @keyframes qsSp{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+
+  /* 미션 카드 */
+  #qsCard{position:fixed;left:10px;z-index:61;width:min(330px,calc(100vw - 20px));padding:14px 14px 12px;border-radius:18px;color:#e9ecff;
+    background:linear-gradient(165deg,rgba(36,40,88,.97),rgba(16,18,40,.98));border:1px solid rgba(150,160,255,.38);box-shadow:0 18px 48px rgba(0,0,0,.5);
+    transform-origin:20px 100%;transform:translateY(10px) scale(.9);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.2,1.3,.3,1),opacity .25s}
+  #qsCard.on{opacity:1;transform:none;pointer-events:auto}
+  #qsCard .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  #qsCard .hd small{font-size:10px;font-weight:900;color:#a9b2ff;letter-spacing:.06em}
+  #qsCard .hd .x{margin-left:auto;background:none;border:0;color:#9aa0c8;font-size:15px;cursor:pointer;padding:2px 4px}
+  #qsCard h4{margin:0 0 4px;font-size:16px;font-weight:900}
+  #qsCard p{margin:0 0 10px;font-size:12.5px;line-height:1.55;color:#c4c9ee}
+  #qsCard .tl{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+  #qsCard .tl .pl{font-size:15px;font-weight:900;color:#8f97c8}
+  .qs-t{position:relative;width:46px;height:50px;border-radius:9px;display:grid;place-items:center;align-content:center;gap:0;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--c) 26%,#171a38),#141632);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);border-bottom:3px solid var(--c)}
+  .qs-t i{position:absolute;top:3px;left:5px;font-style:normal;font-size:9px;opacity:.7}
+  .qs-t b{font-size:17px;font-weight:900}
+  .qs-t em{position:absolute;right:-6px;top:-7px;font-style:normal;font-size:10.5px;font-weight:900;padding:1px 5px;border-radius:999px;background:#ffd166;color:#241a00}
+  #qsCard .tip{font-size:11.5px;line-height:1.5;padding:7px 9px;border-radius:10px;background:rgba(255,209,102,.08);border:1px dashed rgba(255,209,102,.35);color:#f3e2b0;margin:0 0 10px}
+  #qsCard .dots{display:flex;gap:4px;margin:0 0 10px}
+  #qsCard .dots i{flex:1;height:4px;border-radius:9px;background:rgba(150,160,255,.18)}
+  #qsCard .dots i.d{background:#ffd166}
+  #qsCard .dots i.c{background:#8f9bff;box-shadow:0 0 8px #8f9bff}
+  #qsCard .bt{display:flex;gap:6px;flex-wrap:wrap}
+  #qsCard .bt button{flex:1 1 auto;padding:9px 10px;border-radius:11px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid rgba(150,160,255,.35);background:rgba(255,255,255,.05);color:#dfe2ff}
+  #qsCard .bt button.go{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;border-color:transparent}
+  #qsCard .bt button.lt{flex:0 0 auto;background:none;border-color:transparent;color:#8f95c2;font-weight:700}
+  /* 눌러야 할 칸 알려 주기 */
+  #grid .cell.qs-hi{position:relative;z-index:3;outline:2px solid #ffd166;outline-offset:1px;animation:qsHi 1s ease-in-out infinite}
+  #grid .cell.qs-hi::after{content:attr(data-qs);position:absolute;right:-5px;top:-7px;z-index:4;font-size:10px;font-weight:900;line-height:1;padding:2px 5px;border-radius:999px;background:#ffd166;color:#241a00;pointer-events:none}
+  @keyframes qsHi{50%{outline-color:rgba(255,209,102,.35);box-shadow:0 0 16px rgba(255,209,102,.55)}}
+  #mixBtn.qs-hi{animation:qsHiB 1s ease-in-out infinite}
+  @keyframes qsHiB{50%{box-shadow:0 0 0 4px rgba(255,209,102,.35),0 0 20px rgba(255,209,102,.6)}}
+
+  /* 주기율표 읽는 법 */
+  .gd{display:grid;gap:14px}
+  .gd-sec{padding:12px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  .gd-sec h5{margin:0 0 8px;font-size:13.5px;font-weight:900;display:flex;align-items:center;gap:7px}
+  .gd-sec h5 span{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#8f9bff;color:#fff}
+  .gd-sec p{margin:0;font-size:12.5px;line-height:1.6;color:#c4c9ee}
+  .gd-cellw{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .gd-cell{position:relative;flex:none;width:118px;height:132px;border-radius:14px;cursor:pointer;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--nonmetal) 22%,#171a38),#121430);border:1px solid color-mix(in srgb,var(--nonmetal) 55%,transparent);border-bottom:4px solid var(--nonmetal)}
+  .gd-cell > *{position:absolute;border-radius:6px;transition:background .25s,box-shadow .25s,color .25s;padding:0 4px}
+  .gd-cell .a{left:8px;top:7px;font-size:14px;font-weight:800}
+  .gd-cell .s{left:0;right:0;top:30px;text-align:center;font-size:44px;font-weight:900;line-height:1}
+  .gd-cell .k{left:0;right:0;top:82px;text-align:center;font-size:13px}
+  .gd-cell .m{left:0;right:0;top:104px;text-align:center;font-size:11px;opacity:.75}
+  .gd-cell > .lit{background:rgba(255,209,102,.22);box-shadow:0 0 0 2px #ffd166;color:#fff3c4;opacity:1}
+  .gd-lab{flex:1;min-width:150px;display:grid;gap:5px}
+  .gd-lab button{display:flex;gap:8px;align-items:flex-start;text-align:left;padding:6px 8px;border-radius:9px;font:inherit;font-size:12px;line-height:1.45;color:#c4c9ee;cursor:pointer;background:none;border:1px solid transparent}
+  .gd-lab button i{flex:none;font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:900;background:rgba(150,160,255,.2);color:#dfe2ff;margin-top:1px}
+  .gd-lab button b{color:#eef0ff}
+  .gd-lab button.on{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.35)}
+  .gd-lab button.on i{background:#ffd166;color:#241a00}
+  .gd-seg{display:flex;gap:5px;margin:0 0 9px}
+  .gd-seg button{flex:1;padding:7px 4px;border-radius:9px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid rgba(150,160,255,.3);background:rgba(255,255,255,.04);color:#c4c9ee}
+  .gd-seg button.on{background:#8f9bff;border-color:#8f9bff;color:#fff}
+  .gd-mini{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;margin:0 auto 9px;max-width:380px}
+  .gd-mini i{aspect-ratio:1;border-radius:2px;background:var(--c);opacity:.25;transition:opacity .3s,transform .3s,box-shadow .3s}
+  .gd-mini i.e{background:none}
+  .gd-mini i.e.gap{aspect-ratio:auto;height:4px}
+  .gd-mini i.fs{border-radius:2px;background:repeating-linear-gradient(135deg,var(--c) 0 2px,transparent 2px 4px)}
+  .gd-mini i.hl{opacity:1;transform:scale(1.15);box-shadow:0 0 6px var(--c)}
+  .gd-mini.col i:not(.e){opacity:.95}
+  .gd-legend{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:11px;color:#c4c9ee;margin:0 0 6px}
+  .gd-legend span{display:flex;align-items:center;gap:4px}
+  .gd-legend span::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--c)}
+  .gd-ex{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0 0}
+  .gd-ex .eq{font-size:15px;font-weight:900;color:#8f97c8}
+  .gd-ex .res{padding:8px 12px;border-radius:11px;font-weight:900;background:rgba(120,200,255,.12);border:1px solid rgba(120,200,255,.4);color:#bfe6ff}
+  .gd-go{width:100%;padding:12px;border-radius:12px;font:inherit;font-size:13.5px;font-weight:900;cursor:pointer;border:0;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  @media (prefers-reduced-motion:reduce){#grid .cell.qs-hi,#mixBtn.qs-hi,#tuWin .medal,#qsPill.nudge{animation:none}}
+</style>
+<script>
+(function(){
+  if(typeof RX_TUT === 'undefined' || typeof rxTut !== 'function') return;
+  const P = (k, e) => LANG === 'en' ? e : k;
+  const col = c => { try{ return cssv(CAT[c].v) || '#8f9bff'; }catch(e){ return '#8f9bff'; } };
+  const tileHTML = (s, n) => { const e = rxSym(s); return e ? `<span class="qs-t" style="--c:${col(e.c)}"><i>${e.n}</i><b>${e.s}</b>${n > 1 ? `<em>×${n}</em>` : ''}</span>` : ''; };
+
+  /* ─────────── 1) 튜토리얼 강화: 원소 하나 직접 눌러 보기 + 원자 모형 + 챕터 ─────────── */
+  Object.assign(RXT.ko, {
+    tuSel:'아무 칸이나 눌러도 되지만, 일단 탄소(C)를 눌러 볼까요? 숫자 6이 적힌 칸이에요',
+    tuAtom:'이게 탄소 원자예요. 가운데 뭉친 게 핵(양성자+중성자)이고, 바깥을 도는 점 6개가 전자예요. 원자 번호 = 양성자 수 = 전자 수',
+    tuSet:'튜토리얼은 설정(⚙)에서 다시 볼 수 있어요. 끝나면 첫걸음 미션이 열려요',
+  });
+  Object.assign(RXT.en, {
+    tuSel:'Any cell works, but let us try carbon (C) first. It is the one marked 6',
+    tuAtom:'That is a carbon atom. The clump in the middle is the nucleus (protons + neutrons), the 6 dots going around are electrons. Atomic number = protons = electrons',
+    tuSet:'You can replay this from Settings (⚙). When we are done, your first missions unlock',
+  });
+  const i1 = RX_TUT.findIndex(s => s.key === 'tut1');
+  if(i1 >= 0 && !RX_TUT.some(s => s.key === 'tuSel')){
+    RX_TUT.splice(i1 + 1, 0,
+      { sel: '#grid .cell[data-n="6"]', key: 'tuSel', scroll: true,
+        prep(){ try{ if(selected === 6) select(1); }catch(e){} },
+        done: () => typeof selected !== 'undefined' && selected === 6 },
+      { sel: '#atomBox', key: 'tuAtom', scroll: true,
+        prep(){ try{ const b = document.querySelector('#detPager button'); if(b && !b.classList.contains('on') && matchMedia('(max-width:700px)').matches) b.click(); }catch(e){} } },
+    );
+  }
+  const CH = [
+    [P('주기율표', 'The table'), ['tut0', 'tut1', 'tuSel', 'tuAtom']],
+    [P('조합하기', 'Mixing'), ['tuAdd', 'tuH', 'tuO', 'tuMix', 'tuDone', 'tuQty']],
+    [P('둘러보기', 'Look around'), ['tut4', 'tuLearn', 'tuSet']],
+  ];
+  const chapOf = k => { const i = CH.findIndex(c => c[1].includes(k)); return i < 0 ? CH.length - 1 : i; };
+
+  function enhance(box){
+    if(!box || box._enh) return; box._enh = true;
+    const text = document.getElementById('tuText'), dots = document.getElementById('tuDots');
+    const chap = document.createElement('div'); chap.className = 'tu-chap';
+    chap.innerHTML = `<span class="c"></span><span class="bar"><i></i></span>`;
+    text.parentNode.insertBefore(chap, text);
+    let finished = false, idx = 0;
+    const upd = () => {
+      const ds = [...dots.children]; idx = Math.max(0, ds.findIndex(d => d.classList.contains('on')));
+      const st = RX_TUT[idx]; if(!st) return;
+      const c = chapOf(st.key);
+      chap.querySelector('.c').textContent = `${c + 1}/${CH.length} · ${CH[c][0]}`;
+      chap.querySelector('i').style.width = ((idx + 1) / RX_TUT.length * 100).toFixed(1) + '%';
+    };
+    try{ new MutationObserver(upd).observe(dots, { childList: true, subtree: true, attributes: true }); }catch(e){}
+    upd();
+    document.getElementById('tuNext').addEventListener('click', () => { if(idx >= RX_TUT.length - 1) finished = true; }, true);
+    const mo = new MutationObserver(() => {
+      if(document.body.contains(box)) return;
+      mo.disconnect();
+      if(finished) setTimeout(win, 250);
+    });
+    mo.observe(document.body, { childList: true });
+  }
+  const _tut = rxTut;
+  rxTut = function(){
+    const had = document.getElementById('rxTut');
+    const r = _tut.apply(this, arguments);
+    if(!had) enhance(document.getElementById('rxTut'));
+    return r;
+  };
+  // 이 스크립트보다 먼저 튜토리얼이 떠 있으면 그 자리에서 붙인다
+  enhance(document.getElementById('rxTut'));
+  setTimeout(() => enhance(document.getElementById('rxTut')), 0);
+
+  function win(){
+    if(document.getElementById('tuWin')) return;
+    const w = document.createElement('div'); w.id = 'tuWin';
+    const li = [
+      [P('원소 정보랑 원자 모형 보기', 'Element info and atom models'), '✓'],
+      [P('직접 물 만들기', 'Made water yourself'), '✓'],
+      [P('도감 · 학습 · 설정 위치', 'Where Codex, Learn and Settings live'), '✓'],
+    ];
+    w.innerHTML = `<div class="w"><div class="medal"><span>★</span></div>
+      <h3>${P('튜토리얼 완료!', 'Tutorial complete!')}</h3>
+      <p>${P('이제 첫걸음 미션 8개가 기다려요. 하나씩 깨다 보면 금방 익숙해져요', '8 first-step missions are waiting. Clear them one by one and you will be a pro in no time')}</p>
+      <div class="lst">${li.map(([t], k) => `<div style="animation-delay:${.25 + k * .12}s"><b>✓</b>${t}</div>`).join('')}</div>
+      <div class="bt"><button type="button" class="lt">${P('혼자 해 볼게요', 'I will explore')}</button><button type="button" class="go">${P('미션 시작', 'Start missions')}</button></div></div>`;
+    document.body.appendChild(w);
+    try{ mix = []; renderChips(); if(ADD_MODE) setAddMode(false); }catch(e){}   // 튜토리얼에서 담은 물 재료 정리
+    requestAnimationFrame(() => w.classList.add('on'));
+    try{ rxConfetti(); }catch(e){}
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    const close = open => { w.classList.remove('on'); setTimeout(() => w.remove(), 350); QS.begin(open); };
+    w.querySelector('.go').addEventListener('click', () => close(true));
+    w.querySelector('.lt').addEventListener('click', () => close(false));
+  }
+
+  /* ─────────── 2) 첫걸음 미션 ─────────── */
+  const M = [
+    { id: 'read', t: P('주기율표 읽는 법 보기', 'Learn to read the table'),
+      d: P('칸 하나에 뭐가 적혀 있는지, 가로줄·세로줄이 무슨 뜻인지 1분이면 알아요', 'What is in a cell and what rows and columns mean. Takes a minute'),
+      act: 'guide' },
+    { id: 'salt', t: P('소금 만들기', 'Make salt'), name: '소금', r: [['Na', 1], ['Cl', 1]],
+      d: P('나트륨(Na) 하나와 염소(Cl) 하나', 'One sodium (Na) and one chlorine (Cl)'),
+      tip: P('Na는 맨 왼쪽(1족), Cl은 오른쪽 끝 근처(17족)에 있어요. 양 끝에 있는 애들끼리 잘 붙어요', 'Na sits far left (group 1), Cl near the right edge (group 17). Opposite ends stick together') },
+    { id: 'co2', t: P('이산화탄소 만들기', 'Make carbon dioxide'), name: '이산화탄소', r: [['C', 1], ['O', 2]],
+      d: P('탄소(C) 하나, 산소(O) 둘. 숨 쉴 때 나오는 그거', 'One carbon (C), two oxygen (O). What you breathe out'),
+      tip: P('화학식의 작은 숫자가 개수예요. CO₂ = C 1개 + O 2개', 'The small number in a formula is the count. CO₂ = 1 C + 2 O') },
+    { id: 'nh3', t: P('암모니아 만들기', 'Make ammonia'), name: '암모니아', r: [['N', 1], ['H', 3]],
+      d: P('질소(N) 하나, 수소(H) 셋', 'One nitrogen (N), three hydrogen (H)'),
+      tip: P('같은 원소를 여러 개 넣을 땐 그냥 여러 번 누르면 돼요', 'For several of the same element, just tap it several times') },
+    { id: 'ch4', t: P('메테인 만들기', 'Make methane'), name: '메테인', r: [['C', 1], ['H', 4]],
+      d: P('탄소(C) 하나, 수소(H) 넷', 'One carbon (C), four hydrogen (H)'),
+      tip: P('꿀팁: 아래 개수 칸을 4로 맞추고 H를 한 번만 누르면 4개가 한꺼번에 담겨요', 'Tip: set the count box to 4, then tap H once to add all four') },
+    { id: 'fail', t: P('일부러 실패해 보기', 'Fail on purpose'),
+      d: P('없는 조합을 섞으면 실패해요. 실패하면 비슷한 물질 힌트가 나와요', 'Mix something that does not exist. Failing shows hints for similar substances'),
+      tip: P('예: 헬륨(He) 다섯 개. 비활성 기체는 아무랑도 안 붙어요', 'Try five helium (He). Noble gases bond with nothing'), r: [['He', 5]], free: true },
+    { id: 'dex', t: P('도감 열어 보기', 'Open the Codex'),
+      d: P('만든 물질이 전부 여기 모여요. 잠긴 카드를 누르면 힌트를 볼 수 있어요', 'Everything you make lands here. Tap a locked card for hints'), act: 'dex' },
+    { id: 'quiz', t: P('학습 열어 보기', 'Open Learn'),
+      d: P('퀴즈랑 미니게임으로 원소를 외워요. 오늘의 원소도 여기 있어요', 'Quizzes and minigames to learn elements. Element of the day lives here too'), act: 'quiz' },
+  ];
+  const LS = 'pt_quest';
+  const st = () => Object.assign({ on: false, off: false, done: [] }, rxLS.get(LS, {}) || {});
+  const save = s => rxLS.set(LS, s);
+  let S = st(), failSeen = false, guideSeen = false, dexSeen = false, quizSeen = false, hiOn = false, hiT = 0, celebrating = false;
+  const cur = () => M.find(m => !S.done.includes(m.id));
+  const isDone = m => {
+    if(m.name) return found.has(m.name);
+    if(m.id === 'fail') return failSeen;
+    if(m.id === 'read') return guideSeen;
+    if(m.id === 'dex') return dexSeen;
+    if(m.id === 'quiz') return quizSeen;
+    return false;
+  };
+
+  let pill, card;
+  function build(){
+    if(pill) return;
+    pill = document.createElement('button'); pill.type = 'button'; pill.id = 'qsPill'; pill.className = 'off';
+    pill.innerHTML = `<span class="rg"><span></span></span><span class="tx"><small>${P('첫걸음 미션', 'FIRST STEPS')}</small><b></b></span><span class="ch">▴</span>`;
+    card = document.createElement('div'); card.id = 'qsCard'; card.setAttribute('role', 'dialog');
+    document.body.append(pill, card);
+    pill.addEventListener('click', () => card.classList.contains('on') ? closeCard() : openCard());
+    document.addEventListener('pointerdown', e => { if(card.classList.contains('on') && !card.contains(e.target) && !pill.contains(e.target)) closeCard(); }, true);
+  }
+  function paintPill(){
+    const m = cur(); if(!m) return;
+    const n = S.done.length;
+    pill.querySelector('.rg span').textContent = `${n}/${M.length}`;
+    pill.querySelector('.rg').style.setProperty('--p', (n / M.length * 100).toFixed(0));
+    pill.querySelector('.tx b').textContent = m.t;
+  }
+  function openCard(){
+    const m = cur(); if(!m) return;
+    const n = M.indexOf(m);
+    card.innerHTML = `<div class="hd"><small>${P('미션', 'MISSION')} ${n + 1} / ${M.length}</small><button type="button" class="x" aria-label="${rt('close')}">✕</button></div>
+      <div class="dots">${M.map((x, k) => `<i class="${S.done.includes(x.id) ? 'd' : x === m ? 'c' : ''}"></i>`).join('')}</div>
+      <h4>${m.t}</h4><p>${m.d}</p>
+      ${m.r ? `<div class="tl">${m.r.map(([s, k]) => tileHTML(s, k)).join('<span class="pl">+</span>')}</div>` : ''}
+      ${m.tip ? `<div class="tip">💡 ${m.tip}</div>` : ''}
+      <div class="bt">
+        ${m.r ? `<button type="button" class="go" data-a="hi">${P('칸 알려 줘', 'Show me the cells')}</button><button type="button" data-a="load">${P('대신 담아 줘', 'Load it for me')}</button>` : ''}
+        ${m.act === 'guide' ? `<button type="button" class="go" data-a="guide">${P('읽는 법 보기', 'Open the guide')}</button>` : ''}
+        ${m.act === 'dex' ? `<button type="button" class="go" data-a="dex">${P('도감 열기', 'Open Codex')}</button>` : ''}
+        ${m.act === 'quiz' ? `<button type="button" class="go" data-a="quiz">${P('학습 열기', 'Open Learn')}</button>` : ''}
+        <button type="button" class="lt" data-a="later">${P('미션 숨기기', 'Hide missions')}</button>
+      </div>`;
+    place();
+    card.classList.add('on'); pill.classList.add('open');
+    card.querySelector('.x').addEventListener('click', closeCard);
+    card.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => act(b.dataset.a, m)));
+    try{ SFX.pick && SFX.pick(); }catch(e){}
+  }
+  function closeCard(){ if(card){ card.classList.remove('on'); pill.classList.remove('open'); } }
+  function act(a, m){
+    closeCard();
+    if(a === 'later'){ S.off = true; save(S); hide(); try{ rxMiniToast(P('설정 › 튜토리얼에서 다시 켤 수 있어요', 'Turn it back on in Settings › Tutorial')); }catch(e){} return; }
+    if(a === 'guide'){ rxGuide(); return; }
+    if(a === 'dex'){ try{ document.getElementById('dexBtn').click(); }catch(e){} return; }
+    if(a === 'quiz'){ try{ document.getElementById('quizBtn').click(); }catch(e){} return; }
+    if(a === 'hi'){ highlight(m); return; }
+    if(a === 'load'){
+      try{
+        mix = [];
+        m.r.forEach(([s, n]) => { const e = rxSym(s); if(e) for(let i = 0; i < n; i++) mix.push(e.n); });
+        renderChips(); SFX.pick && SFX.pick();
+      }catch(e){}
+      clearHi(); const mb = document.getElementById('mixBtn'); if(mb){ mb.classList.add('qs-hi'); hiOn = true; clearTimeout(hiT); hiT = setTimeout(clearHi, 9000); }
+      try{ rxMiniToast(P('담았어요. 이제 조합하기!', 'Loaded. Now hit Mix!')); }catch(e){}
+    }
+  }
+  function highlight(m){
+    clearHi();
+    try{ if(mix.length){ mix = []; renderChips(); } }catch(e){}   // 다른 게 담겨 있으면 섞여서 실패하니까 비우고 시작
+    try{ if(!ADD_MODE) setAddMode(true); if(ADD_QTY !== 1) setQty(1); }catch(e){}
+    let first = null;
+    m.r.forEach(([s, n]) => { const e = rxSym(s); const c = e && document.querySelector(`#grid .cell[data-n="${e.n}"]`);
+      if(c){ c.classList.add('qs-hi'); c.dataset.qs = '×' + n; first = first || c; } });
+    try{ if(first) first.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); }catch(e){}
+    hiOn = true; clearTimeout(hiT); hiT = setTimeout(clearHi, 20000);
+    try{ rxMiniToast(P('반짝이는 칸을 숫자만큼 눌러요', 'Tap each glowing cell that many times')); }catch(e){}
+  }
+  function clearHi(){
+    hiOn = false; clearTimeout(hiT);
+    document.querySelectorAll('#grid .cell.qs-hi').forEach(c => { c.classList.remove('qs-hi'); delete c.dataset.qs; });
+    const mb = document.getElementById('mixBtn'); if(mb) mb.classList.remove('qs-hi');
+  }
+  // 담은 게 정답과 같아지면 칸 반짝임 → 조합하기 버튼 반짝임
+  function hiStep(){
+    if(!hiOn) return;
+    const m = cur(); if(!m || !m.r) return;
+    const want = {}; m.r.forEach(([s, n]) => want[s] = n);
+    const have = {}; (mix || []).forEach(n => { const s = byNum[n] && byNum[n].s; if(s) have[s] = (have[s] || 0) + 1; });
+    const ok = Object.keys(want).every(s => have[s] === want[s]) && Object.keys(have).every(s => want[s]);
+    m.r.forEach(([s, n]) => { const e = rxSym(s); const c = e && document.querySelector(`#grid .cell[data-n="${e.n}"]`); if(!c) return;
+      const left = n - (have[s] || 0); c.classList.toggle('qs-hi', left > 0); if(left > 0) c.dataset.qs = '×' + left; });
+    const mb = document.getElementById('mixBtn'); if(mb) mb.classList.toggle('qs-hi', ok);
+  }
+  function place(){
+    if(!pill) return;
+    const tr = document.getElementById('tray');
+    const top = tr && tr.getClientRects().length ? tr.getBoundingClientRect().top : innerHeight;
+    const b = Math.max(10, innerHeight - top + 8);
+    pill.style.bottom = b + 'px';
+    if(card) card.style.bottom = (b + 50) + 'px';
+  }
+  const busy = () => {
+    const on = id => { const e = document.getElementById(id); return e && e.classList.contains('on'); };
+    return !rxLS.get('pt_seentut', false) || document.getElementById('rxTut') || document.getElementById('tuWin') || document.getElementById('rxIntro') || document.querySelector('#verPop.in') ||
+      on('modal') || on('rxPanel') || on('quiz') || on('dex') || on('settings') || on('moBig') || document.querySelector('#setModal.on, #setPanel.on');
+  };
+  function show(){ build(); paintPill(); place(); pill.classList.remove('off'); }
+  function hide(){ if(pill){ pill.classList.add('off'); closeCard(); } clearHi(); }
+  function sparks(){
+    const r = pill.getBoundingClientRect(), cx = r.left + 22, cy = r.top + r.height / 2;
+    for(let k = 0; k < 14; k++){ const s = document.createElement('i'); s.className = 'qs-spark';
+      const a = Math.PI * 2 * k / 14, d = 30 + Math.random() * 26;
+      s.style.left = cx + 'px'; s.style.top = cy + 'px'; s.style.setProperty('--x', (Math.cos(a) * d).toFixed(0) + 'px'); s.style.setProperty('--y', (Math.sin(a) * d).toFixed(0) + 'px');
+      document.body.appendChild(s); setTimeout(() => s.remove(), 800); }
+  }
+  function complete(m){
+    if(S.done.includes(m.id)) return;
+    S.done.push(m.id); save(S); clearHi(); closeCard();
+    celebrating = true;
+    show();
+    pill.querySelector('.tx b').textContent = P('완료! ', 'Done! ') + m.t;
+    pill.querySelector('.rg span').textContent = '✓';
+    pill.classList.remove('win'); void pill.offsetWidth; pill.classList.add('win');
+    sparks();
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    setTimeout(() => {
+      pill.classList.remove('win'); celebrating = false;
+      if(!cur()){
+        S.on = false; S.all = true; save(S); hide();
+        try{ rxConfetti(); }catch(e){}
+        try{ rxToast(P('첫걸음 미션', 'First steps'), P('전부 완료!', 'All clear!'), P('이제 진짜 실험 시작이에요. 도감 550종에 도전해 보세요', 'Now the real lab begins. Go for all 550 entries')); }catch(e){}
+        try{ rxEvt('questAll'); }catch(e){}
+        return;
+      }
+      paintPill(); pill.classList.remove('nudge'); void pill.offsetWidth; pill.classList.add('nudge');
+    }, 1700);
+  }
+  function tick(){
+    const tb = document.getElementById('rxTut'); if(tb && !tb._enh) enhance(tb);
+    if(!S.on || S.off){ if(pill && !pill.classList.contains('off')) hide(); return; }
+    if(busy()){ if(pill && !celebrating){ pill.classList.add('off'); closeCard(); } return; }
+    const m = cur(); if(!m){ S.on = false; save(S); hide(); return; }
+    if(!celebrating && isDone(m)){ complete(m); return; }
+    if(!celebrating){ if(!pill || pill.classList.contains('off')) show(); else place(); }
+    hiStep();
+  }
+  setInterval(tick, 500);
+  addEventListener('resize', place);
+  // 실패 / 도감 / 학습을 본 순간 기억해 둔다
+  try{ const _rr = rxRender; rxRender = function(kind){ if(kind === 'fail' && S.on && cur() && cur().id === 'fail') failSeen = true; return _rr.apply(this, arguments); }; }catch(e){}
+  ['dexBtn', 'quizBtn'].forEach(id => { const b = document.getElementById(id); if(b) b.addEventListener('click', () => { const m = cur(); if(!S.on || !m) return; if(id === 'dexBtn' && m.id === 'dex') dexSeen = true; if(id === 'quizBtn' && m.id === 'quiz') quizSeen = true; }); });
+
+  const QS = window.rxQuest = {
+    begin(open){
+      S = st(); S.on = true; S.off = false; S.all = false;
+      // 이미 해 본 건 미리 체크
+      M.forEach(m => { if(m.name && found.has(m.name) && !S.done.includes(m.id)) S.done.push(m.id); });
+      save(S);
+      if(open) setTimeout(() => { tick(); if(pill && !pill.classList.contains('off')) openCard(); }, 500);
+    },
+    reset(){ S = { on: true, off: false, done: [] }; failSeen = guideSeen = dexSeen = quizSeen = false; save(S); },
+  };
+  // 이미 튜토리얼을 끝낸 새내기(발견이 아직 적은 사람)에게도 한 번 켜 준다
+  setTimeout(() => {
+    S = st();
+    if(!rxLS.get('pt_seentut', false) || S.on || S.off || S.all || S.seeded) return;
+    S.seeded = true; save(S);
+    if(found.size < 12) QS.begin(false);
+  }, 4000);
+
+  /* ─────────── 3) 주기율표 읽는 법 ─────────── */
+  window.rxGuide = function rxGuide(){
+    const show3 = ['alkali', 'alkaline', 'transition', 'post', 'metalloid', 'nonmetal', 'halogen', 'noble', 'lanthanide', 'actinide'];
+    let mini = '';
+    for(let p = 1; p <= 7; p++) for(let g = 1; g <= 18; g++){
+      const e = EL.find(x => x.p === p && x.g === g);
+      const f = !e && g === 3 && (p === 6 || p === 7) ? (p === 6 ? 'lanthanide' : 'actinide') : '';   // 란타넘족·악티늄족 자리
+      mini += e ? `<i data-p="${p}" data-g="${g}" data-c="${e.c}" style="--c:${col(e.c)}"></i>` : f ? `<i class="fs" data-p="${p}" data-c="${f}" style="--c:${col(f)}"></i>` : '<i class="e"></i>';
+    }
+    // 아래에 따로 빼 둔 두 줄 (57–71, 89–103)
+    mini += '<i class="e gap"></i>'.repeat(18);
+    [[57, 6], [89, 7]].forEach(([s, p]) => { mini += '<i class="e"></i><i class="e"></i>';
+      for(let n = s; n < s + 15; n++){ const e = byNum[n]; mini += `<i data-p="${p}" data-c="${e.c}" style="--c:${col(e.c)}"></i>`; }
+      mini += '<i class="e"></i>'; });
+    const L = [
+      ['a', P('<b>원자 번호</b> · 양성자 수예요. 원소마다 하나뿐인 번호', '<b>Atomic number</b> · the number of protons. Unique to each element')],
+      ['s', P('<b>원소 기호</b> · 1~2글자. 조합할 때 쓰는 이름표', '<b>Symbol</b> · one or two letters. The tag you mix with')],
+      ['k', P('<b>이름</b> · 우리말 이름', '<b>Name</b> · the element name')],
+      ['m', P('<b>원자량</b> · 원자 하나의 상대적인 무게', '<b>Atomic mass</b> · how heavy one atom is, relatively')],
+    ];
+    const body = `<div class="gd">
+      <div class="gd-sec"><h5><span>1</span>${P('칸 하나 읽기', 'Reading one cell')}</h5>
+        <div class="gd-cellw"><div class="gd-cell" id="gdCell"><span class="a">6</span><span class="s">C</span><span class="k">${P('탄소', 'Carbon')}</span><span class="m">12.011</span></div>
+        <div class="gd-lab" id="gdLab">${L.map(([k, t], i) => `<button type="button" data-k="${k}"><i>${i + 1}</i><span>${t}</span></button>`).join('')}</div></div></div>
+      <div class="gd-sec"><h5><span>2</span>${P('가로줄 · 세로줄 · 색깔', 'Rows, columns, colors')}</h5>
+        <div class="gd-seg" id="gdSeg"><button type="button" data-v="p" class="on">${P('주기 (가로)', 'Period (row)')}</button><button type="button" data-v="g">${P('족 (세로)', 'Group (column)')}</button><button type="button" data-v="c">${P('색깔', 'Colors')}</button></div>
+        <div class="gd-mini" id="gdMini">${mini}</div>
+        <div class="gd-legend" id="gdLeg" hidden>${show3.map(c => `<span style="--c:${col(c)}">${LANG === 'en' ? ({alkali:'Alkali metal',alkaline:'Alkaline earth',transition:'Transition metal',post:'Post-transition',nonmetal:'Nonmetal',halogen:'Halogen',noble:'Noble gas',metalloid:'Metalloid',lanthanide:'Lanthanide',actinide:'Actinide'})[c] : CAT[c].ko}</span>`).join('')}</div>
+        <p id="gdTxt"></p></div>
+      <div class="gd-sec"><h5><span>3</span>${P('조합은 이렇게', 'How mixing works')}</h5>
+        <p>${P('원소 <b>종류</b>와 <b>개수</b>를 맞추면 물질이 나와요. 화학식 아래 작은 숫자가 개수예요', 'Match the <b>elements</b> and their <b>counts</b> and you get a substance. The small numbers in a formula are counts')}</p>
+        <div class="gd-ex">${tileHTML('H', 2)}<span class="eq">+</span>${tileHTML('O', 1)}<span class="eq">=</span><span class="res">H₂O · ${P('물', 'Water')}</span></div></div>
+      <button type="button" class="gd-go" id="gdGo">${P('알겠어요! 섞으러 가기', 'Got it! Let me mix')}</button></div>`;
+    const b = rxPanel(P('주기율표 읽는 법', 'How to read the table'), P('처음이라면 이것만 알면 돼요', 'All you need to get started'), body);
+    guideSeen = true;
+    const cell = b.querySelector('#gdCell'), lab = b.querySelector('#gdLab');
+    let li = 0, auto = 0;
+    const lit = k => { cell.querySelectorAll(':scope > span').forEach(s => s.classList.toggle('lit', s.classList.contains(k))); lab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.k === k)); };
+    const cycle = () => { lit(L[li % L.length][0]); li++; };
+    cycle(); auto = setInterval(() => { if(!document.body.contains(cell)) return clearInterval(auto); cycle(); }, 2200);
+    lab.querySelectorAll('button').forEach(x => x.addEventListener('click', () => { clearInterval(auto); lit(x.dataset.k); }));
+    cell.addEventListener('click', () => { clearInterval(auto); cycle(); });
+    const miniEl = b.querySelector('#gdMini'), txt = b.querySelector('#gdTxt'), leg = b.querySelector('#gdLeg');
+    let mt = 0, step = 0;
+    const view = v => {
+      clearInterval(mt); step = 0;
+      b.querySelectorAll('#gdSeg button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
+      miniEl.classList.toggle('col', v === 'c'); leg.hidden = v !== 'c';
+      const cells = [...miniEl.querySelectorAll('i:not(.e)')];
+      const run = () => {
+        if(!document.body.contains(miniEl)) return clearInterval(mt);
+        if(v === 'c'){ const c = show3[step % show3.length]; cells.forEach(i => i.classList.toggle('hl', i.dataset.c === c));
+          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>. 아래 따로 뺀 두 줄은 <b>란타넘족·악티늄족</b>이에요. 원래 3족 6·7주기 자리에 들어가는데, 표가 너무 길어져서 빼 둔 거예요', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing. The two rows below are the <b>lanthanides and actinides</b>: they belong in group 3, periods 6 and 7, but are pulled out so the table is not too wide'); }
+        else if(v === 'p'){ const p = step % 7 + 1; cells.forEach(i => i.classList.toggle('hl', +i.dataset.p === p));
+          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요${p >= 6 ? ` (아래 ${p === 6 ? '란타넘족' : '악티늄족'} 줄도 ${p}주기)` : ''}`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down${p >= 6 ? ` (the ${p === 6 ? 'lanthanide' : 'actinide'} row below is period ${p} too)` : ''}`); }
+        else { const G = [1, 2, 14, 17, 18], g = G[step % G.length]; cells.forEach(i => i.classList.toggle('hl', +i.dataset.g === g));
+          txt.innerHTML = P(`세로줄은 <b>족</b>. 지금 ${g}족 · 같은 족은 바깥 전자 수가 같아서 성질이 비슷해요`, `Columns are <b>groups</b>. This is group ${g} · same outer electrons, so similar behavior`); }
+        step++;
+      };
+      run(); mt = setInterval(run, 1600);
+    };
+    b.querySelectorAll('#gdSeg button').forEach(x => x.addEventListener('click', () => view(x.dataset.v)));
+    view('p');
+    b.querySelector('#gdGo').addEventListener('click', () => { clearInterval(auto); clearInterval(mt); rxPanelClose(); });
+  };
+
+  /* ─────────── 설정 › 튜토리얼 줄에 버튼 둘 더 ─────────── */
+  try{
+    const _rs = renderSettings;
+    renderSettings = function(){
+      const r = _rs.apply(this, arguments);
+      try{
+        const tb = document.querySelector('#setBody [data-rxtut]');
+        if(tb && !tb.parentNode.querySelector('[data-qsx]')){
+          tb.insertAdjacentHTML('afterend', ` <button class="sbtn" data-qsx="q">${P('첫걸음 미션', 'First missions')}</button> <button class="sbtn" data-qsx="g">${P('주기율표 읽는 법', 'Reading the table')}</button>`);
+          tb.parentNode.querySelector('[data-qsx="q"]').addEventListener('click', () => { QS.reset(); closeSettings(); setTimeout(() => QS.begin(true), 300); });
+          tb.parentNode.querySelector('[data-qsx="g"]').addEventListener('click', () => { closeSettings(); setTimeout(rxGuide, 300); });
+        }
+      }catch(e){}
+      return r;
+    };
+  }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 헤더 리워크 (4.2.5+): 로고 · 홀로 제목 · 둥근 검색창 · 아이콘 버튼 · 도감 진행도 ═══ */
+  body:not(.w95) header{position:relative;display:flex;align-items:center;gap:14px;flex-wrap:nowrap;padding:10px 18px;
+    background:linear-gradient(180deg,rgba(26,28,58,.72),rgba(14,15,32,.55));border-bottom:1px solid rgba(150,160,255,.14);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  body:not(.w95) header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(143,155,255,.7) 20%,rgba(201,168,255,.8) 50%,rgba(247,131,172,.6) 80%,transparent);opacity:.8}
+  body:not(.w95) header .legend{display:none!important}   /* 아래 분류 칩과 겹쳐서 뺀다 */
+
+  /* 로고 + 제목 */
+  .hd-brand{display:flex;align-items:center;gap:11px;min-width:0;flex:none}
+  #hdLogo{flex:none;width:38px;height:38px;display:block;filter:drop-shadow(0 0 8px rgba(143,155,255,.45));cursor:pointer;transition:transform .5s cubic-bezier(.2,1.4,.3,1)}
+  #hdLogo:hover{transform:rotate(90deg) scale(1.06)}
+  #hdLogo.pop{animation:hdPop .7s cubic-bezier(.2,1.5,.3,1)}
+  @keyframes hdPop{40%{transform:rotate(45deg) scale(1.18)}}
+  .hd-tx{display:grid;gap:1px;min-width:0}
+  body:not(.w95) header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.15;white-space:nowrap;
+    background:linear-gradient(100deg,#eef0ff 0%,var(--tc,#b6a8ff) 32%,#ffd1e8 50%,#eef0ff 72%,var(--tc,#b6a8ff) 100%);background-size:200% 100%;background-position:0 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;transition:background-position 1.2s ease}
+  body:not(.w95) header h1.tint{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--tc) 40%,transparent))}
+  body:not(.w95) header h1.sweep{animation:hdSweep 1.6s ease}
+  @keyframes hdSweep{0%{background-position:100% 0}100%{background-position:0 0}}
+  body:not(.w95) header .sub{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.04em;color:#9ea6d6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hd-ver{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:1px 6px;border-radius:999px;color:#cfd4ff;background:rgba(143,155,255,.14);border:1px solid rgba(143,155,255,.3)}
+
+  /* 도구 */
+  body:not(.w95) header #tools{margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:nowrap}
+  .hd-sw{position:relative;display:block;flex:none}
+  .hd-sw::before{content:"";position:absolute;left:12px;top:50%;width:15px;height:15px;transform:translateY(-50%);background:#9ea6d6;pointer-events:none;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat}
+  .hd-sw kbd{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:inherit;font-size:10.5px;font-weight:700;line-height:1;padding:3px 6px;border-radius:6px;color:#9ea6d6;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.25);pointer-events:none;transition:opacity .2s}
+  .hd-sw:focus-within kbd,.hd-sw.has kbd{opacity:0}
+  body:not(.w95) header #search{width:230px;height:38px;box-sizing:border-box;padding:0 34px 0 34px;border-radius:999px;font-size:13px;color:#eef0ff;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);outline:none;transition:border-color .2s,box-shadow .2s,width .35s cubic-bezier(.2,.8,.2,1),background .2s}
+  body:not(.w95) header #search::placeholder{color:#8088b8}
+  body:not(.w95) header #search:focus{width:270px;border-color:#8f9bff;background:rgba(143,155,255,.08);box-shadow:0 0 0 3px rgba(143,155,255,.2)}
+  .hd-sw:focus-within::before{background:#c9d0ff}
+
+  body:not(.w95) header .tbtn{position:relative;height:38px;box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;padding:0 13px;border-radius:12px;
+    font-size:12.5px;font-weight:700;color:#d6daf8;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.2);
+    transition:background .2s,border-color .2s,transform .15s,color .2s;white-space:nowrap}
+  body:not(.w95) header .tbtn:hover{background:rgba(143,155,255,.12);border-color:rgba(150,160,255,.45);color:#fff}
+  body:not(.w95) header .tbtn:active{transform:scale(.95)}
+  body:not(.w95) header .tbtn::before{content:"";flex:none;width:17px;height:17px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  body:not(.w95) header #labBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M10 3v6l-5.2 9.1A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-2.9L14 9V3M7.3 15h9.4'/%3E%3C/svg%3E");
+    color:#bff0dc;border-color:rgba(99,230,190,.3);background:rgba(99,230,190,.06)}
+  body:not(.w95) header #labBtn:hover{background:rgba(99,230,190,.14);border-color:rgba(99,230,190,.55)}
+  body:not(.w95) header #dexBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20v-5'/%3E%3Cpath d='M9 7.5h7M9 11h5'/%3E%3C/svg%3E")}
+  body:not(.w95) header #quizBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9l10-5 10 5-10 5z'/%3E%3Cpath d='M6 11v5c0 1.6 2.7 3 6 3s6-1.4 6-3v-5M22 9v6'/%3E%3C/svg%3E")}
+  body:not(.w95) header #setBtn{width:38px;padding:0;justify-content:center;font-size:0;gap:0;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z'/%3E%3C/svg%3E")}
+  body:not(.w95) header #setBtn::before{width:18px;height:18px}
+  body:not(.w95) header #setBtn.hasnew::after{top:5px;right:5px;width:7px;height:7px;box-shadow:0 0 0 2px #191b3c,0 0 8px #ffd43b}
+  /* 도감 진행도 */
+  body:not(.w95) header #dexBtn[data-n]::after{content:attr(data-n);font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;margin-left:1px;color:#1b1640;
+    background:linear-gradient(90deg,#ffd166 var(--dp,0%),#c3caff var(--dp,0%))}
+  body:not(.w95) header #dexBtn.bump::after{animation:hdBump .6s cubic-bezier(.2,1.6,.3,1)}
+  @keyframes hdBump{40%{transform:scale(1.3)}}
+
+  @media (max-width:1100px){ body:not(.w95) header #search{width:170px} body:not(.w95) header #search:focus{width:200px} .hd-sw kbd{display:none} }
+  @media (max-width:900px){ body:not(.w95) header .sub{display:none} }
+
+  /* 폰: 1줄 = 로고·제목 + 아이콘 버튼, 2줄 = 검색창 꽉 차게 */
+  @media (max-width:700px){
+    body:not(.w95) header{flex-wrap:wrap;gap:8px 6px;padding:9px 12px 10px}
+    body:not(.w95) header #tools{display:contents}
+    .hd-brand{flex:1 1 auto;gap:8px;order:0}
+    #hdLogo{width:30px;height:30px}
+    body:not(.w95) header h1{font-size:16.5px}
+    body:not(.w95) header .tbtn{order:1;width:38px;height:36px;padding:0;justify-content:center;font-size:0;border-radius:11px;gap:0}
+    body:not(.w95) header .tbtn::before{width:18px;height:18px}
+    body:not(.w95) header #dexBtn[data-n]::after{position:absolute;right:-5px;top:-6px;font-size:9px;padding:1px 4px;margin:0;content:attr(data-s);box-shadow:0 0 0 2px #15172f}
+    .hd-sw{order:2;flex:1 1 100%}
+    body:not(.w95) header #search,body:not(.w95) header #search:focus{width:100%;height:38px;font-size:16px}
+  }
+  /* 아주 좁은 폰(≤380px): 버튼을 조금 작게, 제목은 넘치면 말줄임 */
+  @media (max-width:700px){ .hd-brand{flex:1 1 0;min-width:0} .hd-tx{min-width:0} body:not(.w95) header h1{overflow:hidden;text-overflow:ellipsis} }
+  @media (max-width:380px){
+    body:not(.w95) header h1{font-size:14.5px}
+    #hdLogo{width:26px;height:26px}
+    body:not(.w95) header{gap:8px 4px}
+    body:not(.w95) header .tbtn{width:33px;height:33px}
+  }
+  /* 앱의 레벨 버튼: 아이콘 대신 글자 그대로 */
+  body:not(.w95) header #lvBtn::before{display:none!important}
+  @media (max-width:700px){
+    body:not(.w95) header #lvBtn{width:auto;padding:0 10px;font-size:12px;gap:5px}
+    body:not(.w95) header #lvBtn b{font-size:12px}
+  }
+  @media (prefers-reduced-motion:reduce){ #hdLogo,#hdLogo.pop,body:not(.w95) header h1.sweep{animation:none;transition:none} }
+</style>
+<script>
+(function(){
+  const hd = document.querySelector('header'); if(!hd) return;
+  const h1 = hd.querySelector('h1'), sub = hd.querySelector('.sub'), tools = document.getElementById('tools'), se = document.getElementById('search');
+  if(!h1 || !tools || !se) return;
+  // 로고: 앱 아이콘처럼 45도 돌린 정사각형 + Pt
+  const brand = document.createElement('div'); brand.className = 'hd-brand';
+  brand.innerHTML = `<svg id="hdLogo" viewBox="0 0 64 64" aria-hidden="true">
+    <defs><linearGradient id="hdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ee7ff"/><stop offset=".45" stop-color="#a9b4ff"/><stop offset=".75" stop-color="#d7a8ff"/><stop offset="1" stop-color="#ff9ad5"/></linearGradient>
+    <radialGradient id="hdR" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#2c2f72"/><stop offset="1" stop-color="#11122b"/></radialGradient></defs>
+    <circle cx="32" cy="32" r="29" fill="none" stroke="url(#hdG)" stroke-width="1.2" opacity=".5"/>
+    <path d="M32 9 L55 32 L32 55 L9 32Z" fill="url(#hdR)" stroke="url(#hdG)" stroke-width="2.4" stroke-linejoin="round"/>
+    <text x="32" y="36.5" text-anchor="middle" font-size="15" font-weight="900" fill="#eef0ff" font-family="inherit">Pt</text>
+    <text x="32" y="24" text-anchor="middle" font-size="6" font-weight="800" fill="#a9b4ff" font-family="inherit">78</text>
+    <rect x="24" y="40" width="16" height="2" rx="1" fill="url(#hdG)"/></svg><div class="hd-tx"></div>`;
+  hd.insertBefore(brand, hd.firstChild);
+  const tx = brand.querySelector('.hd-tx'); tx.appendChild(h1); if(sub) tx.appendChild(sub);
+  const ver = document.createElement('span'); ver.className = 'hd-ver';
+  const putVer = () => { try{ ver.textContent = 'v' + (typeof APP_VER !== 'undefined' ? APP_VER : ''); if(sub && ver.parentNode !== sub) sub.appendChild(ver); }catch(e){} };
+  // 검색창 감싸기 (돋보기 + / 단축키)
+  const sw = document.createElement('label'); sw.className = 'hd-sw';
+  se.parentNode.insertBefore(sw, se); sw.appendChild(se);
+  const kb = document.createElement('kbd'); kb.textContent = '/'; sw.appendChild(kb);
+  se.addEventListener('input', () => sw.classList.toggle('has', !!se.value));
+  // 로고 누르면 살짝 돌고 제목에 빛이 한 번 쓸린다
+  const logo = document.getElementById('hdLogo');
+  logo.addEventListener('click', () => { logo.classList.remove('pop'); h1.classList.remove('sweep'); void logo.offsetWidth; logo.classList.add('pop'); h1.classList.add('sweep'); try{ SFX.pick && SFX.pick(); }catch(e){} });
+  setTimeout(() => h1.classList.add('sweep'), 400);
+  // 글자 정리: 실험실 이모지 빼기, 아이콘만 남는 버튼에 이름표
+  const tidy = () => {
+    try{
+      const lb = document.getElementById('labBtn'); if(lb) lb.textContent = lb.textContent.replace(/^\s*🧪\s*/, '');
+      const en = LANG === 'en';
+      [['dexBtn', en ? 'Codex' : '도감'], ['quizBtn', en ? 'Learn' : '학습'], ['setBtn', en ? 'Settings' : '설정']].forEach(([id, l]) => { const b = document.getElementById(id); if(b){ b.setAttribute('aria-label', l); if(!b.title) b.title = l; } });
+      putVer();
+    }catch(e){}
+  };
+  try{ const _as = applyStaticText; applyStaticText = function(){ const r = _as.apply(this, arguments); tidy(); count(); return r; }; }catch(e){}
+  // 도감 진행도 (찾은 수 / 전체)
+  let TOT = 0, last = -1;
+  function count(){
+    try{
+      if(!TOT) TOT = allEntries().length;
+      const n = codexGot(), b = document.getElementById('dexBtn'); if(!b) return;
+      b.dataset.n = `${n}/${TOT}`; b.dataset.s = n > 999 ? '999+' : String(n);
+      b.style.setProperty('--dp', (n / TOT * 100).toFixed(1) + '%');
+      if(last >= 0 && n > last){ b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+      last = n;
+    }catch(e){}
+  }
+  try{ const _sf = saveFound; saveFound = function(){ const r = _sf.apply(this, arguments); setTimeout(count, 0); return r; }; }catch(e){}
+  tidy(); count(); setTimeout(() => { tidy(); count(); }, 1200);
+})();
+</script>
+<style>
+  /* ═══ 원소 정보 카드 리워크 (4.2.5+): 주기율표 칸 모양 타일 + 궤도 · 스탯 칸 · 인용구 ═══ */
+  #info .ihero.ixc{padding:18px 18px 16px;border-radius:20px;isolation:isolate;
+    background:
+      radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--cc) 34%,transparent),transparent 60%),
+      radial-gradient(80% 60% at 100% 100%,color-mix(in srgb,var(--cc) 12%,transparent),transparent 70%),
+      linear-gradient(160deg,#181b36,#11132a 70%);
+    border:1px solid color-mix(in srgb,var(--cc) 50%,transparent);
+    box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.03) inset,0 0 30px color-mix(in srgb,var(--cc) 12%,transparent)}
+  #info .ihero.ixc::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+    background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.2px);background-size:14px 14px;
+    -webkit-mask:linear-gradient(160deg,#000,transparent 70%);mask:linear-gradient(160deg,#000,transparent 70%)}
+  #info .ihero.ixc::after{right:-4px;top:-22px;font-size:132px;opacity:.22;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--cc) 70%,transparent);z-index:-1}
+  #info .ihero.ixc .ix-sheen{position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--cc) 80%,#fff),transparent);opacity:.8;pointer-events:none}
+
+  #info .ihero.ixc .ih-top{display:flex;align-items:center;gap:20px}
+  /* 타일 + 궤도 */
+  .ix-tw{position:relative;flex:none;width:96px;height:108px;margin:4px 6px 4px 4px}
+  .ix-tile{position:absolute;inset:0;z-index:1;border-radius:14px;display:grid;place-items:center;align-content:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--cc) 30%,#1e2146),#151733 70%);
+    border:1px solid color-mix(in srgb,var(--cc) 65%,transparent);border-bottom:4px solid var(--cc);
+    box-shadow:0 8px 20px rgba(0,0,0,.35),0 0 22px color-mix(in srgb,var(--cc) 28%,transparent),inset 0 1px 0 rgba(255,255,255,.12)}
+  .ix-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(130deg,rgba(255,255,255,.14),transparent 38%,transparent 70%,rgba(255,255,255,.05))}
+  #info .ihero.ixc .ix-tile .ih-num{position:absolute;left:9px;top:7px;margin:0;font-size:12px;font-weight:800;opacity:1;color:color-mix(in srgb,var(--cc) 70%,#fff)}
+  #info .ihero.ixc .ix-tile .bigsym{font-size:46px;line-height:1;margin-top:4px;color:#fff;text-shadow:0 0 18px color-mix(in srgb,var(--cc) 70%,transparent),0 2px 0 color-mix(in srgb,var(--cc) 40%,#000)}
+  .ix-tile .ix-m{margin-top:6px;font-size:10.5px;font-variant-numeric:tabular-nums;color:#b9bfe6;letter-spacing:.02em}
+  /* 타일 뒤 전자 구름: 그 원소 블록(s·p·d·f)의 오비탈 모양. 보어 궤도 대신 */
+  .ix-orb{position:absolute;left:50%;top:50%;width:250px;height:250px;margin:-125px 0 0 -125px;overflow:visible;pointer-events:none;z-index:0}
+  .ix-orb .rot{transform-box:view-box;transform-origin:50% 50%;animation:ixSpin 26s linear infinite}
+  .ix-orb .br{transform-box:view-box;transform-origin:50% 50%;animation:ixBreath 4.5s ease-in-out infinite}
+  @keyframes ixSpin{to{transform:rotate(360deg)}}
+  @keyframes ixBreath{50%{transform:scale(1.07);opacity:.82}}
+  html.idle .ix-orb .rot,html.idle .ix-orb .br{animation-play-state:paused}
+  .ix-blab{position:absolute;right:-7px;bottom:-9px;z-index:3;font-size:9.5px;font-weight:900;padding:2px 6px;border-radius:999px;color:#1b1640;background:color-mix(in srgb,var(--cc) 70%,#fff);box-shadow:0 0 10px color-mix(in srgb,var(--cc) 50%,transparent)}
+
+  /* 이름 쪽 */
+  #info .ihero.ixc .names{margin:0;min-width:0;flex:1}
+  #info .ihero.ixc .names .k{font-size:24px;font-weight:850;letter-spacing:-.01em;line-height:1.1;color:#f2f3ff}
+  #info .ihero.ixc .names .e{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#a6adda;margin-top:4px}
+  .ix-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  #info .ihero.ixc .ix-pills .cat{margin:0;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;color:color-mix(in srgb,var(--cc) 55%,#fff);
+    background:color-mix(in srgb,var(--cc) 16%,transparent);border:1px solid color-mix(in srgb,var(--cc) 55%,transparent)}
+  .ix-pills .blk{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;color:#cfd4ff;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.25)}
+  .ix-pills .blk b{color:#fff;font-weight:900}
+  /* 별명 · 한마디 */
+  #info .ihero.ixc .subtitle{margin:9px 0 0;font-size:13px;font-style:normal;font-weight:800;color:color-mix(in srgb,var(--cc) 45%,#fff)}
+  #info .ihero.ixc .subtitle::before{content:"“";margin-right:2px;opacity:.7}
+  #info .ihero.ixc .subtitle::after{content:"”";margin-left:2px;opacity:.7}
+  .ix-quote{position:relative;margin:14px 0 0;padding:11px 13px 11px 15px;border-radius:13px;background:rgba(8,9,24,.38);border:1px solid rgba(150,160,255,.14)}
+  .ix-quote::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:linear-gradient(var(--cc),color-mix(in srgb,var(--cc) 30%,transparent))}
+  #info .ihero.ixc .ix-quote .subtitle2{margin:0;padding:0;border:0;font-size:12.5px;line-height:1.6;color:#d9dcf5}
+  #info .ihero.ixc .ix-quote .subtitle3{margin:6px 0 0;padding:0;border:0;font-size:12px;line-height:1.55;color:#a3aad4}
+  /* 스탯 칸 */
+  #info .ihero.ixc .ih-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:6px;margin-top:12px}
+  #info .ihero.ixc .ih-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border-radius:12px;white-space:nowrap;
+    font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:#f2f3ff;background:rgba(255,255,255,.045);border:1px solid rgba(150,160,255,.16);
+    transition:border-color .2s,background .2s}
+  #info .ihero.ixc .ih-b:hover{border-color:color-mix(in srgb,var(--cc) 60%,transparent);background:color-mix(in srgb,var(--cc) 8%,transparent)}
+  #info .ihero.ixc .ih-b i{margin:0;font-size:9.5px;font-weight:800;letter-spacing:.08em;color:#9097c8}
+  /* 들어올 때 */
+  #info .ihero.ixc.in .ix-tw{animation:ixTile .6s cubic-bezier(.2,1.4,.3,1) both}
+  #info .ihero.ixc.in .names > *,#info .ihero.ixc.in .ix-quote,#info .ihero.ixc.in .ih-b{animation:ixUp .45s cubic-bezier(.2,.9,.3,1) both}
+  #info .ihero.ixc.in .names > :nth-child(2){animation-delay:.04s} #info .ihero.ixc.in .names > :nth-child(n+3){animation-delay:.08s}
+  #info .ihero.ixc.in .ix-quote{animation-delay:.12s}
+  #info .ihero.ixc.in .ih-b:nth-child(1){animation-delay:.14s} #info .ihero.ixc.in .ih-b:nth-child(2){animation-delay:.18s} #info .ihero.ixc.in .ih-b:nth-child(3){animation-delay:.22s} #info .ihero.ixc.in .ih-b:nth-child(n+4){animation-delay:.26s}
+  @keyframes ixTile{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes ixUp{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+
+  /* TMI */
+  #info .el-tmi{position:relative;margin:12px 0 4px;padding:10px 12px 10px 12px;border-radius:13px;align-items:flex-start;gap:9px;
+    background:linear-gradient(135deg,rgba(255,212,59,.08),rgba(255,212,59,.02));border:1px solid rgba(255,212,59,.24);color:#e4dcc0;font-size:12.5px}
+  #info .el-tmi b{margin-top:1px;padding:2px 6px;border-radius:6px;box-shadow:0 0 10px rgba(255,212,59,.35)}
+  /* 조합에 담기 */
+  #info #addBtn{margin-top:16px;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--cc) 60%,transparent);font-weight:800;font-size:13.5px;
+    color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 45%,#2a2d63),color-mix(in srgb,var(--cc) 20%,#1b1d44));
+    box-shadow:0 6px 18px color-mix(in srgb,var(--cc) 22%,transparent);transition:transform .15s,filter .2s}
+  #info #addBtn:hover{filter:brightness(1.12);color:#fff}
+  #info #addBtn:active{transform:scale(.97)}
+
+  @media (max-width:700px){
+    #info .ihero.ixc{padding:16px 14px 14px}
+    #info .ihero.ixc .ih-top{gap:16px}
+    .ix-tw{width:86px;height:98px}
+    #info .ihero.ixc .ix-tile .bigsym{font-size:40px}
+    #info .ihero.ixc .names .k{font-size:21px}
+    #info .ihero.ixc::after{font-size:110px}
+  }
+  @media (prefers-reduced-motion:reduce){ #info .ihero.ixc.in *{animation:none!important} .ix-orb .rot,.ix-orb .br{animation:none!important} }
+</style>
+<script>
+(function(){
+  if(typeof select !== 'function') return;
+  const blockOf = e => !e.g ? 'f' : (e.g <= 2 || e.n === 2) ? 's' : e.g >= 13 ? 'p' : 'd';
+  let lastN = 0;
+  // 블록별 오비탈 모양: s = 공, p = 아령(2), d = 네잎(4), f = 여섯 잎(6). 잎마다 위상(+/−)에 따라 색이 다르다
+  function orbit(e){
+    const bl = blockOf(e), n = { s: 0, p: 2, d: 4, f: 6 }[bl], id = 'ixg' + e.n;
+    const lobe = (a, k) => `<ellipse cx="95" cy="${95 - 46}" rx="${bl === 'p' ? 26 : 20}" ry="${bl === 'p' ? 40 : 34}" fill="url(#${id}${k % 2 ? 'b' : 'a'})" transform="rotate(${a} 95 95)"/>`;
+    const body = n ? Array.from({ length: n }, (_, k) => lobe(360 / n * k + (bl === 'd' ? 45 : 0), k)).join('')
+      : `<circle cx="95" cy="95" r="88" fill="url(#${id}a)"/>`;
+    return `<svg class="ix-orb" viewBox="0 0 190 190" aria-hidden="true"><defs>
+      <radialGradient id="${id}a" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:var(--cc);stop-opacity:1"/><stop offset=".55" style="stop-color:var(--cc);stop-opacity:.45"/><stop offset="1" style="stop-color:var(--cc);stop-opacity:0"/></radialGradient>
+      <radialGradient id="${id}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c9d2ff" stop-opacity=".85"/><stop offset=".55" stop-color="#8f9bff" stop-opacity=".38"/><stop offset="1" stop-color="#8f9bff" stop-opacity="0"/></radialGradient>
+      <filter id="${id}f" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter></defs>
+      <g class="rot"><g class="br" filter="url(#${id}f)">${body}</g></g></svg>`;
+  }
+  function restyle(){
+    const info = document.getElementById('info'); if(!info) return;
+    const hero = info.querySelector('.ihero'); if(!hero || hero.classList.contains('ixc')) return;
+    const e = byNum[selected]; if(!e) return;
+    const L = LANG === 'en';
+    hero.classList.add('ixc');
+    const top = hero.querySelector('.ih-top'), left = top && top.firstElementChild, names = hero.querySelector('.names');
+    if(!top || !left || !names) return;
+    const num = left.querySelector('.ih-num'), big = left.querySelector('.bigsym');
+    // 왼쪽: 진짜 칸처럼 생긴 타일 + 바깥 전자 궤도
+    const tw = document.createElement('div'); tw.className = 'ix-tw';
+    const tile = document.createElement('div'); tile.className = 'ix-tile';
+    if(num){ num.textContent = e.n; tile.appendChild(num); }
+    if(big) tile.appendChild(big);
+    const m = document.createElement('div'); m.className = 'ix-m';
+    try{ m.textContent = typeof rxAmTxt === 'function' ? rxAmTxt(e) : e.m; }catch(err){ m.textContent = e.m; }
+    tile.appendChild(m);
+    tw.insertAdjacentHTML('beforeend', orbit(e));
+    tw.appendChild(tile);
+    left.replaceWith(tw);
+    // 오른쪽: 이름 · 분류 · 블록 · 별명
+    const k = names.querySelector('.k'), en = names.querySelector('.e'), s1 = names.querySelector('.subtitle'), s2 = names.querySelector('.subtitle2'), s3 = names.querySelector('.subtitle3');
+    const pills = document.createElement('div'); pills.className = 'ix-pills';
+    const cat = hero.querySelector('.ih-badges .cat'); if(cat) pills.appendChild(cat);
+    const bl = blockOf(e); pills.insertAdjacentHTML('beforeend', `<span class="blk" title="${L ? 'The cloud behind the tile is the shape of a ' + bl + ' orbital' : '타일 뒤 구름이 ' + bl + ' 오비탈 모양이에요'}"><b>${bl}</b>${L ? ' orbital' : ' 오비탈'}</span>`);   // 타일 밑 오비탈 표시와 같이 간다
+    (en || k).after(pills);
+    if(s1) pills.after(s1);
+    // 긴 설명은 카드 폭 전체 인용구로
+    if(s2 || s3){ const q = document.createElement('div'); q.className = 'ix-quote'; if(s2) q.appendChild(s2); if(s3) q.appendChild(s3); top.after(q); }
+    // 스탯에서 원자량은 타일에 있으니 뺀다
+    const bw = hero.querySelector('.ih-badges');
+    if(bw) [...bw.querySelectorAll('.ih-b')].forEach(b => { const t = (b.querySelector('i') || {}).textContent || ''; if(/원자량|Weight/.test(t)) b.remove(); });
+    if(bw && !bw.children.length) bw.remove();
+    hero.insertAdjacentHTML('afterbegin', '<i class="ix-sheen"></i>');
+    evict(hero);
+    try{ new MutationObserver(() => evict(hero)).observe(hero, { childList: true, subtree: true }); }catch(err){}
+    if(lastN !== e.n){ hero.classList.add('in'); setTimeout(() => hero.classList.remove('in'), 900); }
+    lastN = e.n;
+  }
+  // 분류 칩 옆에 붙던 것들(영어일 때 아스리엘 말풍선, 붕괴 지켜보기 등)은 카드 밑으로 뺀다
+  function evict(hero){
+    const names = hero.querySelector('.names'), pills = hero.querySelector('.ix-pills'); if(!names) return;
+    const out = [];
+    [...names.children].forEach(c => { if(!c.matches('.k, .e, .ix-pills, .subtitle')) out.push(c); });
+    if(pills) [...pills.children].forEach(c => { if(!c.matches('.cat, .blk')) out.push(c); });
+    if(!out.length) return;
+    let at = hero; out.forEach(c => { at.after(c); at = c; });
+  }
+  const _sel = select;
+  select = function(){
+    const r = _sel.apply(this, arguments);
+    try{ restyle(); }catch(err){ console.warn('infox', err); }
+    setTimeout(() => { try{ restyle(); }catch(err){} }, 0);
+    setTimeout(() => { try{ restyle(); }catch(err){} }, 30);
+    return r;
+  };
+  // 언어를 바꾸거나 다른 코드가 정보 칸을 다시 그려도
+  const info = document.getElementById('info');
+  if(info) try{ new MutationObserver(() => { const h = info.querySelector('.ihero'); if(h && !h.classList.contains('ixc')) restyle(); }).observe(info, { childList: true }); }catch(e){}
+  try{ if(typeof selected !== 'undefined' && selected) restyle(); }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 보기 줄 리워크 (4.2.5+): 헤더와 같은 유리 띠 · 페리윙클 탭 · 한 줄로 밀어 보는 칩 ═══ */
+  #modebar{position:relative;align-items:center;flex-wrap:nowrap;gap:14px;padding:9px 18px;
+    background:linear-gradient(180deg,rgba(20,22,46,.55),rgba(14,15,32,.35));border-bottom:1px solid rgba(150,160,255,.1)}
+  #mopt{flex:1 1 auto;min-width:0}
+  /* 탭 */
+  #mtabs{flex:none;padding:4px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  #mtabs .mbtn{border-radius:10px;padding:7px 13px;font-weight:700;color:#a3a9d6}
+  #mtabs .mbtn:hover{color:#eef0ff;background:rgba(143,155,255,.08)}
+  #mtabs .mbtn.on,#mtabs .mbtn.on:hover{color:#fff}
+  #mtabs .mbtn.on svg{filter:drop-shadow(0 0 4px rgba(255,255,255,.6))}
+  #mtabs .mind{top:4px;bottom:4px;border-radius:10px;background:linear-gradient(135deg,#8f9bff,#b18cff);
+    box-shadow:0 4px 14px rgba(143,155,255,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+
+  /* 칩 줄: 넘치면 옆으로 밀기 (끝이 살짝 흐려져서 더 있다는 걸 알려 줌) */
+  #mopt .mcats,#mopt .mchips{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;padding:3px 2px;scroll-behavior:smooth;overscroll-behavior-x:contain}
+  #mopt .mcats::-webkit-scrollbar,#mopt .mchips::-webkit-scrollbar{display:none}
+  #mopt .sc-r{-webkit-mask:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+  #mopt .sc-l{-webkit-mask:linear-gradient(90deg,transparent,#000 40px);mask:linear-gradient(90deg,transparent,#000 40px)}
+  #mopt .sc-l.sc-r{-webkit-mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+
+  /* 분류 칩 */
+  #mopt .mcat{flex:none;gap:7px;padding:6px 7px 6px 9px;border-radius:999px;font-size:12px;font-weight:700;color:#b6bbe0;
+    background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.16)}
+  #mopt .mcat i{width:10px;height:10px;border-radius:3px;box-shadow:0 0 6px color-mix(in srgb,var(--cc) 70%,transparent)}
+  #mopt .mcat b{opacity:1;font-size:10.5px;font-weight:800;min-width:18px;text-align:center;padding:2px 6px;border-radius:999px;color:#cfd3f5;background:rgba(255,255,255,.07)}
+  #mopt .mcat:hover{color:#eef0ff;border-color:color-mix(in srgb,var(--cc) 65%,transparent);background:color-mix(in srgb,var(--cc) 8%,transparent)}
+  #mopt .mcat.on{color:#fff;transform:translateY(-1px);border-color:var(--cc);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 34%,transparent),color-mix(in srgb,var(--cc) 14%,transparent));box-shadow:0 4px 14px color-mix(in srgb,var(--cc) 30%,transparent)}
+  #mopt .mcat.on b{color:#1b1640;background:color-mix(in srgb,var(--cc) 75%,#fff)}
+  #mopt .mcat.all{padding:6px 13px}
+  #mopt .mcat.all.on{border-color:#8f9bff;background:linear-gradient(135deg,rgba(143,155,255,.4),rgba(177,140,255,.22));box-shadow:0 4px 14px rgba(143,155,255,.3)}
+
+  /* 히트맵 항목 · 온도 프리셋 칩 */
+  #mopt .mchip{flex:none;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;color:#b6bbe0;background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.16);transition:all .2s}
+  #mopt .mchip:hover{color:#eef0ff;border-color:rgba(150,160,255,.45)}
+  #mopt .mchip.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.4)}
+  /* 히트맵 범례 */
+  #mopt .mlegend{gap:9px;margin-top:6px}
+  #mopt .mlegend .bar{height:8px;border-radius:999px;box-shadow:0 0 12px rgba(143,155,255,.25),inset 0 0 0 1px rgba(255,255,255,.08)}
+  #mopt .mlegend .lv{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.18)}
+
+  #mopt .mlegend .lu:empty{display:none}
+  /* 온도 */
+  #mopt .treadout b{font-weight:900;background:linear-gradient(90deg,#eef0ff,#c9a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #mopt .tt-chip{border-radius:999px;border-color:rgba(150,160,255,.16);background:rgba(255,255,255,.03)}
+
+  /* 발견의 역사 */
+  #mopt .hx-play{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;box-shadow:0 4px 16px rgba(143,155,255,.5),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s}
+  #mopt .hx-play:hover{transform:scale(1.07)}
+  #mopt .hx-year{background:linear-gradient(90deg,#eef0ff,#c9a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #mopt .hx-year small{-webkit-text-fill-color:#9ea6d6}
+  #mopt .hx-marks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #mopt .hx-marks::-webkit-scrollbar{display:none}
+  #mopt .hx-marks button{flex:none;border-radius:999px;border-color:rgba(150,160,255,.18);font-weight:700}
+  #mopt .hx-marks button:hover{color:#fff;border-color:#8f9bff;background:rgba(143,155,255,.12)}
+
+  @media (max-width:700px){
+    #modebar{flex-wrap:wrap;gap:8px;padding:8px 10px}
+    #mtabs{width:100%;box-sizing:border-box}
+    #mtabs .mbtn{padding:7px 8px}
+    #mopt{flex:1 1 100%}
+  }
+</style>
+<script>
+(function(){
+  const opt = document.getElementById('mopt'); if(!opt) return;
+  // 칩 줄이 넘치는지 보고 양 끝 흐림을 켠다 + 마우스 휠로 옆 스크롤
+  const SEL = '.mcats, .mchips, .hx-marks';
+  const upd = el => { const m = el.scrollWidth - el.clientWidth; el.classList.toggle('sc-l', m > 2 && el.scrollLeft > 2); el.classList.toggle('sc-r', m > 2 && el.scrollLeft < m - 2); };
+  const hook = () => opt.querySelectorAll(SEL).forEach(el => {
+    upd(el);
+    if(el._mbx) return; el._mbx = 1;
+    el.addEventListener('scroll', () => upd(el), { passive: true });
+    el.addEventListener('wheel', e => { if(Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth){ e.preventDefault(); el.scrollLeft += e.deltaY; } }, { passive: false });
+    // 켜진 칩이 안 보이는 데 있으면 보이게
+    const on = el.querySelector('.on'); if(on && on.offsetLeft + on.offsetWidth > el.clientWidth) el.scrollLeft = on.offsetLeft - 40;
+  });
+  try{ new MutationObserver(() => requestAnimationFrame(hook)).observe(opt, { childList: true, subtree: true }); }catch(e){}
+  addEventListener('resize', () => opt.querySelectorAll(SEL).forEach(upd));
+  hook(); setTimeout(hook, 500);
+})();
+</script>
+<style>
+  /* ═══ 원자 모형 패널 리워크 (4.2.5+): 카드 · 페리윙클 탭 · 유리 도구 버튼 · 입자 칩 ═══ */
+  #detail #atomBox{margin:10px 10px 0;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--cc,#8f9bff) 30%,rgba(150,160,255,.16));border-bottom:1px solid color-mix(in srgb,var(--cc,#8f9bff) 30%,rgba(150,160,255,.16));
+    background:radial-gradient(70% 70% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 10%,transparent),transparent 70%),linear-gradient(170deg,#121430,#0b0c1d);
+    box-shadow:0 10px 28px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+  #detail #atomBox::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:16px 16px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 30%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 30%,#000 90%)}
+  /* 탭 */
+  #atomBox .atom-tabs{left:10px;top:10px;padding:3px;gap:2px;border-radius:12px;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #atomBox .atom-tabs button{padding:5px 11px;border-radius:9px;font-size:11.5px;color:#a3a9d6;transition:color .2s,background .2s}
+  #atomBox .atom-tabs button:hover{color:#eef0ff}
+  #atomBox .atom-tabs button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  /* 도구 버튼 (PC: 오른쪽 위 세로 줄) */
+  #atomBox .atom-nuc,#atomBox .atom-mu,#atomBox .atom-fl,#atomBox .atom-big{height:30px;box-sizing:border-box;display:inline-flex;align-items:center;gap:5px;padding:0 11px;border-radius:999px;
+    font-size:11.5px;font-weight:700;color:#d6daf8;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .2s,border-color .2s,transform .15s,color .2s}
+  #atomBox .atom-nuc{top:10px;right:10px}
+  #atomBox .atom-mu{top:46px;right:10px;color:#ffd0a1;border-color:rgba(255,169,77,.35)}
+  #atomBox .atom-fl{top:82px;right:10px;color:#ffb3b3;border-color:rgba(255,107,107,.35)}
+  #atomBox .atom-big{bottom:10px;right:10px;width:30px;padding:0;justify-content:center;font-size:0}
+  #atomBox .atom-big::before{content:"⤢";font-size:15px;line-height:1}
+  @media (max-width:700px){ #atomBox .atom-big::before{content:none} }
+  #atomBox .atom-subs{top:118px;right:10px}
+  #atomBox .atom-nuc:hover,#atomBox .atom-big:hover{background:rgba(143,155,255,.18);border-color:#8f9bff;color:#fff}
+  #atomBox .atom-mu:hover{background:rgba(255,169,77,.16);border-color:#ffa94d}
+  #atomBox .atom-fl:hover{background:rgba(255,107,107,.16);border-color:#ff6b6b}
+  #atomBox .atom-nuc:active,#atomBox .atom-mu:active,#atomBox .atom-fl:active,#atomBox .atom-big:active{transform:scale(.94)}
+  #atomBox .atom-nuc[aria-pressed="true"],#atomBox .atom-nuc.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  #atomBox .atom-mu[aria-pressed="true"],#atomBox .atom-mu.on{color:#2a1600;border-color:transparent;background:linear-gradient(135deg,#ffc078,#ff922b)}
+  #atomBox .atom-fl[aria-pressed="true"],#atomBox .atom-fl.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff8787,#f03e3e)}
+  #atomBox .atom-subs button{border-radius:999px;padding:3px 8px;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.2)}
+  /* 양성자 · 중성자 · 전자 칩 */
+  #atomBox #atomTag{left:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 20px);z-index:2;pointer-events:none}
+  #atomTag .at-c{display:inline-flex;align-items:center;gap:5px;padding:4px 9px 4px 7px;border-radius:999px;font-size:10.5px;font-weight:700;color:#aeb4dc;
+    background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #atomTag .at-c i{width:8px;height:8px;border-radius:50%;background:var(--pc);box-shadow:0 0 6px var(--pc)}
+  #atomTag .at-c b{font-size:12px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  /* 아래 안내 */
+  #detail #atomNote{margin:7px 14px 0;font-size:11px;color:#8e95c4}
+  #detail #atomNote::before{content:"ⓘ ";opacity:.7}
+  @media (max-width:700px){
+    #detail #atomBox{margin:8px 8px 0;border-radius:16px}
+    #atomBox .atom-tabs{left:8px;top:8px}
+    /* 폰은 도구가 한 줄(.atom-tools)로 모여 있으니 위치는 그쪽을 따른다 */
+    #atomBox .atom-tools > button{height:32px;padding:0 11px!important;border-radius:999px!important}
+    #atomBox #atomTag{left:8px;bottom:8px}
+    #atomTag .at-c{padding:3px 8px 3px 6px;font-size:10px}
+    #atomTag .at-c b{font-size:11px}
+    /* 탭은 작게, 도구 줄은 탭 바로 오른쪽부터 (JS 가 위치를 맞춘다) */
+    #atomBox .atom-tabs button{padding:4px 9px;font-size:11px}
+    #atomBox .atom-tools{max-width:none!important}
+    #atomBox .atom-tools > button{height:30px}
+    /* 전자 구름의 3d⁷ 4s² 같은 오비탈 칩은 입자 칩 위로 */
+    #atomBox .atom-subs{bottom:auto!important;top:var(--subtop,46px)!important;left:8px!important;right:auto!important}
+  }
+</style>
+<script>
+(function(){
+  const tag = document.getElementById('atomTag'); if(!tag) return;
+  const COL = ['#ff8787', '#c0c4d8', '#74d7ff'];
+  function chip(){
+    if(tag.querySelector('.at-c')) return;
+    const html = tag.innerHTML; if(!html.trim()) return;
+    const parts = html.split(/\s*·\s*/).map(s => s.trim()).filter(Boolean);
+    if(parts.length < 2 || parts.length > 5) return;
+    tag.innerHTML = parts.map((s, i) => `<span class="at-c" style="--pc:${COL[i] || '#b6a8ff'}"><i></i>${s}</span>`).join('');
+  }
+  try{ new MutationObserver(chip).observe(tag, { childList: true, characterData: true, subtree: true }); }catch(e){}
+  // 폰: 도구 줄을 탭 오른쪽 끝에서 시작하게 (글자 크기가 큰 폰에서 탭 위에 겹치던 것)
+  const box = document.getElementById('atomBox'), mq = matchMedia('(max-width:700px)');
+  function fit(){
+    const tabs = box && box.querySelector('.atom-tabs'), tools = box && box.querySelector(':scope > .atom-tools');
+    if(!tabs || !tools) return;
+    if(!mq.matches){ tools.style.left = ''; return; }
+    tools.style.left = (tabs.offsetLeft + tabs.offsetWidth + 6) + 'px'; tools.style.right = '8px';
+    box.style.setProperty('--subtop', (tabs.offsetTop + tabs.offsetHeight + 6) + 'px');
+  }
+  try{ const ro = new ResizeObserver(fit); if(box){ ro.observe(box); const tb = box.querySelector('.atom-tabs'); if(tb) ro.observe(tb); } }catch(e){}
+  try{ if(box) new MutationObserver(fit).observe(box, { childList: true }); }catch(e){}
+  setTimeout(fit, 300); setTimeout(fit, 1200);
+  chip();
+})();
+</script>
+<style>
+  /* ═══ 검색 리워크 (4.2.5+): 원소 · 물질 · 화학식을 한 번에 찾는 드롭다운 ═══ */
+  #srxBox{position:fixed;z-index:400;width:360px;max-height:min(70vh,520px);overflow:auto;padding:8px;border-radius:18px;color:#e9ecff;
+    background:linear-gradient(165deg,rgba(32,35,78,.97),rgba(15,16,38,.98));border:1px solid rgba(150,160,255,.32);
+    box-shadow:0 22px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03) inset;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    transform-origin:50% 0;opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:opacity .18s,transform .22s cubic-bezier(.2,1.2,.3,1);scrollbar-width:thin}
+  #srxBox.on{opacity:1;transform:none;pointer-events:auto}
+  #srxBox .sr-sh{display:flex;align-items:center;gap:6px;margin:8px 6px 5px;font-size:10px;font-weight:900;letter-spacing:.08em;color:#8f97c8}
+  #srxBox .sr-sh:first-child{margin-top:2px}
+  #srxBox .sr-sh b{margin-left:auto;font-weight:700;letter-spacing:0;color:#6f76a6}
+  #srxBox .sr-it{display:flex;align-items:center;gap:10px;width:100%;padding:7px 8px;border-radius:12px;font:inherit;text-align:left;color:inherit;cursor:pointer;background:none;border:1px solid transparent}
+  #srxBox .sr-it:hover,#srxBox .sr-it.sr-cur{background:rgba(143,155,255,.12);border-color:rgba(143,155,255,.3)}
+  #srxBox .sr-it .sr-tl{flex:none;position:relative;width:38px;height:40px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--c) 30%,#1c1f44),#14162f);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);border-bottom:3px solid var(--c)}
+  #srxBox .sr-it .sr-tl i{position:absolute;left:4px;top:2px;font-style:normal;font-size:8.5px;opacity:.75}
+  #srxBox .sr-it .sr-tl b{font-size:15px;font-weight:900}
+  #srxBox .sr-it .sr-fx{flex:none;min-width:38px;height:40px;padding:0 7px;box-sizing:border-box;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:900;
+    color:#cfe9ff;background:rgba(120,200,255,.1);border:1px solid rgba(120,200,255,.35)}
+  #srxBox .sr-it .sr-fx.sr-lk{color:#9aa0c8;background:rgba(255,255,255,.04);border:1px dashed rgba(150,160,255,.3)}
+  #srxBox .sr-it .sr-fx.sr-mx{color:#ffe7a8;background:rgba(255,209,102,.1);border-color:rgba(255,209,102,.4)}
+  #srxBox .sr-it .sr-tx{min-width:0;flex:1;display:grid;gap:2px;line-height:1.25}
+  #srxBox .sr-it .sr-tx b{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #srxBox .sr-it .sr-tx small{font-size:11px;color:#9aa0c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #srxBox .sr-it .sr-go{flex:none;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;color:#cfd4ff;background:rgba(143,155,255,.14)}
+  #srxBox .sr-it mark{background:none;color:#ffd166}
+  #srxBox .sr-em{padding:16px 10px;text-align:center;font-size:12.5px;line-height:1.6;color:#9aa0c8}
+  #srxBox .sr-tips{display:grid;gap:5px;padding:4px 4px 2px}
+  #srxBox .sr-tips button{display:flex;gap:8px;align-items:center;padding:7px 9px;border-radius:10px;font:inherit;font-size:12px;color:#c4c9ee;text-align:left;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.14)}
+  #srxBox .sr-tips button:hover{border-color:rgba(150,160,255,.4)}
+  #srxBox .sr-tips kbd{font-family:inherit;font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;color:#fff;background:rgba(143,155,255,.25)}
+  #srxBox .sr-ft{display:flex;gap:10px;justify-content:center;margin:8px 0 2px;font-size:10px;color:#6f76a6}
+  #srxBox .sr-ft kbd{font-family:inherit;font-size:9.5px;padding:1px 5px;border-radius:4px;border:1px solid rgba(150,160,255,.25)}
+  @media (max-width:700px){ #srxBox{border-radius:16px} #srxBox .sr-ft{display:none} }
+</style>
+<script>
+(function(){
+  const se = document.getElementById('search'); if(!se) return;
+  const P = (k, e) => LANG === 'en' ? e : k;
+  const col = c => { try{ return cssv(CAT[c].v); }catch(e){ return '#8f9bff'; } };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const SUBD = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
+  const plain = f => String(f || '').replace(/[₀-₉]/g, c => SUBD[c]).replace(/[⁰-⁹⁺⁻·\s]/g, '');
+  const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+  const pretty = f => String(f).replace(/\d/g, d => SUBS[d]);
+  const box = document.createElement('div'); box.id = 'srxBox'; box.setAttribute('role', 'listbox');
+  document.body.appendChild(box);
+  let items = [], cur = 0, ENT = null;
+  const ents = () => {
+    if(!ENT) ENT = allEntries().map(x => {
+      const en = (typeof REC_EN !== 'undefined' && REC_EN[x.name]) ? REC_EN[x.name][0] : '';
+      return { ...x, en, pf: plain(x.formula).toLowerCase(), parts: String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean) };
+    });
+    return ENT;
+  };
+  // 화학식 풀기: "NaCl", "H2O", "c6h12o6" → [[기호, 개수], ...]
+  function parseFormula(q){
+    const s = q.replace(/[₀-₉]/g, c => SUBD[c]).replace(/\s|\+/g, '');
+    if(!/^[A-Za-z0-9]+$/.test(s) || !/[A-Za-z]/.test(s)) return null;
+    const out = {}; let i = 0;
+    const cased = /[A-Z]/.test(s);
+    while(i < s.length){
+      let sym = null;
+      if(cased){ const m = s.slice(i).match(/^([A-Z][a-z]?)/); if(!m) return null; sym = m[1]; if(!rxSym(sym) && sym.length === 2 && rxSym(sym[0])) sym = sym[0]; }
+      else { const two = s.slice(i, i + 2), one = s.slice(i, i + 1); const cap = x => x[0].toUpperCase() + x.slice(1);
+        if(two.length === 2 && /^[a-z]{2}$/.test(two) && rxSym(cap(two))) sym = cap(two); else if(/[a-z]/.test(one) && rxSym(one.toUpperCase())) sym = one.toUpperCase(); else return null; }
+      if(!rxSym(sym)) return null;
+      i += sym.length;
+      const d = s.slice(i).match(/^\d+/); const n = d ? +d[0] : 1; if(d) i += d[0].length;
+      if(n < 1 || n > 200) return null;
+      out[sym] = (out[sym] || 0) + n;
+    }
+    const L = Object.entries(out);
+    const tot = L.reduce((t, [, n]) => t + n, 0);
+    return L.length && tot <= (typeof MIX_MAX !== 'undefined' ? MIX_MAX : 200) ? L : null;
+  }
+  const hl = (s, q) => { const i = String(s).toLowerCase().indexOf(q); return i < 0 ? esc(s) : esc(s.slice(0, i)) + '<mark>' + esc(s.slice(i, i + q.length)) + '</mark>' + esc(s.slice(i + q.length)); };
+  function build(raw){
+    const q = raw.trim(), ql = q.toLowerCase(), L = LANG === 'en';
+    items = []; cur = 0;
+    if(!q){
+      box.innerHTML = `<div class="sr-sh">${P('이렇게 찾아요', 'TRY')}</div><div class="sr-tips">
+        ${[['철', P('원소 이름', 'Element name')], ['Au', P('원소 기호', 'Symbol')], ['79', P('원자 번호', 'Atomic number')], ['H2O', P('화학식 (담을 수 있어요)', 'Formula (loads the mix)')], [P('소금', 'Salt'), P('물질 이름', 'Substance name')]]
+          .map(([k, d]) => `<button type="button" data-q="${esc(k)}"><kbd>${esc(k)}</kbd>${d}</button>`).join('')}</div>`;
+      box.querySelectorAll('[data-q]').forEach(b => b.addEventListener('mousedown', e => { e.preventDefault(); se.value = b.dataset.q; se.dispatchEvent(new Event('input', { bubbles: true })); }));
+      return;
+    }
+    // 원소
+    const els = EL.map(e => {
+      const nm = (typeof elName === 'function' ? elName(e) : e.ko), en = e.en.toLowerCase(), s = e.s.toLowerCase();
+      let sc = 0;
+      if(String(e.n) === ql || ql === e.n + '번') sc = 100;
+      else if(s === ql) sc = 95;
+      else if(e.ko === q || en === ql) sc = 90;
+      else if(e.ko.startsWith(q) || en.startsWith(ql)) sc = 70;
+      else if(s.startsWith(ql) && ql.length <= 2) sc = 60;
+      else if(e.ko.includes(q) || en.includes(ql)) sc = 40;
+      return { e, nm, sc };
+    }).filter(x => x.sc).sort((a, b) => b.sc - a.sc || a.e.n - b.e.n).slice(0, 6);
+    // 화학식으로 담기
+    const fp = parseFormula(q);
+    const fkey = fp ? fp.map(([s, n]) => s + n).sort().join('+') : '';
+    // 물질 (찾은 건 이름·화학식 일부로, 못 찾은 건 이름이 거의 맞을 때만 "있다"는 것만)
+    const subs = ql.length < 1 ? [] : ents().map(x => {
+      const got = found.has(x.name); let sc = 0;
+      const nm = L && x.en ? x.en : x.name, nml = nm.toLowerCase();
+      if(got){
+        if(nml === ql || x.name === q) sc = 90; else if(x.pf.toLowerCase() === plain(q).toLowerCase()) sc = 85;
+        else if(nml.startsWith(ql) || x.name.startsWith(q)) sc = 60; else if(nml.includes(ql) || x.name.includes(q)) sc = 40;
+        else if(ql.length >= 2 && x.pf.toLowerCase().includes(plain(q).toLowerCase())) sc = 30;
+      } else if(q.length >= 2 && (x.name === q || nml === ql || (x.name.startsWith(q) && q.length >= 2))) sc = 20;
+      return { x, got, nm, sc };
+    }).filter(y => y.sc).sort((a, b) => b.sc - a.sc || (b.got - a.got)).slice(0, 6);
+    let h = '';
+    if(els.length){
+      h += `<div class="sr-sh">${P('원소', 'ELEMENTS')}<b>${els.length}</b></div>`;
+      els.forEach(({ e, nm }) => { items.push({ t: 'el', e });
+        h += `<button type="button" class="sr-it" data-i="${items.length - 1}"><span class="sr-tl" style="--c:${col(e.c)}"><i>${e.n}</i><b>${e.s}</b></span>
+          <span class="sr-tx"><b>${hl(nm, ql)}</b><small>${esc(e.en)} · ${esc(L ? e.c : CAT[e.c].ko)}</small></span><span class="sr-go">${P('보기', 'View')}</span></button>`; });
+    }
+    if(fp){
+      const same = ents().filter(x => x.exact && x.parts.map(([s, n]) => s + n).sort().join('+') === fkey), known = same.find(x => found.has(x.name)) || same[0];
+      const kn = known && found.has(known.name);
+      items.push({ t: 'mix', parts: fp });
+      h += `<div class="sr-sh">${P('화학식', 'FORMULA')}</div><button type="button" class="sr-it" data-i="${items.length - 1}"><span class="sr-fx sr-mx">${esc(pretty(fp.map(([s, n]) => s + (n > 1 ? n : '')).join('')))}</span>
+        <span class="sr-tx"><b>${fp.map(([s, n]) => `${s}${n > 1 ? ' ×' + n : ''}`).join(' + ')}</b><small>${kn ? P(`${known.name} · 담으면 바로 만들 수 있어요`, `${known.en || known.name} · ready to mix`) : P('조합 칸에 담아요', 'Put it in the tray')}</small></span><span class="sr-go">${P('담기', 'Load')}</span></button>`;
+    }
+    if(subs.length){
+      h += `<div class="sr-sh">${P('물질', 'SUBSTANCES')}<b>${subs.filter(s => s.got).length}/${subs.length}</b></div>`;
+      subs.forEach(({ x, got, nm }) => { items.push({ t: got ? 'sub' : 'lock', x });
+        h += got ? `<button type="button" class="sr-it" data-i="${items.length - 1}"><span class="sr-fx">${esc(x.formula)}</span><span class="sr-tx"><b>${hl(nm, ql)}</b><small>${esc(locRec ? (locRec([x.formula, x.name, x.sub])[2] || '') : x.sub || '')}</small></span><span class="sr-go">${P('만들기', 'Make')}</span></button>`
+          : `<button type="button" class="sr-it" data-i="${items.length - 1}"><span class="sr-fx sr-lk">?</span><span class="sr-tx"><b>${esc(nm)}</b><small>${P('아직 못 찾았어요 · 눌러서 힌트', 'Not found yet · tap for a hint')}</small></span><span class="sr-go">${P('힌트', 'Hint')}</span></button>`; });
+    }
+    if(!items.length) h = `<div class="sr-em">${P(`"${esc(q)}" 와 맞는 게 없어요<br>원소 이름·기호·번호나 화학식(H2O)을 넣어 보세요`, `Nothing matches "${esc(q)}"<br>Try an element, symbol, number or a formula like H2O`)}</div>`;
+    else h += `<div class="sr-ft"><span><kbd>↑</kbd><kbd>↓</kbd> ${P('고르기', 'move')}</span><span><kbd>Enter</kbd> ${P('열기', 'open')}</span><span><kbd>Esc</kbd> ${P('닫기', 'close')}</span></div>`;
+    box.innerHTML = h;
+    box.querySelectorAll('.sr-it').forEach(b => {
+      b.addEventListener('mousedown', e => e.preventDefault());
+      b.addEventListener('click', () => pick(+b.dataset.i));
+      b.addEventListener('mousemove', () => mark(+b.dataset.i));
+    });
+    mark(0);
+  }
+  function mark(i){ cur = i; box.querySelectorAll('.sr-it').forEach(b => b.classList.toggle('sr-cur', +b.dataset.i === i)); const c = box.querySelector('.sr-it.sr-cur'); if(c) c.scrollIntoView({ block: 'nearest' }); }
+  function loadMix(parts){
+    try{ mix = []; parts.forEach(([s, n]) => { const e = rxSym(s); if(e) for(let i = 0; i < n; i++) mix.push(e.n); }); if(mix.length > MIX_MAX) mix.length = MIX_MAX; renderChips(); SFX.pick && SFX.pick(); }catch(e){}
+  }
+  function clearQ(){ se.value = ''; se.dispatchEvent(new Event('input', { bubbles: true })); }
+  function pick(i){
+    const it = items[i]; if(!it) return;
+    close(); se.blur();
+    if(it.t === 'el'){
+      clearQ(); select(it.e.n);
+      try{ const c = document.querySelector(`#grid .cell[data-n="${it.e.n}"]`); if(c){ c.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } }catch(e){}
+    } else if(it.t === 'mix'){
+      clearQ(); loadMix(it.parts);
+      try{ rxMiniToast(P('담았어요. 조합하기를 누르면 돼요', 'Loaded. Hit Mix')); }catch(e){}
+    } else if(it.t === 'sub'){
+      clearQ(); loadMix(it.x.parts); window.RX_WANT = it.x.name; setTimeout(() => { window.RX_WANT = ''; }, 1500);
+      setTimeout(() => { try{ document.getElementById('mixBtn').click(); }catch(e){} }, 120);
+    } else if(it.t === 'lock'){
+      clearQ();
+      try{ if(window.rxHintSheet) window.rxHintSheet(it.x.name); }catch(e){}
+    }
+  }
+  function place(){
+    const r = (se.closest('.hd-sw') || se).getBoundingClientRect();
+    const w = innerWidth <= 700 ? innerWidth - 16 : Math.max(340, Math.min(400, r.width + 120));
+    let left = innerWidth <= 700 ? 8 : Math.min(innerWidth - w - 10, Math.max(10, r.right - w));
+    box.style.width = w + 'px'; box.style.left = left + 'px'; box.style.top = (r.bottom + 8) + 'px';
+    box.style.maxHeight = Math.min(520, innerHeight - r.bottom - 24) + 'px';
+  }
+  function open(){ ENT = null; place(); build(se.value); box.classList.add('on'); }
+  function close(){ box.classList.remove('on'); }
+  let tm = 0;
+  se.addEventListener('focus', open);
+  se.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(() => { if(document.activeElement === se || se.value){ place(); build(se.value); box.classList.add('on'); } }, 60); });
+  se.addEventListener('blur', () => setTimeout(close, 120));
+  se.addEventListener('keydown', e => {
+    if(!box.classList.contains('on')) return;
+    if(e.key === 'ArrowDown'){ e.preventDefault(); if(items.length) mark((cur + 1) % items.length); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); if(items.length) mark((cur - 1 + items.length) % items.length); }
+    else if(e.key === 'Enter'){ if(items.length){ e.preventDefault(); e.stopImmediatePropagation(); pick(cur); } }
+    else if(e.key === 'Escape'){ e.preventDefault(); e.stopImmediatePropagation(); close(); clearQ(); se.blur(); }
+  }, true);
+  addEventListener('resize', () => { if(box.classList.contains('on')) place(); });
+  document.addEventListener('pointerdown', e => { if(box.classList.contains('on') && !box.contains(e.target) && e.target !== se) close(); }, true);
+})();
+</script>
+<style>
+  /* ═══ 설정 창 리워크 (4.2.5+): 페리윙클 유리 창 · 아이콘 탭 · 묶음 버튼 · 새 스위치 ═══
+     밝은 배경(setbg-light)을 고른 사람은 예전 대비 규칙을 그대로 쓰게 html:not(.setbg-light) 로 묶는다 */
+  html:not(.setbg-light) #setBox{position:relative;border-radius:22px;border:1px solid rgba(150,160,255,.28);overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03) inset,0 0 40px rgba(143,155,255,.12)}
+  html:not(.setbg-light) #setBox::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(60% 50% at 0% 0%,rgba(143,155,255,.18),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(201,168,255,.12),transparent 70%)}
+  html:not(.setbg-light) #setBox::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;z-index:2;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(201,210,255,.8),transparent)}
+  #setBox > *{position:relative;z-index:1}
+  /* 머리 */
+  html:not(.setbg-light) #setHead{padding:16px 18px 14px;border-bottom:1px solid rgba(150,160,255,.14);align-items:center;gap:10px}
+  #setHead h2{display:flex;align-items:center;gap:9px}
+  #setHead h2::before{content:"";width:26px;height:26px;border-radius:9px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='3.2'/%3E%3Cpath d='M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1'/%3E%3C/svg%3E") center/15px no-repeat,linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 12px rgba(143,155,255,.45)}
+  html:not(.setbg-light) #setHead h2{font-size:17px;font-weight:850}
+  html:not(.setbg-light) #setHead .x{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:17px;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.2);transition:background .2s,transform .2s}
+  html:not(.setbg-light) #setHead .x:hover{background:rgba(255,107,107,.16);border-color:rgba(255,107,107,.5);color:#fff;transform:rotate(90deg)}
+
+  /* 왼쪽 탭 (아이콘) */
+  html:not(.setbg-light) #setNav{width:156px;padding:12px 10px;gap:3px;border-right:1px solid rgba(150,160,255,.12)}
+  #setNav button{position:relative;display:grid!important;grid-template-columns:28px 1fr;grid-template-rows:auto auto;column-gap:9px;align-items:center}
+  #setNav button::before{content:"";grid-row:1 / 3;width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.16);box-sizing:border-box}
+  #setNav button::after{content:"";position:absolute;left:19px;top:50%;width:16px;height:16px;margin-top:-8px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  #setNav button small{grid-column:2}
+  html:not(.setbg-light) #setNav button{padding:8px 10px;border-radius:12px;color:#a3a9d6;transition:background .2s,color .2s}
+  html:not(.setbg-light) #setNav button:hover{background:rgba(143,155,255,.08);color:#eef0ff}
+  html:not(.setbg-light) #setNav button.on{color:#fff;background:linear-gradient(135deg,rgba(143,155,255,.24),rgba(177,140,255,.1));box-shadow:inset 0 0 0 1px rgba(150,160,255,.35)}
+  html:not(.setbg-light) #setNav button.on::before{background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent;box-shadow:0 3px 10px rgba(143,155,255,.45)}
+  #setNav button[data-t="gen"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M4 7h10M18 7h2M4 17h4M12 17h8'/%3E%3Ccircle cx='16' cy='7' r='2'/%3E%3Ccircle cx='10' cy='17' r='2'/%3E%3C/svg%3E")}
+  #setNav button[data-t="view"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='12' rx='2'/%3E%3Cpath d='M8 20h8M12 16v4'/%3E%3C/svg%3E")}
+  #setNav button[data-t="model"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='6' cy='17' r='3'/%3E%3Ccircle cx='18' cy='17' r='3'/%3E%3Ccircle cx='12' cy='6' r='3'/%3E%3Cpath d='M8 15l2.6-6.2M16 15l-2.6-6.2M9 17h6'/%3E%3C/svg%3E")}
+  #setNav button[data-t="cur"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M5 3l14 7-6 2-2 6z'/%3E%3C/svg%3E")}
+  #setNav button[data-t="acc"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='4.5' r='2'/%3E%3Cpath d='M5 8.5l7 1.5 7-1.5M12 10v5l-3 6M12 15l3 6'/%3E%3C/svg%3E")}
+  #setNav button[data-t="data"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2'%3E%3Cellipse cx='12' cy='5.5' rx='7' ry='2.5'/%3E%3Cpath d='M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5'/%3E%3C/svg%3E")}
+  #setNav button[data-t="info"]{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6M12 7.5v.5'/%3E%3C/svg%3E")}
+
+  /* 본문 */
+  html:not(.setbg-light):not(.setbg-mixed) #setBody .stabh{margin:12px 0 8px;padding:0 2px;font-size:20px;font-weight:900;letter-spacing:-.01em;background:none!important;border:0;
+    background-image:linear-gradient(90deg,#eef0ff,#c9a8ff)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;width:max-content;max-width:100%}
+  html:not(.setbg-light):not(.setbg-mixed) #setBody .stabh small{-webkit-text-fill-color:#9aa0c8}
+  html:not(.setbg-light):not(.setbg-mixed) #setBody .srow{margin:7px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(150,160,255,.13);border-bottom:1px solid rgba(150,160,255,.13);
+    background:rgba(255,255,255,.03);transition:border-color .2s,background .2s}
+  html:not(.setbg-light):not(.setbg-mixed) #setBody .srow:hover{border-color:rgba(150,160,255,.3);background:rgba(143,155,255,.05)}
+  html:not(.setbg-light) #setBody .slab{font-size:13.5px;font-weight:750}
+  html:not(.setbg-light) #setBody .snote{color:#959cc9;line-height:1.5}
+  /* 묶음 버튼: 한 덩어리 안에서 켜진 칸만 빛난다 */
+  html:not(.setbg-light) #setBody .sseg{gap:2px;padding:3px;border-radius:12px;background:rgba(8,9,26,.45);border:1px solid rgba(150,160,255,.18);flex-wrap:wrap}
+  html:not(.setbg-light) #setBody .sseg .sopt{border:0;border-radius:9px;padding:6px 12px;font-weight:700;color:#a3a9d6;background:none;transition:background .2s,color .2s,box-shadow .2s}
+  html:not(.setbg-light) #setBody .sseg .sopt:hover{color:#eef0ff;background:rgba(143,155,255,.1)}
+  html:not(.setbg-light) #setBody .sseg .sopt.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  /* 스위치 */
+  html:not(.setbg-light) #setBox .sswitch{width:46px;height:26px;border-radius:999px;background:rgba(8,9,26,.55);border:1px solid rgba(150,160,255,.25)}
+  html:not(.setbg-light) #setBox .sswitch i{top:3px;left:3px;width:18px;height:18px;background:#7c83b0;transition:left .25s cubic-bezier(.3,1.4,.5,1),background .2s}
+  html:not(.setbg-light) #setBox .sswitch.on{background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent;box-shadow:0 3px 12px rgba(143,155,255,.45)}
+  html:not(.setbg-light) #setBox .sswitch.on i{left:23px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  /* 일반 버튼 */
+  html:not(.setbg-light) #setBox .sbtn{padding:7px 13px;border-radius:10px;font-weight:700;color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);transition:background .2s,border-color .2s,color .2s}
+  html:not(.setbg-light) #setBox .sbtn:hover{color:#fff;background:rgba(143,155,255,.16);border-color:#8f9bff}
+  html:not(.setbg-light) #setBox .sbtn.danger{color:#ffa8a8;border-color:rgba(255,107,107,.45)}
+  html:not(.setbg-light) #setBox .sbtn.danger:hover{background:rgba(255,107,107,.16);border-color:#ff6b6b}
+  html:not(.setbg-light) #setBox select{border-radius:10px;border:1px solid rgba(150,160,255,.24);background:rgba(8,9,26,.55);color:#eef0ff;padding:6px 10px}
+
+  @media (max-width:700px){
+    html:not(.setbg-light) #setBox{border-radius:20px}
+    html:not(.setbg-light) #setNav{width:auto;border-right:0;border-bottom:1px solid rgba(150,160,255,.12);padding:9px 10px}
+    #setNav button{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px}
+    #setNav button::before{width:20px;height:20px;border-radius:6px}
+    #setNav button::after{left:10px;width:12px;height:12px;margin-top:-6px}
+    html:not(.setbg-light) #setNav button{padding:5px 12px 5px 6px;border-radius:999px;border:1px solid rgba(150,160,255,.2)}
+    html:not(.setbg-light) #setNav button.on{background:linear-gradient(135deg,rgba(143,155,255,.3),rgba(177,140,255,.14));color:#fff;border-color:rgba(150,160,255,.5);box-shadow:none}
+    html:not(.setbg-light) #setBody .stabh{font-size:18px}
+  }
+</style>
+<style>
+  /* ═══ 결과 창 아래쪽 리워크 (4.2.5+): 상태 칩 · 도감 진행 막대 · 실패하면 "이렇게 고쳐 봐요" ═══ */
+  #card.rx5 .rx-state{margin-top:12px}
+  #card.rx5 .rx-state::before{content:"";width:8px;height:8px;border-radius:50%;background:color-mix(in srgb,var(--ac) 80%,#fff);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent),0 0 10px var(--ac)}
+  #card.rx5.is-fail .rx-state::before{content:"";background:#ff5a6e;box-shadow:0 0 0 3px rgba(255,90,110,.22),0 0 10px #ff5a6e}
+  #card.rx5.is-loose .rx-state::before{background:#ffd166;box-shadow:0 0 0 3px rgba(255,209,102,.22),0 0 10px #ffd166}
+  /* 도감 줄: 진행 막대 */
+  #card.rx5 .cdex{position:relative;padding-bottom:9px}
+  #card.rx5 .cdex .rb-bar{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
+  #card.rx5 .cdex .rb-bar i{position:absolute;inset:0 auto 0 0;width:var(--w,0%);border-radius:9px;background:linear-gradient(90deg,#8f9bff,#c9a8ff,#ffd166);transition:width 1s cubic-bezier(.2,.8,.2,1) .9s}
+  #card.rx5 .cdex .rb-bar i.go{width:var(--w2,0%)}
+
+  /* 고쳐 보기 */
+  .rb-fix{margin-top:10px;padding:10px;border-radius:14px;background:rgba(8,9,26,.45);border:1px solid rgba(255,209,102,.22)}
+  .rb-fix .h{display:flex;align-items:center;gap:7px;margin:0 2px 8px;font-size:11px;font-weight:900;letter-spacing:.06em;color:#ffd98a}
+  .rb-fix .h::before{content:"";width:16px;height:16px;flex:none;background:#ffd166;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat}
+  .rb-fix .row{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;margin-top:5px;border-radius:11px;font:inherit;text-align:left;cursor:pointer;color:#e9ecff;
+    background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16);transition:background .2s,border-color .2s,transform .15s;opacity:0;transform:translateY(6px);animation:rbIn .4s cubic-bezier(.2,.9,.3,1) forwards}
+  .rb-fix .row:hover{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.45)}
+  .rb-fix .row:active{transform:scale(.98)}
+  .rb-fix .ops{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+  .rb-fix .op{display:inline-flex;align-items:center;gap:3px;padding:2px 7px 2px 5px;border-radius:999px;font-size:11.5px;font-weight:800;white-space:nowrap}
+  .rb-fix .op.add{color:#b8f5c8;background:rgba(105,219,124,.12);border:1px solid rgba(105,219,124,.35)}
+  .rb-fix .op.sub{color:#ffc2c9;background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.35)}
+  .rb-fix .op b{font-weight:900}
+  .rb-fix .ar{flex:none;color:#7c83b0;font-weight:900}
+  .rb-fix .to{flex:none;max-width:44%;display:grid;text-align:right;line-height:1.2}
+  .rb-fix .to b{font-size:12.5px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rb-fix .to small{font-size:10px;color:#9aa0c8}
+  .rb-fix .to.lk b{color:#aeb4dc}
+  .rb-fix .row:nth-child(3){animation-delay:.08s} .rb-fix .row:nth-child(4){animation-delay:.16s}
+  #card.rx-anim .rb-fix{animation:rx5Up .45s .95s both}
+  #card.rx-anim .rb-fix .row{animation-delay:1.1s} #card.rx-anim .rb-fix .row:nth-child(3){animation-delay:1.18s} #card.rx-anim .rb-fix .row:nth-child(4){animation-delay:1.26s}
+  @keyframes rbIn{to{opacity:1;transform:none}}
+  @media (max-width:700px){ .rb-fix .op{font-size:11px} .rb-fix .to{max-width:40%} }
+  @media (prefers-reduced-motion:reduce){ .rb-fix .row{animation:none;opacity:1;transform:none} }
+</style>
+<script>
+(function(){
+  if(typeof rxRender !== 'function') return;
+  const P = (k, e) => LANG === 'en' ? e : k;
+  let ENT = null;
+  const ents = () => {
+    if(ENT) return ENT;
+    ENT = allEntries().map(x => {
+      const parts = String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+      return { ...x, parts, map: Object.fromEntries(parts) };
+    }).filter(x => x.parts.length);
+    return ENT;
+  };
+  const enName = x => (LANG === 'en' && typeof REC_EN !== 'undefined' && REC_EN[x.name]) ? REC_EN[x.name][0] : x.name;
+  // 지금 담은 것 → 가장 가까운 물질 몇 개 (원소를 몇 개 더하거나 빼면 되는지)
+  function near(cur){
+    const syms = Object.keys(cur);
+    const out = [];
+    ents().forEach(x => {
+      const ops = []; let cost = 0;
+      const keys = new Set([...syms, ...Object.keys(x.map)]);
+      if(x.exact){
+        keys.forEach(s => { const d = (x.map[s] || 0) - (cur[s] || 0); if(d){ ops.push([s, d]); cost += Math.abs(d) + (cur[s] ? 0 : 0.5) + (x.map[s] ? 0 : 0.5); } });
+      } else {
+        // 비율 상관없는 물질: 원소 종류만 맞추면 된다
+        keys.forEach(s => { const a = !!cur[s], b = !!x.map[s]; if(a !== b){ ops.push([s, b ? 1 : -cur[s]]); cost += b ? 1.5 : 1.5; } });
+      }
+      if(!ops.length || ops.length > 3 || cost > 6) return;
+      const got = found.has(x.name);
+      out.push({ x, ops, cost: cost - (got ? 0.3 : 0) });
+    });
+    // 같은 고치기(같은 ops)는 하나만
+    const seen = new Set();
+    return out.sort((a, b) => a.cost - b.cost).filter(r => { const k = r.ops.map(o => o.join(':')).join(','); if(seen.has(k)) return false; seen.add(k); return true; }).slice(0, 3);
+  }
+  function opHTML([s, d]){
+    return d > 0 ? `<span class="op add">＋<b>${s}</b>${d > 1 ? ' ×' + d : ''}</span>` : `<span class="op sub">－<b>${s}</b>${-d > 1 ? ' ×' + (-d) : ''}</span>`;
+  }
+  function paint(kind){
+    const card = document.getElementById('card'); if(!card) return;
+    card.querySelectorAll('.rb-fix').forEach(e => e.remove());
+    // 도감 진행 막대
+    try{
+      const dx = document.getElementById('mDex');
+      if(dx){
+        dx.querySelectorAll('.rb-bar').forEach(e => e.remove());
+        const tot = allEntries().length, n = codexGot();
+        if(kind !== 'fail'){
+          dx.insertAdjacentHTML('beforeend', `<span class="rb-bar"><i style="--w2:${(n / tot * 100).toFixed(2)}%"></i></span>`);
+          requestAnimationFrame(() => requestAnimationFrame(() => { const i = dx.querySelector('.rb-bar i'); if(i) i.classList.add('go'); }));
+        }
+      }
+    }catch(e){}
+    if(kind !== 'fail' && kind !== 'loose') return;
+    const cur = {}; (mix || []).forEach(n => { const s = byNum[n] && byNum[n].s; if(s) cur[s] = (cur[s] || 0) + 1; });
+    if(!Object.keys(cur).length) return;
+    const list = near(cur); if(!list.length) return;
+    const box = document.createElement('div'); box.className = 'rb-fix';
+    box.innerHTML = `<div class="h">${kind === 'loose' ? P('개수까지 맞추면', 'GET THE COUNTS RIGHT') : P('이렇게 고쳐 봐요', 'TRY A SMALL FIX')}</div>` +
+      list.map((r, i) => { const got = found.has(r.x.name);
+        return `<button type="button" class="row" data-i="${i}"><span class="ops">${r.ops.map(opHTML).join('')}</span><span class="ar">→</span>
+          <span class="to${got ? '' : ' lk'}"><b>${got ? enName(r.x) : P('??? 새 물질', '??? new')}</b><small>${got ? r.x.formula : P('아직 못 찾은 것', 'not found yet')}</small></span></button>`; }).join('');
+    const btns = card.querySelector('.cbtns');
+    if(btns) btns.before(box); else (card.querySelector('.rx-side') || card).appendChild(box);
+    box.querySelectorAll('.row').forEach(b => b.addEventListener('click', () => {
+      const r = list[+b.dataset.i]; if(!r) return;
+      // 고친 대로 조합 칸을 바꾸고 바로 다시 섞는다
+      const next = { ...cur }; r.ops.forEach(([s, d]) => { next[s] = (next[s] || 0) + d; if(next[s] <= 0) delete next[s]; });
+      if(!r.x.exact) Object.keys(r.x.map).forEach(s => { if(!next[s]) next[s] = 1; });
+      try{
+        mix = []; Object.entries(next).forEach(([s, n]) => { const e = rxSym(s); if(e) for(let k = 0; k < n; k++) mix.push(e.n); });
+        renderChips(); SFX.pick && SFX.pick();
+        setTimeout(() => { try{ document.getElementById('mixBtn').click(); }catch(e){} }, 60);
+      }catch(e){}
+    }));
+  }
+  const _rr = rxRender;
+  rxRender = function(kind){
+    const r = _rr.apply(this, arguments);
+    try{ paint(kind); }catch(e){ console.warn('rbx', e); }
+    return r;
+  };
+})();
+</script>
+<style>
+  /* ═══ PC 조합 바 버튼 리워크 (4.2.5+): 페리윙클 유리 도크 · 아이콘 버튼 ═══ */
+  @media (min-width:701px){
+    footer#tray{background:linear-gradient(0deg,rgba(14,15,32,.85),rgba(14,15,32,.4));border-top:1px solid rgba(150,160,255,.1)}
+    #trayDock{gap:10px;padding:8px 10px 8px 12px;border-radius:20px;background:linear-gradient(135deg,rgba(32,35,78,.9),rgba(18,19,44,.92));
+      border:1px solid rgba(150,160,255,.26);box-shadow:0 14px 40px rgba(0,0,0,.45),0 0 24px rgba(143,155,255,.1),inset 0 1px 0 rgba(255,255,255,.06)}
+    #trayDock #trayLabel{gap:8px;font-size:13px;font-weight:800;color:#eef0ff}
+    #trayDock #trayLabel::before{content:"";width:28px;height:28px;border-radius:9px;opacity:1;flex:none;box-shadow:0 3px 10px rgba(143,155,255,.4);
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M10 3v6l-5.2 9.1A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-2.9L14 9V3M7.3 15h9.4'/%3E%3C/svg%3E") center/15px no-repeat,linear-gradient(135deg,#8f9bff,#b18cff)}
+    #trayDock #chips{border-radius:14px;background:rgba(8,9,26,.45);border:1px dashed rgba(150,160,255,.26)}
+    #trayDock .tgrp{border-left-color:rgba(150,160,255,.16)}
+    #trayDock .btn,#trayDock #qtyBox{height:36px;box-sizing:border-box}
+    #trayDock #addModeBtn,#trayDock #randBtn,#trayDock #clearBtn{display:inline-flex;align-items:center;gap:6px;padding:0 13px;border-radius:12px;font-size:12.5px;font-weight:750;
+      color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22);transition:background .2s,border-color .2s,color .2s,transform .15s}
+    #trayDock #addModeBtn:hover,#trayDock #randBtn:hover,#trayDock #clearBtn:hover{color:#fff;background:rgba(143,155,255,.14);border-color:#8f9bff}
+    #trayDock #addModeBtn:active,#trayDock #randBtn:active,#trayDock #clearBtn:active{transform:scale(.95)}
+    #trayDock #addModeBtn[aria-pressed="true"]{color:#0f2a17;border-color:transparent;background:linear-gradient(135deg,#9ff0b0,#63e6be);box-shadow:0 4px 14px rgba(99,230,190,.4)}
+    #trayDock #randBtn::before,#trayDock #clearBtn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+    #trayDock #randBtn{background:rgba(255,255,255,.05)!important;color:#d6daf8!important;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='4'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='15.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='8.5' cy='15.5' r='1.3' fill='%23000'/%3E%3C/svg%3E")}
+    #trayDock #clearBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'/%3E%3C/svg%3E")}
+    #trayDock #randBtn:hover{background:rgba(143,155,255,.14)!important;color:#fff!important}
+    #trayDock #clearBtn:hover{background:rgba(255,107,129,.12);border-color:rgba(255,107,129,.5);color:#ffd0d6}
+    #trayDock #qtyBox{border-radius:12px;background:rgba(8,9,26,.5);border:1px solid rgba(150,160,255,.22)}
+    #trayDock #qtyBox button{border-radius:9px;color:#a3a9d6}
+    #trayDock #qtyBox button:hover{background:rgba(143,155,255,.14);color:#fff}
+    #trayDock #qtyBox:focus-within{border-color:#8f9bff;box-shadow:0 0 0 3px rgba(143,155,255,.2)}
+    #trayDock #mixBtn{height:38px;padding:0 22px;border-radius:13px;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 6px 18px rgba(143,155,255,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+    #trayDock #mixBtn:not(:disabled):hover{box-shadow:0 8px 26px rgba(143,155,255,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+    #trayDock #mixBtn:disabled{color:#6f76a6;background:rgba(255,255,255,.05);box-shadow:none;border:1px solid rgba(150,160,255,.14)}
+  }
+  body.mode-add #trayDock #chips{border-color:rgba(99,230,190,.55);background:rgba(99,230,190,.05)}
+</style>
+<script>
+/* ═══ 될 법한 랜덤 (4.2.5+): 🎲 가 아무거나 담지 않고, 가끔은 진짜 되는 조합(또는 거의 되는 조합)을 담는다 ═══
+   40% 못 찾은 물질 그대로 · 30% 한 끗 차이(개수 하나 틀림 → 결과 창의 "이렇게 고쳐 봐요"로 이어짐) · 30% 예전처럼 막 섞기 */
+(function(){
+  const btn = document.getElementById('randBtn'); if(!btn) return;
+  let ENT = null;
+  const ents = () => {
+    if(ENT) return ENT;
+    ENT = allEntries().filter(x => x.exact).map(x => {
+      const parts = String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+      return { name: x.name, parts, tot: parts.reduce((t, [, n]) => t + n, 0) };
+    }).filter(x => x.parts.length >= 2 && x.parts.length <= 4 && x.tot <= 16 && x.parts.every(([s]) => rxSym(s)));
+    return ENT;
+  };
+  const locked = s => { try{ const e = rxSym(s); return !e || (window.rxLvLocked && window.rxLvLocked(e.n)); }catch(err){ return false; } };
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  btn.addEventListener('click', e => {
+    const r = Math.random();
+    if(r >= 0.7) return;   // 30%: 예전 랜덤이 그대로 돈다
+    const pool = ents().filter(x => !found.has(x.name) && !x.parts.some(([s]) => locked(s)));
+    if(!pool.length) return;
+    e.stopImmediatePropagation();
+    const x = pick(pool);
+    let parts = x.parts.map(p => p.slice());
+    if(r >= 0.4){
+      // 한 끗 차이: 원소 하나의 개수를 하나 늘리거나 줄인다
+      const i = Math.floor(Math.random() * parts.length);
+      if(parts[i][1] > 1 && Math.random() < 0.5) parts[i][1]--; else parts[i][1]++;
+    }
+    try{
+      mix = [];
+      // 담는 순서도 섞어서 정답이 바로 티 나지 않게
+      parts.sort(() => Math.random() - .5).forEach(([s, n]) => { const el = rxSym(s); for(let k = 0; k < n && mix.length < MIX_MAX; k++) mix.push(el.n); });
+      SFX.pick && SFX.pick();
+      renderChips();
+    }catch(err){}
+  }, true);
+})();
+</script>
+<style>
+  /* ═══ 도감 550 / 550 이스터에그 (4.2.5+): 찾은 물질 전부가 별처럼 모여서 앱 로고가 된다 ═══ */
+  #dxAll{position:fixed;inset:0;z-index:2147482900;background:radial-gradient(circle at 50% 50%,rgba(26,22,64,.92),rgba(3,4,12,.97));opacity:0;transition:opacity .8s}
+  #dxAll.on{opacity:1}
+  #dxAll canvas{position:absolute;inset:0;width:100%;height:100%}
+  #dxAll .fin{position:absolute;left:50%;top:50%;width:min(380px,88vw);transform:translate(-50%,-44%) scale(.9);opacity:0;pointer-events:none;text-align:center;color:#f4f1ff;
+    transition:opacity .7s,transform .9s cubic-bezier(.2,1.3,.3,1)}
+  #dxAll.end .fin{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}
+  #dxAll .logo{width:132px;height:132px;margin:0 auto 14px;filter:drop-shadow(0 0 24px rgba(255,209,102,.7));animation:dxFloat 3.6s ease-in-out infinite}
+  @keyframes dxFloat{50%{transform:translateY(-6px) scale(1.03);filter:drop-shadow(0 0 34px rgba(255,209,102,.9))}}
+  #dxAll .big{font-size:42px;font-weight:900;letter-spacing:.02em;line-height:1;background:linear-gradient(90deg,#fff3c4,#ffd166,#ffb4e1,#c9a8ff,#fff3c4);background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:dxSh 4s linear infinite}
+  @keyframes dxSh{to{background-position:300% 0}}
+  #dxAll h3{margin:8px 0 4px;font-size:20px;font-weight:900}
+  #dxAll p{margin:0 0 12px;font-size:13px;line-height:1.6;color:#cfd0f0}
+  #dxAll .ril{display:flex;gap:10px;align-items:flex-end;text-align:left;margin:0 0 14px}
+  #dxAll .ril img{width:62px;height:auto;flex:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
+  #dxAll .ril div{flex:1;padding:9px 11px;border-radius:14px 14px 14px 4px;font-size:12.5px;line-height:1.55;background:rgba(255,255,255,.07);border:1px solid rgba(255,209,102,.3)}
+  #dxAll .ril b{display:block;font-size:10.5px;color:#9ee7ff;margin-bottom:2px}
+  #dxAll .gift{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;color:#2a1d00;background:linear-gradient(90deg,#ffe08a,#ffc24a)}
+  #dxAll .bt{display:flex;gap:8px}
+  #dxAll .bt button{flex:1;padding:12px;border-radius:13px;font:inherit;font-size:13.5px;font-weight:900;cursor:pointer;border:1px solid rgba(255,209,102,.45);background:rgba(255,255,255,.06);color:#ffe9b0}
+  #dxAll .bt button.go{border:0;color:#2a1d00;background:linear-gradient(135deg,#ffe08a,#ffb347)}
+  #dxAll .skip{position:absolute;right:14px;top:calc(12px + env(safe-area-inset-top));padding:6px 12px;border-radius:999px;font:inherit;font-size:12px;color:#aeb0d8;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer}
+  #dxAll.end .skip{display:none}
+  /* 상: 금빛 제목 */
+  html.pt-gold body:not(.w95) header h1{background-image:linear-gradient(100deg,#fff6d6 0%,#ffd166 32%,#ffb4e1 50%,#fff6d6 72%,#ffd166 100%)!important}
+  html.pt-gold #hdLogo{filter:drop-shadow(0 0 9px rgba(255,209,102,.7))}
+  html.pt-gold #hdLogo path{stroke:#ffd166}
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  const LS = 'pt_dexall';
+  try{ if(rxLS.get(LS, 0)) document.documentElement.classList.add('pt-gold'); }catch(e){}
+  const total = () => { try{ return allEntries().length; }catch(e){ return 550; } };
+  function show(){
+    if(document.getElementById('dxAll')) return;
+    const box = document.createElement('div'); box.id = 'dxAll';
+    const ril = (typeof rielOn !== 'function' || rielOn()) && window.RIEL_SRC ? RIEL_SRC.stand : '';
+    const N = total();
+    box.innerHTML = `<canvas></canvas><button type="button" class="skip">${P('건너뛰기', 'Skip')}</button>
+      <div class="fin">
+        <svg class="logo" viewBox="0 0 64 64"><defs><linearGradient id="dxG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#ffd166"/><stop offset="1" stop-color="#ffb4e1"/></linearGradient></defs>
+          <circle cx="32" cy="32" r="29" fill="none" stroke="url(#dxG)" stroke-width="1" opacity=".6"/>
+          <path d="M32 9 L55 32 L32 55 L9 32Z" fill="#1d1640" stroke="url(#dxG)" stroke-width="2.4" stroke-linejoin="round"/>
+          <text x="32" y="36.5" text-anchor="middle" font-size="15" font-weight="900" fill="#fff6d6">Pt</text>
+          <text x="32" y="24" text-anchor="middle" font-size="6" font-weight="800" fill="#ffd166">78</text></svg>
+        <div class="big">${N} / ${N}</div>
+        <h3>${P('도감 완성', 'Codex complete')}</h3>
+        <p>${P(`${N}가지 물질을 전부 직접 섞어서 찾았어요.<br>주기율표를 끝까지 파고든 사람만 보는 화면이에요.`, `You mixed and found all ${N} substances yourself.<br>Only people who dug all the way through see this.`)}</p>
+        ${ril ? `<div class="ril"><img alt="" src="${ril}"><div><b>${P('아스리엘', 'Asriel')}</b>${(typeof APP_MODE !== 'undefined' && APP_MODE) ? P('축하해요! 이제 남은 건... 음, 디렉터가 새로운 물질을 추가하는 것뿐이겠네요.', 'Congrats! All that is left now is... hmm, waiting for the director to add new substances.') : P('축하해요! 이제 남은 건... 음, 카이닉스팀이 새로운 물질을 추가하는 것뿐이겠네요.', 'Congrats! All that is left now is... hmm, waiting for Team Kainix to add new substances.')}</div></div>` : ''}
+        <div class="gift">✦ ${P('선물: 맨 위 제목이 금빛이 됐어요', 'Gift: the title is gold now')}</div>
+        <div class="bt"><button type="button" class="again">${P('다시 보기', 'Replay')}</button><button type="button" class="go">${P('고마워요', 'Thanks')}</button></div>
+      </div>`;
+    document.body.appendChild(box);
+    requestAnimationFrame(() => box.classList.add('on'));
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    const cv = box.querySelector('canvas'), cx = cv.getContext('2d');
+    const low = !!window.RX_LOWPOW;
+    let W, H, dpr, raf = 0, t0 = performance.now(), ended = false;
+    const size = () => { dpr = Math.min(low ? 1 : 2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    size(); addEventListener('resize', size);
+    // 찾은 물질마다 별 하나 (화학식 라벨은 일부만)
+    let list = []; try{ list = allEntries(); }catch(e){}
+    const COL = ['#ffd166', '#ffb4e1', '#c9a8ff', '#9ee7ff', '#8f9bff', '#9ff0b0'];
+    const S = list.map((x, i) => {
+      const a = Math.random() * Math.PI * 2, r = Math.max(innerWidth, innerHeight) * (0.6 + Math.random() * 0.5);
+      return { a0: a, r0: r, f: i % 9 === 0 ? String(x.formula || '').slice(0, 8) : '', c: COL[i % COL.length], k: i / Math.max(1, list.length - 1), z: 0.6 + Math.random() * 0.8 };
+    });
+    const ease = t => t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3);
+    // 마름모(45도 돌린 정사각형) 둘레 위의 자리
+    const diamond = (k, R) => { const q = (k * 4) % 4, i = Math.floor(q), f = q - i; const V = [[0, -R], [R, 0], [0, R], [-R, 0]]; const A = V[i], B = V[(i + 1) % 4]; return [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f]; };
+    function frame(now){
+      raf = requestAnimationFrame(frame);
+      const t = (now - t0) / 1000;
+      cx.clearRect(0, 0, W, H);
+      const ox = W / 2, oy = H / 2, R = Math.min(W, H) * 0.26;
+      cx.globalCompositeOperation = 'lighter';
+      const p1 = ease((t - 0.2) / 2.4), p2 = ease((t - 2.8) / 1.6), boom = t > 4.6 ? ease((t - 4.6) / 1.2) : 0;
+      S.forEach((s, i) => {
+        // 1) 멀리서 소용돌이치며 원으로 → 2) 마름모 둘레로 → 3) 터지면서 퍼짐
+        const sp = s.a0 + t * 0.6 * s.z;
+        const ringA = s.k * Math.PI * 2 + t * 0.5;
+        const rr = R * (1.05 + (s.z - 1) * 0.25);
+        let x = Math.cos(sp) * s.r0 * (1 - p1) + Math.cos(ringA) * rr * p1;
+        let y = Math.sin(sp) * s.r0 * (1 - p1) + Math.sin(ringA) * rr * p1;
+        if(p2 > 0){ const [dx, dy] = diamond(s.k, R); x = x * (1 - p2) + dx * p2; y = y * (1 - p2) + dy * p2; }
+        if(boom > 0){ const d = Math.hypot(x, y) || 1; x += x / d * boom * R * 1.6 * s.z; y += y / d * boom * R * 1.6 * s.z; }
+        const al = (0.3 + 0.5 * Math.min(1, t / 0.8)) * (1 - boom * 0.85) * (1 - 0.45 * p1 * (1 - p2));
+        cx.globalAlpha = al; cx.fillStyle = s.c;
+        cx.beginPath(); cx.arc(ox + x, oy + y, 1.1 + s.z * 1.1, 0, Math.PI * 2); cx.fill();
+        if(s.f && p2 < 0.9 && !low){ cx.globalAlpha = al * 0.55 * (1 - p2); cx.font = '600 10px system-ui,sans-serif'; cx.fillText(s.f, ox + x + 4, oy + y - 4); }
+      });
+      // 가운데 섬광
+      if(t > 4.3 && t < 6){ const f = Math.sin(Math.min(1, (t - 4.3) / 1.7) * Math.PI); cx.globalAlpha = f * 0.9; const g = cx.createRadialGradient(ox, oy, 0, ox, oy, R * 2.2); g.addColorStop(0, '#fff6d6'); g.addColorStop(0.3, 'rgba(255,209,102,.5)'); g.addColorStop(1, 'rgba(255,209,102,0)'); cx.fillStyle = g; cx.fillRect(0, 0, W, H); }
+      cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if(t > 4.9 && !ended){ ended = true; box.classList.add('end'); try{ rxConfetti(); }catch(e){} try{ SFX.gem && SFX.gem(); }catch(e){} }
+      if(t > 9){ cancelAnimationFrame(raf); raf = 0; cx.clearRect(0, 0, W, H); }
+    }
+    raf = requestAnimationFrame(frame);
+    const close = () => { cancelAnimationFrame(raf); removeEventListener('resize', size); box.classList.remove('on'); setTimeout(() => box.remove(), 800); };
+    box.querySelector('.skip').addEventListener('click', () => { t0 = performance.now() - 4600; });
+    box.querySelector('.go').addEventListener('click', close);
+    box.querySelector('.again').addEventListener('click', () => { box.remove(); cancelAnimationFrame(raf); setTimeout(show, 50); });
+    rxLS.set(LS, 1); document.documentElement.classList.add('pt-gold');
+  }
+  window.rxDexAllShow = show;
+  // 마지막 하나를 찾으면: 결과 창이 닫힌 뒤에 보여 준다
+  let waiting = false;
+  function check(){
+    try{
+      if(waiting || rxLS.get(LS, 0)) return;
+      if(codexGot() < total()) return;
+      waiting = true;
+      const iv = setInterval(() => {
+        const on = id => { const e = document.getElementById(id); return e && e.classList.contains('on'); };
+        if(on('modal') || on('rxPanel') || on('dex') || document.getElementById('rxTut')) return;
+        clearInterval(iv); setTimeout(show, 600);
+      }, 500);
+    }catch(e){}
+  }
+  try{ const _sf = saveFound; saveFound = function(){ const r = _sf.apply(this, arguments); setTimeout(check, 0); return r; }; }catch(e){}
+  setTimeout(check, 3000);
+  // 다 모은 사람은 로고를 빠르게 다섯 번 누르면 다시 볼 수 있다
+  let taps = [];
+  document.addEventListener('click', e => {
+    if(!e.target.closest || !e.target.closest('#hdLogo')) return;
+    if(!rxLS.get(LS, 0)) return;
+    const now = Date.now(); taps = taps.filter(x => now - x < 1500); taps.push(now);
+    if(taps.length >= 5){ taps = []; show(); }
+  });
 })();
 </script>
 <style>
