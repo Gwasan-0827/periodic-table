@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
            '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
            '처음 하는 사람을 위한 첫걸음 미션 8개가 생겼어요. 소금·이산화탄소·암모니아·메테인 만들기 등, 눌러야 할 칸이 반짝여요',
            '“주기율표 읽는 법”이 생겼어요. 칸 하나 읽기, 주기·족·색깔을 움직이는 그림으로 보여 줘요 (설정 › 튜토리얼)',
@@ -6245,6 +6246,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
            'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
            '8 first-step missions for newcomers: make salt, CO₂, ammonia, methane and more, with the cells to tap glowing',
            'New "How to read the table": one cell, periods, groups and colours as animated diagrams (Settings › Tutorial)',
@@ -42053,6 +42055,138 @@ void main(){
       return r;
     };
   }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 헤더 리워크 (4.2.5+): 로고 · 홀로 제목 · 둥근 검색창 · 아이콘 버튼 · 도감 진행도 ═══ */
+  body:not(.w95) header{position:relative;display:flex;align-items:center;gap:14px;flex-wrap:nowrap;padding:10px 18px;
+    background:linear-gradient(180deg,rgba(26,28,58,.72),rgba(14,15,32,.55));border-bottom:1px solid rgba(150,160,255,.14);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  body:not(.w95) header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(143,155,255,.7) 20%,rgba(201,168,255,.8) 50%,rgba(247,131,172,.6) 80%,transparent);opacity:.8}
+  body:not(.w95) header .legend{display:none!important}   /* 아래 분류 칩과 겹쳐서 뺀다 */
+
+  /* 로고 + 제목 */
+  .hd-brand{display:flex;align-items:center;gap:11px;min-width:0;flex:none}
+  #hdLogo{flex:none;width:38px;height:38px;display:block;filter:drop-shadow(0 0 8px rgba(143,155,255,.45));cursor:pointer;transition:transform .5s cubic-bezier(.2,1.4,.3,1)}
+  #hdLogo:hover{transform:rotate(90deg) scale(1.06)}
+  #hdLogo.pop{animation:hdPop .7s cubic-bezier(.2,1.5,.3,1)}
+  @keyframes hdPop{40%{transform:rotate(45deg) scale(1.18)}}
+  .hd-tx{display:grid;gap:1px;min-width:0}
+  body:not(.w95) header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.15;white-space:nowrap;
+    background:linear-gradient(100deg,#eef0ff 0%,var(--tc,#b6a8ff) 32%,#ffd1e8 50%,#eef0ff 72%,var(--tc,#b6a8ff) 100%);background-size:200% 100%;background-position:0 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;transition:background-position 1.2s ease}
+  body:not(.w95) header h1.tint{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--tc) 40%,transparent))}
+  body:not(.w95) header h1.sweep{animation:hdSweep 1.6s ease}
+  @keyframes hdSweep{0%{background-position:100% 0}100%{background-position:0 0}}
+  body:not(.w95) header .sub{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.04em;color:#9ea6d6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hd-ver{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:1px 6px;border-radius:999px;color:#cfd4ff;background:rgba(143,155,255,.14);border:1px solid rgba(143,155,255,.3)}
+
+  /* 도구 */
+  body:not(.w95) header #tools{margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:nowrap}
+  .hd-sw{position:relative;display:block;flex:none}
+  .hd-sw::before{content:"";position:absolute;left:12px;top:50%;width:15px;height:15px;transform:translateY(-50%);background:#9ea6d6;pointer-events:none;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat}
+  .hd-sw kbd{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:inherit;font-size:10.5px;font-weight:700;line-height:1;padding:3px 6px;border-radius:6px;color:#9ea6d6;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.25);pointer-events:none;transition:opacity .2s}
+  .hd-sw:focus-within kbd,.hd-sw.has kbd{opacity:0}
+  body:not(.w95) header #search{width:230px;height:38px;box-sizing:border-box;padding:0 34px 0 34px;border-radius:999px;font-size:13px;color:#eef0ff;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);outline:none;transition:border-color .2s,box-shadow .2s,width .35s cubic-bezier(.2,.8,.2,1),background .2s}
+  body:not(.w95) header #search::placeholder{color:#8088b8}
+  body:not(.w95) header #search:focus{width:270px;border-color:#8f9bff;background:rgba(143,155,255,.08);box-shadow:0 0 0 3px rgba(143,155,255,.2)}
+  .hd-sw:focus-within::before{background:#c9d0ff}
+
+  body:not(.w95) header .tbtn{position:relative;height:38px;box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;padding:0 13px;border-radius:12px;
+    font-size:12.5px;font-weight:700;color:#d6daf8;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.2);
+    transition:background .2s,border-color .2s,transform .15s,color .2s;white-space:nowrap}
+  body:not(.w95) header .tbtn:hover{background:rgba(143,155,255,.12);border-color:rgba(150,160,255,.45);color:#fff}
+  body:not(.w95) header .tbtn:active{transform:scale(.95)}
+  body:not(.w95) header .tbtn::before{content:"";flex:none;width:17px;height:17px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  body:not(.w95) header #labBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M10 3v6l-5.2 9.1A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-2.9L14 9V3M7.3 15h9.4'/%3E%3C/svg%3E");
+    color:#bff0dc;border-color:rgba(99,230,190,.3);background:rgba(99,230,190,.06)}
+  body:not(.w95) header #labBtn:hover{background:rgba(99,230,190,.14);border-color:rgba(99,230,190,.55)}
+  body:not(.w95) header #dexBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20v-5'/%3E%3Cpath d='M9 7.5h7M9 11h5'/%3E%3C/svg%3E")}
+  body:not(.w95) header #quizBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9l10-5 10 5-10 5z'/%3E%3Cpath d='M6 11v5c0 1.6 2.7 3 6 3s6-1.4 6-3v-5M22 9v6'/%3E%3C/svg%3E")}
+  body:not(.w95) header #setBtn{width:38px;padding:0;justify-content:center;font-size:0;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z'/%3E%3C/svg%3E")}
+  body:not(.w95) header #setBtn::before{width:18px;height:18px}
+  body:not(.w95) header #setBtn.hasnew::after{top:5px;right:5px;width:7px;height:7px;box-shadow:0 0 0 2px #191b3c,0 0 8px #ffd43b}
+  /* 도감 진행도 */
+  body:not(.w95) header #dexBtn[data-n]::after{content:attr(data-n);font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;margin-left:1px;color:#1b1640;
+    background:linear-gradient(90deg,#ffd166 var(--dp,0%),#c3caff var(--dp,0%))}
+  body:not(.w95) header #dexBtn.bump::after{animation:hdBump .6s cubic-bezier(.2,1.6,.3,1)}
+  @keyframes hdBump{40%{transform:scale(1.3)}}
+
+  @media (max-width:1100px){ body:not(.w95) header #search{width:170px} body:not(.w95) header #search:focus{width:200px} .hd-sw kbd{display:none} }
+  @media (max-width:900px){ body:not(.w95) header .sub{display:none} }
+
+  /* 폰: 1줄 = 로고·제목 + 아이콘 버튼, 2줄 = 검색창 꽉 차게 */
+  @media (max-width:700px){
+    body:not(.w95) header{flex-wrap:wrap;gap:8px 6px;padding:9px 12px 10px}
+    body:not(.w95) header #tools{display:contents}
+    .hd-brand{flex:1 1 auto;gap:8px;order:0}
+    #hdLogo{width:30px;height:30px}
+    body:not(.w95) header h1{font-size:16.5px}
+    body:not(.w95) header .tbtn{order:1;width:38px;height:36px;padding:0;justify-content:center;font-size:0;border-radius:11px;gap:0}
+    body:not(.w95) header .tbtn::before{width:18px;height:18px}
+    body:not(.w95) header #dexBtn[data-n]::after{position:absolute;right:-5px;top:-6px;font-size:9px;padding:1px 4px;margin:0;content:attr(data-s);box-shadow:0 0 0 2px #15172f}
+    .hd-sw{order:2;flex:1 1 100%}
+    body:not(.w95) header #search,body:not(.w95) header #search:focus{width:100%;height:38px;font-size:16px}
+  }
+  @media (prefers-reduced-motion:reduce){ #hdLogo,#hdLogo.pop,body:not(.w95) header h1.sweep{animation:none;transition:none} }
+</style>
+<script>
+(function(){
+  const hd = document.querySelector('header'); if(!hd) return;
+  const h1 = hd.querySelector('h1'), sub = hd.querySelector('.sub'), tools = document.getElementById('tools'), se = document.getElementById('search');
+  if(!h1 || !tools || !se) return;
+  // 로고: 앱 아이콘처럼 45도 돌린 정사각형 + Pt
+  const brand = document.createElement('div'); brand.className = 'hd-brand';
+  brand.innerHTML = `<svg id="hdLogo" viewBox="0 0 64 64" aria-hidden="true">
+    <defs><linearGradient id="hdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ee7ff"/><stop offset=".45" stop-color="#a9b4ff"/><stop offset=".75" stop-color="#d7a8ff"/><stop offset="1" stop-color="#ff9ad5"/></linearGradient>
+    <radialGradient id="hdR" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#2c2f72"/><stop offset="1" stop-color="#11122b"/></radialGradient></defs>
+    <circle cx="32" cy="32" r="29" fill="none" stroke="url(#hdG)" stroke-width="1.2" opacity=".5"/>
+    <path d="M32 9 L55 32 L32 55 L9 32Z" fill="url(#hdR)" stroke="url(#hdG)" stroke-width="2.4" stroke-linejoin="round"/>
+    <text x="32" y="36.5" text-anchor="middle" font-size="15" font-weight="900" fill="#eef0ff" font-family="inherit">Pt</text>
+    <text x="32" y="24" text-anchor="middle" font-size="6" font-weight="800" fill="#a9b4ff" font-family="inherit">78</text>
+    <rect x="24" y="40" width="16" height="2" rx="1" fill="url(#hdG)"/></svg><div class="hd-tx"></div>`;
+  hd.insertBefore(brand, hd.firstChild);
+  const tx = brand.querySelector('.hd-tx'); tx.appendChild(h1); if(sub) tx.appendChild(sub);
+  const ver = document.createElement('span'); ver.className = 'hd-ver';
+  const putVer = () => { try{ ver.textContent = 'v' + (typeof APP_VER !== 'undefined' ? APP_VER : ''); if(sub && ver.parentNode !== sub) sub.appendChild(ver); }catch(e){} };
+  // 검색창 감싸기 (돋보기 + / 단축키)
+  const sw = document.createElement('label'); sw.className = 'hd-sw';
+  se.parentNode.insertBefore(sw, se); sw.appendChild(se);
+  const kb = document.createElement('kbd'); kb.textContent = '/'; sw.appendChild(kb);
+  se.addEventListener('input', () => sw.classList.toggle('has', !!se.value));
+  // 로고 누르면 살짝 돌고 제목에 빛이 한 번 쓸린다
+  const logo = document.getElementById('hdLogo');
+  logo.addEventListener('click', () => { logo.classList.remove('pop'); h1.classList.remove('sweep'); void logo.offsetWidth; logo.classList.add('pop'); h1.classList.add('sweep'); try{ SFX.pick && SFX.pick(); }catch(e){} });
+  setTimeout(() => h1.classList.add('sweep'), 400);
+  // 글자 정리: 실험실 이모지 빼기, 아이콘만 남는 버튼에 이름표
+  const tidy = () => {
+    try{
+      const lb = document.getElementById('labBtn'); if(lb) lb.textContent = lb.textContent.replace(/^\s*🧪\s*/, '');
+      const en = LANG === 'en';
+      [['dexBtn', en ? 'Codex' : '도감'], ['quizBtn', en ? 'Learn' : '학습'], ['setBtn', en ? 'Settings' : '설정']].forEach(([id, l]) => { const b = document.getElementById(id); if(b){ b.setAttribute('aria-label', l); if(!b.title) b.title = l; } });
+      putVer();
+    }catch(e){}
+  };
+  try{ const _as = applyStaticText; applyStaticText = function(){ const r = _as.apply(this, arguments); tidy(); count(); return r; }; }catch(e){}
+  // 도감 진행도 (찾은 수 / 전체)
+  let TOT = 0, last = -1;
+  function count(){
+    try{
+      if(!TOT) TOT = allEntries().length;
+      const n = codexGot(), b = document.getElementById('dexBtn'); if(!b) return;
+      b.dataset.n = `${n}/${TOT}`; b.dataset.s = n > 999 ? '999+' : String(n);
+      b.style.setProperty('--dp', (n / TOT * 100).toFixed(1) + '%');
+      if(last >= 0 && n > last){ b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+      last = n;
+    }catch(e){}
+  }
+  try{ const _sf = saveFound; saveFound = function(){ const r = _sf.apply(this, arguments); setTimeout(count, 0); return r; }; }catch(e){}
+  tidy(); count(); setTimeout(() => { tidy(); count(); }, 1200);
 })();
 </script>
 <style>
