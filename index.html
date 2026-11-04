@@ -6216,6 +6216,7 @@ const CHANGELOG = [
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
+           '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
            '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
            'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
@@ -6257,6 +6258,7 @@ const CHANGELOG = [
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
            'Achievement badges without a drawing now use line icons instead of emoji',
+           'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
            '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
            'The desktop tray buttons now match too, with icons on Random and Clear',
@@ -43244,6 +43246,51 @@ void main(){
   // 이름표가 없는 업적은 트로피
   try{ ACH.forEach(a => { if(!RX_ACH_IC[a.id] || !/^<svg/.test(RX_ACH_IC[a.id])) RX_ACH_IC[a.id] = TROPHY; }); }catch(e){}
   window.RX_ACH_LOCK = LOCK;
+})();
+</script>
+<script>
+/* ═══ 혼합물 모형 겹침 고치기 (4.2.5+): 점(.)으로 나뉜 분자가 미리 계산된 좌표에서 서로 파고든 경우(피라냐 용액·매직산·파라콰트)
+   조각마다 무게중심 반대쪽으로 밀어서 원자끼리 최소 14만큼 떨어뜨린다 */
+(function(){
+  if(typeof RX_SMILES_PRE === 'undefined') return;
+  const GAP = 14;
+  function fix(P){
+    const A = P.a, n = A.length; if(n < 2) return;
+    const c = new Array(n).fill(-1), nb = A.map(() => []);
+    (P.b || []).forEach(([i, j]) => { if(nb[i] && nb[j]){ nb[i].push(j); nb[j].push(i); } });
+    let cc = 0;
+    for(let s = 0; s < n; s++){ if(c[s] >= 0) continue; const st = [s]; c[s] = cc; while(st.length){ const v = st.pop(); nb[v].forEach(w => { if(c[w] < 0){ c[w] = cc; st.push(w); } }); } cc++; }
+    if(cc < 2) return;
+    for(let it = 0; it < 200; it++){
+      let moved = false;
+      // 조각마다 무게중심
+      const cen = Array.from({ length: cc }, () => [0, 0, 0, 0]);
+      A.forEach((a, i) => { const g = cen[c[i]]; g[0] += a[1]; g[1] += a[2]; g[2] += a[3]; g[3]++; });
+      cen.forEach(g => { g[0] /= g[3]; g[1] /= g[3]; g[2] /= g[3]; });
+      const push = Array.from({ length: cc }, () => [0, 0, 0]);
+      for(let i = 0; i < n; i++) for(let j = i + 1; j < n; j++){
+        if(c[i] === c[j]) continue;
+        const a = A[i], b = A[j];
+        const d = Math.hypot(a[1] - b[1], a[2] - b[2], a[3] - b[3]) - (a[4] + b[4]);
+        if(d >= GAP) continue;
+        // 두 조각의 무게중심을 잇는 방향으로 떼어 낸다
+        const ga = cen[c[i]], gb = cen[c[j]];
+        let dx = gb[0] - ga[0], dy = gb[1] - ga[1], dz = gb[2] - ga[2];
+        const L = Math.hypot(dx, dy, dz);
+        if(L < 1e-3){ dx = 1; dy = 0; dz = 0; } else { dx /= L; dy /= L; dz /= L; }
+        const s = (GAP - d) * 0.5 + 0.5;
+        push[c[j]][0] += dx * s; push[c[j]][1] += dy * s; push[c[j]][2] += dz * s;
+        push[c[i]][0] -= dx * s; push[c[i]][1] -= dy * s; push[c[i]][2] -= dz * s;
+        moved = true;
+      }
+      if(!moved) break;
+      A.forEach((a, i) => { const p = push[c[i]], k = 1 / Math.max(1, (cen[c[i]][3])) * 3; a[1] += Math.max(-6, Math.min(6, p[0] * k)); a[2] += Math.max(-6, Math.min(6, p[1] * k)); a[3] += Math.max(-6, Math.min(6, p[2] * k)); });
+    }
+    // 전체를 다시 가운데로
+    let mx = 0, my = 0, mz = 0; A.forEach(a => { mx += a[1]; my += a[2]; mz += a[3]; }); mx /= n; my /= n; mz /= n;
+    A.forEach(a => { a[1] -= mx; a[2] -= my; a[3] -= mz; });
+  }
+  try{ Object.entries(RX_SMILES_PRE).forEach(([k, P]) => { if(k.includes('.') && P && P.a) fix(P); }); }catch(e){ console.warn('fragfix', e); }
 })();
 </script>
 <style>
