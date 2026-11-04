@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '원자 오비탈 크게 보기 창을 새로 꾸몄어요. 원소 타일, 전자·껍질·바깥 전자 칸, 페리윙클 버튼이 생겼어요',
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
@@ -6258,6 +6259,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The big atomic orbital view is redesigned with an element tile, electron and shell stats and periwinkle buttons',
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
@@ -43300,6 +43302,99 @@ void main(){
     A.forEach(a => { a[1] -= mx; a[2] -= my; a[3] -= mz; });
   }
   try{ Object.entries(RX_SMILES_PRE).forEach(([k, P]) => { if(k.includes('.') && P && P.a) fix(P); }); }catch(e){ console.warn('fragfix', e); }
+})();
+</script>
+<style>
+  /* ═══ 원자 오비탈 크게 보기 리워크 (4.2.5+): 분자 오비탈 화면과 같은 유리 카드 · 원소 타일 · 스탯 칸 ═══ */
+  #orbBig,#nucBig{background:radial-gradient(80% 70% at 50% 40%,rgba(30,28,80,.78),rgba(4,5,14,.92));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  :is(#orbBig,#nucBig) .orb-card{position:relative;border-radius:22px;border:1px solid rgba(150,160,255,.28);
+    background:linear-gradient(160deg,rgba(26,28,64,.97),rgba(12,13,32,.98));box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 40px rgba(143,155,255,.12)}
+  :is(#orbBig,#nucBig) .orb-card::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(201,210,255,.8),transparent)}
+  /* 머리 */
+  :is(#orbBig,#nucBig) .orb-head{align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(150,160,255,.14)}
+  .ob-tile{flex:none;position:relative;width:46px;height:50px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--cc,#8f9bff) 32%,#1c1f44),#14162f);border:1px solid color-mix(in srgb,var(--cc,#8f9bff) 60%,transparent);border-bottom:3px solid var(--cc,#8f9bff);
+    box-shadow:0 0 16px color-mix(in srgb,var(--cc,#8f9bff) 30%,transparent)}
+  .ob-tile i{position:absolute;left:5px;top:3px;font-style:normal;font-size:9px;opacity:.8}
+  .ob-tile b{font-size:19px;font-weight:900;color:#fff}
+  .ob-ttl{display:grid;gap:2px;min-width:0}
+  .ob-ttl .k{font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#8f97c8}
+  :is(#orbBig,#nucBig) .orb-head b#orbTitle{font-size:19px;font-weight:900}
+  :is(#orbBig,#nucBig) .orb-head #orbSub{font-size:12px;color:#a6adda;font-variant-numeric:tabular-nums}
+  :is(#orbBig,#nucBig) .orb-head button{width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:11px;font-size:17px;color:#c4c9ee;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22);transition:background .2s,transform .2s}
+  :is(#orbBig,#nucBig) .orb-head button:hover{background:rgba(255,107,129,.16);border-color:rgba(255,107,129,.5);color:#fff;transform:rotate(90deg)}
+  /* 보기 칸 */
+  #orbBig .orb-stage{background:radial-gradient(60% 60% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 12%,#141734),#0a0b1c 80%)}
+  #orbBig .orb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%)}
+  #orbBig .orb-cfg{left:14px;top:12px;font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;right:auto;background:rgba(18,20,46,.7);border:1px solid rgba(150,160,255,.2);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #orbBig .orb-hint{left:14px;bottom:14px;font-size:10.5px;color:#8e95c4}
+  #orbBig .orb-style{right:12px;bottom:10px;padding:3px;gap:2px;border-radius:12px;background:rgba(18,20,46,.75);border:1px solid rgba(150,160,255,.24)}
+  #orbBig .orb-style button{border-radius:9px;padding:5px 12px;font-weight:700;color:#a3a9d6}
+  #orbBig .orb-style button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  /* 옆 칸 */
+  #orbBig .orb-side{padding:16px 18px 18px;gap:11px;border-left:1px solid rgba(150,160,255,.12)}
+  #orbBig .orb-sec{font-size:10px;font-weight:900;letter-spacing:.12em;color:#8f97c8;text-transform:uppercase}
+  #orbBig .orb-chip{padding:6px 11px;border-radius:999px;font-size:12.5px;font-weight:750;color:#d6daf8;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.2);transition:all .2s}
+  #orbBig .orb-chip:hover{background:rgba(143,155,255,.1);border-color:rgba(150,160,255,.45)}
+  #orbBig .orb-chip i{box-shadow:0 0 6px var(--oc)}
+  #orbBig .orb-chip.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.4)}
+  #orbBig .orb-chip.on sup{color:#e8e4ff}
+  #orbBig .orb-desc,#orbBig .orb-faq{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #orbBig .orb-desc em{color:#959cc9}
+  #orbBig .orb-note{border-radius:14px}
+  #orbBig .orb-box{width:22px;height:24px;border-radius:6px;border-color:rgba(150,160,255,.3);background:rgba(8,9,26,.45)}
+  #orbBig .orb-row.cur .orb-box{border-color:#c9a8ff;box-shadow:0 0 8px rgba(201,168,255,.4)}
+  #orbBig .orb-btn{padding:9px 14px;border-radius:12px;font-weight:800;color:#fff;border:1px solid transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.35)}
+  #orbBig .orb-btn.ghost{color:#d6daf8;background:rgba(255,255,255,.05);border-color:rgba(150,160,255,.24);box-shadow:none;font-weight:750}
+  #orbBig .orb-btn.ghost:hover{background:rgba(143,155,255,.14);border-color:#8f9bff;color:#fff}
+  #orbBig .orb-btn.ghost[aria-pressed="true"]{background:rgba(255,154,213,.16);border-color:#ff9ad5;color:#fff}
+  #orbBig .orb-btn.ghost[aria-expanded="true"]{background:rgba(158,231,255,.14);border-color:#9ee7ff;color:#fff}
+  #orbBig .orb-foot{color:#8e95c4}
+  /* 스탯 칸 */
+  .ob-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .ob-stats div{display:grid;gap:2px;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  .ob-stats b{font-size:19px;font-weight:900;color:#f2f3ff;font-variant-numeric:tabular-nums}
+  .ob-stats span{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  @media (max-width:700px){
+    :is(#orbBig,#nucBig) .orb-card{border-radius:0;border:0}
+    :is(#orbBig,#nucBig) .orb-head{padding:12px 14px}
+    .ob-tile{width:40px;height:44px} .ob-tile b{font-size:16px}
+    #orbBig .orb-side{border-left:0;border-top:1px solid rgba(150,160,255,.12)}
+  }
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  function paint(){
+    const box = document.getElementById('orbBig'); if(!box) return;
+    const head = box.querySelector('.orb-head'), ttl = document.getElementById('orbTitle'), sub = document.getElementById('orbSub');
+    if(!head || !ttl) return;
+    const e = byNum[selected]; if(!e) return;
+    if(box._obN === e.n + LANG && head.querySelector('.ob-ttl') && box.querySelector('.ob-stats')) return; box._obN = e.n + LANG;
+    let wrap = head.querySelector('.ob-ttl');
+    if(!wrap){
+      head.insertAdjacentHTML('afterbegin', '<span class="ob-tile"><i></i><b></b></span><span class="ob-ttl"><span class="k"></span></span>');
+      wrap = head.querySelector('.ob-ttl'); wrap.appendChild(ttl); if(sub) wrap.appendChild(sub);
+    }
+    let c = '#8f9bff'; try{ c = cssv(CAT[e.c].v) || c; }catch(err){}
+    box.style.setProperty('--cc', c);
+    head.querySelector('.ob-tile i').textContent = e.n; head.querySelector('.ob-tile b').textContent = e.s;
+    head.querySelector('.ob-ttl .k').textContent = P('ATOMIC ORBITALS // 원자 오비탈', 'ATOMIC ORBITALS');
+    // 스탯: 전자 수 · 껍질 수 · 바깥 전자
+    const side = box.querySelector('.orb-side'), sec3 = document.getElementById('orbSec3');
+    if(side && sec3){
+      let st = side.querySelector('.ob-stats');
+      if(!st){ st = document.createElement('div'); st.className = 'ob-stats'; sec3.before(st); }
+      const sh = e.sh || [];
+      st.innerHTML = `<div><b>${e.n}</b><span>${P('전자', 'ELECTRONS')}</span></div><div><b>${sh.length}</b><span>${P('전자 껍질', 'SHELLS')}</span></div><div><b>${sh[sh.length - 1] || 0}</b><span>${P('바깥 껍질 전자', 'OUTER SHELL')}</span></div>`;
+    }
+  }
+  const tick = () => { const b = document.getElementById('orbBig'); if(b && b.classList.contains('on')) paint(); };
+  try{ new MutationObserver(tick).observe(document.body, { childList: true, subtree: false }); }catch(e){}
+  document.addEventListener('click', () => setTimeout(tick, 60), true);
+  setInterval(tick, 1500);
 })();
 </script>
 <style>
