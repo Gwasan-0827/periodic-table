@@ -43066,7 +43066,7 @@ void main(){
         <div class="big">${N} / ${N}</div>
         <h3>${P('도감 완성', 'Codex complete')}</h3>
         <p>${P(`${N}가지 물질을 전부 직접 섞어서 찾았어요.<br>주기율표를 끝까지 파고든 사람만 보는 화면이에요.`, `You mixed and found all ${N} substances yourself.<br>Only people who dug all the way through see this.`)}</p>
-        ${ril ? `<div class="ril"><img alt="" src="${ril}"><div><b>${P('아스리엘', 'Asriel')}</b>${P('와, 550개 전부요! 이제 주기율표 박사님이라고 불러도 되죠? 새 물질 생기면 또 같이 찾아요!', 'Whoa, all 550! Can I call you Doctor Periodic now? When new ones show up, let us find them together!')}</div></div>` : ''}
+        ${ril ? `<div class="ril"><img alt="" src="${ril}"><div><b>${P('아스리엘', 'Asriel')}</b>${(typeof APP_MODE !== 'undefined' && APP_MODE) ? P('축하해요! 이제 남은 건... 음, 디렉터가 새로운 물질을 추가하는 것뿐이겠네요.', 'Congrats! All that is left now is... hmm, waiting for the director to add new substances.') : P('축하해요! 이제 남은 건... 음, 카이닉스팀이 새로운 물질을 추가하는 것뿐이겠네요.', 'Congrats! All that is left now is... hmm, waiting for Team Kainix to add new substances.')}</div></div>` : ''}
         <div class="gift">✦ ${P('선물: 맨 위 제목이 금빛이 됐어요', 'Gift: the title is gold now')}</div>
         <div class="bt"><button type="button" class="again">${P('다시 보기', 'Replay')}</button><button type="button" class="go">${P('고마워요', 'Thanks')}</button></div>
       </div>`;
