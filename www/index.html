@@ -42082,6 +42082,8 @@ void main(){
 })();
 </script>
 <style>
+  /* 제목 색(--tc)을 색으로 등록해 두면 그라데이션 안에서도 부드럽게 바뀐다 */
+  @property --tc{syntax:'<color>';inherits:true;initial-value:#b6a8ff}
   /* ═══ 헤더 리워크 (4.2.5+): 로고 · 홀로 제목 · 둥근 검색창 · 아이콘 버튼 · 도감 진행도 ═══ */
   body:not(.w95) header{position:relative;display:flex;align-items:center;gap:14px;flex-wrap:nowrap;padding:10px 18px;
     background:linear-gradient(180deg,rgba(26,28,58,.72),rgba(14,15,32,.55));border-bottom:1px solid rgba(150,160,255,.14);
@@ -42099,7 +42101,8 @@ void main(){
   .hd-tx{display:grid;gap:1px;min-width:0}
   body:not(.w95) header h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.15;white-space:nowrap;
     background:linear-gradient(100deg,#eef0ff 0%,var(--tc,#b6a8ff) 32%,#ffd1e8 50%,#eef0ff 72%,var(--tc,#b6a8ff) 100%);background-size:200% 100%;background-position:0 0;
-    -webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;transition:background-position 1.2s ease}
+    -webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;transition:--tc .9s ease,filter .9s ease,background-position 1.2s ease!important}
+  body:not(.w95) header h1{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--tc) 0%,transparent))}
   body:not(.w95) header h1.tint{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--tc) 40%,transparent))}
   body:not(.w95) header h1.sweep{animation:hdSweep 1.6s ease}
   @keyframes hdSweep{0%{background-position:100% 0}100%{background-position:0 0}}
