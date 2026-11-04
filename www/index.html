@@ -6215,7 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
-           '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 둘레로 바깥 전자가 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
+           '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 뒤로 그 원소 블록의 오비탈(s 공 · p 아령 · d 네잎 · f 여섯 잎) 모양 전자 구름이 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
            '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
            '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
            '처음 하는 사람을 위한 첫걸음 미션 8개가 생겼어요. 소금·이산화탄소·암모니아·메테인 만들기 등, 눌러야 할 칸이 반짝여요',
@@ -6247,7 +6247,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
-           'The element card is redesigned: a table-cell tile with its outer electrons orbiting around it, category and block chips, a quote box and stat tiles for group, period and state',
+           'The element card is redesigned: a table-cell tile with an electron cloud behind it shaped like its block's orbital (s sphere, p dumbbell, d clover, f six lobes), category and block chips, a quote box and stat tiles for group, period and state',
            'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
            'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
            '8 first-step missions for newcomers: make salt, CO₂, ammonia, methane and more, with the cells to tap glowing',
@@ -42221,11 +42221,14 @@ void main(){
   #info .ihero.ixc .ix-tile .ih-num{position:absolute;left:9px;top:7px;margin:0;font-size:12px;font-weight:800;opacity:1;color:color-mix(in srgb,var(--cc) 70%,#fff)}
   #info .ihero.ixc .ix-tile .bigsym{font-size:46px;line-height:1;margin-top:4px;color:#fff;text-shadow:0 0 18px color-mix(in srgb,var(--cc) 70%,transparent),0 2px 0 color-mix(in srgb,var(--cc) 40%,#000)}
   .ix-tile .ix-m{margin-top:6px;font-size:10.5px;font-variant-numeric:tabular-nums;color:#b9bfe6;letter-spacing:.02em}
-  .ix-orb{position:absolute;left:50%;top:50%;width:200px;height:150px;margin:-75px 0 0 -100px;overflow:visible;pointer-events:none}
-  .ix-orb.back{z-index:0} .ix-orb.front{z-index:2}
-  .ix-orb ellipse{fill:none;stroke:color-mix(in srgb,var(--cc) 60%,transparent);stroke-width:1;opacity:.55}
-  .ix-orb circle{fill:#fff;filter:drop-shadow(0 0 3px var(--cc))}
-  html.idle .ix-orb{visibility:hidden}
+  /* 타일 뒤 전자 구름: 그 원소 블록(s·p·d·f)의 오비탈 모양. 보어 궤도 대신 */
+  .ix-orb{position:absolute;left:50%;top:50%;width:250px;height:250px;margin:-125px 0 0 -125px;overflow:visible;pointer-events:none;z-index:0}
+  .ix-orb .rot{transform-box:view-box;transform-origin:50% 50%;animation:ixSpin 26s linear infinite}
+  .ix-orb .br{transform-box:view-box;transform-origin:50% 50%;animation:ixBreath 4.5s ease-in-out infinite}
+  @keyframes ixSpin{to{transform:rotate(360deg)}}
+  @keyframes ixBreath{50%{transform:scale(1.07);opacity:.82}}
+  html.idle .ix-orb .rot,html.idle .ix-orb .br{animation-play-state:paused}
+  .ix-blab{position:absolute;right:-7px;bottom:-9px;z-index:3;font-size:9.5px;font-weight:900;padding:2px 6px;border-radius:999px;color:#1b1640;background:color-mix(in srgb,var(--cc) 70%,#fff);box-shadow:0 0 10px color-mix(in srgb,var(--cc) 50%,transparent)}
 
   /* 이름 쪽 */
   #info .ihero.ixc .names{margin:0;min-width:0;flex:1}
@@ -42279,23 +42282,24 @@ void main(){
     #info .ihero.ixc .names .k{font-size:21px}
     #info .ihero.ixc::after{font-size:110px}
   }
-  @media (prefers-reduced-motion:reduce){ #info .ihero.ixc.in *{animation:none!important} .ix-orb animateMotion{display:none} }
+  @media (prefers-reduced-motion:reduce){ #info .ihero.ixc.in *{animation:none!important} .ix-orb .rot,.ix-orb .br{animation:none!important} }
 </style>
 <script>
 (function(){
   if(typeof select !== 'function') return;
   const blockOf = e => !e.g ? 'f' : (e.g <= 2 || e.n === 2) ? 's' : e.g >= 13 ? 'p' : 'd';
   let lastN = 0;
-  function orbit(e, front){
-    const v = Math.max(1, Math.min(8, (e.sh && e.sh[e.sh.length - 1]) || 1));
-    const rx = 74, ry = 22, P = `M ${100 - rx} 75 a ${rx} ${ry} 0 1 0 ${rx * 2} 0 a ${rx} ${ry} 0 1 0 ${-rx * 2} 0`;
-    const dur = 7 + (e.n % 5);
-    const dots = Array.from({ length: v }, (_, i) => `<circle r="2.6"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="-${(dur * i / v).toFixed(2)}s" path="${P}"/></circle>`).join('');
-    const id = 'ixc' + (front ? 'f' : 'b');
-    return `<svg class="ix-orb ${front ? 'front' : 'back'}" viewBox="0 0 200 150" aria-hidden="true">
-      ${front ? `<defs><clipPath id="${id}"><rect x="0" y="75" width="200" height="75" transform="rotate(-18 100 75)"/></clipPath></defs>` : ''}
-      <g transform="rotate(-18 100 75)" ${front ? `clip-path="url(#${id})"` : ''}>${front ? '' : `<ellipse cx="100" cy="75" rx="${rx}" ry="${ry}"/>`}</g>
-      <g ${front ? `clip-path="url(#${id})"` : ''}><g transform="rotate(-18 100 75)">${front ? `<ellipse cx="100" cy="75" rx="${rx}" ry="${ry}"/>` : ''}${dots}</g></g></svg>`;
+  // 블록별 오비탈 모양: s = 공, p = 아령(2), d = 네잎(4), f = 여섯 잎(6). 잎마다 위상(+/−)에 따라 색이 다르다
+  function orbit(e){
+    const bl = blockOf(e), n = { s: 0, p: 2, d: 4, f: 6 }[bl], id = 'ixg' + e.n;
+    const lobe = (a, k) => `<ellipse cx="95" cy="${95 - 46}" rx="${bl === 'p' ? 26 : 20}" ry="${bl === 'p' ? 40 : 34}" fill="url(#${id}${k % 2 ? 'b' : 'a'})" transform="rotate(${a} 95 95)"/>`;
+    const body = n ? Array.from({ length: n }, (_, k) => lobe(360 / n * k + (bl === 'd' ? 45 : 0), k)).join('')
+      : `<circle cx="95" cy="95" r="88" fill="url(#${id}a)"/>`;
+    return `<svg class="ix-orb" viewBox="0 0 190 190" aria-hidden="true"><defs>
+      <radialGradient id="${id}a" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:var(--cc);stop-opacity:1"/><stop offset=".55" style="stop-color:var(--cc);stop-opacity:.45"/><stop offset="1" style="stop-color:var(--cc);stop-opacity:0"/></radialGradient>
+      <radialGradient id="${id}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c9d2ff" stop-opacity=".85"/><stop offset=".55" stop-color="#8f9bff" stop-opacity=".38"/><stop offset="1" stop-color="#8f9bff" stop-opacity="0"/></radialGradient>
+      <filter id="${id}f" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter></defs>
+      <g class="rot"><g class="br" filter="url(#${id}f)">${body}</g></g></svg>`;
   }
   function restyle(){
     const info = document.getElementById('info'); if(!info) return;
@@ -42314,15 +42318,14 @@ void main(){
     const m = document.createElement('div'); m.className = 'ix-m';
     try{ m.textContent = typeof rxAmTxt === 'function' ? rxAmTxt(e) : e.m; }catch(err){ m.textContent = e.m; }
     tile.appendChild(m);
-    tw.insertAdjacentHTML('beforeend', orbit(e, false));
+    tw.insertAdjacentHTML('beforeend', orbit(e));
     tw.appendChild(tile);
-    tw.insertAdjacentHTML('beforeend', orbit(e, true));
     left.replaceWith(tw);
     // 오른쪽: 이름 · 분류 · 블록 · 별명
     const k = names.querySelector('.k'), en = names.querySelector('.e'), s1 = names.querySelector('.subtitle'), s2 = names.querySelector('.subtitle2'), s3 = names.querySelector('.subtitle3');
     const pills = document.createElement('div'); pills.className = 'ix-pills';
     const cat = hero.querySelector('.ih-badges .cat'); if(cat) pills.appendChild(cat);
-    const bl = blockOf(e); pills.insertAdjacentHTML('beforeend', `<span class="blk"><b>${bl}</b>${L ? '-block' : ' 블록'}</span>`);
+    const bl = blockOf(e); pills.insertAdjacentHTML('beforeend', `<span class="blk" title="${L ? 'The cloud behind the tile is the shape of a ' + bl + ' orbital' : '타일 뒤 구름이 ' + bl + ' 오비탈 모양이에요'}"><b>${bl}</b>${L ? ' orbital' : ' 오비탈'}</span>`);   // 타일 밑 오비탈 표시와 같이 간다
     (en || k).after(pills);
     if(s1) pills.after(s1);
     // 긴 설명은 카드 폭 전체 인용구로
