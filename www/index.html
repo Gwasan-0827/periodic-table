@@ -6215,6 +6215,8 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
+           '실패하거나 개수가 틀리면 결과 창에 "이렇게 고쳐 봐요"가 떠요. H 하나 빼기처럼 고칠 방법을 보여 주고, 누르면 그대로 고쳐서 다시 섞어요. 도감 줄엔 진행 막대도 생겼어요',
            '설정 창을 새로 꾸몄어요. 탭마다 아이콘이 생기고, 고르는 버튼은 한 덩어리로 묶였고, 스위치와 버튼도 페리윙클로 바뀌었어요',
            '검색이 똑똑해졌어요. 원소 이름·기호·번호에, 찾은 물질 이름과 화학식까지 드롭다운으로 바로 떠요. H2O, NaCl처럼 화학식을 치면 그대로 조합 칸에 담을 수 있어요',
            '원자 모형 칸도 카드로 바꿨어요. 페리윙클 탭, 유리 느낌 도구 버튼, 양성자·중성자·전자 칩이 생겼어요',
@@ -6251,6 +6253,8 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The desktop tray buttons now match too, with icons on Random and Clear',
+           'Fail or get the counts wrong and the result card now suggests small fixes, like removing one H. Tap one to fix the tray and mix again. The codex line also gets a progress bar',
            'Settings are redesigned: icons on every tab, option buttons grouped into one control, and periwinkle switches and buttons',
            'Search is smarter: elements by name, symbol or number, plus the substances you have found and formulas, all in a dropdown. Type a formula like H2O or NaCl to load it straight into the tray',
            'The atom model panel is now a card too, with periwinkle tabs, glassy tool buttons and proton, neutron and electron chips',
@@ -42812,6 +42816,161 @@ void main(){
     html:not(.setbg-light) #setNav button.on{background:linear-gradient(135deg,rgba(143,155,255,.3),rgba(177,140,255,.14));color:#fff;border-color:rgba(150,160,255,.5);box-shadow:none}
     html:not(.setbg-light) #setBody .stabh{font-size:18px}
   }
+</style>
+<style>
+  /* ═══ 결과 창 아래쪽 리워크 (4.2.5+): 상태 칩 · 도감 진행 막대 · 실패하면 "이렇게 고쳐 봐요" ═══ */
+  #card.rx5 .rx-state{margin-top:12px}
+  #card.rx5 .rx-state::before{content:"";width:8px;height:8px;border-radius:50%;background:color-mix(in srgb,var(--ac) 80%,#fff);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent),0 0 10px var(--ac)}
+  #card.rx5.is-fail .rx-state::before{content:"";background:#ff5a6e;box-shadow:0 0 0 3px rgba(255,90,110,.22),0 0 10px #ff5a6e}
+  #card.rx5.is-loose .rx-state::before{background:#ffd166;box-shadow:0 0 0 3px rgba(255,209,102,.22),0 0 10px #ffd166}
+  /* 도감 줄: 진행 막대 */
+  #card.rx5 .cdex{position:relative;padding-bottom:9px}
+  #card.rx5 .cdex .rb-bar{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
+  #card.rx5 .cdex .rb-bar i{position:absolute;inset:0 auto 0 0;width:var(--w,0%);border-radius:9px;background:linear-gradient(90deg,#8f9bff,#c9a8ff,#ffd166);transition:width 1s cubic-bezier(.2,.8,.2,1) .9s}
+  #card.rx5 .cdex .rb-bar i.go{width:var(--w2,0%)}
+
+  /* 고쳐 보기 */
+  .rb-fix{margin-top:10px;padding:10px;border-radius:14px;background:rgba(8,9,26,.45);border:1px solid rgba(255,209,102,.22)}
+  .rb-fix .h{display:flex;align-items:center;gap:7px;margin:0 2px 8px;font-size:11px;font-weight:900;letter-spacing:.06em;color:#ffd98a}
+  .rb-fix .h::before{content:"";width:16px;height:16px;flex:none;background:#ffd166;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat}
+  .rb-fix .row{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;margin-top:5px;border-radius:11px;font:inherit;text-align:left;cursor:pointer;color:#e9ecff;
+    background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16);transition:background .2s,border-color .2s,transform .15s;opacity:0;transform:translateY(6px);animation:rbIn .4s cubic-bezier(.2,.9,.3,1) forwards}
+  .rb-fix .row:hover{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.45)}
+  .rb-fix .row:active{transform:scale(.98)}
+  .rb-fix .ops{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+  .rb-fix .op{display:inline-flex;align-items:center;gap:3px;padding:2px 7px 2px 5px;border-radius:999px;font-size:11.5px;font-weight:800;white-space:nowrap}
+  .rb-fix .op.add{color:#b8f5c8;background:rgba(105,219,124,.12);border:1px solid rgba(105,219,124,.35)}
+  .rb-fix .op.sub{color:#ffc2c9;background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.35)}
+  .rb-fix .op b{font-weight:900}
+  .rb-fix .ar{flex:none;color:#7c83b0;font-weight:900}
+  .rb-fix .to{flex:none;max-width:44%;display:grid;text-align:right;line-height:1.2}
+  .rb-fix .to b{font-size:12.5px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rb-fix .to small{font-size:10px;color:#9aa0c8}
+  .rb-fix .to.lk b{color:#aeb4dc}
+  .rb-fix .row:nth-child(3){animation-delay:.08s} .rb-fix .row:nth-child(4){animation-delay:.16s}
+  #card.rx-anim .rb-fix{animation:rx5Up .45s .95s both}
+  #card.rx-anim .rb-fix .row{animation-delay:1.1s} #card.rx-anim .rb-fix .row:nth-child(3){animation-delay:1.18s} #card.rx-anim .rb-fix .row:nth-child(4){animation-delay:1.26s}
+  @keyframes rbIn{to{opacity:1;transform:none}}
+  @media (max-width:700px){ .rb-fix .op{font-size:11px} .rb-fix .to{max-width:40%} }
+  @media (prefers-reduced-motion:reduce){ .rb-fix .row{animation:none;opacity:1;transform:none} }
+</style>
+<script>
+(function(){
+  if(typeof rxRender !== 'function') return;
+  const P = (k, e) => LANG === 'en' ? e : k;
+  let ENT = null;
+  const ents = () => {
+    if(ENT) return ENT;
+    ENT = allEntries().map(x => {
+      const parts = String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+      return { ...x, parts, map: Object.fromEntries(parts) };
+    }).filter(x => x.parts.length);
+    return ENT;
+  };
+  const enName = x => (LANG === 'en' && typeof REC_EN !== 'undefined' && REC_EN[x.name]) ? REC_EN[x.name][0] : x.name;
+  // 지금 담은 것 → 가장 가까운 물질 몇 개 (원소를 몇 개 더하거나 빼면 되는지)
+  function near(cur){
+    const syms = Object.keys(cur);
+    const out = [];
+    ents().forEach(x => {
+      const ops = []; let cost = 0;
+      const keys = new Set([...syms, ...Object.keys(x.map)]);
+      if(x.exact){
+        keys.forEach(s => { const d = (x.map[s] || 0) - (cur[s] || 0); if(d){ ops.push([s, d]); cost += Math.abs(d) + (cur[s] ? 0 : 0.5) + (x.map[s] ? 0 : 0.5); } });
+      } else {
+        // 비율 상관없는 물질: 원소 종류만 맞추면 된다
+        keys.forEach(s => { const a = !!cur[s], b = !!x.map[s]; if(a !== b){ ops.push([s, b ? 1 : -cur[s]]); cost += b ? 1.5 : 1.5; } });
+      }
+      if(!ops.length || ops.length > 3 || cost > 6) return;
+      const got = found.has(x.name);
+      out.push({ x, ops, cost: cost - (got ? 0.3 : 0) });
+    });
+    // 같은 고치기(같은 ops)는 하나만
+    const seen = new Set();
+    return out.sort((a, b) => a.cost - b.cost).filter(r => { const k = r.ops.map(o => o.join(':')).join(','); if(seen.has(k)) return false; seen.add(k); return true; }).slice(0, 3);
+  }
+  function opHTML([s, d]){
+    return d > 0 ? `<span class="op add">＋<b>${s}</b>${d > 1 ? ' ×' + d : ''}</span>` : `<span class="op sub">－<b>${s}</b>${-d > 1 ? ' ×' + (-d) : ''}</span>`;
+  }
+  function paint(kind){
+    const card = document.getElementById('card'); if(!card) return;
+    card.querySelectorAll('.rb-fix').forEach(e => e.remove());
+    // 도감 진행 막대
+    try{
+      const dx = document.getElementById('mDex');
+      if(dx){
+        dx.querySelectorAll('.rb-bar').forEach(e => e.remove());
+        const tot = allEntries().length, n = codexGot();
+        if(kind !== 'fail'){
+          dx.insertAdjacentHTML('beforeend', `<span class="rb-bar"><i style="--w2:${(n / tot * 100).toFixed(2)}%"></i></span>`);
+          requestAnimationFrame(() => requestAnimationFrame(() => { const i = dx.querySelector('.rb-bar i'); if(i) i.classList.add('go'); }));
+        }
+      }
+    }catch(e){}
+    if(kind !== 'fail' && kind !== 'loose') return;
+    const cur = {}; (mix || []).forEach(n => { const s = byNum[n] && byNum[n].s; if(s) cur[s] = (cur[s] || 0) + 1; });
+    if(!Object.keys(cur).length) return;
+    const list = near(cur); if(!list.length) return;
+    const box = document.createElement('div'); box.className = 'rb-fix';
+    box.innerHTML = `<div class="h">${kind === 'loose' ? P('개수까지 맞추면', 'GET THE COUNTS RIGHT') : P('이렇게 고쳐 봐요', 'TRY A SMALL FIX')}</div>` +
+      list.map((r, i) => { const got = found.has(r.x.name);
+        return `<button type="button" class="row" data-i="${i}"><span class="ops">${r.ops.map(opHTML).join('')}</span><span class="ar">→</span>
+          <span class="to${got ? '' : ' lk'}"><b>${got ? enName(r.x) : P('??? 새 물질', '??? new')}</b><small>${got ? r.x.formula : P('아직 못 찾은 것', 'not found yet')}</small></span></button>`; }).join('');
+    const btns = card.querySelector('.cbtns');
+    if(btns) btns.before(box); else (card.querySelector('.rx-side') || card).appendChild(box);
+    box.querySelectorAll('.row').forEach(b => b.addEventListener('click', () => {
+      const r = list[+b.dataset.i]; if(!r) return;
+      // 고친 대로 조합 칸을 바꾸고 바로 다시 섞는다
+      const next = { ...cur }; r.ops.forEach(([s, d]) => { next[s] = (next[s] || 0) + d; if(next[s] <= 0) delete next[s]; });
+      if(!r.x.exact) Object.keys(r.x.map).forEach(s => { if(!next[s]) next[s] = 1; });
+      try{
+        mix = []; Object.entries(next).forEach(([s, n]) => { const e = rxSym(s); if(e) for(let k = 0; k < n; k++) mix.push(e.n); });
+        renderChips(); SFX.pick && SFX.pick();
+        setTimeout(() => { try{ document.getElementById('mixBtn').click(); }catch(e){} }, 60);
+      }catch(e){}
+    }));
+  }
+  const _rr = rxRender;
+  rxRender = function(kind){
+    const r = _rr.apply(this, arguments);
+    try{ paint(kind); }catch(e){ console.warn('rbx', e); }
+    return r;
+  };
+})();
+</script>
+<style>
+  /* ═══ PC 조합 바 버튼 리워크 (4.2.5+): 페리윙클 유리 도크 · 아이콘 버튼 ═══ */
+  @media (min-width:701px){
+    footer#tray{background:linear-gradient(0deg,rgba(14,15,32,.85),rgba(14,15,32,.4));border-top:1px solid rgba(150,160,255,.1)}
+    #trayDock{gap:10px;padding:8px 10px 8px 12px;border-radius:20px;background:linear-gradient(135deg,rgba(32,35,78,.9),rgba(18,19,44,.92));
+      border:1px solid rgba(150,160,255,.26);box-shadow:0 14px 40px rgba(0,0,0,.45),0 0 24px rgba(143,155,255,.1),inset 0 1px 0 rgba(255,255,255,.06)}
+    #trayDock #trayLabel{gap:8px;font-size:13px;font-weight:800;color:#eef0ff}
+    #trayDock #trayLabel::before{content:"";width:28px;height:28px;border-radius:9px;opacity:1;flex:none;box-shadow:0 3px 10px rgba(143,155,255,.4);
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M10 3v6l-5.2 9.1A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-2.9L14 9V3M7.3 15h9.4'/%3E%3C/svg%3E") center/15px no-repeat,linear-gradient(135deg,#8f9bff,#b18cff)}
+    #trayDock #chips{border-radius:14px;background:rgba(8,9,26,.45);border:1px dashed rgba(150,160,255,.26)}
+    #trayDock .tgrp{border-left-color:rgba(150,160,255,.16)}
+    #trayDock .btn,#trayDock #qtyBox{height:36px;box-sizing:border-box}
+    #trayDock #addModeBtn,#trayDock #randBtn,#trayDock #clearBtn{display:inline-flex;align-items:center;gap:6px;padding:0 13px;border-radius:12px;font-size:12.5px;font-weight:750;
+      color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22);transition:background .2s,border-color .2s,color .2s,transform .15s}
+    #trayDock #addModeBtn:hover,#trayDock #randBtn:hover,#trayDock #clearBtn:hover{color:#fff;background:rgba(143,155,255,.14);border-color:#8f9bff}
+    #trayDock #addModeBtn:active,#trayDock #randBtn:active,#trayDock #clearBtn:active{transform:scale(.95)}
+    #trayDock #addModeBtn[aria-pressed="true"]{color:#0f2a17;border-color:transparent;background:linear-gradient(135deg,#9ff0b0,#63e6be);box-shadow:0 4px 14px rgba(99,230,190,.4)}
+    #trayDock #randBtn::before,#trayDock #clearBtn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+    #trayDock #randBtn{background:rgba(255,255,255,.05)!important;color:#d6daf8!important;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='4'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='15.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='15.5' cy='8.5' r='1.3' fill='%23000'/%3E%3Ccircle cx='8.5' cy='15.5' r='1.3' fill='%23000'/%3E%3C/svg%3E")}
+    #trayDock #clearBtn{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'/%3E%3C/svg%3E")}
+    #trayDock #randBtn:hover{background:rgba(143,155,255,.14)!important;color:#fff!important}
+    #trayDock #clearBtn:hover{background:rgba(255,107,129,.12);border-color:rgba(255,107,129,.5);color:#ffd0d6}
+    #trayDock #qtyBox{border-radius:12px;background:rgba(8,9,26,.5);border:1px solid rgba(150,160,255,.22)}
+    #trayDock #qtyBox button{border-radius:9px;color:#a3a9d6}
+    #trayDock #qtyBox button:hover{background:rgba(143,155,255,.14);color:#fff}
+    #trayDock #qtyBox:focus-within{border-color:#8f9bff;box-shadow:0 0 0 3px rgba(143,155,255,.2)}
+    #trayDock #mixBtn{height:38px;padding:0 22px;border-radius:13px;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 6px 18px rgba(143,155,255,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+    #trayDock #mixBtn:not(:disabled):hover{box-shadow:0 8px 26px rgba(143,155,255,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+    #trayDock #mixBtn:disabled{color:#6f76a6;background:rgba(255,255,255,.05);box-shadow:none;border:1px solid rgba(150,160,255,.14)}
+  }
+  body.mode-add #trayDock #chips{border-color:rgba(99,230,190,.55);background:rgba(99,230,190,.05)}
 </style>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
