@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '쿼크 그림을 새로 그렸어요. 글루온 끈이 실제 물리 그림처럼 가운데서 만나는 Y자 빛줄기가 되고, 색이 바뀔 때마다 쿼크 사이로 글루온 알갱이가 날아가요',
            '핵 속으로 창도 새로 꾸몄어요. 원자 → 원자핵 → 양성자·중성자 → 쿼크 여정이 번호 단계로 보이고, 지나온 단계엔 ✓가 붙어요',
            '원자 오비탈 크게 보기 창을 새로 꾸몄어요. 원소 타일, 전자·껍질·바깥 전자 칸, 페리윙클 버튼이 생겼어요',
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
@@ -6260,6 +6261,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The quark view is redrawn: gluon strings now form a glowing Y-shaped flux tube like in real QCD pictures, and gluon sparks fly between quarks as their colours swap',
            'Into the nucleus is redesigned too: the atom → nucleus → nucleons → quarks journey shows as numbered steps with checkmarks',
            'The big atomic orbital view is redesigned with an element tile, electron and shell stats and periwinkle buttons',
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
@@ -43468,6 +43470,162 @@ void main(){
   const nb = () => document.getElementById('nucBig');
   let mo = null;
   setInterval(() => { const b = nb(); if(b && !mo){ mo = new MutationObserver(() => requestAnimationFrame(paint)); mo.observe(b, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); paint(); } }, 800);
+})();
+</script>
+<script>
+/* ═══ 쿼크 단계 비주얼 리워크 (4.2.5+)
+   · 양성자·중성자: 빛나는 "주머니" + 안쪽에서 일렁이는 글루온 장
+   · 글루온 끈: 실제 QCD 그림처럼 Y자 플럭스 튜브(가운데 한 점에서 세 쿼크로). 쿼크 쪽은 그 쿼크 색, 가운데는 섞여서 흰색
+   · 색이 바뀔 때(1.4초마다) 쿼크 사이로 글루온 빛 알갱이가 날아간다
+   · 쿼크: 유리구슬 + 색 후광, 이름·전하 배지 */
+(function(){
+  if(typeof rxNucDraw !== 'function' || typeof RX_NUC === 'undefined') return;
+  const _old = rxNucDraw;
+  const hex = c => { const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const rgba = (c, a) => { const [r, g, b] = hex(c); return `rgba(${r},${g},${b},${a})`; };
+  const low = () => !!window.RX_LOWPOW;
+  // 유리구슬 쿼크
+  function bead(ctx, x, y, r, col, a){
+    ctx.save(); ctx.globalAlpha = a == null ? 1 : a;
+    // 후광
+    const h = ctx.createRadialGradient(x, y, r * .6, x, y, r * 2.6);
+    h.addColorStop(0, rgba(col, .55)); h.addColorStop(1, rgba(col, 0));
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = h; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, 6.2832); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    // 몸통
+    const g = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .05, x, y, r);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(.25, col); g.addColorStop(.85, rgba(col, .9)); g.addColorStop(1, 'rgba(10,10,30,.9)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+    // 테두리 빛
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, r - .6, 0, 6.2832); ctx.stroke();
+    // 반짝
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.ellipse(x - r * .38, y - r * .45, r * .26, r * .14, -.6, 0, 6.2832); ctx.fill();
+    ctx.restore();
+  }
+  // 플럭스 튜브 한 가닥 (a → b), 색은 a 쪽 col 에서 b 쪽 흰색으로
+  function tube(ctx, ax, ay, bx, by, col, t, tense, ph){
+    const dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d;
+    const g = ctx.createLinearGradient(ax, ay, bx, by);
+    g.addColorStop(0, rgba(col, .95)); g.addColorStop(1, 'rgba(255,255,255,.9)');
+    const n = Math.max(24, Math.round(d / 3)), amp = 4.5 * (1 - Math.min(.85, tense));
+    const path = () => { ctx.beginPath();
+      for(let i = 0; i <= n; i++){ const u = i / n, w = Math.sin(u * d / 7 - t * 7 + ph) * amp * Math.sin(u * 3.1416);
+        const px = ax + dx * u + nx * w, py = ay + dy * u + ny * w; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } };
+    ctx.save(); ctx.lineCap = 'round'; ctx.globalCompositeOperation = 'lighter';
+    // 두꺼운 빛 + 가는 심
+    ctx.strokeStyle = g; ctx.globalAlpha = .22 + tense * .25; ctx.lineWidth = 12 + tense * 6; path(); ctx.stroke();
+    ctx.globalAlpha = .55 + tense * .3; ctx.lineWidth = 3.2 + tense * 2; path(); ctx.stroke();
+    ctx.globalAlpha = .9; ctx.lineWidth = 1.1; ctx.strokeStyle = 'rgba(255,255,255,.9)'; path(); ctx.stroke();
+    // 끈을 따라 흐르는 빛 알갱이
+    for(let k = 0; k < 2; k++){ const u = ((t * .6 + k * .5 + ph * .1) % 1), px = ax + dx * u, py = ay + dy * u;
+      const s = ctx.createRadialGradient(px, py, 0, px, py, 7); s.addColorStop(0, 'rgba(255,255,255,.9)'); s.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = Math.sin(u * 3.1416) * .8; ctx.fillStyle = s; ctx.beginPath(); ctx.arc(px, py, 7, 0, 6.2832); ctx.fill(); }
+    ctx.restore();
+  }
+  let lastShift = -1, flights = [];
+  rxNucDraw = function(ctx, w, h, dt, st){
+    if(st < 2) return _old.apply(this, arguments);
+    const N = RX_NUC, cx = w / 2, cy = h / 2, M = Math.min(w, h);
+    const font = (px, wt) => `${wt || 500} ${px}px PTSym, Orbit, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const S = M * .36, R = S, isP = N.kind === 'p', base = isP ? '#ff8787' : '#b6bfd4';
+    // ── 주머니: 겉 빛 + 안쪽 일렁이는 장 ──
+    ctx.save();
+    const halo = ctx.createRadialGradient(cx, cy, R * .55, cx, cy, R * 1.35);
+    halo.addColorStop(0, rgba(base, .12)); halo.addColorStop(1, rgba(base, 0));
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx, cy, R * 1.35, 0, 6.2832); ctx.fill();
+    const bag = ctx.createRadialGradient(cx - R * .25, cy - R * .3, R * .1, cx, cy, R);
+    bag.addColorStop(0, rgba(base, .2)); bag.addColorStop(.7, rgba(base, .1)); bag.addColorStop(1, rgba(base, .02));
+    ctx.fillStyle = bag; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.clip();
+    // 안쪽 장: 천천히 도는 색 얼룩
+    if(!low()){
+      ctx.globalCompositeOperation = 'lighter';
+      for(let k = 0; k < 3; k++){
+        const a = N.t * (.25 + k * .07) + k * 2.1, px = cx + Math.cos(a) * R * .35, py = cy + Math.sin(a * 1.3) * R * .3;
+        const f = ctx.createRadialGradient(px, py, 0, px, py, R * .7); f.addColorStop(0, rgba(RX_NUC_COL[k], .1)); f.addColorStop(1, rgba(RX_NUC_COL[k], 0));
+        ctx.fillStyle = f; ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.restore();
+    // 가장자리: 숨 쉬는 얇은 고리
+    ctx.save(); ctx.strokeStyle = rgba(base, .35 + Math.sin(N.t * 2) * .1); ctx.lineWidth = 1.4;
+    ctx.setLineDash([2, 6]); ctx.lineDashOffset = -N.t * 10; ctx.beginPath(); ctx.arc(cx, cy, R * .97, 0, 6.2832); ctx.stroke(); ctx.restore();
+    // ── 쿼크 움직임 (원래 로직 그대로) ──
+    const shift = Math.floor(N.t / 1.4);
+    N.q.forEach(q => {
+      if(!(N.drag && N.drag.q === q)){
+        const tx = q.hx + Math.cos(N.t * 1.7 + q.ph) * .09, ty = q.hy + Math.sin(N.t * 2.1 + q.ph * 1.3) * .09;
+        q.x += (tx - q.x) * Math.min(1, dt * 7); q.y += (ty - q.y) * Math.min(1, dt * 7);
+      }
+      if(q.flash) q.flash = Math.max(0, q.flash - dt * 2);
+    });
+    // ── 바다 쿼크 ──
+    if(N.sea){
+      for(let i = 0; i < 16; i++){
+        const life = (N.t * .9 + i * .37) % 1, rnd = rxNucRand(i * 7919 + Math.floor(N.t * .9 + i * .37) * 104729);
+        const r = Math.sqrt(rnd()) * R * .78, a = rnd() * 6.2832, px = cx + Math.cos(a) * r, py = cy + Math.sin(a) * r;
+        const al = Math.sin(life * 3.1416) * .75, sep = 5 + life * 9, da = rnd() * 6.2832, c = RX_NUC_COL[Math.floor(rnd() * 3)];
+        bead(ctx, px + Math.cos(da) * sep, py + Math.sin(da) * sep, 4.5, c, al);
+        ctx.save(); ctx.globalAlpha = al; ctx.strokeStyle = c; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(px - Math.cos(da) * sep, py - Math.sin(da) * sep, 4.2, 0, 6.2832); ctx.stroke(); ctx.restore();
+      }
+    }
+    const scr = N.q.map(q => [cx + q.x * S, cy + q.y * S]);
+    const cols = N.q.map(q => N.real ? '#eef1f5' : RX_NUC_COL[(q.c + shift) % 3]);
+    // ── Y자 플럭스 튜브: 가운데 점(세 쿼크의 무게중심) ──
+    const jx = (scr[0][0] + scr[1][0] + scr[2][0]) / 3, jy = (scr[0][1] + scr[1][1] + scr[2][1]) / 3;
+    N.q.forEach((q, i) => {
+      const far = Math.hypot(q.x - q.hx, q.y - q.hy), tense = Math.min(1, far / 1.5);
+      tube(ctx, scr[i][0], scr[i][1], jx, jy, cols[i], N.t, tense, i * 2.1);
+    });
+    // 가운데 이음매
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const jg = ctx.createRadialGradient(jx, jy, 0, jx, jy, 16); jg.addColorStop(0, 'rgba(255,255,255,.95)'); jg.addColorStop(.4, 'rgba(255,255,255,.35)'); jg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = jg; ctx.beginPath(); ctx.arc(jx, jy, 16 + Math.sin(N.t * 4) * 2, 0, 6.2832); ctx.fill(); ctx.restore();
+    // ── 색이 바뀔 때: 글루온 빛 알갱이가 한 쿼크에서 다음 쿼크로 ──
+    if(!N.real && shift !== lastShift){ if(lastShift >= 0) for(let i = 0; i < 3; i++) flights.push({ a: i, b: (i + 1) % 3, t: 0, c: cols[i] }); lastShift = shift; }
+    flights = flights.filter(f => f.t < 1);
+    flights.forEach(f => {
+      f.t += dt * 1.8; const u = f.t, e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      const [ax, ay] = scr[f.a], [bx, by] = scr[f.b];
+      const mx = (ax + bx) / 2 + (jx - (ax + bx) / 2) * .6, my = (ay + by) / 2 + (jy - (ay + by) / 2) * .6;   // 가운데 쪽으로 휘어서
+      const px = (1 - e) * (1 - e) * ax + 2 * (1 - e) * e * mx + e * e * bx, py = (1 - e) * (1 - e) * ay + 2 * (1 - e) * e * my + e * e * by;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.sin(u * 3.1416);
+      const s = ctx.createRadialGradient(px, py, 0, px, py, 10); s.addColorStop(0, '#fff'); s.addColorStop(.35, rgba(f.c, .9)); s.addColorStop(1, rgba(f.c, 0));
+      ctx.fillStyle = s; ctx.beginPath(); ctx.arc(px, py, 10, 0, 6.2832); ctx.fill(); ctx.restore();
+    });
+    // ── 쿼크 ──
+    N.q.forEach((q, i) => {
+      const [x, y] = scr[i], r = 21, col = cols[i];
+      if(q.flash){ ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,255,255,${q.flash * .5})`; ctx.beginPath(); ctx.arc(x, y, r + 24 * (1 - q.flash), 0, 6.2832); ctx.fill(); ctx.restore(); }
+      bead(ctx, x, y, r, col);
+      if(N.real){
+        ctx.save();
+        for(let k = 0; k < 3; k++){ const a0 = N.t * 9 + i * 2 + k * 2.0944; ctx.strokeStyle = RX_NUC_COL[k]; ctx.globalAlpha = .85; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.arc(x, y, r + 5, a0, a0 + 1.5); ctx.stroke(); }
+        ctx.restore();
+      }
+      ctx.fillStyle = '#0b0d1e'; ctx.font = font(19, 700); ctx.fillText(q.f, x, y + 1);
+      // 전하 배지
+      const lab = q.f === 'u' ? '+⅔' : '−⅓', bw = 30, by = y + r + 13;
+      ctx.fillStyle = 'rgba(18,20,46,.85)'; ctx.strokeStyle = rgba(col, .6); ctx.lineWidth = 1;
+      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x - bw / 2, by - 9, bw, 18, 9); else ctx.rect(x - bw / 2, by - 9, bw, 18); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#eef0ff'; ctx.font = font(11.5, 600); ctx.fillText(lab, x, by + 1);
+    });
+    // ── 중간자 (원래 로직, 구슬만 새로) ──
+    N.mesons = N.mesons.filter(m => m.t < 1.6);
+    N.mesons.forEach(m => {
+      m.t += dt; m.x += m.vx * dt; m.y += m.vy * dt;
+      const a = Math.max(0, 1 - m.t / 1.6), x = cx + m.x * S, y = cy + m.y * S, col = RX_NUC_COL[m.c];
+      tube(ctx, x - 9, y, x + 11, y, col, N.t, .6, 0);
+      bead(ctx, x - 9, y, 12, col, a);
+      ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x + 11, y, 11, 0, 6.2832); ctx.stroke();
+      ctx.fillStyle = '#0b0d11'; ctx.font = font(12, 600); ctx.fillText(m.f, x - 9, y + 1);
+      ctx.fillStyle = '#e8ecf3'; ctx.fillText(m.f, x + 11, y + 1);
+      const tw = ctx.measureText(m.f).width; ctx.strokeStyle = '#e8ecf3'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(x + 11 - tw / 2 - .5, y - 7.5); ctx.lineTo(x + 11 + tw / 2 + .5, y - 7.5); ctx.stroke(); ctx.restore();
+    });
+  };
 })();
 </script>
 <style>
