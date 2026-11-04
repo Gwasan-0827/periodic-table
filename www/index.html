@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
            '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
            'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
            '실패하거나 개수가 틀리면 결과 창에 "이렇게 고쳐 봐요"가 떠요. H 하나 빼기처럼 고칠 방법을 보여 주고, 누르면 그대로 고쳐서 다시 섞어요. 도감 줄엔 진행 막대도 생겼어요',
@@ -6254,6 +6255,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'Collect all 550 entries and…? (find out yourself)',
            '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
            'The desktop tray buttons now match too, with icons on Random and Clear',
            'Fail or get the counts wrong and the result card now suggests small fixes, like removing one H. Tap one to fix the tray and mix again. The codex line also gets a progress bar',
@@ -43011,6 +43013,140 @@ void main(){
       renderChips();
     }catch(err){}
   }, true);
+})();
+</script>
+<style>
+  /* ═══ 도감 550 / 550 이스터에그 (4.2.5+): 찾은 물질 전부가 별처럼 모여서 앱 로고가 된다 ═══ */
+  #dxAll{position:fixed;inset:0;z-index:2147482900;background:radial-gradient(circle at 50% 50%,rgba(26,22,64,.92),rgba(3,4,12,.97));opacity:0;transition:opacity .8s}
+  #dxAll.on{opacity:1}
+  #dxAll canvas{position:absolute;inset:0;width:100%;height:100%}
+  #dxAll .fin{position:absolute;left:50%;top:50%;width:min(380px,88vw);transform:translate(-50%,-44%) scale(.9);opacity:0;pointer-events:none;text-align:center;color:#f4f1ff;
+    transition:opacity .7s,transform .9s cubic-bezier(.2,1.3,.3,1)}
+  #dxAll.end .fin{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}
+  #dxAll .logo{width:132px;height:132px;margin:0 auto 14px;filter:drop-shadow(0 0 24px rgba(255,209,102,.7));animation:dxFloat 3.6s ease-in-out infinite}
+  @keyframes dxFloat{50%{transform:translateY(-6px) scale(1.03);filter:drop-shadow(0 0 34px rgba(255,209,102,.9))}}
+  #dxAll .big{font-size:42px;font-weight:900;letter-spacing:.02em;line-height:1;background:linear-gradient(90deg,#fff3c4,#ffd166,#ffb4e1,#c9a8ff,#fff3c4);background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:dxSh 4s linear infinite}
+  @keyframes dxSh{to{background-position:300% 0}}
+  #dxAll h3{margin:8px 0 4px;font-size:20px;font-weight:900}
+  #dxAll p{margin:0 0 12px;font-size:13px;line-height:1.6;color:#cfd0f0}
+  #dxAll .ril{display:flex;gap:10px;align-items:flex-end;text-align:left;margin:0 0 14px}
+  #dxAll .ril img{width:62px;height:auto;flex:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
+  #dxAll .ril div{flex:1;padding:9px 11px;border-radius:14px 14px 14px 4px;font-size:12.5px;line-height:1.55;background:rgba(255,255,255,.07);border:1px solid rgba(255,209,102,.3)}
+  #dxAll .ril b{display:block;font-size:10.5px;color:#9ee7ff;margin-bottom:2px}
+  #dxAll .gift{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;color:#2a1d00;background:linear-gradient(90deg,#ffe08a,#ffc24a)}
+  #dxAll .bt{display:flex;gap:8px}
+  #dxAll .bt button{flex:1;padding:12px;border-radius:13px;font:inherit;font-size:13.5px;font-weight:900;cursor:pointer;border:1px solid rgba(255,209,102,.45);background:rgba(255,255,255,.06);color:#ffe9b0}
+  #dxAll .bt button.go{border:0;color:#2a1d00;background:linear-gradient(135deg,#ffe08a,#ffb347)}
+  #dxAll .skip{position:absolute;right:14px;top:calc(12px + env(safe-area-inset-top));padding:6px 12px;border-radius:999px;font:inherit;font-size:12px;color:#aeb0d8;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer}
+  #dxAll.end .skip{display:none}
+  /* 상: 금빛 제목 */
+  html.pt-gold body:not(.w95) header h1{background-image:linear-gradient(100deg,#fff6d6 0%,#ffd166 32%,#ffb4e1 50%,#fff6d6 72%,#ffd166 100%)!important}
+  html.pt-gold #hdLogo{filter:drop-shadow(0 0 9px rgba(255,209,102,.7))}
+  html.pt-gold #hdLogo path{stroke:#ffd166}
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  const LS = 'pt_dexall';
+  try{ if(rxLS.get(LS, 0)) document.documentElement.classList.add('pt-gold'); }catch(e){}
+  const total = () => { try{ return allEntries().length; }catch(e){ return 550; } };
+  function show(){
+    if(document.getElementById('dxAll')) return;
+    const box = document.createElement('div'); box.id = 'dxAll';
+    const ril = (typeof rielOn !== 'function' || rielOn()) && window.RIEL_SRC ? RIEL_SRC.stand : '';
+    const N = total();
+    box.innerHTML = `<canvas></canvas><button type="button" class="skip">${P('건너뛰기', 'Skip')}</button>
+      <div class="fin">
+        <svg class="logo" viewBox="0 0 64 64"><defs><linearGradient id="dxG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#ffd166"/><stop offset="1" stop-color="#ffb4e1"/></linearGradient></defs>
+          <circle cx="32" cy="32" r="29" fill="none" stroke="url(#dxG)" stroke-width="1" opacity=".6"/>
+          <path d="M32 9 L55 32 L32 55 L9 32Z" fill="#1d1640" stroke="url(#dxG)" stroke-width="2.4" stroke-linejoin="round"/>
+          <text x="32" y="36.5" text-anchor="middle" font-size="15" font-weight="900" fill="#fff6d6">Pt</text>
+          <text x="32" y="24" text-anchor="middle" font-size="6" font-weight="800" fill="#ffd166">78</text></svg>
+        <div class="big">${N} / ${N}</div>
+        <h3>${P('도감 완성', 'Codex complete')}</h3>
+        <p>${P(`${N}가지 물질을 전부 직접 섞어서 찾았어요.<br>주기율표를 끝까지 파고든 사람만 보는 화면이에요.`, `You mixed and found all ${N} substances yourself.<br>Only people who dug all the way through see this.`)}</p>
+        ${ril ? `<div class="ril"><img alt="" src="${ril}"><div><b>${P('아스리엘', 'Asriel')}</b>${P('진짜 다 찾았네요…? 저도 못 해 본 건데. 앞으로 이 표는 당신 거예요.', 'You actually found them all…? Even I never managed that. This table is yours now.')}</div></div>` : ''}
+        <div class="gift">✦ ${P('선물: 맨 위 제목이 금빛이 됐어요', 'Gift: the title is gold now')}</div>
+        <div class="bt"><button type="button" class="again">${P('다시 보기', 'Replay')}</button><button type="button" class="go">${P('고마워요', 'Thanks')}</button></div>
+      </div>`;
+    document.body.appendChild(box);
+    requestAnimationFrame(() => box.classList.add('on'));
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    const cv = box.querySelector('canvas'), cx = cv.getContext('2d');
+    const low = !!window.RX_LOWPOW;
+    let W, H, dpr, raf = 0, t0 = performance.now(), ended = false;
+    const size = () => { dpr = Math.min(low ? 1 : 2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    size(); addEventListener('resize', size);
+    // 찾은 물질마다 별 하나 (화학식 라벨은 일부만)
+    let list = []; try{ list = allEntries(); }catch(e){}
+    const COL = ['#ffd166', '#ffb4e1', '#c9a8ff', '#9ee7ff', '#8f9bff', '#9ff0b0'];
+    const S = list.map((x, i) => {
+      const a = Math.random() * Math.PI * 2, r = Math.max(innerWidth, innerHeight) * (0.6 + Math.random() * 0.5);
+      return { a0: a, r0: r, f: i % 9 === 0 ? String(x.formula || '').slice(0, 8) : '', c: COL[i % COL.length], k: i / Math.max(1, list.length - 1), z: 0.6 + Math.random() * 0.8 };
+    });
+    const ease = t => t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3);
+    // 마름모(45도 돌린 정사각형) 둘레 위의 자리
+    const diamond = (k, R) => { const q = (k * 4) % 4, i = Math.floor(q), f = q - i; const V = [[0, -R], [R, 0], [0, R], [-R, 0]]; const A = V[i], B = V[(i + 1) % 4]; return [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f]; };
+    function frame(now){
+      raf = requestAnimationFrame(frame);
+      const t = (now - t0) / 1000;
+      cx.clearRect(0, 0, W, H);
+      const ox = W / 2, oy = H / 2, R = Math.min(W, H) * 0.26;
+      cx.globalCompositeOperation = 'lighter';
+      const p1 = ease((t - 0.2) / 2.4), p2 = ease((t - 2.8) / 1.6), boom = t > 4.6 ? ease((t - 4.6) / 1.2) : 0;
+      S.forEach((s, i) => {
+        // 1) 멀리서 소용돌이치며 원으로 → 2) 마름모 둘레로 → 3) 터지면서 퍼짐
+        const sp = s.a0 + t * 0.6 * s.z;
+        const ringA = s.k * Math.PI * 2 + t * 0.5;
+        const rr = R * (1.05 + (s.z - 1) * 0.25);
+        let x = Math.cos(sp) * s.r0 * (1 - p1) + Math.cos(ringA) * rr * p1;
+        let y = Math.sin(sp) * s.r0 * (1 - p1) + Math.sin(ringA) * rr * p1;
+        if(p2 > 0){ const [dx, dy] = diamond(s.k, R); x = x * (1 - p2) + dx * p2; y = y * (1 - p2) + dy * p2; }
+        if(boom > 0){ const d = Math.hypot(x, y) || 1; x += x / d * boom * R * 1.6 * s.z; y += y / d * boom * R * 1.6 * s.z; }
+        const al = (0.3 + 0.5 * Math.min(1, t / 0.8)) * (1 - boom * 0.85) * (1 - 0.45 * p1 * (1 - p2));
+        cx.globalAlpha = al; cx.fillStyle = s.c;
+        cx.beginPath(); cx.arc(ox + x, oy + y, 1.1 + s.z * 1.1, 0, Math.PI * 2); cx.fill();
+        if(s.f && p2 < 0.9 && !low){ cx.globalAlpha = al * 0.55 * (1 - p2); cx.font = '600 10px system-ui,sans-serif'; cx.fillText(s.f, ox + x + 4, oy + y - 4); }
+      });
+      // 가운데 섬광
+      if(t > 4.3 && t < 6){ const f = Math.sin(Math.min(1, (t - 4.3) / 1.7) * Math.PI); cx.globalAlpha = f * 0.9; const g = cx.createRadialGradient(ox, oy, 0, ox, oy, R * 2.2); g.addColorStop(0, '#fff6d6'); g.addColorStop(0.3, 'rgba(255,209,102,.5)'); g.addColorStop(1, 'rgba(255,209,102,0)'); cx.fillStyle = g; cx.fillRect(0, 0, W, H); }
+      cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if(t > 4.9 && !ended){ ended = true; box.classList.add('end'); try{ rxConfetti(); }catch(e){} try{ SFX.gem && SFX.gem(); }catch(e){} }
+      if(t > 9){ cancelAnimationFrame(raf); raf = 0; cx.clearRect(0, 0, W, H); }
+    }
+    raf = requestAnimationFrame(frame);
+    const close = () => { cancelAnimationFrame(raf); removeEventListener('resize', size); box.classList.remove('on'); setTimeout(() => box.remove(), 800); };
+    box.querySelector('.skip').addEventListener('click', () => { t0 = performance.now() - 4600; });
+    box.querySelector('.go').addEventListener('click', close);
+    box.querySelector('.again').addEventListener('click', () => { box.remove(); cancelAnimationFrame(raf); setTimeout(show, 50); });
+    rxLS.set(LS, 1); document.documentElement.classList.add('pt-gold');
+  }
+  window.rxDexAllShow = show;
+  // 마지막 하나를 찾으면: 결과 창이 닫힌 뒤에 보여 준다
+  let waiting = false;
+  function check(){
+    try{
+      if(waiting || rxLS.get(LS, 0)) return;
+      if(codexGot() < total()) return;
+      waiting = true;
+      const iv = setInterval(() => {
+        const on = id => { const e = document.getElementById(id); return e && e.classList.contains('on'); };
+        if(on('modal') || on('rxPanel') || on('dex') || document.getElementById('rxTut')) return;
+        clearInterval(iv); setTimeout(show, 600);
+      }, 500);
+    }catch(e){}
+  }
+  try{ const _sf = saveFound; saveFound = function(){ const r = _sf.apply(this, arguments); setTimeout(check, 0); return r; }; }catch(e){}
+  setTimeout(check, 3000);
+  // 다 모은 사람은 로고를 빠르게 다섯 번 누르면 다시 볼 수 있다
+  let taps = [];
+  document.addEventListener('click', e => {
+    if(!e.target.closest || !e.target.closest('#hdLogo')) return;
+    if(!rxLS.get(LS, 0)) return;
+    const now = Date.now(); taps = taps.filter(x => now - x < 1500); taps.push(now);
+    if(taps.length >= 5){ taps = []; show(); }
+  });
 })();
 </script>
 <style>
