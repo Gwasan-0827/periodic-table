@@ -6214,6 +6214,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '결과 창 뒤 물결을 새로 만들었어요. 원근이 들어간 격자 바다가 만든 물질 색으로 물들고, 창이 열릴 때마다 가운데서 물결이 한 번 퍼져요. 폭발하면 크게 출렁여요',
            '폰에서 원자 모형 도구 버튼이 화면 밖으로 잘리던 걸 위쪽 한 줄로 옮기고, 조합 바를 두 줄로 줄였어요',
            '앱 아이콘이 바뀌었어요. 시작 화면을 닮은 빛나는 마름모와 Pt예요',
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
@@ -6240,6 +6241,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The waves behind the result card are new: a perspective grid sea tinted with the colour of what you made, with a ripple spreading out each time the card opens, and a big swell on explosions',
            'On phones, the atom model tool buttons no longer get cut off at the edge, and the mix tray is down to two rows',
            'New app icon: a glowing diamond and Pt, like the start screen',
            'The credits now have a team name: K ɑ ɪ ɴ i x // X',
@@ -41441,6 +41443,110 @@ void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.
     }catch(e){ console.warn('mo2', e); }
     return r;
   };
+})();
+</script>
+<style>
+  /* ═══ 결과 창 뒤 웨이브 리워크: 원근 격자 바다 (WebGL) — 결과 색으로 물들고, 열릴 때 물결이 퍼진다 ═══ */
+  #rxWaves2{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity .6s ease}
+  #modal.on #rxWaves2.on{opacity:1}
+  #modal.on #rxWaves.v2off{display:none!important}
+</style>
+<script>
+(function(){
+  if(typeof rxwStart !== 'function') return;
+  const modalEl = document.getElementById('modal'); if(!modalEl) return;
+  const VS = `attribute vec2 g;uniform float T;uniform vec2 R;uniform vec3 C1;uniform vec3 C2;uniform float K;uniform float RT;uniform vec2 MP;uniform float NZ;
+varying vec3 col;varying float al;
+float H(vec2 p){ // 바닷물결: 여러 겹의 사인 + 결과 창에서 퍼지는 물결
+  float h=sin(p.x*.9+T*.7)*.22+sin(p.y*1.3-T*.9+p.x*.4)*.18+sin((p.x+p.y)*2.1+T*1.6)*.06+sin(p.x*3.4-p.y*2.2-T*2.)*.035;
+  float d=length(p-vec2(0.,2.2)); float ring=RT*3.2; h+=K*exp(-pow((d-ring)*1.6,2.))*.75*exp(-RT*.5);
+  return h; }
+void main(){
+  vec2 p=vec2(g.x*7.,g.y*9.+.6);                  // 바닥 격자 (x 좌우, y 앞뒤)
+  float h=H(p);
+  vec3 w=vec3(p.x+MP.x*.6,h-1.25+MP.y*.15,-p.y);  // 카메라 앞쪽이 -z
+  float z=-w.z+1.2; float f=1.25/max(z,.25);
+  vec2 s=vec2(w.x*f*R.y/R.x,(w.y+.05)*f*1.9-.12);
+  gl_Position=vec4(s,0.,1.);
+  gl_PointSize=1.;
+  float t=clamp(p.y/9.,0.,1.);
+  col=mix(C1,C2,t)*(.75+h*.9);
+  al=(1.-t)*(1.-t)*.9*smoothstep(1.,.75,abs(g.x))*(.55+.45*smoothstep(-.2,.35,h))+exp(-pow((length(p-vec2(0.,2.2))-RT*3.2)*1.6,2.))*K*.5;
+}`;
+  const FS = `precision mediump float;varying vec3 col;varying float al;void main(){gl_FragColor=vec4(col*al,al);}`;
+  let cv, gl, pr, buf, U = {}, NV = 0, raf = 0, t0 = 0, rip = -9, kick = 0, col1 = [0.6, 0.66, 1], col2 = [0.35, 0.3, 0.85], failed = false, mx = 0, my = 0, cx = 0, cy = 0, last = 0;
+  function init(){
+    if(cv || failed) return !!cv;
+    try{
+      cv = document.createElement('canvas'); cv.id = 'rxWaves2'; cv.setAttribute('aria-hidden', 'true');
+      const old = document.getElementById('rxWaves');
+      if(old && old.parentNode) old.parentNode.insertBefore(cv, old); else modalEl.prepend(cv);
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: true }); if(!gl) throw 0;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw gl.getProgramInfoLog(pr);
+      // 격자 선: 가로줄(앞뒤로 여러 줄) + 세로줄 → 선 조각으로
+      const lowp = !!window.RX_LOWPOW, NX = lowp ? 60 : 110, NY = lowp ? 26 : 44, CX = lowp ? 18 : 30;
+      const v = [];
+      for(let j = 0; j < NY; j++){ const y = j / (NY - 1); for(let i = 0; i < NX; i++){ const a = i / NX * 2 - 1, b = (i + 1) / NX * 2 - 1; v.push(a, y, b, y); } }
+      for(let i = 0; i <= CX; i++){ const x = i / CX * 2 - 1; for(let j = 0; j < NY * 2; j++){ const a = j / (NY * 2), b = (j + 1) / (NY * 2); v.push(x, a, x, b); } }
+      NV = v.length / 2;
+      buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW);
+      ['T', 'R', 'C1', 'C2', 'K', 'RT', 'MP'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; stop(); });
+      return true;
+    }catch(e){ failed = true; if(cv) cv.remove(); cv = null; return false; }
+  }
+  const hex = c => { c = String(c || '').trim(); if(c.startsWith('rgb')){ const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(v => v / 255) : null; }
+    if(c[0] !== '#') return null; if(c.length === 4) c = '#' + [...c.slice(1)].map(x => x + x).join(''); const n = parseInt(c.slice(1, 7), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  function tint(){
+    try{ const st = document.getElementById('mStage'); const g = st && getComputedStyle(st).getPropertyValue('--glow');
+      const c = hex(g) || [.6, .66, 1];
+      // 결과 색과 페리윙클을 섞어서 너무 튀지 않게
+      col1 = [c[0] * .7 + .25, c[1] * .7 + .28, c[2] * .7 + .32];
+      col2 = [.33, .3, .82];
+      if(document.getElementById('card') && document.getElementById('card').classList.contains('is-fail')){ col1 = [1, .45, .5]; col2 = [.5, .15, .3]; }
+    }catch(e){}
+  }
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!modalEl.classList.contains('on') || document.hidden){ stop(); return; }
+    if(window.RX_LOWPOW && now - last < 45) return;   // 폰: 초당 22번 정도
+    last = now;
+    const dpr = Math.min(window.RX_LOWPOW ? 1 : 1.5, devicePixelRatio || 1);
+    const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr); if(!W || !H) return;
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    cx += (mx - cx) * .04; cy += (my - cy) * .04;
+    kick *= .97;
+    const t = (now - t0) / 1000;
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(pr); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    const loc = gl.getAttribLocation(pr, 'g'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(U.T, RX_REDUCED ? 0 : t); gl.uniform2f(U.R, W, H);
+    gl.uniform3f(U.C1, ...col1); gl.uniform3f(U.C2, ...col2);
+    const rt = t - rip; gl.uniform1f(U.RT, rt); gl.uniform1f(U.K, (rt >= 0 && rt < 6 ? 1 : 0) * (1 + kick * 2.5));
+    gl.uniform2f(U.MP, cx, cy);
+    gl.drawArrays(gl.LINES, 0, NV);
+  }
+  function start(){
+    if(RX_FX === 'lo' || !init()) return false;
+    tint();
+    const old = document.getElementById('rxWaves'); if(old) old.classList.add('v2off');
+    cv.classList.add('on');
+    if(!raf){ t0 = performance.now(); last = 0; raf = requestAnimationFrame(frame); }
+    rip = (performance.now() - t0) / 1000;   // 열릴 때마다 물결 한 번
+    return true;
+  }
+  function stop(){ cancelAnimationFrame(raf); raf = 0; if(cv) cv.classList.remove('on'); }
+  const _ws = rxwStart;
+  rxwStart = function(){ if(start()) return; return _ws.apply(this, arguments); };
+  // 결과가 바뀔 때(같은 창에서 다시 보기 등)도 색과 물결을 새로
+  const _rr = rxRender;
+  rxRender = function(){ const r = _rr.apply(this, arguments); try{ if(modalEl.classList.contains('on')) setTimeout(() => { if(start()){} }, 60); }catch(e){} return r; };
+  // 폭발 충격: 기존 RXW.kick 을 따라 더 크게 출렁
+  try{ Object.defineProperty(RXW, 'kick', { configurable: true, get(){ return this._k || 0; }, set(v){ this._k = v; if(v > kick) kick = Math.min(3, v); } }); }catch(e){}
+  addEventListener('pointermove', e => { if(!raf) return; mx = (e.clientX / innerWidth) * 2 - 1; my = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
 })();
 </script>
 <style>
