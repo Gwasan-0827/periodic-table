@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '핵 속으로 창도 새로 꾸몄어요. 원자 → 원자핵 → 양성자·중성자 → 쿼크 여정이 번호 단계로 보이고, 지나온 단계엔 ✓가 붙어요',
            '원자 오비탈 크게 보기 창을 새로 꾸몄어요. 원소 타일, 전자·껍질·바깥 전자 칸, 페리윙클 버튼이 생겼어요',
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
@@ -6259,6 +6260,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'Into the nucleus is redesigned too: the atom → nucleus → nucleons → quarks journey shows as numbered steps with checkmarks',
            'The big atomic orbital view is redesigned with an element tile, electron and shell stats and periwinkle buttons',
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
@@ -43395,6 +43397,77 @@ void main(){
   try{ new MutationObserver(tick).observe(document.body, { childList: true, subtree: false }); }catch(e){}
   document.addEventListener('click', () => setTimeout(tick, 60), true);
   setInterval(tick, 1500);
+})();
+</script>
+<style>
+  /* ═══ 핵 속으로 리워크 (4.2.5+): 원소 타일 · 여정 단계 표시 · 배율 알약 · 스탯 칸 ═══ */
+  #nucBig .orb-stage{background:radial-gradient(60% 60% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 12%,#141734),#0a0b1c 80%)}
+  #nucBig .orb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;z-index:1;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%)}
+  #nucBig .nuc-mag{z-index:2;left:14px;top:12px;font-size:12.5px;font-weight:800;padding:5px 11px;border-radius:999px;color:#fff;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #nucBig .nuc-mag::before{content:"🔍";margin-right:5px;font-size:11px}
+  #nucBig .orb-hint{z-index:2;left:14px;bottom:14px;color:#8e95c4}
+  #nucBig .orb-side{padding:16px 18px 18px;gap:12px;border-left:1px solid rgba(150,160,255,.12)}
+  :is(#nucBig) .orb-head #nucSub{font-size:12px;color:#a6adda}
+  :is(#nucBig) .orb-head b#nucTitle{font-size:19px;font-weight:900}
+  /* 여정 단계: 번호 동그라미 + 이어진 선 */
+  #nucBig .nuc-steps{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px 0 2px}
+  #nucBig .nuc-steps > i{display:none}
+  #nucBig .nuc-steps::before{content:"";position:absolute;left:12%;right:12%;top:17px;height:2px;border-radius:2px;background:rgba(150,160,255,.18)}
+  #nucBig .nuc-steps button{position:relative;z-index:1;display:grid;justify-items:center;gap:5px;padding:0;border:0;background:none;color:#8f97c8;font-size:11px;font-weight:800;counter-increment:ns}
+  #nucBig .nuc-steps{counter-reset:ns}
+  #nucBig .nuc-steps button::before{content:counter(ns);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;
+    color:#a3a9d6;background:#16183a;border:2px solid rgba(150,160,255,.3);transition:all .25s}
+  #nucBig .nuc-steps button:not(:disabled):hover::before{border-color:#8f9bff;color:#fff}
+  #nucBig .nuc-steps button.on{color:#fff;background:none}
+  #nucBig .nuc-steps button.on::before{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 0 0 4px rgba(143,155,255,.18),0 4px 14px rgba(143,155,255,.5)}
+  #nucBig .nuc-steps button.done::before{content:"✓";color:#fff;background:rgba(143,155,255,.35);border-color:transparent}
+  #nucBig .nuc-steps button:disabled{opacity:.4}
+  /* 글 · 카드 */
+  #nucBig .nuc-lead{font-size:13.5px;line-height:1.7;color:#e3e6ff;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-lead b{font-weight:900;color:color-mix(in srgb,var(--cc,#8f9bff) 55%,#fff)}
+  #nucBig .nuc-row{gap:7px}
+  #nucBig .nuc-stat{padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-stat u{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  #nucBig .nuc-stat b{font-size:19px;font-weight:900;color:#f2f3ff}
+  #nucBig .nuc-card{padding:11px 13px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-card h4 i{box-shadow:0 0 8px currentColor}
+  #nucBig .nuc-card p{color:#aeb4dc}
+  #nucBig .nuc-bar{height:24px;border-radius:999px;border-color:rgba(150,160,255,.24);background:rgba(8,9,26,.45)}
+  #nucBig .nuc-bar i{background:linear-gradient(90deg,#ffd166,#ffb4e1)}
+  #nucBig .nuc-bar-key{color:#9097c8}
+  #nucBig .nuc-btn{padding:9px 14px;border-radius:12px;font-weight:750;color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);transition:all .2s}
+  #nucBig .nuc-btn:hover{background:rgba(143,155,255,.14);border-color:#8f9bff;color:#fff}
+  #nucBig .nuc-btn.on{background:rgba(158,231,255,.14);border-color:#9ee7ff;color:#fff}
+  #nucBig .nuc-btn.go{color:#fff;font-weight:900;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 6px 18px rgba(143,155,255,.4)}
+  #nucBig .nuc-btn.go:hover{filter:brightness(1.1)}
+  @media (max-width:700px){ #nucBig .orb-side{border-left:0;border-top:1px solid rgba(150,160,255,.12)} #nucBig .nuc-steps button{font-size:10px} }
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  function paint(){
+    const box = document.getElementById('nucBig'); if(!box || !box.classList.contains('on')) return;
+    const head = box.querySelector('.orb-head'), ttl = document.getElementById('nucTitle'), sub = document.getElementById('nucSub');
+    const e = byNum[selected]; if(!head || !ttl || !e) return;
+    let wrap = head.querySelector('.ob-ttl');
+    if(!wrap){
+      head.insertAdjacentHTML('afterbegin', '<span class="ob-tile"><i></i><b></b></span><span class="ob-ttl"><span class="k"></span></span>');
+      wrap = head.querySelector('.ob-ttl'); wrap.appendChild(ttl); if(sub) wrap.appendChild(sub);
+    }
+    let c = '#8f9bff'; try{ c = cssv(CAT[e.c].v) || c; }catch(err){}
+    const set = (el, v) => { v = String(v); if(el && el.textContent !== v) el.textContent = v; };
+    if(box.style.getPropertyValue('--cc') !== c) box.style.setProperty('--cc', c);
+    set(head.querySelector('.ob-tile i'), e.n); set(head.querySelector('.ob-tile b'), e.s);
+    set(head.querySelector('.ob-ttl .k'), P('INTO THE NUCLEUS // 핵 속으로', 'INTO THE NUCLEUS'));
+    // 지나온 단계에 ✓
+    const bs = [...box.querySelectorAll('.nuc-steps button')], on = bs.findIndex(b => b.classList.contains('on'));
+    bs.forEach((b, i) => b.classList.toggle('done', on >= 0 && i < on));
+  }
+  const nb = () => document.getElementById('nucBig');
+  let mo = null;
+  setInterval(() => { const b = nb(); if(b && !mo){ mo = new MutationObserver(() => requestAnimationFrame(paint)); mo.observe(b, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); paint(); } }, 800);
 })();
 </script>
 <style>
