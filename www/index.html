@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '보기 줄(표준 · 히트맵 · 온도 · 발견의 역사)을 헤더와 맞췄어요. 탭은 페리윙클로 빛나고, 분류 칩은 한 줄로 밀어 보게 바뀌었어요',
            '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 뒤로 그 원소 블록의 오비탈(s 공 · p 아령 · d 네잎 · f 여섯 잎) 모양 전자 구름이 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
            '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
            '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
@@ -6247,6 +6248,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The view bar (Standard, Heatmap, Temperature, Discovery) now matches the header: glowing periwinkle tabs and chips in a single swipeable row',
            'The element card is redesigned: a table-cell tile with an electron cloud behind it shaped like the orbital of its block (s sphere, p dumbbell, d clover, f six lobes), category and block chips, a quote box and stat tiles for group, period and state',
            'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
            'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
@@ -42361,6 +42363,89 @@ void main(){
   const info = document.getElementById('info');
   if(info) try{ new MutationObserver(() => { const h = info.querySelector('.ihero'); if(h && !h.classList.contains('ixc')) restyle(); }).observe(info, { childList: true }); }catch(e){}
   try{ if(typeof selected !== 'undefined' && selected) restyle(); }catch(e){}
+})();
+</script>
+<style>
+  /* ═══ 보기 줄 리워크 (4.2.5+): 헤더와 같은 유리 띠 · 페리윙클 탭 · 한 줄로 밀어 보는 칩 ═══ */
+  #modebar{position:relative;align-items:center;flex-wrap:nowrap;gap:14px;padding:9px 18px;
+    background:linear-gradient(180deg,rgba(20,22,46,.55),rgba(14,15,32,.35));border-bottom:1px solid rgba(150,160,255,.1)}
+  #mopt{flex:1 1 auto;min-width:0}
+  /* 탭 */
+  #mtabs{flex:none;padding:4px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  #mtabs .mbtn{border-radius:10px;padding:7px 13px;font-weight:700;color:#a3a9d6}
+  #mtabs .mbtn:hover{color:#eef0ff;background:rgba(143,155,255,.08)}
+  #mtabs .mbtn.on,#mtabs .mbtn.on:hover{color:#fff}
+  #mtabs .mbtn.on svg{filter:drop-shadow(0 0 4px rgba(255,255,255,.6))}
+  #mtabs .mind{top:4px;bottom:4px;border-radius:10px;background:linear-gradient(135deg,#8f9bff,#b18cff);
+    box-shadow:0 4px 14px rgba(143,155,255,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+
+  /* 칩 줄: 넘치면 옆으로 밀기 (끝이 살짝 흐려져서 더 있다는 걸 알려 줌) */
+  #mopt .mcats,#mopt .mchips{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;padding:3px 2px;scroll-behavior:smooth;overscroll-behavior-x:contain}
+  #mopt .mcats::-webkit-scrollbar,#mopt .mchips::-webkit-scrollbar{display:none}
+  #mopt .sc-r{-webkit-mask:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+  #mopt .sc-l{-webkit-mask:linear-gradient(90deg,transparent,#000 40px);mask:linear-gradient(90deg,transparent,#000 40px)}
+  #mopt .sc-l.sc-r{-webkit-mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+
+  /* 분류 칩 */
+  #mopt .mcat{flex:none;gap:7px;padding:6px 7px 6px 9px;border-radius:999px;font-size:12px;font-weight:700;color:#b6bbe0;
+    background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.16)}
+  #mopt .mcat i{width:10px;height:10px;border-radius:3px;box-shadow:0 0 6px color-mix(in srgb,var(--cc) 70%,transparent)}
+  #mopt .mcat b{opacity:1;font-size:10.5px;font-weight:800;min-width:18px;text-align:center;padding:2px 6px;border-radius:999px;color:#cfd3f5;background:rgba(255,255,255,.07)}
+  #mopt .mcat:hover{color:#eef0ff;border-color:color-mix(in srgb,var(--cc) 65%,transparent);background:color-mix(in srgb,var(--cc) 8%,transparent)}
+  #mopt .mcat.on{color:#fff;transform:translateY(-1px);border-color:var(--cc);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 34%,transparent),color-mix(in srgb,var(--cc) 14%,transparent));box-shadow:0 4px 14px color-mix(in srgb,var(--cc) 30%,transparent)}
+  #mopt .mcat.on b{color:#1b1640;background:color-mix(in srgb,var(--cc) 75%,#fff)}
+  #mopt .mcat.all{padding:6px 13px}
+  #mopt .mcat.all.on{border-color:#8f9bff;background:linear-gradient(135deg,rgba(143,155,255,.4),rgba(177,140,255,.22));box-shadow:0 4px 14px rgba(143,155,255,.3)}
+
+  /* 히트맵 항목 · 온도 프리셋 칩 */
+  #mopt .mchip{flex:none;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;color:#b6bbe0;background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.16);transition:all .2s}
+  #mopt .mchip:hover{color:#eef0ff;border-color:rgba(150,160,255,.45)}
+  #mopt .mchip.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.4)}
+  /* 히트맵 범례 */
+  #mopt .mlegend{gap:9px;margin-top:6px}
+  #mopt .mlegend .bar{height:8px;border-radius:999px;box-shadow:0 0 12px rgba(143,155,255,.25),inset 0 0 0 1px rgba(255,255,255,.08)}
+  #mopt .mlegend .lv{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.18)}
+
+  #mopt .mlegend .lu:empty{display:none}
+  /* 온도 */
+  #mopt .treadout b{font-weight:900;background:linear-gradient(90deg,#eef0ff,#c9a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #mopt .tt-chip{border-radius:999px;border-color:rgba(150,160,255,.16);background:rgba(255,255,255,.03)}
+
+  /* 발견의 역사 */
+  #mopt .hx-play{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;box-shadow:0 4px 16px rgba(143,155,255,.5),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s}
+  #mopt .hx-play:hover{transform:scale(1.07)}
+  #mopt .hx-year{background:linear-gradient(90deg,#eef0ff,#c9a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #mopt .hx-year small{-webkit-text-fill-color:#9ea6d6}
+  #mopt .hx-marks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #mopt .hx-marks::-webkit-scrollbar{display:none}
+  #mopt .hx-marks button{flex:none;border-radius:999px;border-color:rgba(150,160,255,.18);font-weight:700}
+  #mopt .hx-marks button:hover{color:#fff;border-color:#8f9bff;background:rgba(143,155,255,.12)}
+
+  @media (max-width:700px){
+    #modebar{flex-wrap:wrap;gap:8px;padding:8px 10px}
+    #mtabs{width:100%;box-sizing:border-box}
+    #mtabs .mbtn{padding:7px 8px}
+    #mopt{flex:1 1 100%}
+  }
+</style>
+<script>
+(function(){
+  const opt = document.getElementById('mopt'); if(!opt) return;
+  // 칩 줄이 넘치는지 보고 양 끝 흐림을 켠다 + 마우스 휠로 옆 스크롤
+  const SEL = '.mcats, .mchips, .hx-marks';
+  const upd = el => { const m = el.scrollWidth - el.clientWidth; el.classList.toggle('sc-l', m > 2 && el.scrollLeft > 2); el.classList.toggle('sc-r', m > 2 && el.scrollLeft < m - 2); };
+  const hook = () => opt.querySelectorAll(SEL).forEach(el => {
+    upd(el);
+    if(el._mbx) return; el._mbx = 1;
+    el.addEventListener('scroll', () => upd(el), { passive: true });
+    el.addEventListener('wheel', e => { if(Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth){ e.preventDefault(); el.scrollLeft += e.deltaY; } }, { passive: false });
+    // 켜진 칩이 안 보이는 데 있으면 보이게
+    const on = el.querySelector('.on'); if(on && on.offsetLeft + on.offsetWidth > el.clientWidth) el.scrollLeft = on.offsetLeft - 40;
+  });
+  try{ new MutationObserver(() => requestAnimationFrame(hook)).observe(opt, { childList: true, subtree: true }); }catch(e){}
+  addEventListener('resize', () => opt.querySelectorAll(SEL).forEach(upd));
+  hook(); setTimeout(hook, 500);
 })();
 </script>
 <style>
