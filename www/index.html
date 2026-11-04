@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
            '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
            'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
@@ -6255,6 +6256,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'Achievement badges without a drawing now use line icons instead of emoji',
            'Collect all 550 entries and…? (find out yourself)',
            '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
            'The desktop tray buttons now match too, with icons on Random and Clear',
@@ -24423,7 +24425,7 @@ function rxAchOpen(id){
     <button class="ac-nav ac-prev" aria-label="이전">‹</button><button class="ac-nav ac-next" aria-label="다음">›</button>
     <div class="ac-in">
       <div class="ac-top"><span class="ac-kind">${U.kind[kind]}</span><span class="ac-st">${on ? U.got : U.not}</span></div>
-      ${!hide && RX_ACH_IMG[a.id] ? `<div class="ac-ic drawn"><img alt="" src="${RX_ACH_IMG[a.id]}"></div>` : `<div class="ac-ic">${hide ? '🔒' : (RX_ACH_IC[a.id] || '🏆')}</div>`}
+      ${!hide && RX_ACH_IMG[a.id] ? `<div class="ac-ic drawn"><img alt="" src="${RX_ACH_IMG[a.id]}"></div>` : `<div class="ac-ic">${hide ? (window.RX_ACH_LOCK || '🔒') : (RX_ACH_IC[a.id] || '🏆')}</div>`}
       <h3>${hide ? '???' : a[L][0]}</h3>
       <p>${hide ? U.secret : a[L][1]}</p>
       ${bar}
@@ -40552,7 +40554,7 @@ void main(){
       c.classList.toggle('sec', !!a.secret);
       let ic;
       if(isOn && typeof RX_ACH_IMG !== 'undefined' && RX_ACH_IMG[a.id]) ic = `<img alt="" src="${RX_ACH_IMG[a.id]}">`;
-      else if(!isOn && a.secret) ic = '<span class="lk">🔒</span>';
+      else if(!isOn && a.secret) ic = `<span class="lk">${window.RX_ACH_LOCK || '🔒'}</span>`;
       else ic = `<span>${(typeof RX_ACH_IC !== 'undefined' && RX_ACH_IC[a.id]) || (a.bad ? '💢' : '⭐')}</span>`;
       c.insertAdjacentHTML('afterbegin', `<span class="kd">${a.secret ? P('숨은', 'SECRET') : a.bad ? P('실패', 'FAIL') : ''}</span>${isOn ? '<span class="ck">✓</span>' : ''}<div class="bdg${ic.startsWith('<img') ? ' drawn' : ''}">${ic}</div>`);
       if(!isOn && a.prog && !a.secret){ try{ const [x, n] = a.prog(); if(n > 0) c.insertAdjacentHTML('beforeend', `<div class="pg"><i style="width:${Math.min(100, x / n * 100).toFixed(1)}%"></i></div>`); }catch(e){} }
@@ -43147,6 +43149,98 @@ void main(){
     const now = Date.now(); taps = taps.filter(x => now - x < 1500); taps.push(now);
     if(taps.length >= 5){ taps = []; show(); }
   });
+})();
+</script>
+<style>
+  /* ═══ 업적 아이콘 (4.2.5+): 그림이 없는 업적은 이모지 대신 선 아이콘 ═══ */
+  svg.aic{width:1em;height:1em;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+  svg.aic .f{fill:currentColor;stroke:none}
+  svg.aic text{fill:currentColor;stroke:none;font-weight:900;font-family:inherit}
+  body:not(.w95) #achRow .achchip .bdg > span{display:grid;place-items:center;color:#c9d0ff;filter:drop-shadow(0 0 6px rgba(143,155,255,.45))}
+  body:not(.w95) #achRow .achchip .bdg > span svg.aic{width:30px;height:30px}
+  body:not(.w95) #achRow .achchip:not(.on) .bdg > span{color:#7f86b4;filter:none}
+  .ac-ic svg.aic{width:56px;height:56px;margin:auto;color:#d6dcff;filter:drop-shadow(0 0 10px rgba(143,155,255,.55))}
+  .ach-ic svg.aic{width:22px;height:22px;color:#fff}
+</style>
+<script>
+/* 24×24 선 아이콘. 그림(RX_ACH_IMG)이 있는 업적은 그림이 먼저 쓰인다 */
+(function(){
+  if(typeof RX_ACH_IC === 'undefined') return;
+  const S = b => `<svg class="aic" viewBox="0 0 24 24" aria-hidden="true">${b}</svg>`;
+  const I = {
+    first:   '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/><circle class="f" cx="10" cy="18" r="1"/><circle class="f" cx="14" cy="17" r=".8"/>',
+    d10:     '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/><path d="M8 10.5h5M10.5 8v5"/>',
+    d50:     '<circle cx="7.5" cy="13" r="3.5"/><circle cx="16.5" cy="13" r="3.5"/><path d="M11 13h2M4 13H2.5M20 13h1.5M6 6l-1.5 3M18 6l1.5 3"/>',
+    d100:    '<path d="M4 4.5h6a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4zM20 4.5h-6a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5H20z"/>',
+    gem:     '<path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9 4l3 16M15 4l-3 16"/>',
+    space:   '<circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="3.5" transform="rotate(-20 12 12)"/>',
+    boom:    '<path d="M12 2l2 5 5-2-2 5 5 2-5 2 2 5-5-2-2 5-2-5-5 2 2-5-5-2 5-2-2-5 5 2z"/>',
+    body:    '<path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 7.5 3c0 5.4-7.5 10-7.5 10z"/><path d="M7 12h3l1.5-3 2 6 1.5-3H17"/>',
+    f1:      '<rect x="3" y="5" width="18" height="14" rx="2"/><text x="12" y="15.2" font-size="7" text-anchor="middle">404</text>',
+    f50:     '<circle cx="12" cy="12" r="9"/><path d="M8 9.5l2 1M16 9.5l-2 1M8.5 16c1-1.2 2.2-1.8 3.5-1.8s2.5.6 3.5 1.8"/>',
+    f200:    '<path d="M12 3c4.5 0 8 3.3 8 7.5 0 3.3-2.4 4.3-2.4 6.8V20H6.4v-2.7C6.4 14.8 4 13.8 4 10.5 4 6.3 7.5 3 12 3z"/><path d="M9 11h.01M15 11h.01M9.5 15h5"/>',
+    fog:     '<circle cx="12" cy="12" r="2"/><path d="M12 4a8 8 0 0 1 6.9 4l-4.3 2.5M12 4a8 8 0 0 0-6.9 4l4.3 2.5M5.1 16a8 8 0 0 0 13.8 0l-4.3-2.5h-5.2z"/>',
+    ffull:   '<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/>',
+    fsame:   '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+    egg:     '<path d="M12 3c3.6 0 6.5 5.2 6.5 10a6.5 6.5 0 0 1-13 0C5.5 8.2 8.4 3 12 3z"/><path d="M9 12l1.5 1.5L12 11l1.5 2.5L15 12"/>',
+    egg0:    '<ellipse cx="12" cy="12" rx="6" ry="9"/><path d="M8 18L16 6"/>',
+    ghost:   '<path d="M5 20V11a7 7 0 0 1 14 0v9l-2.3-1.6L14.3 20 12 18.4 9.7 20l-2.4-1.6z"/><circle class="f" cx="9.5" cy="11" r="1.1"/><circle class="f" cx="14.5" cy="11" r="1.1"/>',
+    tease119:'<rect x="5" y="3" width="14" height="18" rx="1.5" stroke-dasharray="3 2.4"/><text x="12" y="15" font-size="7.5" text-anchor="middle">119</text>',
+    titin:   '<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6"/><path d="M6 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2"/><path d="M8.5 8h7M8.5 11.5h7M8.5 15h4"/>',
+    insulin: '<path d="M17 3l4 4M19 5l-9.5 9.5M14 6l4 4M7.5 12.5l4 4M9 15l-5 5M10.5 9.5l2 2M12.5 7.5l2 2"/>',
+    hemoglobin:'<path d="M12 3.5c3 4 6 7.2 6 10.5a6 6 0 0 1-12 0c0-3.3 3-6.5 6-10.5z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+    labPeek: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><circle class="f" cx="12" cy="12" r="1.2"/>',
+    labRip:  '<rect x="3" y="7" width="18" height="10" rx="5"/><path d="M8 10v4M6 12h4"/><circle class="f" cx="15.5" cy="11" r="1"/><circle class="f" cx="17.5" cy="13" r="1"/>',
+    rielCaught:'<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+    rielCursor:'<path d="M5 3l13 6.5-5.5 1.8-2 5.7z"/><path d="M13 13l5 5"/>',
+    rielNoU: '<circle cx="12" cy="12" r="9"/><circle class="f" cx="9" cy="10" r="1"/><circle class="f" cx="15" cy="10" r="1"/><path d="M8.5 14.5h7"/><path d="M11 14.5v2a1.5 1.5 0 0 0 3 0v-2"/>',
+    decaychain:'<rect x="2.5" y="8.5" width="8" height="7" rx="3.5"/><rect x="13.5" y="8.5" width="8" height="7" rx="3.5"/><path d="M8 12h8"/>',
+    relic:   '<path d="M8 3h8M9 3v3a6 6 0 0 0-3 5.2V19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7.8A6 6 0 0 0 15 6V3"/><path d="M7 13h10"/>',
+    defen:   '<rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M12 3v18M3 12h18"/><path d="M15 15l5 5" stroke-dasharray="2 2"/>',
+    micro118:'<circle cx="12" cy="12" r="9"/><path d="M8 9l2.5 2M10.5 9L8 11M16 9l-2.5 2M13.5 9l2.5 2"/><path d="M8 16c1.3 1.3 2.6 1.3 4 0s2.7-1.3 4 0"/>',
+    dhmo:    '<path d="M12 3c3 4 6 7.2 6 10.5a6 6 0 0 1-12 0C6 10.2 9 7 12 3z"/><path d="M12 10v3.5"/><circle class="f" cx="12" cy="16.2" r="1"/>',
+    spinner: '<circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="5" r="2.6"/><circle cx="6" cy="15.5" r="2.6"/><circle cx="18" cy="15.5" r="2.6"/><path d="M12 7.6v2.2M7.9 14.3l2.2-1.3M16.1 14.3l-2.2-1.3"/>',
+    leiden:  '<ellipse cx="12" cy="17" rx="7" ry="2.5"/><path d="M19 17c2 0 2.5-1 2.5-1"/><circle cx="12" cy="9" r="2.6"/><path d="M8 4.5c.5 1 .5 2 0 3M16 4.5c.5 1 .5 2 0 3M12 13v1.5" stroke-dasharray="1.5 1.5"/>',
+    muCapture:'<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><text x="18.5" y="7" font-size="6.5">μ</text>',
+    fireworks:'<path d="M12 12V22M12 12l-5-5M12 12l5-5M12 12l-6 1M12 12l6 1M12 12V4"/><circle class="f" cx="12" cy="3" r="1"/><circle class="f" cx="6" cy="6" r="1"/><circle class="f" cx="18" cy="6" r="1"/><circle class="f" cx="5" cy="13" r="1"/><circle class="f" cx="19" cy="13" r="1"/>',
+    supernova:'<circle cx="12" cy="12" r="3.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.8 2.8M16.2 16.2L19 19M19 5l-2.8 2.8M7.8 16.2L5 19"/>',
+    benzene: '<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="4.2"/>',
+    boomFamous:'<rect x="4" y="9" width="16" height="7" rx="1.5"/><path d="M8 9v7M12 9v7M16 9v7M20 12.5c1.5 0 1.5-3 3-3"/><path d="M22.5 7.5l.5-1.5M23.5 9.5h1.2"/>',
+    typer:   '<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M9 10h.01M12 10h.01M15 10h.01M18 10h.01M7 14h10"/>',
+    hanyeong:'<rect x="3" y="4" width="18" height="16" rx="3"/><text x="8.3" y="15.3" font-size="7.5" text-anchor="middle">가</text><text x="16" y="15.3" font-size="7.5" text-anchor="middle">A</text>',
+    devtools:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M12 15h5"/>',
+    cube5:   '<path d="M12 3l7 4v8l-7 4-7-4V7z"/><path d="M5 7l7 4 7-4M12 11v8"/>',
+    fakegold:'<path d="M4 15l3-7h10l3 7z"/><path d="M4 15h16v3H4z"/><text x="12" y="13.6" font-size="5.5" text-anchor="middle">Ti</text>',
+    coffe:   '<path d="M5 8h11v6a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c-.5 1 .5 1.5 0 2.5M11 3.5c-.5 1 .5 1.5 0 2.5M14 3.5c-.5 1 .5 1.5 0 2.5"/>',
+    nanocar: '<path d="M3 15v-3l3-4h10l3 4h2v3"/><circle cx="7" cy="16" r="2.4"/><circle cx="17" cy="16" r="2.4"/>',
+    weirdos: '<circle cx="8" cy="9" r="3"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0"/><path d="M15 6l1 2.2 2.4.3-1.8 1.6.5 2.4-2.1-1.2-2.1 1.2.5-2.4-1.8-1.6 2.4-.3z"/><path d="M14 20a4.5 4.5 0 0 1 8 0"/>',
+    pun1:    '<rect x="2.5" y="7" width="6" height="10" rx="1.2"/><rect x="9" y="7" width="6" height="10" rx="1.2"/><rect x="15.5" y="7" width="6" height="10" rx="1.2"/><path d="M5.5 15v.01M12 15v.01M18.5 15v.01"/>',
+    punfood: '<path d="M4 13h16a8 8 0 0 1-16 0z"/><path d="M12 13V4M9 7c1-1.5 5-1.5 6 0"/>',
+    punall:  '<path d="M4 6h10l6 6-6 6H4z"/><circle class="f" cx="8" cy="12" r="1.3"/>',
+    lightmode:'<circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1"/>',
+    flameQuiz5:'<path d="M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-3.6 3-5.8 3.4-9.8 2.6 1.5 4 4 4 6.1 1-.9 1.6-2.1 1.7-3.4 2.4 1.9 3.9 4.6 3.9 7.1 0 3.6-2.6 6.2-6.5 6.2z"/><path d="M12 21c-1.6 0-2.8-1.2-2.8-2.8 0-1.8 1.6-2.7 2.8-4.6 1.2 1.9 2.8 2.8 2.8 4.6 0 1.6-1.2 2.8-2.8 2.8z"/>',
+    frog:    '<path d="M4 15c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5c0 2.8-3.6 4.5-8 4.5s-8-1.7-8-4.5z"/><circle cx="8" cy="7.5" r="2.5"/><circle cx="16" cy="7.5" r="2.5"/><path d="M9 15.5c1.8 1.2 4.2 1.2 6 0"/>',
+    master:  '<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/><path d="M5 19h14"/>',
+    x_spin:  '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>',
+    x_atom:  '<circle class="f" cx="12" cy="12" r="1.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(120 12 12)"/>',
+    x_shelf: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+    x_cmp:   '<path d="M12 3v18M7 21h10M4 7h16"/><path d="M4 7l-2.5 6a3 3 0 0 0 5 0zM20 7l-2.5 6a3 3 0 0 0 5 0z"/>',
+    x_freeze:'<path d="M12 2v20M3.3 7l17.4 10M20.7 7L3.3 17"/><path d="M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5"/>',
+    x_card:  '<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+    x_replay:'<path d="M11 6L4 12l7 6zM20 6l-7 6 7 6z"/>',
+    x_note:  '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18M12 8h4M12 12h4"/>',
+    x_door:  '<path d="M6 21V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M16 9l5-2M16 12l5 1M16 15l4 3"/><circle class="f" cx="13" cy="12" r=".9"/>',
+    x_skip:  '<path d="M5 5l9 7-9 7zM18 5v14"/>',
+    x_quark: '<circle cx="5" cy="12" r="2.4"/><circle cx="19" cy="12" r="2.4"/><path d="M7.4 12c2-3 3.4 3 4.6 0s2.6 3 4.6 0"/>',
+    allAch:  '<circle cx="12" cy="12" r="9"/><path d="M8 9.5h2M14 9h2.2M8.5 16h7"/><path d="M15 6.5l1.5-1"/>',
+    stolenDex:'<path d="M5 13V7a1.5 1.5 0 0 1 3 0v4M8 11V5.5a1.5 1.5 0 0 1 3 0V11M11 10.5V6a1.5 1.5 0 0 1 3 0v5M14 11V8a1.5 1.5 0 0 1 3 0v6a7 7 0 0 1-7 7h-.5A5.5 5.5 0 0 1 5 16z"/>',
+  };
+  const LOCK = S('<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle class="f" cx="12" cy="15.5" r="1.3"/>');
+  const TROPHY = S('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8.5 21h7M10 18h4"/>');
+  Object.keys(I).forEach(k => { RX_ACH_IC[k] = S(I[k]); });
+  // 이름표가 없는 업적은 트로피
+  try{ ACH.forEach(a => { if(!RX_ACH_IC[a.id] || !/^<svg/.test(RX_ACH_IC[a.id])) RX_ACH_IC[a.id] = TROPHY; }); }catch(e){}
+  window.RX_ACH_LOCK = LOCK;
 })();
 </script>
 <style>
