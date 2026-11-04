@@ -29799,7 +29799,9 @@ document.addEventListener('animationend', e => {
           dex.style.setProperty('--dox', (g.left + g.width / 2 - bx.left) + 'px'); dex.style.setProperty('--doy', (g.top + g.height / 2 - bx.top) + 'px');
         }catch(e){}
         dex.classList.remove('opening'); void dex.offsetWidth; dex.classList.add('opening');
-        clearTimeout(dex._ot); dex._ot = setTimeout(() => dex.classList.remove('opening'), 680);
+        clearTimeout(dex._ot); cancelAnimationFrame(dex._or);
+        // 뒤따르는 도감 꾸미기가 오래 걸려도 애니메이션이 화면에 나온 뒤부터 잰다
+        dex._or = requestAnimationFrame(() => { dex._ot = setTimeout(() => dex.classList.remove('opening'), 700); });
         anim();
       }
     }catch(e){}
@@ -40318,8 +40320,10 @@ void main(){
   const P = (ko, en) => LANG === 'en' ? en : ko;
   const get = () => rxLS.get('pt_hint', {});
   const lvOf = nm => get()[nm] || 0;
-  const entry = nm => { const x = allEntries().find(e => e.name === nm); if(!x) return null; const r = locRec([x.formula, x.name, x.sub]); return { ...x, sub: r[2] }; };
-  const noOf = nm => { const L = allEntries(); const i = L.findIndex(e => e.name === nm); return i >= 0 ? 'No.' + String(i + 1).padStart(3, '0') : ''; };
+  // 카드마다 allEntries() 를 새로 만들면 도감 열 때 1초 넘게 걸려서, 한 번에 한 번만 만들어 둔다
+  let AE = null; const aeMap = () => { if(!AE){ const L = allEntries(); AE = new Map(L.map((e, i) => [e.name, [e, i]])); setTimeout(() => AE = null, 0); } return AE; };
+  const entry = nm => { const h = aeMap().get(nm), x = h && h[0]; if(!x) return null; const r = locRec([x.formula, x.name, x.sub]); return { ...x, sub: r[2] }; };
+  const noOf = nm => { const h = aeMap().get(nm); return h ? 'No.' + String(h[1] + 1).padStart(3, '0') : ''; };
   const parts = key => String(key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
   const col = s => { try{ const e = rxSym(s); return e && CAT[e.c] ? cssv(CAT[e.c].v) : '#9aa8ff'; }catch(e){ return '#9aa8ff'; } };
   const tile = (s, n, showN) => `<span class="hx-t" style="--c:${col(s)}"><b>${s}</b>${showN && n > 1 ? `<i>×${n}</i>` : ''}</span>`;
