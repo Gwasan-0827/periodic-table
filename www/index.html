@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
@@ -6257,6 +6258,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
@@ -41267,6 +41269,10 @@ void main(){
     Cl2: { A: 'Cl', B: 'Cl', f: 'Cl₂', d: 66, ne: 14, ao: [['3s', .6], ['3p', 2.7]], lv: homo(true).map(x => ({ ...x, lab: x.lab.replace('2', '3') })), zA: .95, zB: .95 },
     CO:  { A: 'C', B: 'O', f: 'CO', d: 38, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: het(.55, .84), zA: 1.15, zB: 1.3 },
     NO:  { A: 'N', B: 'O', f: 'NO', d: 39, ne: 11, ao: [['2s', .6], ['2p', 2.7]], lv: het(.62, .78), zA: 1.25, zB: 1.3 },
+    // 몰리브데넘 두 개: 4d 다섯 개 + 5s 하나씩 → σ·π·π·δ·δ·σ(5s) 결합 여섯 개 (육중결합)
+    Mo2: { A: 'Mo', B: 'Mo', f: 'Mo₂', d: 62, ne: 12, ao: [['5s', 2.7], ['4d', 1.9]], lv: [
+           L('π4d', 0, 'D1', 'D1', 1, -1, 0, 2), L('σ4d', 0, 'D0', 'D0', 1, 1, .5, 1), L('σ5s', 0, 's', 's', 1, 1, 1.0, 1), L('δ4d', 0, 'D2', 'D2', 1, 1, 1.6, 2),
+           L('δ*4d', 1, 'D2', 'D2', 1, -1, 2.7, 2), L('π*4d', 1, 'D1', 'D1', 1, 1, 3.5, 2), L('σ*5s', 1, 's', 's', 1, -1, 4.0, 1), L('σ*4d', 1, 'D0', 'D0', 1, -1, 4.6, 1)], zA: 1.6, zB: 1.6 },
     HF:  { A: 'H', B: 'F', f: 'HF', d: 31, ne: 8, ao: null, lv: [
            L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
            L('n', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
@@ -41288,9 +41294,10 @@ void main(){
     Cl2: ['3s·3p 오비탈로 만들어지지만 순서와 모양은 F₂와 같아요. 결합 하나.', 'Built from 3s and 3p, but the same pattern as F₂. One bond.'],
     CO: ['N₂와 전자 수가 같아서 이것도 <b>삼중 결합</b>이에요. 다만 산소 쪽으로 전자가 살짝 쏠려 있어요.', 'Same electron count as N₂, so also a <b>triple bond</b>, but leaning a little toward oxygen.'],
     NO: ['전자가 11개라 홀수예요. π*에 전자 하나가 혼자 남아서 결합 차수가 2.5예요. 그래서 NO는 반응을 잘해요.', 'With 11 electrons, one is left alone in π*. Bond order 2.5, and that lone electron makes NO reactive.'],
+    Mo2: ['전자 12개가 결합 오비탈에만 들어가요. σ 둘, π 둘, δ 둘 해서 <b>결합 차수 6</b>, 육중결합이에요. δ 결합은 오비탈의 네 갈래가 옆으로 겹치는 특이한 결합이라 d 오비탈이 있어야만 생겨요. δ4d를 눌러 보세요!', 'All 12 electrons sit in bonding orbitals: two σ, two π and two δ, for a <b>bond order of 6</b>. A δ bond overlaps four lobes side by side and needs d orbitals. Tap δ4d!'],
     HF: ['플루오린이 전자를 세게 당겨서 σ 오비탈이 F 쪽으로 쏠려요. F의 나머지 전자들은 결합에 안 끼는 비결합(n) 오비탈에 있어요.', 'Fluorine pulls hard, so the σ orbital leans toward F. F’s other electrons sit in non-bonding (n) orbitals.'],
   };
-  const KEYOF = { H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
+  const KEYOF = { Mo2: 'Mo2', H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
   function molKey(){
     try{ if(RX && RX.raw === '벤젠') return 'C6H6'; const c = RX && RX.comp; if(!c || c.length > 2) return null;
       if(c.reduce((s, [, n]) => s + n, 0) !== 2) return null;
@@ -41313,7 +41320,9 @@ void main(){
 
   /* ── 오비탈 함수 (화면 단위: 18 = 보어 반지름 1) ── */
   const basis = (k, x, y, z, Z) => { const r = Math.hypot(x, y, z), e = Math.exp(-Z * r);
-    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 : 0; };
+    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 :
+    // d 오비탈 (결합 축 = x): σ = d(z²) 모양, π = d(xy), δ = d(yz)
+    k === 'D0' ? (2 * x * x - y * y - z * z) * e * Z * Z * .45 : k === 'D1' ? x * y * e * Z * Z * 1.3 : k === 'D2' ? y * z * e * Z * Z * 1.3 : 0; };
   const psi = (M, o, x, y, z) => {
     if(M.ring){ const s = 1 / 18, Z = M.zA * 1.4, cc = o.alt && o.c2 ? o.c2 : o.c; let v = 0;
       for(let k = 0; k < 6; k++){ const ax = Math.cos(TH[k]) * M.ring, ay = Math.sin(TH[k]) * M.ring;
