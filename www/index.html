@@ -41666,6 +41666,8 @@ void main(){
   .gd-mini{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;margin:0 auto 9px;max-width:380px}
   .gd-mini i{aspect-ratio:1;border-radius:2px;background:var(--c);opacity:.25;transition:opacity .3s,transform .3s,box-shadow .3s}
   .gd-mini i.e{background:none}
+  .gd-mini i.e.gap{aspect-ratio:auto;height:4px}
+  .gd-mini i.fs{border-radius:2px;background:repeating-linear-gradient(135deg,var(--c) 0 2px,transparent 2px 4px)}
   .gd-mini i.hl{opacity:1;transform:scale(1.15);box-shadow:0 0 6px var(--c)}
   .gd-mini.col i:not(.e){opacity:.95}
   .gd-legend{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:11px;color:#c4c9ee;margin:0 0 6px}
@@ -41971,12 +41973,18 @@ void main(){
 
   /* ─────────── 3) 주기율표 읽는 법 ─────────── */
   window.rxGuide = function rxGuide(){
-    const show3 = ['alkali', 'transition', 'nonmetal', 'halogen', 'noble', 'metalloid'];
+    const show3 = ['alkali', 'alkaline', 'transition', 'post', 'metalloid', 'nonmetal', 'halogen', 'noble', 'lanthanide', 'actinide'];
     let mini = '';
     for(let p = 1; p <= 7; p++) for(let g = 1; g <= 18; g++){
       const e = EL.find(x => x.p === p && x.g === g);
-      mini += e ? `<i data-p="${p}" data-g="${g}" data-c="${e.c}" style="--c:${col(e.c)}"></i>` : '<i class="e"></i>';
+      const f = !e && g === 3 && (p === 6 || p === 7) ? (p === 6 ? 'lanthanide' : 'actinide') : '';   // 란타넘족·악티늄족 자리
+      mini += e ? `<i data-p="${p}" data-g="${g}" data-c="${e.c}" style="--c:${col(e.c)}"></i>` : f ? `<i class="fs" data-p="${p}" data-c="${f}" style="--c:${col(f)}"></i>` : '<i class="e"></i>';
     }
+    // 아래에 따로 빼 둔 두 줄 (57–71, 89–103)
+    mini += '<i class="e gap"></i>'.repeat(18);
+    [[57, 6], [89, 7]].forEach(([s, p]) => { mini += '<i class="e"></i><i class="e"></i>';
+      for(let n = s; n < s + 15; n++){ const e = byNum[n]; mini += `<i data-p="${p}" data-c="${e.c}" style="--c:${col(e.c)}"></i>`; }
+      mini += '<i class="e"></i>'; });
     const L = [
       ['a', P('<b>원자 번호</b> · 양성자 수예요. 원소마다 하나뿐인 번호', '<b>Atomic number</b> · the number of protons. Unique to each element')],
       ['s', P('<b>원소 기호</b> · 1~2글자. 조합할 때 쓰는 이름표', '<b>Symbol</b> · one or two letters. The tag you mix with')],
@@ -41990,7 +41998,7 @@ void main(){
       <div class="gd-sec"><h5><span>2</span>${P('가로줄 · 세로줄 · 색깔', 'Rows, columns, colors')}</h5>
         <div class="gd-seg" id="gdSeg"><button type="button" data-v="p" class="on">${P('주기 (가로)', 'Period (row)')}</button><button type="button" data-v="g">${P('족 (세로)', 'Group (column)')}</button><button type="button" data-v="c">${P('색깔', 'Colors')}</button></div>
         <div class="gd-mini" id="gdMini">${mini}</div>
-        <div class="gd-legend" id="gdLeg" hidden>${show3.map(c => `<span style="--c:${col(c)}">${LANG === 'en' ? ({alkali:'Alkali metal',transition:'Transition metal',nonmetal:'Nonmetal',halogen:'Halogen',noble:'Noble gas',metalloid:'Metalloid'})[c] : CAT[c].ko}</span>`).join('')}</div>
+        <div class="gd-legend" id="gdLeg" hidden>${show3.map(c => `<span style="--c:${col(c)}">${LANG === 'en' ? ({alkali:'Alkali metal',alkaline:'Alkaline earth',transition:'Transition metal',post:'Post-transition',nonmetal:'Nonmetal',halogen:'Halogen',noble:'Noble gas',metalloid:'Metalloid',lanthanide:'Lanthanide',actinide:'Actinide'})[c] : CAT[c].ko}</span>`).join('')}</div>
         <p id="gdTxt"></p></div>
       <div class="gd-sec"><h5><span>3</span>${P('조합은 이렇게', 'How mixing works')}</h5>
         <p>${P('원소 <b>종류</b>와 <b>개수</b>를 맞추면 물질이 나와요. 화학식 아래 작은 숫자가 개수예요', 'Match the <b>elements</b> and their <b>counts</b> and you get a substance. The small numbers in a formula are counts')}</p>
@@ -42015,9 +42023,9 @@ void main(){
       const run = () => {
         if(!document.body.contains(miniEl)) return clearInterval(mt);
         if(v === 'c'){ const c = show3[step % show3.length]; cells.forEach(i => i.classList.toggle('hl', i.dataset.c === c));
-          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing'); }
+          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>. 아래 따로 뺀 두 줄은 <b>란타넘족·악티늄족</b>이에요. 원래 3족 6·7주기 자리에 들어가는데, 표가 너무 길어져서 빼 둔 거예요', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing. The two rows below are the <b>lanthanides and actinides</b>: they belong in group 3, periods 6 and 7, but are pulled out so the table is not too wide'); }
         else if(v === 'p'){ const p = step % 7 + 1; cells.forEach(i => i.classList.toggle('hl', +i.dataset.p === p));
-          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down`); }
+          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요${p >= 6 ? ` (아래 ${p === 6 ? '란타넘족' : '악티늄족'} 줄도 ${p}주기)` : ''}`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down${p >= 6 ? ` (the ${p === 6 ? 'lanthanide' : 'actinide'} row below is period ${p} too)` : ''}`); }
         else { const G = [1, 2, 14, 17, 18], g = G[step % G.length]; cells.forEach(i => i.classList.toggle('hl', +i.dataset.g === g));
           txt.innerHTML = P(`세로줄은 <b>족</b>. 지금 ${g}족 · 같은 족은 바깥 전자 수가 같아서 성질이 비슷해요`, `Columns are <b>groups</b>. This is group ${g} · same outer electrons, so similar behavior`); }
         step++;
