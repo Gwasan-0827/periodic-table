@@ -6215,6 +6215,10 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '쿼크 그림을 새로 그렸어요. 글루온 끈이 실제 물리 그림처럼 가운데서 만나는 Y자 빛줄기가 되고, 색이 바뀔 때마다 쿼크 사이로 글루온 알갱이가 날아가요',
+           '핵 속으로 창도 새로 꾸몄어요. 원자 → 원자핵 → 양성자·중성자 → 쿼크 여정이 번호 단계로 보이고, 지나온 단계엔 ✓가 붙어요',
+           '원자 오비탈 크게 보기 창을 새로 꾸몄어요. 원소 타일, 전자·껍질·바깥 전자 칸, 페리윙클 버튼이 생겼어요',
+           '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
@@ -6257,6 +6261,10 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The quark view is redrawn: gluon strings now form a glowing Y-shaped flux tube like in real QCD pictures, and gluon sparks fly between quarks as their colours swap',
+           'Into the nucleus is redesigned too: the atom → nucleus → nucleons → quarks journey shows as numbered steps with checkmarks',
+           'The big atomic orbital view is redesigned with an element tile, electron and shell stats and periwinkle buttons',
+           'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
@@ -41267,6 +41275,10 @@ void main(){
     Cl2: { A: 'Cl', B: 'Cl', f: 'Cl₂', d: 66, ne: 14, ao: [['3s', .6], ['3p', 2.7]], lv: homo(true).map(x => ({ ...x, lab: x.lab.replace('2', '3') })), zA: .95, zB: .95 },
     CO:  { A: 'C', B: 'O', f: 'CO', d: 38, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: het(.55, .84), zA: 1.15, zB: 1.3 },
     NO:  { A: 'N', B: 'O', f: 'NO', d: 39, ne: 11, ao: [['2s', .6], ['2p', 2.7]], lv: het(.62, .78), zA: 1.25, zB: 1.3 },
+    // 몰리브데넘 두 개: 4d 다섯 개 + 5s 하나씩 → σ·π·π·δ·δ·σ(5s) 결합 여섯 개 (육중결합)
+    Mo2: { A: 'Mo', B: 'Mo', f: 'Mo₂', d: 62, ne: 12, ao: [['5s', 2.7], ['4d', 1.9]], lv: [
+           L('π4d', 0, 'D1', 'D1', 1, -1, 0, 2), L('σ4d', 0, 'D0', 'D0', 1, 1, .5, 1), L('σ5s', 0, 's', 's', 1, 1, 1.0, 1), L('δ4d', 0, 'D2', 'D2', 1, 1, 1.6, 2),
+           L('δ*4d', 1, 'D2', 'D2', 1, -1, 2.7, 2), L('π*4d', 1, 'D1', 'D1', 1, 1, 3.5, 2), L('σ*5s', 1, 's', 's', 1, -1, 4.0, 1), L('σ*4d', 1, 'D0', 'D0', 1, -1, 4.6, 1)], zA: 1.6, zB: 1.6 },
     HF:  { A: 'H', B: 'F', f: 'HF', d: 31, ne: 8, ao: null, lv: [
            L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
            L('n', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
@@ -41288,9 +41300,10 @@ void main(){
     Cl2: ['3s·3p 오비탈로 만들어지지만 순서와 모양은 F₂와 같아요. 결합 하나.', 'Built from 3s and 3p, but the same pattern as F₂. One bond.'],
     CO: ['N₂와 전자 수가 같아서 이것도 <b>삼중 결합</b>이에요. 다만 산소 쪽으로 전자가 살짝 쏠려 있어요.', 'Same electron count as N₂, so also a <b>triple bond</b>, but leaning a little toward oxygen.'],
     NO: ['전자가 11개라 홀수예요. π*에 전자 하나가 혼자 남아서 결합 차수가 2.5예요. 그래서 NO는 반응을 잘해요.', 'With 11 electrons, one is left alone in π*. Bond order 2.5, and that lone electron makes NO reactive.'],
+    Mo2: ['전자 12개가 결합 오비탈에만 들어가요. σ 둘, π 둘, δ 둘 해서 <b>결합 차수 6</b>, 육중결합이에요. δ 결합은 오비탈의 네 갈래가 옆으로 겹치는 특이한 결합이라 d 오비탈이 있어야만 생겨요. δ4d를 눌러 보세요!', 'All 12 electrons sit in bonding orbitals: two σ, two π and two δ, for a <b>bond order of 6</b>. A δ bond overlaps four lobes side by side and needs d orbitals. Tap δ4d!'],
     HF: ['플루오린이 전자를 세게 당겨서 σ 오비탈이 F 쪽으로 쏠려요. F의 나머지 전자들은 결합에 안 끼는 비결합(n) 오비탈에 있어요.', 'Fluorine pulls hard, so the σ orbital leans toward F. F’s other electrons sit in non-bonding (n) orbitals.'],
   };
-  const KEYOF = { H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
+  const KEYOF = { Mo2: 'Mo2', H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
   function molKey(){
     try{ if(RX && RX.raw === '벤젠') return 'C6H6'; const c = RX && RX.comp; if(!c || c.length > 2) return null;
       if(c.reduce((s, [, n]) => s + n, 0) !== 2) return null;
@@ -41313,7 +41326,9 @@ void main(){
 
   /* ── 오비탈 함수 (화면 단위: 18 = 보어 반지름 1) ── */
   const basis = (k, x, y, z, Z) => { const r = Math.hypot(x, y, z), e = Math.exp(-Z * r);
-    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 : 0; };
+    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 :
+    // d 오비탈 (결합 축 = x): σ = d(z²) 모양, π = d(xy), δ = d(yz)
+    k === 'D0' ? (2 * x * x - y * y - z * z) * e * Z * Z * .45 : k === 'D1' ? x * y * e * Z * Z * 1.3 : k === 'D2' ? y * z * e * Z * Z * 1.3 : 0; };
   const psi = (M, o, x, y, z) => {
     if(M.ring){ const s = 1 / 18, Z = M.zA * 1.4, cc = o.alt && o.c2 ? o.c2 : o.c; let v = 0;
       for(let k = 0; k < 6; k++){ const ax = Math.cos(TH[k]) * M.ring, ay = Math.sin(TH[k]) * M.ring;
@@ -42777,7 +42792,7 @@ void main(){
   html:not(.setbg-light) #setNav{width:156px;padding:12px 10px;gap:3px;border-right:1px solid rgba(150,160,255,.12)}
   #setNav button{position:relative;display:grid!important;grid-template-columns:28px 1fr;grid-template-rows:auto auto;column-gap:9px;align-items:center}
   #setNav button::before{content:"";grid-row:1 / 3;width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.16);box-sizing:border-box}
-  #setNav button::after{content:"";position:absolute;left:19px;top:50%;width:16px;height:16px;margin-top:-8px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  #setNav button::after{content:"";position:absolute;left:16px;top:50%;width:16px;height:16px;margin-top:-8px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
   #setNav button small{grid-column:2}
   html:not(.setbg-light) #setNav button{padding:8px 10px;border-radius:12px;color:#a3a9d6;transition:background .2s,color .2s}
   html:not(.setbg-light) #setNav button:hover{background:rgba(143,155,255,.08);color:#eef0ff}
@@ -43291,6 +43306,357 @@ void main(){
     A.forEach(a => { a[1] -= mx; a[2] -= my; a[3] -= mz; });
   }
   try{ Object.entries(RX_SMILES_PRE).forEach(([k, P]) => { if(k.includes('.') && P && P.a) fix(P); }); }catch(e){ console.warn('fragfix', e); }
+})();
+</script>
+<style>
+  /* ═══ 원자 오비탈 크게 보기 리워크 (4.2.5+): 분자 오비탈 화면과 같은 유리 카드 · 원소 타일 · 스탯 칸 ═══ */
+  #orbBig,#nucBig{background:radial-gradient(80% 70% at 50% 40%,rgba(30,28,80,.78),rgba(4,5,14,.92));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  :is(#orbBig,#nucBig) .orb-card{position:relative;border-radius:22px;border:1px solid rgba(150,160,255,.28);
+    background:linear-gradient(160deg,rgba(26,28,64,.97),rgba(12,13,32,.98));box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 40px rgba(143,155,255,.12)}
+  :is(#orbBig,#nucBig) .orb-card::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(201,210,255,.8),transparent)}
+  /* 머리 */
+  :is(#orbBig,#nucBig) .orb-head{align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(150,160,255,.14)}
+  .ob-tile{flex:none;position:relative;width:46px;height:50px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--cc,#8f9bff) 32%,#1c1f44),#14162f);border:1px solid color-mix(in srgb,var(--cc,#8f9bff) 60%,transparent);border-bottom:3px solid var(--cc,#8f9bff);
+    box-shadow:0 0 16px color-mix(in srgb,var(--cc,#8f9bff) 30%,transparent)}
+  .ob-tile i{position:absolute;left:5px;top:3px;font-style:normal;font-size:9px;opacity:.8}
+  .ob-tile b{font-size:19px;font-weight:900;color:#fff}
+  .ob-ttl{display:grid;gap:2px;min-width:0}
+  .ob-ttl .k{font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#8f97c8}
+  :is(#orbBig,#nucBig) .orb-head b#orbTitle{font-size:19px;font-weight:900}
+  :is(#orbBig,#nucBig) .orb-head #orbSub{font-size:12px;color:#a6adda;font-variant-numeric:tabular-nums}
+  :is(#orbBig,#nucBig) .orb-head button{width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:11px;font-size:17px;color:#c4c9ee;
+    background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22);transition:background .2s,transform .2s}
+  :is(#orbBig,#nucBig) .orb-head button:hover{background:rgba(255,107,129,.16);border-color:rgba(255,107,129,.5);color:#fff;transform:rotate(90deg)}
+  /* 보기 칸 */
+  #orbBig .orb-stage{background:radial-gradient(60% 60% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 12%,#141734),#0a0b1c 80%)}
+  #orbBig .orb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%)}
+  #orbBig .orb-cfg{left:14px;top:12px;font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;right:auto;background:rgba(18,20,46,.7);border:1px solid rgba(150,160,255,.2);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #orbBig .orb-hint{left:14px;bottom:14px;font-size:10.5px;color:#8e95c4}
+  #orbBig .orb-style{right:12px;bottom:10px;padding:3px;gap:2px;border-radius:12px;background:rgba(18,20,46,.75);border:1px solid rgba(150,160,255,.24)}
+  #orbBig .orb-style button{border-radius:9px;padding:5px 12px;font-weight:700;color:#a3a9d6}
+  #orbBig .orb-style button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  /* 옆 칸 */
+  #orbBig .orb-side{padding:16px 18px 18px;gap:11px;border-left:1px solid rgba(150,160,255,.12)}
+  #orbBig .orb-sec{font-size:10px;font-weight:900;letter-spacing:.12em;color:#8f97c8;text-transform:uppercase}
+  #orbBig .orb-chip{padding:6px 11px;border-radius:999px;font-size:12.5px;font-weight:750;color:#d6daf8;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.2);transition:all .2s}
+  #orbBig .orb-chip:hover{background:rgba(143,155,255,.1);border-color:rgba(150,160,255,.45)}
+  #orbBig .orb-chip i{box-shadow:0 0 6px var(--oc)}
+  #orbBig .orb-chip.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.4)}
+  #orbBig .orb-chip.on sup{color:#e8e4ff}
+  #orbBig .orb-desc,#orbBig .orb-faq{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #orbBig .orb-desc em{color:#959cc9}
+  #orbBig .orb-note{border-radius:14px}
+  #orbBig .orb-box{width:22px;height:24px;border-radius:6px;border-color:rgba(150,160,255,.3);background:rgba(8,9,26,.45)}
+  #orbBig .orb-row.cur .orb-box{border-color:#c9a8ff;box-shadow:0 0 8px rgba(201,168,255,.4)}
+  #orbBig .orb-btn{padding:9px 14px;border-radius:12px;font-weight:800;color:#fff;border:1px solid transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 14px rgba(143,155,255,.35)}
+  #orbBig .orb-btn.ghost{color:#d6daf8;background:rgba(255,255,255,.05);border-color:rgba(150,160,255,.24);box-shadow:none;font-weight:750}
+  #orbBig .orb-btn.ghost:hover{background:rgba(143,155,255,.14);border-color:#8f9bff;color:#fff}
+  #orbBig .orb-btn.ghost[aria-pressed="true"]{background:rgba(255,154,213,.16);border-color:#ff9ad5;color:#fff}
+  #orbBig .orb-btn.ghost[aria-expanded="true"]{background:rgba(158,231,255,.14);border-color:#9ee7ff;color:#fff}
+  #orbBig .orb-foot{color:#8e95c4}
+  /* 스탯 칸 */
+  .ob-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .ob-stats div{display:grid;gap:2px;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  .ob-stats b{font-size:19px;font-weight:900;color:#f2f3ff;font-variant-numeric:tabular-nums}
+  .ob-stats span{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  @media (max-width:700px){
+    :is(#orbBig,#nucBig) .orb-card{border-radius:0;border:0}
+    :is(#orbBig,#nucBig) .orb-head{padding:12px 14px}
+    .ob-tile{width:40px;height:44px} .ob-tile b{font-size:16px}
+    #orbBig .orb-side{border-left:0;border-top:1px solid rgba(150,160,255,.12)}
+  }
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  function paint(){
+    const box = document.getElementById('orbBig'); if(!box) return;
+    const head = box.querySelector('.orb-head'), ttl = document.getElementById('orbTitle'), sub = document.getElementById('orbSub');
+    if(!head || !ttl) return;
+    const e = byNum[selected]; if(!e) return;
+    if(box._obN === e.n + LANG && head.querySelector('.ob-ttl') && box.querySelector('.ob-stats')) return; box._obN = e.n + LANG;
+    let wrap = head.querySelector('.ob-ttl');
+    if(!wrap){
+      head.insertAdjacentHTML('afterbegin', '<span class="ob-tile"><i></i><b></b></span><span class="ob-ttl"><span class="k"></span></span>');
+      wrap = head.querySelector('.ob-ttl'); wrap.appendChild(ttl); if(sub) wrap.appendChild(sub);
+    }
+    let c = '#8f9bff'; try{ c = cssv(CAT[e.c].v) || c; }catch(err){}
+    box.style.setProperty('--cc', c);
+    head.querySelector('.ob-tile i').textContent = e.n; head.querySelector('.ob-tile b').textContent = e.s;
+    head.querySelector('.ob-ttl .k').textContent = P('ATOMIC ORBITALS // 원자 오비탈', 'ATOMIC ORBITALS');
+    // 스탯: 전자 수 · 껍질 수 · 바깥 전자
+    const side = box.querySelector('.orb-side'), sec3 = document.getElementById('orbSec3');
+    if(side && sec3){
+      let st = side.querySelector('.ob-stats');
+      if(!st){ st = document.createElement('div'); st.className = 'ob-stats'; sec3.before(st); }
+      const sh = e.sh || [];
+      st.innerHTML = `<div><b>${e.n}</b><span>${P('전자', 'ELECTRONS')}</span></div><div><b>${sh.length}</b><span>${P('전자 껍질', 'SHELLS')}</span></div><div><b>${sh[sh.length - 1] || 0}</b><span>${P('바깥 껍질 전자', 'OUTER SHELL')}</span></div>`;
+    }
+  }
+  const tick = () => { const b = document.getElementById('orbBig'); if(b && b.classList.contains('on')) paint(); };
+  try{ new MutationObserver(tick).observe(document.body, { childList: true, subtree: false }); }catch(e){}
+  document.addEventListener('click', () => setTimeout(tick, 60), true);
+  setInterval(tick, 1500);
+})();
+</script>
+<style>
+  /* ═══ 핵 속으로 리워크 (4.2.5+): 원소 타일 · 여정 단계 표시 · 배율 알약 · 스탯 칸 ═══ */
+  #nucBig .orb-stage{background:radial-gradient(60% 60% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 12%,#141734),#0a0b1c 80%)}
+  #nucBig .orb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;z-index:1;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 35%,#000 90%)}
+  #nucBig .nuc-mag{z-index:2;left:14px;top:12px;font-size:12.5px;font-weight:800;padding:5px 11px;border-radius:999px;color:#fff;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #nucBig .nuc-mag::before{content:"🔍";margin-right:5px;font-size:11px}
+  #nucBig .orb-hint{z-index:2;left:14px;bottom:14px;color:#8e95c4}
+  #nucBig .orb-side{padding:16px 18px 18px;gap:12px;border-left:1px solid rgba(150,160,255,.12)}
+  :is(#nucBig) .orb-head #nucSub{font-size:12px;color:#a6adda}
+  :is(#nucBig) .orb-head b#nucTitle{font-size:19px;font-weight:900}
+  /* 여정 단계: 번호 동그라미 + 이어진 선 */
+  #nucBig .nuc-steps{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px 0 2px}
+  #nucBig .nuc-steps > i{display:none}
+  #nucBig .nuc-steps::before{content:"";position:absolute;left:12%;right:12%;top:17px;height:2px;border-radius:2px;background:rgba(150,160,255,.18)}
+  #nucBig .nuc-steps button{position:relative;z-index:1;display:grid;justify-items:center;gap:5px;padding:0;border:0;background:none;color:#8f97c8;font-size:11px;font-weight:800;counter-increment:ns}
+  #nucBig .nuc-steps{counter-reset:ns}
+  #nucBig .nuc-steps button::before{content:counter(ns);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;
+    color:#a3a9d6;background:#16183a;border:2px solid rgba(150,160,255,.3);transition:all .25s}
+  #nucBig .nuc-steps button:not(:disabled):hover::before{border-color:#8f9bff;color:#fff}
+  #nucBig .nuc-steps button.on{color:#fff;background:none}
+  #nucBig .nuc-steps button.on::before{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 0 0 4px rgba(143,155,255,.18),0 4px 14px rgba(143,155,255,.5)}
+  #nucBig .nuc-steps button.done::before{content:"✓";color:#fff;background:rgba(143,155,255,.35);border-color:transparent}
+  #nucBig .nuc-steps button:disabled{opacity:.4}
+  /* 글 · 카드 */
+  #nucBig .nuc-lead{font-size:13.5px;line-height:1.7;color:#e3e6ff;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-lead b{font-weight:900;color:color-mix(in srgb,var(--cc,#8f9bff) 55%,#fff)}
+  #nucBig .nuc-row{gap:7px}
+  #nucBig .nuc-stat{padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-stat u{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  #nucBig .nuc-stat b{font-size:19px;font-weight:900;color:#f2f3ff}
+  #nucBig .nuc-card{padding:11px 13px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  #nucBig .nuc-card h4 i{box-shadow:0 0 8px currentColor}
+  #nucBig .nuc-card p{color:#aeb4dc}
+  #nucBig .nuc-bar{height:24px;border-radius:999px;border-color:rgba(150,160,255,.24);background:rgba(8,9,26,.45)}
+  #nucBig .nuc-bar i{background:linear-gradient(90deg,#ffd166,#ffb4e1)}
+  #nucBig .nuc-bar-key{color:#9097c8}
+  #nucBig .nuc-btn{padding:9px 14px;border-radius:12px;font-weight:750;color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);transition:all .2s}
+  #nucBig .nuc-btn:hover{background:rgba(143,155,255,.14);border-color:#8f9bff;color:#fff}
+  #nucBig .nuc-btn.on{background:rgba(158,231,255,.14);border-color:#9ee7ff;color:#fff}
+  #nucBig .nuc-btn.go{color:#fff;font-weight:900;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 6px 18px rgba(143,155,255,.4)}
+  #nucBig .nuc-btn.go:hover{filter:brightness(1.1)}
+  @media (max-width:700px){ #nucBig .orb-side{border-left:0;border-top:1px solid rgba(150,160,255,.12)} #nucBig .nuc-steps button{font-size:10px} }
+</style>
+<script>
+(function(){
+  const P = (k, e) => LANG === 'en' ? e : k;
+  function paint(){
+    const box = document.getElementById('nucBig'); if(!box || !box.classList.contains('on')) return;
+    const head = box.querySelector('.orb-head'), ttl = document.getElementById('nucTitle'), sub = document.getElementById('nucSub');
+    const e = byNum[selected]; if(!head || !ttl || !e) return;
+    let wrap = head.querySelector('.ob-ttl');
+    if(!wrap){
+      head.insertAdjacentHTML('afterbegin', '<span class="ob-tile"><i></i><b></b></span><span class="ob-ttl"><span class="k"></span></span>');
+      wrap = head.querySelector('.ob-ttl'); wrap.appendChild(ttl); if(sub) wrap.appendChild(sub);
+    }
+    let c = '#8f9bff'; try{ c = cssv(CAT[e.c].v) || c; }catch(err){}
+    const set = (el, v) => { v = String(v); if(el && el.textContent !== v) el.textContent = v; };
+    if(box.style.getPropertyValue('--cc') !== c) box.style.setProperty('--cc', c);
+    set(head.querySelector('.ob-tile i'), e.n); set(head.querySelector('.ob-tile b'), e.s);
+    set(head.querySelector('.ob-ttl .k'), P('INTO THE NUCLEUS // 핵 속으로', 'INTO THE NUCLEUS'));
+    // 지나온 단계에 ✓
+    const bs = [...box.querySelectorAll('.nuc-steps button')], on = bs.findIndex(b => b.classList.contains('on'));
+    bs.forEach((b, i) => b.classList.toggle('done', on >= 0 && i < on));
+  }
+  const nb = () => document.getElementById('nucBig');
+  let mo = null;
+  setInterval(() => { const b = nb(); if(b && !mo){ mo = new MutationObserver(() => requestAnimationFrame(paint)); mo.observe(b, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); paint(); } }, 800);
+})();
+</script>
+<script>
+/* ═══ 쿼크 단계 비주얼 리워크 (4.2.5+)
+   · 양성자·중성자: 빛나는 "주머니" + 안쪽에서 일렁이는 글루온 장
+   · 글루온 끈: 실제 QCD 그림처럼 Y자 플럭스 튜브(가운데 한 점에서 세 쿼크로). 쿼크 쪽은 그 쿼크 색, 가운데는 섞여서 흰색
+   · 색이 바뀔 때(1.4초마다) 쿼크 사이로 글루온 빛 알갱이가 날아간다
+   · 쿼크: 유리구슬 + 색 후광, 이름·전하 배지 */
+(function(){
+  if(typeof rxNucDraw !== 'function' || typeof RX_NUC === 'undefined') return;
+  const _old = rxNucDraw;
+  const hex = c => { const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const rgba = (c, a) => { const [r, g, b] = hex(c); return `rgba(${r},${g},${b},${a})`; };
+  const low = () => !!window.RX_LOWPOW;
+  // 에너지 구체 쿼크: 부드러운 안개 같은 속 + 번지는 테두리 빛 + 끝이 흐려지는 빛줄기
+  function bead(ctx, x, y, r, col, a){
+    const T = (typeof RX_NUC !== 'undefined' && RX_NUC.t) || 0, A = a == null ? 1 : a;
+    const pulse = 1 + Math.sin(T * 2.4 + x * .03) * .04;
+    ctx.save(); ctx.globalAlpha = A; ctx.globalCompositeOperation = 'lighter';
+    // 1) 크게 번지는 바깥 빛
+    const h = ctx.createRadialGradient(x, y, r * .7, x, y, r * 2.6);
+    h.addColorStop(0, rgba(col, .45)); h.addColorStop(.4, rgba(col, .12)); h.addColorStop(1, rgba(col, 0));
+    ctx.fillStyle = h; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, 6.2832); ctx.fill();
+    // 2) 속: 옅은 안개 → 테두리 쪽이 밝게 (선 없이 그라데이션만으로)
+    const R = r * pulse;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, R * 1.08);
+    g.addColorStop(0, rgba(col, .14)); g.addColorStop(.55, rgba(col, .22)); g.addColorStop(.82, rgba(col, .6));
+    g.addColorStop(.93, 'rgba(255,255,255,.85)'); g.addColorStop(.97, rgba(col, .55)); g.addColorStop(1, rgba(col, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, R * 1.08, 0, 6.2832); ctx.fill();
+    // 3) 빛줄기: 테두리를 따라 미끄러지는 긴 호, 양 끝은 흐려진다
+    if(r > 8){
+      ctx.lineCap = 'round';
+      for(let k = 0; k < 3; k++){
+        const dir = k % 2 ? -1 : 1, a0 = T * (.9 + k * .35) * dir + k * 2.1 + x * .02, len = 1.1 + .4 * Math.sin(T * 1.3 + k), rr = R * (.62 + k * .1);
+        const n = 14;
+        for(let i = 0; i < n; i++){
+          const u0 = i / n, u1 = (i + 1) / n, f = Math.sin((u0 + u1) / 2 * 3.1416);
+          ctx.strokeStyle = `rgba(255,255,255,${(.5 * f).toFixed(3)})`; ctx.lineWidth = .7 + f * 1.1;
+          ctx.beginPath(); ctx.arc(x, y, rr, a0 + u0 * len, a0 + u1 * len + .01); ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+  }
+  function _oldBead(ctx, x, y, r, col, a){
+    ctx.save(); ctx.globalAlpha = a == null ? 1 : a;
+    // 후광
+    const h = ctx.createRadialGradient(x, y, r * .6, x, y, r * 2.6);
+    h.addColorStop(0, rgba(col, .55)); h.addColorStop(1, rgba(col, 0));
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = h; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, 6.2832); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    // 몸통
+    const g = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .05, x, y, r);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(.25, col); g.addColorStop(.85, rgba(col, .9)); g.addColorStop(1, 'rgba(10,10,30,.9)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+    // 테두리 빛
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, r - .6, 0, 6.2832); ctx.stroke();
+    // 반짝
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.ellipse(x - r * .38, y - r * .45, r * .26, r * .14, -.6, 0, 6.2832); ctx.fill();
+    ctx.restore();
+  }
+  // 플럭스 튜브 한 가닥 (a → b), 색은 a 쪽 col 에서 b 쪽 흰색으로
+  function tube(ctx, ax, ay, bx, by, col, t, tense, ph){
+    const dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d;
+    const g = ctx.createLinearGradient(ax, ay, bx, by);
+    g.addColorStop(0, rgba(col, .95)); g.addColorStop(1, 'rgba(255,255,255,.9)');
+    const n = Math.max(24, Math.round(d / 3)), amp = 4.5 * (1 - Math.min(.85, tense));
+    const path = () => { ctx.beginPath();
+      for(let i = 0; i <= n; i++){ const u = i / n, w = Math.sin(u * d / 7 - t * 7 + ph) * amp * Math.sin(u * 3.1416);
+        const px = ax + dx * u + nx * w, py = ay + dy * u + ny * w; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } };
+    ctx.save(); ctx.lineCap = 'round'; ctx.globalCompositeOperation = 'lighter';
+    // 두꺼운 빛 + 가는 심
+    ctx.strokeStyle = g; ctx.globalAlpha = .22 + tense * .25; ctx.lineWidth = 12 + tense * 6; path(); ctx.stroke();
+    ctx.globalAlpha = .55 + tense * .3; ctx.lineWidth = 3.2 + tense * 2; path(); ctx.stroke();
+    ctx.globalAlpha = .9; ctx.lineWidth = 1.1; ctx.strokeStyle = 'rgba(255,255,255,.9)'; path(); ctx.stroke();
+    // 끈을 따라 흐르는 빛 알갱이
+    for(let k = 0; k < 2; k++){ const u = ((t * .6 + k * .5 + ph * .1) % 1), px = ax + dx * u, py = ay + dy * u;
+      const s = ctx.createRadialGradient(px, py, 0, px, py, 7); s.addColorStop(0, 'rgba(255,255,255,.9)'); s.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = Math.sin(u * 3.1416) * .8; ctx.fillStyle = s; ctx.beginPath(); ctx.arc(px, py, 7, 0, 6.2832); ctx.fill(); }
+    ctx.restore();
+  }
+  let lastShift = -1, flights = [];
+  rxNucDraw = function(ctx, w, h, dt, st){
+    if(st < 2) return _old.apply(this, arguments);
+    const N = RX_NUC, cx = w / 2, cy = h / 2, M = Math.min(w, h);
+    const font = (px, wt) => `${wt || 500} ${px}px PTSym, Orbit, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const S = M * .36, R = S, isP = N.kind === 'p', base = isP ? '#ff8787' : '#b6bfd4';
+    // ── 주머니: 겉 빛 + 안쪽 일렁이는 장 ──
+    ctx.save();
+    const halo = ctx.createRadialGradient(cx, cy, R * .55, cx, cy, R * 1.35);
+    halo.addColorStop(0, rgba(base, .12)); halo.addColorStop(1, rgba(base, 0));
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx, cy, R * 1.35, 0, 6.2832); ctx.fill();
+    const bag = ctx.createRadialGradient(cx - R * .25, cy - R * .3, R * .1, cx, cy, R);
+    bag.addColorStop(0, rgba(base, .2)); bag.addColorStop(.7, rgba(base, .1)); bag.addColorStop(1, rgba(base, .02));
+    ctx.fillStyle = bag; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.clip();
+    // 안쪽 장: 천천히 도는 색 얼룩
+    if(!low()){
+      ctx.globalCompositeOperation = 'lighter';
+      for(let k = 0; k < 3; k++){
+        const a = N.t * (.25 + k * .07) + k * 2.1, px = cx + Math.cos(a) * R * .35, py = cy + Math.sin(a * 1.3) * R * .3;
+        const f = ctx.createRadialGradient(px, py, 0, px, py, R * .7); f.addColorStop(0, rgba(RX_NUC_COL[k], .1)); f.addColorStop(1, rgba(RX_NUC_COL[k], 0));
+        ctx.fillStyle = f; ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.restore();
+    // 가장자리: 숨 쉬는 얇은 고리
+    ctx.save(); ctx.strokeStyle = rgba(base, .35 + Math.sin(N.t * 2) * .1); ctx.lineWidth = 1.4;
+    ctx.setLineDash([2, 6]); ctx.lineDashOffset = -N.t * 10; ctx.beginPath(); ctx.arc(cx, cy, R * .97, 0, 6.2832); ctx.stroke(); ctx.restore();
+    // ── 쿼크 움직임 (원래 로직 그대로) ──
+    const shift = Math.floor(N.t / 1.4);
+    N.q.forEach(q => {
+      if(!(N.drag && N.drag.q === q)){
+        const tx = q.hx + Math.cos(N.t * 1.7 + q.ph) * .09, ty = q.hy + Math.sin(N.t * 2.1 + q.ph * 1.3) * .09;
+        q.x += (tx - q.x) * Math.min(1, dt * 7); q.y += (ty - q.y) * Math.min(1, dt * 7);
+      }
+      if(q.flash) q.flash = Math.max(0, q.flash - dt * 2);
+    });
+    // ── 바다 쿼크 ──
+    if(N.sea){
+      for(let i = 0; i < 16; i++){
+        const life = (N.t * .9 + i * .37) % 1, rnd = rxNucRand(i * 7919 + Math.floor(N.t * .9 + i * .37) * 104729);
+        const r = Math.sqrt(rnd()) * R * .78, a = rnd() * 6.2832, px = cx + Math.cos(a) * r, py = cy + Math.sin(a) * r;
+        const al = Math.sin(life * 3.1416) * .75, sep = 5 + life * 9, da = rnd() * 6.2832, c = RX_NUC_COL[Math.floor(rnd() * 3)];
+        bead(ctx, px + Math.cos(da) * sep, py + Math.sin(da) * sep, 4.5, c, al);
+        ctx.save(); ctx.globalAlpha = al; ctx.strokeStyle = c; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(px - Math.cos(da) * sep, py - Math.sin(da) * sep, 4.2, 0, 6.2832); ctx.stroke(); ctx.restore();
+      }
+    }
+    const scr = N.q.map(q => [cx + q.x * S, cy + q.y * S]);
+    const cols = N.q.map(q => N.real ? '#eef1f5' : RX_NUC_COL[(q.c + shift) % 3]);
+    // ── Y자 플럭스 튜브: 가운데 점(세 쿼크의 무게중심) ──
+    const jx = (scr[0][0] + scr[1][0] + scr[2][0]) / 3, jy = (scr[0][1] + scr[1][1] + scr[2][1]) / 3;
+    N.q.forEach((q, i) => {
+      const far = Math.hypot(q.x - q.hx, q.y - q.hy), tense = Math.min(1, far / 1.5);
+      // 끈은 구체 가장자리에서 시작 (반투명한 구체 속으로 비치지 않게)
+      const dx0 = jx - scr[i][0], dy0 = jy - scr[i][1], d0 = Math.hypot(dx0, dy0) || 1, k0 = Math.min(.9, 24 / d0);
+      tube(ctx, scr[i][0] + dx0 * k0, scr[i][1] + dy0 * k0, jx, jy, cols[i], N.t, tense, i * 2.1);
+    });
+    // 가운데 이음매
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const jg = ctx.createRadialGradient(jx, jy, 0, jx, jy, 16); jg.addColorStop(0, 'rgba(255,255,255,.95)'); jg.addColorStop(.4, 'rgba(255,255,255,.35)'); jg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = jg; ctx.beginPath(); ctx.arc(jx, jy, 16 + Math.sin(N.t * 4) * 2, 0, 6.2832); ctx.fill(); ctx.restore();
+    // ── 색이 바뀔 때: 글루온 빛 알갱이가 한 쿼크에서 다음 쿼크로 ──
+    if(!N.real && shift !== lastShift){ if(lastShift >= 0) for(let i = 0; i < 3; i++) flights.push({ a: i, b: (i + 1) % 3, t: 0, c: cols[i] }); lastShift = shift; }
+    flights = flights.filter(f => f.t < 1);
+    flights.forEach(f => {
+      f.t += dt * 1.8; const u = f.t, e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      const [ax, ay] = scr[f.a], [bx, by] = scr[f.b];
+      const mx = (ax + bx) / 2 + (jx - (ax + bx) / 2) * .6, my = (ay + by) / 2 + (jy - (ay + by) / 2) * .6;   // 가운데 쪽으로 휘어서
+      const px = (1 - e) * (1 - e) * ax + 2 * (1 - e) * e * mx + e * e * bx, py = (1 - e) * (1 - e) * ay + 2 * (1 - e) * e * my + e * e * by;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.sin(u * 3.1416);
+      const s = ctx.createRadialGradient(px, py, 0, px, py, 10); s.addColorStop(0, '#fff'); s.addColorStop(.35, rgba(f.c, .9)); s.addColorStop(1, rgba(f.c, 0));
+      ctx.fillStyle = s; ctx.beginPath(); ctx.arc(px, py, 10, 0, 6.2832); ctx.fill(); ctx.restore();
+    });
+    // ── 쿼크 ──
+    N.q.forEach((q, i) => {
+      const [x, y] = scr[i], r = 25, col = cols[i];
+      if(q.flash){ ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,255,255,${q.flash * .5})`; ctx.beginPath(); ctx.arc(x, y, r + 24 * (1 - q.flash), 0, 6.2832); ctx.fill(); ctx.restore(); }
+      bead(ctx, x, y, r, col);
+      if(N.real){
+        ctx.save();
+        for(let k = 0; k < 3; k++){ const a0 = N.t * 9 + i * 2 + k * 2.0944; ctx.strokeStyle = RX_NUC_COL[k]; ctx.globalAlpha = .85; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.arc(x, y, r + 5, a0, a0 + 1.5); ctx.stroke(); }
+        ctx.restore();
+      }
+      ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 10; ctx.fillStyle = '#fff'; ctx.font = font(20, 800); ctx.fillText(q.f, x, y + 1); ctx.shadowColor = col; ctx.shadowBlur = 18; ctx.fillText(q.f, x, y + 1); ctx.restore();
+      // 전하 배지
+      const lab = q.f === 'u' ? '+⅔' : '−⅓', bw = 30, by = y + r + 15;
+      ctx.fillStyle = 'rgba(18,20,46,.85)'; ctx.strokeStyle = rgba(col, .6); ctx.lineWidth = 1;
+      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x - bw / 2, by - 9, bw, 18, 9); else ctx.rect(x - bw / 2, by - 9, bw, 18); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#eef0ff'; ctx.font = font(11.5, 600); ctx.fillText(lab, x, by + 1);
+    });
+    // ── 중간자 (원래 로직, 구슬만 새로) ──
+    N.mesons = N.mesons.filter(m => m.t < 1.6);
+    N.mesons.forEach(m => {
+      m.t += dt; m.x += m.vx * dt; m.y += m.vy * dt;
+      const a = Math.max(0, 1 - m.t / 1.6), x = cx + m.x * S, y = cy + m.y * S, col = RX_NUC_COL[m.c];
+      tube(ctx, x - 9, y, x + 11, y, col, N.t, .6, 0);
+      bead(ctx, x - 9, y, 12, col, a);
+      ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x + 11, y, 11, 0, 6.2832); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = font(12, 700); ctx.fillText(m.f, x - 9, y + 1);
+      ctx.fillStyle = '#e8ecf3'; ctx.fillText(m.f, x + 11, y + 1);
+      const tw = ctx.measureText(m.f).width; ctx.strokeStyle = '#e8ecf3'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(x + 11 - tw / 2 - .5, y - 7.5); ctx.lineTo(x + 11 + tw / 2 + .5, y - 7.5); ctx.stroke(); ctx.restore();
+    });
+  };
 })();
 </script>
 <style>
