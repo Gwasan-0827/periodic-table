@@ -41157,6 +41157,275 @@ void main(){
 })();
 </script>
 <style>
+  /* ═══ 분자 오비탈 전용 화면 (오비탈 탭 → 전체 화면) ═══ */
+  #moBig{position:fixed;inset:0;z-index:75;display:none;color:#e8ebff;font-family:inherit;
+    background:radial-gradient(90% 70% at 70% 40%,#2c2f86 0%,#17194a 45%,#0a0b22 100%)}
+  #moBig.on{display:block;animation:moBgIn .35s ease-out}
+  @keyframes moBgIn{from{opacity:0}}
+  #moBig::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(201,208,255,.05) 0 1px,transparent 1px 48px),repeating-linear-gradient(0deg,rgba(201,208,255,.04) 0 1px,transparent 1px 48px);
+    -webkit-mask:radial-gradient(70% 60% at 65% 45%,#000,transparent);mask:radial-gradient(70% 60% at 65% 45%,#000,transparent)}
+  #moBig .mb-wrap{position:absolute;inset:0;display:grid;grid-template-columns:minmax(300px,380px) 1fr;grid-template-rows:auto 1fr;gap:0}
+  #moBig .mb-top{grid-column:1 / -1;display:flex;align-items:center;gap:14px;padding:14px 18px 6px}
+  #moBig .mb-top .k{font:700 11px/1 ui-monospace,monospace;letter-spacing:.18em;color:rgba(201,208,255,.7)}
+  #moBig .mb-top h2{margin:5px 0 0;font:600 30px/1 Kanit,system-ui,sans-serif;background:linear-gradient(90deg,#fff,#c9d0ff 60%,#9aa8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #moBig .mb-top h2 small{font:600 15px/1 inherit;font-family:inherit;color:#c9d0ff;-webkit-text-fill-color:#c9d0ff;margin-left:10px}
+  #moBig .mb-x{margin-left:auto;width:40px;height:40px;border-radius:12px;border:1px solid rgba(201,208,255,.3);background:rgba(10,12,30,.5);color:#fff;font-size:18px;cursor:pointer}
+  #moBig .mb-side{grid-row:2;grid-column:1;overflow-y:auto;padding:6px 14px 18px 18px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+  #moBig .mb-card{border-radius:16px;border:1px solid rgba(154,168,255,.22);background:rgba(10,12,32,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  #moBig .mb-dg{padding:10px 10px 6px}
+  #moBig .mb-dg svg{display:block;width:100%;height:auto}
+  #moBig .mb-dg .lv{cursor:pointer}
+  #moBig .mb-dg .lv:hover .bar{opacity:1}
+  #moBig .mb-hint{font-size:11px;color:var(--dim);text-align:center;margin-top:2px}
+  #moBig .mb-info{padding:14px}
+  #moBig .mb-info .nm{display:flex;align-items:center;gap:10px}
+  #moBig .mb-info .nm b{font:600 26px/1 Kanit,system-ui,sans-serif}
+  #moBig .mb-info .pill{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:800}
+  #moBig .mb-info .pill.bd{color:#0b1530;background:linear-gradient(90deg,#d6f4ff,#9ee7ff)}
+  #moBig .mb-info .pill.an{color:#2a0b1e;background:linear-gradient(90deg,#ffd6ec,#ff9ad5)}
+  #moBig .mb-info .pill.nb{color:#141833;background:#c9d0ff}
+  #moBig .mb-info p{margin:9px 0 0;font-size:13px;line-height:1.6;color:#d6dbff;word-break:keep-all}
+  #moBig .mb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  #moBig .mb-st{padding:10px 8px;text-align:center}
+  #moBig .mb-st b{display:block;font:700 22px/1 Kanit,system-ui,sans-serif}
+  #moBig .mb-st span{display:block;margin-top:5px;font-size:10.5px;color:var(--dim)}
+  #moBig .mb-st.mag b{color:#ff9ad5}
+  #moBig .mb-note{padding:12px 14px;font-size:12.5px;line-height:1.6;color:#d6dbff;word-break:keep-all}
+  #moBig .mb-note b{color:#ffe29a}
+  #moBig .mb-view{grid-row:2;grid-column:2;position:relative;min-height:0}
+  #moBig .mb-view canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+  #moBig .mb-leg{position:absolute;right:16px;bottom:14px;display:flex;gap:12px;font:700 11px/1 ui-monospace,monospace;color:#c9d0ff;pointer-events:none}
+  #moBig .mb-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;box-shadow:0 0 8px currentColor}
+  #moBig .mb-tip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:11px;color:var(--dim);pointer-events:none;white-space:nowrap}
+  #moBig .mb-lab{position:absolute;pointer-events:none;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff6e0;box-shadow:0 0 10px 3px rgba(255,240,200,.9),0 0 28px 8px rgba(201,208,255,.5)}
+  #moBig .mb-lab::after{content:attr(data-s);position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:700 14px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 8px #000,0 0 14px rgba(154,168,255,.9)}
+  @media (max-width:760px){
+    #moBig .mb-wrap{grid-template-columns:1fr;grid-template-rows:auto minmax(220px,42vh) 1fr}
+    #moBig .mb-top{padding:10px 12px 4px} #moBig .mb-top h2{font-size:24px}
+    #moBig .mb-view{grid-row:2;grid-column:1}
+    #moBig .mb-side{grid-row:3;grid-column:1;padding:6px 10px 16px}
+    #moBig .mb-tip{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ #moBig.on{animation:none} }
+</style>
+<script>
+(function(){
+  if(typeof rxRender !== 'function') return;
+  const P = (ko, en) => LANG === 'en' ? en : ko;
+  const L = (lab, star, kA, kB, cA, cB, e, deg) => ({ lab, star, kA, kB, cA, cB, e, deg });
+  const homo = (swap) => [
+    L('σ2s', 0, 's', 's', 1, 1, 0, 1), L('σ*2s', 1, 's', 's', 1, -1, 1.2, 1),
+    swap ? L('σ2p', 0, 'p', 'p', 1, -1, 2.4, 1) : L('π2p', 0, 'q', 'q', 1, 1, 2.4, 2),
+    swap ? L('π2p', 0, 'q', 'q', 1, 1, 3.0, 2) : L('σ2p', 0, 'p', 'p', 1, -1, 3.0, 1),
+    L('π*2p', 1, 'q', 'q', 1, -1, 4.1, 2), L('σ*2p', 1, 'p', 'p', 1, 1, 5.0, 1)];
+  const het = (a, b) => [
+    L('σ2s', 0, 's', 's', a, b, 0, 1), L('σ*2s', 1, 's', 's', b, -a, 1.2, 1),
+    L('π2p', 0, 'q', 'q', a, b, 2.4, 2), L('σ2p', 0, 'p', 'p', b, -a, 3.0, 1),
+    L('π*2p', 1, 'q', 'q', b, -a, 4.1, 2), L('σ*2p', 1, 'p', 'p', a, b, 5.0, 1)];
+  const MOL = {
+    H2:  { A: 'H', B: 'H', f: 'H₂', d: 25, ne: 2, ao: [['1s', 1.4]], lv: [L('σ1s', 0, 's', 's', 1, 1, 0, 1), L('σ*1s', 1, 's', 's', 1, -1, 2.8, 1)], zA: 1, zB: 1 },
+    N2:  { A: 'N', B: 'N', f: 'N₂', d: 37, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: homo(false), zA: 1.25, zB: 1.25 },
+    O2:  { A: 'O', B: 'O', f: 'O₂', d: 41, ne: 12, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.3, zB: 1.3 },
+    F2:  { A: 'F', B: 'F', f: 'F₂', d: 48, ne: 14, ao: [['2s', .6], ['2p', 2.7]], lv: homo(true), zA: 1.35, zB: 1.35 },
+    Cl2: { A: 'Cl', B: 'Cl', f: 'Cl₂', d: 66, ne: 14, ao: [['3s', .6], ['3p', 2.7]], lv: homo(true).map(x => ({ ...x, lab: x.lab.replace('2', '3') })), zA: .95, zB: .95 },
+    CO:  { A: 'C', B: 'O', f: 'CO', d: 38, ne: 10, ao: [['2s', .6], ['2p', 2.7]], lv: het(.55, .84), zA: 1.15, zB: 1.3 },
+    NO:  { A: 'N', B: 'O', f: 'NO', d: 39, ne: 11, ao: [['2s', .6], ['2p', 2.7]], lv: het(.62, .78), zA: 1.25, zB: 1.3 },
+    HF:  { A: 'H', B: 'F', f: 'HF', d: 31, ne: 8, ao: null, lv: [
+           L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
+           L('n', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
+  };
+  const NOTE = {
+    H2: ['전자 두 개가 결합 오비탈 하나에 같이 들어가요. 그래서 결합이 하나예요.', 'Two electrons share one bonding orbital, so there is one bond.'],
+    N2: ['전자가 결합 오비탈에만 꽉 차 있어요. 그래서 질소는 아주 튼튼한 <b>삼중 결합</b>이에요. 공기 중 질소가 잘 반응 안 하는 이유예요.', 'Only bonding orbitals are filled, giving a very strong <b>triple bond</b>. That is why nitrogen in air barely reacts.'],
+    O2: ['맨 위 π* 오비탈 두 칸에 전자가 하나씩 따로 들어가요. 짝 없는 전자가 2개라서 <b>산소는 자석에 끌려요</b>. 액체 산소를 자석 사이에 부으면 진짜 붙어요!', 'The top two π* orbitals each hold one lone electron. With two unpaired electrons, <b>oxygen is pulled by magnets</b>. Liquid oxygen really sticks between magnet poles!'],
+    F2: ['반결합 오비탈까지 거의 다 차서 결합이 하나뿐이에요. 그래서 F₂는 쉽게 쪼개지고 엄청 잘 반응해요.', 'Antibonding orbitals fill up too, leaving one weak bond. That is why F₂ splits easily and reacts so violently.'],
+    Cl2: ['3s·3p 오비탈로 만들어지지만 순서와 모양은 F₂와 같아요. 결합 하나.', 'Built from 3s and 3p, but the same pattern as F₂. One bond.'],
+    CO: ['N₂와 전자 수가 같아서 이것도 <b>삼중 결합</b>이에요. 다만 산소 쪽으로 전자가 살짝 쏠려 있어요.', 'Same electron count as N₂, so also a <b>triple bond</b>, but leaning a little toward oxygen.'],
+    NO: ['전자가 11개라 홀수예요. π*에 전자 하나가 혼자 남아서 결합 차수가 2.5예요. 그래서 NO는 반응을 잘해요.', 'With 11 electrons, one is left alone in π*. Bond order 2.5, and that lone electron makes NO reactive.'],
+    HF: ['플루오린이 전자를 세게 당겨서 σ 오비탈이 F 쪽으로 쏠려요. F의 나머지 전자들은 결합에 안 끼는 비결합(n) 오비탈에 있어요.', 'Fluorine pulls hard, so the σ orbital leans toward F. F’s other electrons sit in non-bonding (n) orbitals.'],
+  };
+  const KEYOF = { H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
+  function molKey(){
+    try{ const c = RX && RX.comp; if(!c || c.length > 2) return null;
+      if(c.reduce((s, [, n]) => s + n, 0) !== 2) return null;
+      return KEYOF[c.length === 1 ? c[0][0] + '2' : c.map(([s, n]) => s + n).join('')] || null; }catch(e){ return null; }
+  }
+  function fill(M){
+    const lv = M.lv.slice().sort((a, b) => a.e - b.e).map(x => ({ ...x, n: 0 }));
+    let left = M.ne; lv.forEach(x => { const k = Math.min(left, x.deg * 2); x.n = k; left -= k; });
+    let b = 0, a = 0; lv.forEach(x => { if(x.lab === 'n' || (M.hf && x.lab === '2s')) return; if(x.star) a += x.n; else b += x.n; });
+    const unp = lv.reduce((s, x) => s + (x.deg === 2 ? (x.n === 1 || x.n === 3 ? 1 : x.n === 2 ? 2 : 0) : (x.n === 1 ? 1 : 0)), 0);
+    return { lv, bo: (b - a) / 2, unp };
+  }
+  const kind = x => x.star ? 'an' : x.lab === 'n' || x.lab === '2s' ? 'nb' : 'bd';
+  const KTXT = { bd: ['결합', 'Bonding'], an: ['반결합', 'Antibonding'], nb: ['비결합', 'Non-bonding'] };
+  const KDESC = {
+    bd: ['원자 사이 공간에 전자가 모여서 두 원자를 끌어당겨 붙여 줘요.', 'Electrons gather between the atoms and pull them together.'],
+    an: ['원자 사이 한가운데에 전자가 하나도 없는 면(마디)이 있어요. 여기 든 전자는 결합을 약하게 해요.', 'There is an empty plane (node) right between the atoms. Electrons here weaken the bond.'],
+    nb: ['한쪽 원자에만 머물러서 결합에 거의 영향을 안 줘요.', 'It stays on one atom and barely affects the bond.'],
+  };
+
+  /* ── 오비탈 함수 (화면 단위: 18 = 보어 반지름 1) ── */
+  const basis = (k, x, y, z, Z) => { const r = Math.hypot(x, y, z), e = Math.exp(-Z * r);
+    return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 : 0; };
+  const psi = (M, o, x, y, z) => {
+    const s = 1 / 18, xa = (x + M.d / 2) * s, xb = (x - M.d / 2) * s, ys = y * s, zs = z * s;
+    return o.cA * basis(o.kA, xa, ys, zs, M.zA * (o.kA === 's' ? 1.55 : 1.4)) + o.cB * basis(o.kB, xb, ys, zs, M.zB * (o.kB === 's' ? 1.55 : 1.4));
+  };
+  // |ψ|² 에 비례하게 점을 뿌린다 (전자 구름)
+  function sample(M, o, N){
+    const R = 50, X = M.d / 2 + R;
+    let mx = 0; for(let i = 0; i < 4000; i++){ const v = psi(M, o, (Math.random() * 2 - 1) * X, (Math.random() * 2 - 1) * R, (Math.random() * 2 - 1) * R); mx = Math.max(mx, v * v); }
+    const out = new Float32Array(N * 4); let n = 0, tries = 0;
+    while(n < N && tries < N * 400){ tries++;
+      const x = (Math.random() * 2 - 1) * X, y = (Math.random() * 2 - 1) * R, z = (Math.random() * 2 - 1) * R;
+      const v = psi(M, o, x, y, z), p = v * v / mx;
+      if(Math.random() < Math.pow(p, 1.35) * 1.2){ out[n * 4] = x; out[n * 4 + 1] = y; out[n * 4 + 2] = z; out[n * 4 + 3] = v >= 0 ? 1 : -1; n++; } }
+    return out.subarray(0, n * 4);
+  }
+
+  /* ── WebGL 점 구름 ── */
+  const VS = `attribute vec4 a;uniform mat3 M;uniform vec2 R;uniform float S;uniform float PS;uniform float T;varying float sg;varying float dz;
+void main(){ vec3 p=M*a.xyz; float f=420./(420.-p.z); vec2 s=p.xy*f*S; gl_Position=vec4(s.x/R.x*2.,-s.y/R.y*2.,0.,1.); gl_PointSize=PS*f*(.8+.4*fract(sin(dot(a.xyz,vec3(12.9,78.2,37.7)))*437.)); sg=a.w; dz=clamp((p.z+90.)/180.,0.,1.); }`;
+  const FS = `precision mediump float;varying float sg;varying float dz;
+void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.0,r); g=g*g;
+  vec3 A=vec3(.55,.75,1.), B=vec3(1.,.5,.78); vec3 col=(sg>0.?A:B)*(.55+.75*dz)+vec3(.35)*smoothstep(.18,0.,r);
+  gl_FragColor=vec4(col*g*(.55+.75*dz),g*(.5+.5*dz)); }`;
+  const VS2 = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+  let G = null;
+  function glInit(cv){
+    const gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: true }); if(!gl) return null;
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    const buf = gl.createBuffer();
+    const U = {}; ['M', 'R', 'S', 'PS', 'T'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+    return { gl, pr, buf, U, loc: gl.getAttribLocation(pr, 'a'), n: 0 };
+  }
+  let st = null, raf = 0;
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!st || !G) return;
+    const cv = st.cv, gl = G.gl, dpr = Math.min(window.RX_LOWPOW ? 1.25 : 2, devicePixelRatio || 1);
+    const w = cv.clientWidth, h = cv.clientHeight; if(!w || !h) return;
+    if(cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    if(!st.drag && !RX_REDUCED) st.yaw += (now - (st.last || now)) * 0.00025;
+    st.last = now;
+    // 새 오비탈로 바뀔 때: 점들이 퍼졌다 모이며 바뀐다
+    const k = Math.min(1, (now - st.t0) / 650), e = 1 - Math.pow(1 - k, 3);
+    const cY = Math.cos(st.yaw), sY = Math.sin(st.yaw), cX = Math.cos(st.pitch), sX = Math.sin(st.pitch);
+    const col = (x, y, z) => { const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
+    const S = Math.min(w / (st.M.d + 120), h / 125) * dpr * (.85 + .15 * e);
+    gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(G.pr); gl.bindBuffer(gl.ARRAY_BUFFER, G.buf); gl.enableVertexAttribArray(G.loc); gl.vertexAttribPointer(G.loc, 4, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix3fv(G.U.M, false, new Float32Array([...col(1, 0, 0), ...col(0, 1, 0), ...col(0, 0, 1)]));
+    gl.uniform2f(G.U.R, cv.width, cv.height); gl.uniform1f(G.U.S, S); gl.uniform1f(G.U.PS, 3.4 * dpr * (window.RX_LOWPOW ? 1.25 : 1));
+    gl.drawArrays(gl.POINTS, 0, Math.round(G.n * e));
+    // 원자 이름표 위치
+    [[-st.M.d / 2, st.M.A, st.la], [st.M.d / 2, st.M.B, st.lb]].forEach(([x, , el]) => { const p = col(x, 0, 0), f = 420 / (420 - p[2]);
+      el.style.left = (w / 2 + p[0] * f * S / dpr) + 'px'; el.style.top = (h / 2 + p[1] * f * S / dpr) + 'px'; el.style.opacity = .55 + .45 * Math.min(1, (p[2] + 60) / 120); });
+  }
+  function choose(i, fresh){
+    st.sel = i; const o = st.F.lv[i];
+    const pts = sample(st.M, o, window.RX_LOWPOW ? 9000 : 18000);
+    G.gl.bindBuffer(G.gl.ARRAY_BUFFER, G.buf); G.gl.bufferData(G.gl.ARRAY_BUFFER, pts, G.gl.STATIC_DRAW); G.n = pts.length / 4;
+    st.t0 = performance.now();
+    diag(); info();
+    if(!fresh) try{ SFX.tick(); }catch(e){}
+  }
+  /* ── 큰 에너지 도표 ── */
+  function diag(){
+    const M = st.M, F = st.F, W = 340, H = 330, top = 26, bot = 290, cx = 170, w = 46;
+    const es = F.lv.map(x => x.e), e0 = Math.min(...es), e1 = Math.max(...es);
+    const Y = e => bot - (e - e0) / ((e1 - e0) || 1) * (bot - top);
+    let s = `<defs><filter id="mbGl" x="-30%" y="-300%" width="160%" height="700%"><feGaussianBlur stdDeviation="3"/></filter></defs>`;
+    s += `<line x1="18" x2="18" y1="${bot + 6}" y2="${top - 10}" stroke="rgba(201,208,255,.35)"/><path d="M14 ${top - 4}l4-7 4 7" fill="none" stroke="rgba(201,208,255,.6)" stroke-width="1.4"/><text x="24" y="${top - 6}" font-size="10" fill="rgba(201,208,255,.65)">${P('에너지', 'Energy')}</text>`;
+    const aoY = [];
+    if(M.ao) M.ao.forEach(([lab, e]) => { const yy = Y(e0 + (e1 - e0) * (e / 5)); aoY.push(yy);
+      s += `<line x1="38" x2="78" y1="${yy}" y2="${yy}" stroke="#aab3d6" stroke-width="2.5" stroke-linecap="round"/><line x1="262" x2="302" y1="${yy}" y2="${yy}" stroke="#aab3d6" stroke-width="2.5" stroke-linecap="round"/>`;
+      s += `<text x="58" y="${yy - 7}" font-size="11" fill="#aab3d6" text-anchor="middle">${lab}</text><text x="282" y="${yy - 7}" font-size="11" fill="#aab3d6" text-anchor="middle">${lab}</text>`; });
+    s += `<text x="58" y="${H - 6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle" font-family="Kanit,sans-serif">${M.A}</text><text x="282" y="${H - 6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle" font-family="Kanit,sans-serif">${M.B}</text><text x="${cx}" y="${H - 6}" font-size="12" font-weight="700" fill="#c9d0ff" text-anchor="middle">${M.f}</text>`;
+    let ei = 0;
+    F.lv.forEach((x, i) => {
+      const yy = Y(x.e), K = kind(x), c = K === 'an' ? '#ff9ad5' : K === 'nb' ? '#c9d0ff' : '#9ee7ff';
+      if(aoY.length){ const a = aoY[/s/.test(x.lab) && !/p/.test(x.lab) ? 0 : aoY.length - 1];
+        s += `<path d="M78 ${a}L${cx - w} ${yy}M262 ${a}L${cx + w} ${yy}" stroke="rgba(154,168,255,.28)" stroke-dasharray="3 3"/>`; }
+      const segs = x.deg === 2 ? [[cx - w, cx - 4], [cx + 4, cx + w]] : [[cx - w * .5, cx + w * .5]];
+      let g = `<g class="lv" data-i="${i}"><rect x="${cx - w - 12}" y="${yy - 15}" width="${w * 2 + 74}" height="30" rx="15" fill="${i === st.sel ? 'rgba(255,226,154,.13)' : 'transparent'}" stroke="${i === st.sel ? 'rgba(255,226,154,.7)' : 'none'}"/>`;
+      segs.forEach(([a, b]) => g += `<line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${c}" stroke-width="9" opacity=".35" filter="url(#mbGl)" stroke-linecap="round"/><line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/>`);
+      g += `<text x="${cx + w + 10}" y="${yy + 4.5}" font-size="13" font-weight="700" fill="${i === st.sel ? '#ffe29a' : c}" font-family="Kanit,sans-serif">${x.lab}</text>`;
+      const put = segs.map(() => 0); for(let k = 0; k < x.n; k++) put[k % segs.length]++;
+      segs.forEach(([a, b], k) => { const m = (a + b) / 2;
+        for(let j = 0; j < put[k]; j++){ const xx = m + (put[k] === 2 ? (j ? 5.5 : -5.5) : 0), up = j === 0, d = (ei++ * .07).toFixed(2);
+          g += `<path d="${up ? `M${xx} ${yy + 8}V${yy - 9}m-3.4 3.6 3.4-3.6 3.4 3.6` : `M${xx} ${yy - 8}V${yy + 9}m-3.4-3.6 3.4 3.6 3.4-3.6`}" stroke="#fff" stroke-width="1.9" fill="none" stroke-linecap="round" style="opacity:0;animation:mbE .35s ${d}s ease-out forwards"/>`; } });
+      s += g + '</g>';
+    });
+    const box = st.el.querySelector('.mb-dg');
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}"><style>@keyframes mbE{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}</style>${s}</svg><div class="mb-hint">${P('칸을 누르면 그 오비탈 모양이 보여요', 'Tap a level to see its shape')}</div>`;
+    if(!st.animOnce){ st.animOnce = true; } else box.querySelectorAll('path[style]').forEach(p => p.style.animation = 'none');
+    box.querySelectorAll('.lv').forEach(g => g.addEventListener('click', () => { if(+g.dataset.i !== st.sel){ choose(+g.dataset.i); box.querySelectorAll('path[style]').forEach(p => { p.style.animation = 'none'; p.style.opacity = 1; }); } }));
+  }
+  function info(){
+    const x = st.F.lv[st.sel], K = kind(x), M = st.M, F = st.F;
+    const bo = Number.isInteger(F.bo) ? F.bo : F.bo.toFixed(1);
+    st.el.querySelector('.mb-info').innerHTML = `<div class="nm"><b>${x.lab}</b><span class="pill ${K}">${P(KTXT[K][0], KTXT[K][1])}</span></div>
+      <p>${P(KDESC[K][0], KDESC[K][1])} ${x.deg === 2 ? P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요(90° 돌린 모양).', 'It has a twin with the same energy, turned 90°.') : ''} ${P(`전자 <b>${x.n}</b> / ${x.deg * 2}개`, `<b>${x.n}</b> / ${x.deg * 2} electrons`)}</p>`;
+    st.el.querySelector('.mb-stats').innerHTML = `<div class="mb-card mb-st"><b>${bo}</b><span>${P('결합 차수', 'Bond order')}</span></div><div class="mb-card mb-st"><b>${M.ne}</b><span>${P('원자가 전자', 'Valence e⁻')}</span></div><div class="mb-card mb-st${F.unp ? ' mag' : ''}"><b>${F.unp}${F.unp ? ' 🧲' : ''}</b><span>${P('짝 없는 전자', 'Unpaired')}</span></div>`;
+  }
+  function open(key){
+    const M = MOL[key]; if(!M) return;
+    let el = document.getElementById('moBig');
+    if(!el){
+      el = document.createElement('div'); el.id = 'moBig'; el.setAttribute('role', 'dialog');
+      el.innerHTML = `<div class="mb-wrap"><div class="mb-top"><div><div class="k">MOLECULAR ORBITALS // ${P('분자 오비탈', 'MO')}</div><h2></h2></div><button class="mb-x" aria-label="close">✕</button></div>
+        <div class="mb-side"><div class="mb-card mb-dg"></div><div class="mb-card mb-info"></div><div class="mb-stats"></div><div class="mb-card mb-note"></div></div>
+        <div class="mb-view"><canvas></canvas><span class="mb-lab a"></span><span class="mb-lab b"></span><div class="mb-leg"><span><i style="background:#9ee7ff;color:#9ee7ff"></i>+</span><span><i style="background:#ff9ad5;color:#ff9ad5"></i>−</span></div><div class="mb-tip">${P('드래그해서 돌려 보기 · 점이 많을수록 전자가 있을 확률이 높아요', 'Drag to rotate · denser dots = electron more likely')}</div></div></div>`;
+      document.body.appendChild(el);
+      el.querySelector('.mb-x').addEventListener('click', close);
+      addEventListener('keydown', e => { if(e.key === 'Escape' && el.classList.contains('on')) close(); });
+      const cv = el.querySelector('canvas');
+      cv.addEventListener('pointerdown', e => { if(!st) return; st.drag = { x: e.clientX, y: e.clientY }; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+      cv.addEventListener('pointermove', e => { if(!st || !st.drag) return; st.yaw += (e.clientX - st.drag.x) * .01; st.pitch = Math.max(-1.4, Math.min(1.4, st.pitch + (e.clientY - st.drag.y) * .01)); st.drag = { x: e.clientX, y: e.clientY }; });
+      ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => { if(st) st.drag = null; }));
+    }
+    const cv = el.querySelector('canvas');
+    if(!G || G.cv !== cv){ try{ G = glInit(cv); if(G) G.cv = cv; }catch(e){ console.warn('mo', e); G = null; } }
+    if(!G) return;
+    const F = fill(M);
+    el.querySelector('h2').innerHTML = `${M.f}<small>${RX && RX.raw ? (LANG === 'en' && typeof REC_EN !== 'undefined' && REC_EN[RX.raw] ? REC_EN[RX.raw][0] : RX.raw) : ''}</small>`;
+    el.querySelector('.mb-note').innerHTML = P(NOTE[key][0], NOTE[key][1]);
+    const la = el.querySelector('.mb-lab.a'), lb = el.querySelector('.mb-lab.b'); la.dataset.s = M.A; lb.dataset.s = M.B;
+    let sel = 0; F.lv.forEach((x, i) => { if(x.n > 0) sel = i; });
+    st = { el, cv, M, F, sel, yaw: .6, pitch: -.35, la, lb, animOnce: false };
+    el.classList.add('on');
+    requestAnimationFrame(() => { choose(sel, true); if(!raf) raf = requestAnimationFrame(frame); });
+    try{ rxEvt && rxEvt('mo'); }catch(e){}
+  }
+  function close(){
+    const el = document.getElementById('moBig'); if(el) el.classList.remove('on');
+    cancelAnimationFrame(raf); raf = 0; st = null;
+  }
+  window.rxMOOpen = () => { const k = molKey(); if(k) open(k); };
+  // 결과 창 탭: 누르면 전용 화면을 연다 (결과 창의 보기는 그대로)
+  const _rr = rxRender;
+  rxRender = function(){
+    const r = _rr.apply(this, arguments);
+    try{
+      const old = document.getElementById('mTabMO');
+      const key = molKey(), ok = !!(key && RX && RX.views && RX.molTabs);
+      if(RX && RX.views) delete RX.views.mo;
+      let b = document.getElementById('mTabMO2');
+      if(old) old.hidden = true;
+      if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'mTabMO2'; b.setAttribute('role', 'tab');
+        b.addEventListener('click', e => { e.stopPropagation(); window.rxMOOpen(); });
+        document.getElementById('mTabs').appendChild(b); }
+      b.textContent = P('오비탈 ⤢', 'Orbitals ⤢'); b.hidden = !ok;
+    }catch(e){ console.warn('mo2', e); }
+    return r;
+  };
+})();
+</script>
+<style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
   #rxIntro.pw canvas.pw-main{position:absolute;inset:0;width:100%;height:100%;display:block}
