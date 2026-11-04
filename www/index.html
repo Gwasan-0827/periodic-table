@@ -4316,7 +4316,8 @@ mixBtn.addEventListener('click', () => {
   // 이성질체: 아직 못 찾은 모양이 있으면 그걸 보여준다
   // 물(H₂O)은 반반: 물 아니면 다이하이드로젠 모노옥사이드 (같은 물질, 무서운 이름)
   if(r && exKey === 'H2+O1' && RX_ISOMERS[exKey]){
-    if(Math.random() < 0.5){ r = RX_ISOMERS[exKey][0]; setTimeout(() => { try{ rxToast('⇄', LANG === 'en' ? 'Same stuff, scarier name!' : '같은 물질, 무서운 이름!'); }catch(e){} }, 1400); }
+    // 튜토리얼 중이거나 물을 처음 만들 땐 무조건 그냥 물
+    if(!document.getElementById('rxTut') && found.has('물') && Math.random() < 0.5){ r = RX_ISOMERS[exKey][0]; setTimeout(() => { try{ rxToast('⇄', LANG === 'en' ? 'Same stuff, scarier name!' : '같은 물질, 무서운 이름!'); }catch(e){} }, 1400); }
   } else if(r && RX_ISOMERS[exKey]){
     const all = [r].concat(RX_ISOMERS[exKey]);
     const pick = all.find(x => !found.has(x[1])) || all[Math.floor(Math.random() * all.length)];
