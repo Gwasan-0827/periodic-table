@@ -6213,7 +6213,7 @@ const CHANGELOG = [
            '힌트를 새로 만들었어요. 못 찾은 카드를 누르면 힌트 창이 튀어나오고, 설명 → 원소 하나 → 전체 조합 순서로 하나씩 열어요. 마지막엔 그 조합을 바로 담을 수 있어요',
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
-           'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
            '폰에서 원자 모형 도구 버튼이 화면 밖으로 잘리던 걸 위쪽 한 줄로 옮기고, 조합 바를 두 줄로 줄였어요',
            '앱 아이콘이 바뀌었어요. 시작 화면을 닮은 빛나는 마름모와 Pt예요',
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
@@ -6239,7 +6239,7 @@ const CHANGELOG = [
            'Hints are new: tap a missing card and a hint sheet pops out. Reveal a description, then one element, then the whole recipe, and load it straight into your mix',
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
-           'H₂, N₂, O₂, F₂, Cl₂, CO, NO and HF results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
            'On phones, the atom model tool buttons no longer get cut off at the edge, and the mix tray is down to two rows',
            'New app icon: a glowing diamond and Pt, like the start screen',
            'The credits now have a team name: K ɑ ɪ ɴ i x // X',
@@ -41234,7 +41234,16 @@ void main(){
            L('2s', 0, 's', 's', .05, 1, 0, 1), L('σ', 0, 's', 'p', .55, -.83, 1.9, 1),
            L('n', 0, 'x', 'q', 0, 1, 2.9, 2), L('σ*', 1, 's', 'p', .83, .55, 4.8, 1)], zA: 1, zB: 1.35, hf: true },
   };
+  // 벤젠: 고리 탄소 6개의 2p(고리면에 수직)로 만든 π 오비탈 6개 (휘켈 근사)
+  const TH = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3);
+  const RL = (lab, star, e, deg, c, c2) => ({ lab, star, e, deg, c, c2, kA: 'z', kB: 'z' });
+  MOL.C6H6 = { A: 'C', B: 'C', f: 'C₆H₆', d: 0, ring: 47, ne: 6, ao: null, zA: 1.4, zB: 1.4, pi: true, lv: [
+    RL('π₁', 0, 0, 1, TH.map(() => 1)),
+    RL('π₂ · π₃', 0, 1.4, 2, TH.map(a => Math.cos(a)), TH.map(a => Math.sin(a))),
+    RL('π₄* · π₅*', 1, 3.0, 2, TH.map(a => Math.cos(2 * a)), TH.map(a => Math.sin(2 * a))),
+    RL('π₆*', 1, 4.4, 1, TH.map((a, k) => k % 2 ? -1 : 1))] };
   const NOTE = {
+    C6H6: ['탄소 6개의 p 오비탈이 고리 위아래로 하나로 이어져서, π 전자 6개가 고리 전체를 빙글빙글 돌아다녀요. 결합 오비탈 3개(π₁~π₃)만 딱 차서 아주 안정해요. 이걸 <b>방향족</b>이라고 불러요. 그래서 벤젠의 탄소-탄소 결합 6개는 길이가 다 똑같아요.', 'The six carbon p orbitals join into one ring above and below the plane, so six π electrons roam the whole ring. Only the three bonding orbitals (π₁–π₃) are filled, which makes it very stable. This is called <b>aromaticity</b>, and it is why all six C–C bonds are the same length.'],
     H2: ['전자 두 개가 결합 오비탈 하나에 같이 들어가요. 그래서 결합이 하나예요.', 'Two electrons share one bonding orbital, so there is one bond.'],
     N2: ['전자가 결합 오비탈에만 꽉 차 있어요. 그래서 질소는 아주 튼튼한 <b>삼중 결합</b>이에요. 공기 중 질소가 잘 반응 안 하는 이유예요.', 'Only bonding orbitals are filled, giving a very strong <b>triple bond</b>. That is why nitrogen in air barely reacts.'],
     O2: ['맨 위 π* 오비탈 두 칸에 전자가 하나씩 따로 들어가요. 짝 없는 전자가 2개라서 <b>산소는 자석에 끌려요</b>. 액체 산소를 자석 사이에 부으면 진짜 붙어요!', 'The top two π* orbitals each hold one lone electron. With two unpaired electrons, <b>oxygen is pulled by magnets</b>. Liquid oxygen really sticks between magnet poles!'],
@@ -41246,7 +41255,7 @@ void main(){
   };
   const KEYOF = { H2: 'H2', N2: 'N2', O2: 'O2', F2: 'F2', Cl2: 'Cl2', C1O1: 'CO', O1C1: 'CO', N1O1: 'NO', O1N1: 'NO', F1H1: 'HF', H1F1: 'HF' };
   function molKey(){
-    try{ const c = RX && RX.comp; if(!c || c.length > 2) return null;
+    try{ if(RX && RX.raw === '벤젠') return 'C6H6'; const c = RX && RX.comp; if(!c || c.length > 2) return null;
       if(c.reduce((s, [, n]) => s + n, 0) !== 2) return null;
       return KEYOF[c.length === 1 ? c[0][0] + '2' : c.map(([s, n]) => s + n).join('')] || null; }catch(e){ return null; }
   }
@@ -41269,16 +41278,20 @@ void main(){
   const basis = (k, x, y, z, Z) => { const r = Math.hypot(x, y, z), e = Math.exp(-Z * r);
     return k === 's' ? e * 1.6 : k === 'p' ? x * e * Z * .9 : k === 'q' ? y * e * Z * .9 : 0; };
   const psi = (M, o, x, y, z) => {
+    if(M.ring){ const s = 1 / 18, Z = M.zA * 1.4, cc = o.alt && o.c2 ? o.c2 : o.c; let v = 0;
+      for(let k = 0; k < 6; k++){ const ax = Math.cos(TH[k]) * M.ring, ay = Math.sin(TH[k]) * M.ring;
+        const dx = (x - ax) * s, dy = (y - ay) * s, dz = z * s; v += cc[k] * dz * Math.exp(-Z * Math.hypot(dx, dy, dz)) * Z * .9; }
+      return v; }
     const s = 1 / 18, xa = (x + M.d / 2) * s, xb = (x - M.d / 2) * s, ys = y * s, zs = z * s;
     return o.cA * basis(o.kA, xa, ys, zs, M.zA * (o.kA === 's' ? 1.55 : 1.4)) + o.cB * basis(o.kB, xb, ys, zs, M.zB * (o.kB === 's' ? 1.55 : 1.4));
   };
   // |ψ|² 에 비례하게 점을 뿌린다 (전자 구름)
   function sample(M, o, N){
-    const R = 50, X = M.d / 2 + R;
-    let mx = 0; for(let i = 0; i < 4000; i++){ const v = psi(M, o, (Math.random() * 2 - 1) * X, (Math.random() * 2 - 1) * R, (Math.random() * 2 - 1) * R); mx = Math.max(mx, v * v); }
+    const R = 50, X = M.ring ? M.ring + 48 : M.d / 2 + R;
+    let mx = 0; for(let i = 0; i < 6000; i++){ const v = psi(M, o, (Math.random() * 2 - 1) * X, (Math.random() * 2 - 1) * (M.ring ? X : R), (Math.random() * 2 - 1) * R); mx = Math.max(mx, v * v); }
     const out = new Float32Array(N * 4); let n = 0, tries = 0;
     while(n < N && tries < N * 400){ tries++;
-      const x = (Math.random() * 2 - 1) * X, y = (Math.random() * 2 - 1) * R, z = (Math.random() * 2 - 1) * R;
+      const x = (Math.random() * 2 - 1) * X, y = (Math.random() * 2 - 1) * (M.ring ? X : R), z = (Math.random() * 2 - 1) * R;
       const v = psi(M, o, x, y, z), p = v * v / mx;
       if(Math.random() < Math.pow(p, 1.35) * 1.2){ out[n * 4] = x; out[n * 4 + 1] = y; out[n * 4 + 2] = z; out[n * 4 + 3] = v >= 0 ? 1 : -1; n++; } }
     return out.subarray(0, n * 4);
@@ -41314,7 +41327,7 @@ void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.
     const k = Math.min(1, (now - st.t0) / 650), e = 1 - Math.pow(1 - k, 3);
     const cY = Math.cos(st.yaw), sY = Math.sin(st.yaw), cX = Math.cos(st.pitch), sX = Math.sin(st.pitch);
     const col = (x, y, z) => { const x1 = x * cY + z * sY, z1 = -x * sY + z * cY; return [x1, y * cX - z1 * sX, y * sX + z1 * cX]; };
-    const S = Math.min(w / (st.M.d + 120), h / 125) * dpr * (.85 + .15 * e);
+    const S = (st.M.ring ? Math.min(w, h) / (st.M.ring * 2 + 110) : Math.min(w / (st.M.d + 120), h / 125)) * dpr * (.85 + .15 * e);
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
     gl.useProgram(G.pr); gl.bindBuffer(gl.ARRAY_BUFFER, G.buf); gl.enableVertexAttribArray(G.loc); gl.vertexAttribPointer(G.loc, 4, gl.FLOAT, false, 0, 0);
@@ -41322,7 +41335,7 @@ void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.
     gl.uniform2f(G.U.R, cv.width, cv.height); gl.uniform1f(G.U.S, S); gl.uniform1f(G.U.PS, 3.4 * dpr * (window.RX_LOWPOW ? 1.25 : 1));
     gl.drawArrays(gl.POINTS, 0, Math.round(G.n * e));
     // 원자 이름표 위치
-    [[-st.M.d / 2, st.M.A, st.la], [st.M.d / 2, st.M.B, st.lb]].forEach(([x, , el]) => { const p = col(x, 0, 0), f = 420 / (420 - p[2]);
+    st.nuc.forEach(([x, y, el]) => { const p = col(x, y, 0), f = 420 / (420 - p[2]);
       el.style.left = (w / 2 + p[0] * f * S / dpr) + 'px'; el.style.top = (h / 2 + p[1] * f * S / dpr) + 'px'; el.style.opacity = .55 + .45 * Math.min(1, (p[2] + 60) / 120); });
   }
   function choose(i, fresh){
@@ -41363,14 +41376,15 @@ void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.
     const box = st.el.querySelector('.mb-dg');
     box.innerHTML = `<svg viewBox="0 0 ${W} ${H}"><style>@keyframes mbE{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}</style>${s}</svg><div class="mb-hint">${P('칸을 누르면 그 오비탈 모양이 보여요', 'Tap a level to see its shape')}</div>`;
     if(!st.animOnce){ st.animOnce = true; } else box.querySelectorAll('path[style]').forEach(p => p.style.animation = 'none');
-    box.querySelectorAll('.lv').forEach(g => g.addEventListener('click', () => { if(+g.dataset.i !== st.sel){ choose(+g.dataset.i); box.querySelectorAll('path[style]').forEach(p => { p.style.animation = 'none'; p.style.opacity = 1; }); } }));
+    box.querySelectorAll('.lv').forEach(g => g.addEventListener('click', () => { const lv = st.F.lv[+g.dataset.i]; if(+g.dataset.i === st.sel && lv.c2){ lv.alt = !lv.alt; choose(st.sel); return; } if(+g.dataset.i !== st.sel){ choose(+g.dataset.i); box.querySelectorAll('path[style]').forEach(p => { p.style.animation = 'none'; p.style.opacity = 1; }); } }));
   }
   function info(){
     const x = st.F.lv[st.sel], K = kind(x), M = st.M, F = st.F;
     const bo = Number.isInteger(F.bo) ? F.bo : F.bo.toFixed(1);
     st.el.querySelector('.mb-info').innerHTML = `<div class="nm"><b>${x.lab}</b><span class="pill ${K}">${P(KTXT[K][0], KTXT[K][1])}</span></div>
-      <p>${P(KDESC[K][0], KDESC[K][1])} ${x.deg === 2 ? P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요(90° 돌린 모양).', 'It has a twin with the same energy, turned 90°.') : ''} ${P(`전자 <b>${x.n}</b> / ${x.deg * 2}개`, `<b>${x.n}</b> / ${x.deg * 2} electrons`)}</p>`;
-    st.el.querySelector('.mb-stats').innerHTML = `<div class="mb-card mb-st"><b>${bo}</b><span>${P('결합 차수', 'Bond order')}</span></div><div class="mb-card mb-st"><b>${M.ne}</b><span>${P('원자가 전자', 'Valence e⁻')}</span></div><div class="mb-card mb-st${F.unp ? ' mag' : ''}"><b>${F.unp}${F.unp ? ' 🧲' : ''}</b><span>${P('짝 없는 전자', 'Unpaired')}</span></div>`;
+      <p>${P(KDESC[K][0], KDESC[K][1])} ${x.deg === 2 ? (x.c2 ? P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요. 이 칸을 한 번 더 누르면 쌍둥이 모양이 보여요.', 'It has a twin with the same energy. Tap this level again to see the twin.') : P('에너지가 똑같은 쌍둥이 오비탈이 하나 더 있어요(90° 돌린 모양).', 'It has a twin with the same energy, turned 90°.')) : ''}${M.pi && x.lab !== 'π₁' ? P(` 위에서 보면 마디(색이 바뀌는 선)가 ${['π₂ · π₃'].includes(x.lab) ? 1 : x.lab === 'π₆*' ? 3 : 2}개 있어요.`, ` Seen from above it has ${['π₂ · π₃'].includes(x.lab) ? 1 : x.lab === 'π₆*' ? 3 : 2} node line(s).`) : ''} ${P(`전자 <b>${x.n}</b> / ${x.deg * 2}개`, `<b>${x.n}</b> / ${x.deg * 2} electrons`)}</p>`;
+    st.el.querySelector('.mb-stats').innerHTML = M.pi ? `<div class="mb-card mb-st"><b>6</b><span>${P('π 전자', 'π electrons')}</span></div><div class="mb-card mb-st"><b>1.5</b><span>${P('C–C 결합 차수', 'C–C bond order')}</span></div>` : `<div class="mb-card mb-st"><b>${bo}</b><span>${P('결합 차수', 'Bond order')}</span></div><div class="mb-card mb-st"><b>${M.ne}</b><span>${P('원자가 전자', 'Valence e⁻')}</span></div>`;
+    st.el.querySelector('.mb-stats').innerHTML += `<div class="mb-card mb-st${F.unp ? ' mag' : ''}"><b>${F.unp}${F.unp ? ' 🧲' : ''}</b><span>${P('짝 없는 전자', 'Unpaired')}</span></div>`;
   }
   function open(key){
     const M = MOL[key]; if(!M) return;
@@ -41396,7 +41410,11 @@ void main(){ vec2 c=gl_PointCoord-.5; float r=length(c); float g=smoothstep(.5,.
     el.querySelector('.mb-note').innerHTML = P(NOTE[key][0], NOTE[key][1]);
     const la = el.querySelector('.mb-lab.a'), lb = el.querySelector('.mb-lab.b'); la.dataset.s = M.A; lb.dataset.s = M.B;
     let sel = 0; F.lv.forEach((x, i) => { if(x.n > 0) sel = i; });
-    st = { el, cv, M, F, sel, yaw: .6, pitch: -.35, la, lb, animOnce: false };
+    el.querySelectorAll('.mb-lab.x').forEach(e => e.remove());
+    let nuc = [[-M.d / 2, 0, la], [M.d / 2, 0, lb]];
+    la.style.display = lb.style.display = M.ring ? 'none' : '';
+    if(M.ring){ nuc = TH.map(a => { const s = document.createElement('span'); s.className = 'mb-lab x'; s.dataset.s = 'C'; el.querySelector('.mb-view').appendChild(s); return [Math.cos(a) * M.ring, Math.sin(a) * M.ring, s]; }); }
+    st = { el, cv, M, F, sel, yaw: M.ring ? 0 : .6, pitch: M.ring ? -.62 : -.35, la, lb, nuc, animOnce: false };
     el.classList.add('on');
     requestAnimationFrame(() => { choose(sel, true); if(!raf) raf = requestAnimationFrame(frame); });
     try{ rxEvt && rxEvt('mo'); }catch(e){}
