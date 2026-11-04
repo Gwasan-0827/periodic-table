@@ -6214,6 +6214,9 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
+           '처음 하는 사람을 위한 첫걸음 미션 8개가 생겼어요. 소금·이산화탄소·암모니아·메테인 만들기 등, 눌러야 할 칸이 반짝여요',
+           '“주기율표 읽는 법”이 생겼어요. 칸 하나 읽기, 주기·족·색깔을 움직이는 그림으로 보여 줘요 (설정 › 튜토리얼)',
            '결과 창 뒤 물결을 새로 만들었어요. 원근이 들어간 격자 바다가 만든 물질 색으로 물들고, 창이 열릴 때마다 가운데서 물결이 한 번 퍼져요. 폭발하면 크게 출렁여요',
            '폰에서 원자 모형 도구 버튼이 화면 밖으로 잘리던 걸 위쪽 한 줄로 옮기고, 조합 바를 두 줄로 줄였어요',
            '앱 아이콘이 바뀌었어요. 시작 화면을 닮은 빛나는 마름모와 Pt예요',
@@ -6241,6 +6244,9 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
+           '8 first-step missions for newcomers: make salt, CO₂, ammonia, methane and more, with the cells to tap glowing',
+           'New "How to read the table": one cell, periods, groups and colours as animated diagrams (Settings › Tutorial)',
            'The waves behind the result card are new: a perspective grid sea tinted with the colour of what you made, with a ripple spreading out each time the card opens, and a big swell on explosions',
            'On phones, the atom model tool buttons no longer get cut off at the edge, and the mix tray is down to two rows',
            'New app icon: a glowing diamond and Pt, like the start screen',
@@ -41547,6 +41553,497 @@ void main(){
   // 폭발 충격: 기존 RXW.kick 을 따라 더 크게 출렁
   try{ Object.defineProperty(RXW, 'kick', { configurable: true, get(){ return this._k || 0; }, set(v){ this._k = v; if(v > kick) kick = Math.min(3, v); } }); }catch(e){}
   addEventListener('pointermove', e => { if(!raf) return; mx = (e.clientX / innerWidth) * 2 - 1; my = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
+})();
+</script>
+<style>
+  /* ═══ 초보자 도우미 (4.2.5+): 튜토리얼 강화 · 첫걸음 미션 · 주기율표 읽는 법 ═══ */
+  /* 튜토리얼 챕터 표시 */
+  .tu-chap{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:10.5px;font-weight:800;letter-spacing:.04em;color:#b8c2ff}
+  .tu-chap .bar{flex:1;height:4px;border-radius:9px;background:rgba(160,170,255,.16);overflow:hidden;position:relative}
+  .tu-chap .bar i{position:absolute;inset:0 auto 0 0;width:0;border-radius:9px;background:linear-gradient(90deg,#8f9bff,#c9a8ff,#ffd166);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .tu-chap .c{padding:2px 7px;border-radius:999px;background:rgba(143,155,255,.16);border:1px solid rgba(143,155,255,.35);white-space:nowrap}
+  /* 튜토리얼 끝 축하 */
+  #tuWin{position:fixed;inset:0;z-index:2147482990;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(30,26,70,.55),rgba(4,6,14,.72));opacity:0;transition:opacity .35s}
+  #tuWin.on{opacity:1;pointer-events:auto}
+  #tuWin .w{position:relative;width:min(340px,86vw);padding:26px 22px 18px;border-radius:22px;text-align:center;color:#eef0ff;
+    background:linear-gradient(160deg,rgba(40,44,96,.96),rgba(18,20,44,.97));border:1px solid rgba(170,180,255,.35);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset;
+    transform:translateY(18px) scale(.92);transition:transform .5s cubic-bezier(.2,1.4,.3,1)}
+  #tuWin.on .w{transform:none}
+  #tuWin .medal{width:84px;height:84px;margin:-62px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;line-height:1;color:#c08a10;
+    background:conic-gradient(from 200deg,#ffd166,#ffe9a8,#c9a8ff,#8f9bff,#ffd166);box-shadow:0 0 0 5px rgba(255,209,102,.18),0 0 34px rgba(255,209,102,.55);animation:tuMedal 2.4s ease-in-out infinite}
+  #tuWin .medal span{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#fff7dc}
+  @keyframes tuMedal{50%{box-shadow:0 0 0 10px rgba(255,209,102,.08),0 0 46px rgba(255,209,102,.75)}}
+  #tuWin h3{margin:0 0 6px;font-size:19px;font-weight:900}
+  #tuWin p{margin:0 0 14px;font-size:13px;line-height:1.55;color:#c8ccf0}
+  #tuWin .lst{display:grid;gap:6px;margin:0 0 16px;text-align:left}
+  #tuWin .lst div{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:7px 10px;border-radius:11px;background:rgba(255,255,255,.05);opacity:0;transform:translateX(-8px);animation:tuLi .4s forwards}
+  #tuWin .lst div b{color:#ffd166}
+  @keyframes tuLi{to{opacity:1;transform:none}}
+  #tuWin .bt{display:flex;gap:8px}
+  #tuWin .bt button{flex:1;padding:11px 8px;border-radius:12px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;border:1px solid rgba(170,180,255,.35);background:rgba(255,255,255,.06);color:#dfe2ff}
+  #tuWin .bt button.go{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;border-color:transparent}
+
+  /* 첫걸음 미션 알약 */
+  #qsPill{position:fixed;left:10px;z-index:60;display:flex;align-items:center;gap:8px;max-width:min(320px,calc(100vw - 20px));padding:6px 12px 6px 6px;border-radius:999px;cursor:pointer;
+    font:inherit;color:#e9ecff;background:rgba(22,24,52,.88);border:1px solid rgba(150,160,255,.38);box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 18px rgba(143,155,255,.18);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s,transform .35s cubic-bezier(.2,1.2,.3,1);text-align:left}
+  #qsPill.off{opacity:0;pointer-events:none;transform:translateY(10px) scale(.96)}
+  #qsPill .rg{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:900;color:#fff;
+    background:conic-gradient(#ffd166 calc(var(--p,0)*1%),rgba(150,160,255,.2) 0);position:relative}
+  #qsPill .rg::before{content:"";position:absolute;inset:3px;border-radius:50%;background:#1a1c40}
+  #qsPill .rg span{position:relative}
+  #qsPill .tx{min-width:0;display:grid;line-height:1.2}
+  #qsPill .tx small{font-size:9.5px;font-weight:800;color:#a9b2ff;letter-spacing:.05em}
+  #qsPill .tx b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #qsPill .ch{flex:none;opacity:.6;font-size:12px;transition:transform .3s}
+  #qsPill.open .ch{transform:rotate(180deg)}
+  #qsPill.win{border-color:#ffd166;box-shadow:0 0 0 4px rgba(255,209,102,.2),0 0 30px rgba(255,209,102,.6);animation:qsWin .7s cubic-bezier(.2,1.6,.3,1)}
+  #qsPill.win .rg{background:#ffd166}
+  @keyframes qsWin{30%{transform:scale(1.12)}}
+  #qsPill.nudge{animation:qsNudge 1.6s ease-in-out 2}
+  @keyframes qsNudge{0%,100%{transform:none}20%{transform:translateY(-4px)}40%{transform:none}55%{transform:translateY(-2px)}}
+  .qs-spark{position:fixed;z-index:61;width:6px;height:6px;border-radius:50%;pointer-events:none;background:#ffd166;box-shadow:0 0 8px #ffd166;animation:qsSp .7s ease-out forwards}
+  @keyframes qsSp{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+
+  /* 미션 카드 */
+  #qsCard{position:fixed;left:10px;z-index:61;width:min(330px,calc(100vw - 20px));padding:14px 14px 12px;border-radius:18px;color:#e9ecff;
+    background:linear-gradient(165deg,rgba(36,40,88,.97),rgba(16,18,40,.98));border:1px solid rgba(150,160,255,.38);box-shadow:0 18px 48px rgba(0,0,0,.5);
+    transform-origin:20px 100%;transform:translateY(10px) scale(.9);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.2,1.3,.3,1),opacity .25s}
+  #qsCard.on{opacity:1;transform:none;pointer-events:auto}
+  #qsCard .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  #qsCard .hd small{font-size:10px;font-weight:900;color:#a9b2ff;letter-spacing:.06em}
+  #qsCard .hd .x{margin-left:auto;background:none;border:0;color:#9aa0c8;font-size:15px;cursor:pointer;padding:2px 4px}
+  #qsCard h4{margin:0 0 4px;font-size:16px;font-weight:900}
+  #qsCard p{margin:0 0 10px;font-size:12.5px;line-height:1.55;color:#c4c9ee}
+  #qsCard .tl{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+  #qsCard .tl .pl{font-size:15px;font-weight:900;color:#8f97c8}
+  .qs-t{position:relative;width:46px;height:50px;border-radius:9px;display:grid;place-items:center;align-content:center;gap:0;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--c) 26%,#171a38),#141632);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);border-bottom:3px solid var(--c)}
+  .qs-t i{position:absolute;top:3px;left:5px;font-style:normal;font-size:9px;opacity:.7}
+  .qs-t b{font-size:17px;font-weight:900}
+  .qs-t em{position:absolute;right:-6px;top:-7px;font-style:normal;font-size:10.5px;font-weight:900;padding:1px 5px;border-radius:999px;background:#ffd166;color:#241a00}
+  #qsCard .tip{font-size:11.5px;line-height:1.5;padding:7px 9px;border-radius:10px;background:rgba(255,209,102,.08);border:1px dashed rgba(255,209,102,.35);color:#f3e2b0;margin:0 0 10px}
+  #qsCard .dots{display:flex;gap:4px;margin:0 0 10px}
+  #qsCard .dots i{flex:1;height:4px;border-radius:9px;background:rgba(150,160,255,.18)}
+  #qsCard .dots i.d{background:#ffd166}
+  #qsCard .dots i.c{background:#8f9bff;box-shadow:0 0 8px #8f9bff}
+  #qsCard .bt{display:flex;gap:6px;flex-wrap:wrap}
+  #qsCard .bt button{flex:1 1 auto;padding:9px 10px;border-radius:11px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid rgba(150,160,255,.35);background:rgba(255,255,255,.05);color:#dfe2ff}
+  #qsCard .bt button.go{background:linear-gradient(135deg,#8f9bff,#b18cff);color:#fff;border-color:transparent}
+  #qsCard .bt button.lt{flex:0 0 auto;background:none;border-color:transparent;color:#8f95c2;font-weight:700}
+  /* 눌러야 할 칸 알려 주기 */
+  #grid .cell.qs-hi{position:relative;z-index:3;outline:2px solid #ffd166;outline-offset:1px;animation:qsHi 1s ease-in-out infinite}
+  #grid .cell.qs-hi::after{content:attr(data-qs);position:absolute;right:-5px;top:-7px;z-index:4;font-size:10px;font-weight:900;line-height:1;padding:2px 5px;border-radius:999px;background:#ffd166;color:#241a00;pointer-events:none}
+  @keyframes qsHi{50%{outline-color:rgba(255,209,102,.35);box-shadow:0 0 16px rgba(255,209,102,.55)}}
+  #mixBtn.qs-hi{animation:qsHiB 1s ease-in-out infinite}
+  @keyframes qsHiB{50%{box-shadow:0 0 0 4px rgba(255,209,102,.35),0 0 20px rgba(255,209,102,.6)}}
+
+  /* 주기율표 읽는 법 */
+  .gd{display:grid;gap:14px}
+  .gd-sec{padding:12px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  .gd-sec h5{margin:0 0 8px;font-size:13.5px;font-weight:900;display:flex;align-items:center;gap:7px}
+  .gd-sec h5 span{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#8f9bff;color:#fff}
+  .gd-sec p{margin:0;font-size:12.5px;line-height:1.6;color:#c4c9ee}
+  .gd-cellw{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .gd-cell{position:relative;flex:none;width:118px;height:132px;border-radius:14px;cursor:pointer;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--nonmetal) 22%,#171a38),#121430);border:1px solid color-mix(in srgb,var(--nonmetal) 55%,transparent);border-bottom:4px solid var(--nonmetal)}
+  .gd-cell > *{position:absolute;border-radius:6px;transition:background .25s,box-shadow .25s,color .25s;padding:0 4px}
+  .gd-cell .a{left:8px;top:7px;font-size:14px;font-weight:800}
+  .gd-cell .s{left:0;right:0;top:30px;text-align:center;font-size:44px;font-weight:900;line-height:1}
+  .gd-cell .k{left:0;right:0;top:82px;text-align:center;font-size:13px}
+  .gd-cell .m{left:0;right:0;top:104px;text-align:center;font-size:11px;opacity:.75}
+  .gd-cell > .lit{background:rgba(255,209,102,.22);box-shadow:0 0 0 2px #ffd166;color:#fff3c4;opacity:1}
+  .gd-lab{flex:1;min-width:150px;display:grid;gap:5px}
+  .gd-lab button{display:flex;gap:8px;align-items:flex-start;text-align:left;padding:6px 8px;border-radius:9px;font:inherit;font-size:12px;line-height:1.45;color:#c4c9ee;cursor:pointer;background:none;border:1px solid transparent}
+  .gd-lab button i{flex:none;font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:900;background:rgba(150,160,255,.2);color:#dfe2ff;margin-top:1px}
+  .gd-lab button b{color:#eef0ff}
+  .gd-lab button.on{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.35)}
+  .gd-lab button.on i{background:#ffd166;color:#241a00}
+  .gd-seg{display:flex;gap:5px;margin:0 0 9px}
+  .gd-seg button{flex:1;padding:7px 4px;border-radius:9px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid rgba(150,160,255,.3);background:rgba(255,255,255,.04);color:#c4c9ee}
+  .gd-seg button.on{background:#8f9bff;border-color:#8f9bff;color:#fff}
+  .gd-mini{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;margin:0 auto 9px;max-width:380px}
+  .gd-mini i{aspect-ratio:1;border-radius:2px;background:var(--c);opacity:.25;transition:opacity .3s,transform .3s,box-shadow .3s}
+  .gd-mini i.e{background:none}
+  .gd-mini i.hl{opacity:1;transform:scale(1.15);box-shadow:0 0 6px var(--c)}
+  .gd-mini.col i:not(.e){opacity:.95}
+  .gd-legend{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:11px;color:#c4c9ee;margin:0 0 6px}
+  .gd-legend span{display:flex;align-items:center;gap:4px}
+  .gd-legend span::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--c)}
+  .gd-ex{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0 0}
+  .gd-ex .eq{font-size:15px;font-weight:900;color:#8f97c8}
+  .gd-ex .res{padding:8px 12px;border-radius:11px;font-weight:900;background:rgba(120,200,255,.12);border:1px solid rgba(120,200,255,.4);color:#bfe6ff}
+  .gd-go{width:100%;padding:12px;border-radius:12px;font:inherit;font-size:13.5px;font-weight:900;cursor:pointer;border:0;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  @media (prefers-reduced-motion:reduce){#grid .cell.qs-hi,#mixBtn.qs-hi,#tuWin .medal,#qsPill.nudge{animation:none}}
+</style>
+<script>
+(function(){
+  if(typeof RX_TUT === 'undefined' || typeof rxTut !== 'function') return;
+  const P = (k, e) => LANG === 'en' ? e : k;
+  const col = c => { try{ return cssv(CAT[c].v) || '#8f9bff'; }catch(e){ return '#8f9bff'; } };
+  const tileHTML = (s, n) => { const e = rxSym(s); return e ? `<span class="qs-t" style="--c:${col(e.c)}"><i>${e.n}</i><b>${e.s}</b>${n > 1 ? `<em>×${n}</em>` : ''}</span>` : ''; };
+
+  /* ─────────── 1) 튜토리얼 강화: 원소 하나 직접 눌러 보기 + 원자 모형 + 챕터 ─────────── */
+  Object.assign(RXT.ko, {
+    tuSel:'아무 칸이나 눌러도 되지만, 일단 탄소(C)를 눌러 볼까요? 숫자 6이 적힌 칸이에요',
+    tuAtom:'이게 탄소 원자예요. 가운데 뭉친 게 핵(양성자+중성자)이고, 바깥을 도는 점 6개가 전자예요. 원자 번호 = 양성자 수 = 전자 수',
+    tuSet:'튜토리얼은 설정(⚙)에서 다시 볼 수 있어요. 끝나면 첫걸음 미션이 열려요',
+  });
+  Object.assign(RXT.en, {
+    tuSel:'Any cell works, but let us try carbon (C) first. It is the one marked 6',
+    tuAtom:'That is a carbon atom. The clump in the middle is the nucleus (protons + neutrons), the 6 dots going around are electrons. Atomic number = protons = electrons',
+    tuSet:'You can replay this from Settings (⚙). When we are done, your first missions unlock',
+  });
+  const i1 = RX_TUT.findIndex(s => s.key === 'tut1');
+  if(i1 >= 0 && !RX_TUT.some(s => s.key === 'tuSel')){
+    RX_TUT.splice(i1 + 1, 0,
+      { sel: '#grid .cell[data-n="6"]', key: 'tuSel', scroll: true,
+        prep(){ try{ if(selected === 6) select(1); }catch(e){} },
+        done: () => typeof selected !== 'undefined' && selected === 6 },
+      { sel: '#atomBox', key: 'tuAtom', scroll: true,
+        prep(){ try{ const b = document.querySelector('#detPager button'); if(b && !b.classList.contains('on') && matchMedia('(max-width:700px)').matches) b.click(); }catch(e){} } },
+    );
+  }
+  const CH = [
+    [P('주기율표', 'The table'), ['tut0', 'tut1', 'tuSel', 'tuAtom']],
+    [P('조합하기', 'Mixing'), ['tuAdd', 'tuH', 'tuO', 'tuMix', 'tuDone', 'tuQty']],
+    [P('둘러보기', 'Look around'), ['tut4', 'tuLearn', 'tuSet']],
+  ];
+  const chapOf = k => { const i = CH.findIndex(c => c[1].includes(k)); return i < 0 ? CH.length - 1 : i; };
+
+  function enhance(box){
+    if(!box || box._enh) return; box._enh = true;
+    const text = document.getElementById('tuText'), dots = document.getElementById('tuDots');
+    const chap = document.createElement('div'); chap.className = 'tu-chap';
+    chap.innerHTML = `<span class="c"></span><span class="bar"><i></i></span>`;
+    text.parentNode.insertBefore(chap, text);
+    let finished = false, idx = 0;
+    const upd = () => {
+      const ds = [...dots.children]; idx = Math.max(0, ds.findIndex(d => d.classList.contains('on')));
+      const st = RX_TUT[idx]; if(!st) return;
+      const c = chapOf(st.key);
+      chap.querySelector('.c').textContent = `${c + 1}/${CH.length} · ${CH[c][0]}`;
+      chap.querySelector('i').style.width = ((idx + 1) / RX_TUT.length * 100).toFixed(1) + '%';
+    };
+    try{ new MutationObserver(upd).observe(dots, { childList: true, subtree: true, attributes: true }); }catch(e){}
+    upd();
+    document.getElementById('tuNext').addEventListener('click', () => { if(idx >= RX_TUT.length - 1) finished = true; }, true);
+    const mo = new MutationObserver(() => {
+      if(document.body.contains(box)) return;
+      mo.disconnect();
+      if(finished) setTimeout(win, 250);
+    });
+    mo.observe(document.body, { childList: true });
+  }
+  const _tut = rxTut;
+  rxTut = function(){
+    const had = document.getElementById('rxTut');
+    const r = _tut.apply(this, arguments);
+    if(!had) enhance(document.getElementById('rxTut'));
+    return r;
+  };
+  // 이 스크립트보다 먼저 튜토리얼이 떠 있으면 그 자리에서 붙인다
+  enhance(document.getElementById('rxTut'));
+  setTimeout(() => enhance(document.getElementById('rxTut')), 0);
+
+  function win(){
+    if(document.getElementById('tuWin')) return;
+    const w = document.createElement('div'); w.id = 'tuWin';
+    const li = [
+      [P('원소 정보랑 원자 모형 보기', 'Element info and atom models'), '✓'],
+      [P('직접 물 만들기', 'Made water yourself'), '✓'],
+      [P('도감 · 학습 · 설정 위치', 'Where Codex, Learn and Settings live'), '✓'],
+    ];
+    w.innerHTML = `<div class="w"><div class="medal"><span>★</span></div>
+      <h3>${P('튜토리얼 완료!', 'Tutorial complete!')}</h3>
+      <p>${P('이제 첫걸음 미션 8개가 기다려요. 하나씩 깨다 보면 금방 익숙해져요', '8 first-step missions are waiting. Clear them one by one and you will be a pro in no time')}</p>
+      <div class="lst">${li.map(([t], k) => `<div style="animation-delay:${.25 + k * .12}s"><b>✓</b>${t}</div>`).join('')}</div>
+      <div class="bt"><button type="button" class="lt">${P('혼자 해 볼게요', 'I will explore')}</button><button type="button" class="go">${P('미션 시작', 'Start missions')}</button></div></div>`;
+    document.body.appendChild(w);
+    try{ mix = []; renderChips(); if(ADD_MODE) setAddMode(false); }catch(e){}   // 튜토리얼에서 담은 물 재료 정리
+    requestAnimationFrame(() => w.classList.add('on'));
+    try{ rxConfetti(); }catch(e){}
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    const close = open => { w.classList.remove('on'); setTimeout(() => w.remove(), 350); QS.begin(open); };
+    w.querySelector('.go').addEventListener('click', () => close(true));
+    w.querySelector('.lt').addEventListener('click', () => close(false));
+  }
+
+  /* ─────────── 2) 첫걸음 미션 ─────────── */
+  const M = [
+    { id: 'read', t: P('주기율표 읽는 법 보기', 'Learn to read the table'),
+      d: P('칸 하나에 뭐가 적혀 있는지, 가로줄·세로줄이 무슨 뜻인지 1분이면 알아요', 'What is in a cell and what rows and columns mean. Takes a minute'),
+      act: 'guide' },
+    { id: 'salt', t: P('소금 만들기', 'Make salt'), name: '소금', r: [['Na', 1], ['Cl', 1]],
+      d: P('나트륨(Na) 하나와 염소(Cl) 하나', 'One sodium (Na) and one chlorine (Cl)'),
+      tip: P('Na는 맨 왼쪽(1족), Cl은 오른쪽 끝 근처(17족)에 있어요. 양 끝에 있는 애들끼리 잘 붙어요', 'Na sits far left (group 1), Cl near the right edge (group 17). Opposite ends stick together') },
+    { id: 'co2', t: P('이산화탄소 만들기', 'Make carbon dioxide'), name: '이산화탄소', r: [['C', 1], ['O', 2]],
+      d: P('탄소(C) 하나, 산소(O) 둘. 숨 쉴 때 나오는 그거', 'One carbon (C), two oxygen (O). What you breathe out'),
+      tip: P('화학식의 작은 숫자가 개수예요. CO₂ = C 1개 + O 2개', 'The small number in a formula is the count. CO₂ = 1 C + 2 O') },
+    { id: 'nh3', t: P('암모니아 만들기', 'Make ammonia'), name: '암모니아', r: [['N', 1], ['H', 3]],
+      d: P('질소(N) 하나, 수소(H) 셋', 'One nitrogen (N), three hydrogen (H)'),
+      tip: P('같은 원소를 여러 개 넣을 땐 그냥 여러 번 누르면 돼요', 'For several of the same element, just tap it several times') },
+    { id: 'ch4', t: P('메테인 만들기', 'Make methane'), name: '메테인', r: [['C', 1], ['H', 4]],
+      d: P('탄소(C) 하나, 수소(H) 넷', 'One carbon (C), four hydrogen (H)'),
+      tip: P('꿀팁: 아래 개수 칸을 4로 맞추고 H를 한 번만 누르면 4개가 한꺼번에 담겨요', 'Tip: set the count box to 4, then tap H once to add all four') },
+    { id: 'fail', t: P('일부러 실패해 보기', 'Fail on purpose'),
+      d: P('없는 조합을 섞으면 실패해요. 실패하면 비슷한 물질 힌트가 나와요', 'Mix something that does not exist. Failing shows hints for similar substances'),
+      tip: P('예: 헬륨(He) 다섯 개. 비활성 기체는 아무랑도 안 붙어요', 'Try five helium (He). Noble gases bond with nothing'), r: [['He', 5]], free: true },
+    { id: 'dex', t: P('도감 열어 보기', 'Open the Codex'),
+      d: P('만든 물질이 전부 여기 모여요. 잠긴 카드를 누르면 힌트를 볼 수 있어요', 'Everything you make lands here. Tap a locked card for hints'), act: 'dex' },
+    { id: 'quiz', t: P('학습 열어 보기', 'Open Learn'),
+      d: P('퀴즈랑 미니게임으로 원소를 외워요. 오늘의 원소도 여기 있어요', 'Quizzes and minigames to learn elements. Element of the day lives here too'), act: 'quiz' },
+  ];
+  const LS = 'pt_quest';
+  const st = () => Object.assign({ on: false, off: false, done: [] }, rxLS.get(LS, {}) || {});
+  const save = s => rxLS.set(LS, s);
+  let S = st(), failSeen = false, guideSeen = false, dexSeen = false, quizSeen = false, hiOn = false, hiT = 0, celebrating = false;
+  const cur = () => M.find(m => !S.done.includes(m.id));
+  const isDone = m => {
+    if(m.name) return found.has(m.name);
+    if(m.id === 'fail') return failSeen;
+    if(m.id === 'read') return guideSeen;
+    if(m.id === 'dex') return dexSeen;
+    if(m.id === 'quiz') return quizSeen;
+    return false;
+  };
+
+  let pill, card;
+  function build(){
+    if(pill) return;
+    pill = document.createElement('button'); pill.type = 'button'; pill.id = 'qsPill'; pill.className = 'off';
+    pill.innerHTML = `<span class="rg"><span></span></span><span class="tx"><small>${P('첫걸음 미션', 'FIRST STEPS')}</small><b></b></span><span class="ch">▴</span>`;
+    card = document.createElement('div'); card.id = 'qsCard'; card.setAttribute('role', 'dialog');
+    document.body.append(pill, card);
+    pill.addEventListener('click', () => card.classList.contains('on') ? closeCard() : openCard());
+    document.addEventListener('pointerdown', e => { if(card.classList.contains('on') && !card.contains(e.target) && !pill.contains(e.target)) closeCard(); }, true);
+  }
+  function paintPill(){
+    const m = cur(); if(!m) return;
+    const n = S.done.length;
+    pill.querySelector('.rg span').textContent = `${n}/${M.length}`;
+    pill.querySelector('.rg').style.setProperty('--p', (n / M.length * 100).toFixed(0));
+    pill.querySelector('.tx b').textContent = m.t;
+  }
+  function openCard(){
+    const m = cur(); if(!m) return;
+    const n = M.indexOf(m);
+    card.innerHTML = `<div class="hd"><small>${P('미션', 'MISSION')} ${n + 1} / ${M.length}</small><button type="button" class="x" aria-label="${rt('close')}">✕</button></div>
+      <div class="dots">${M.map((x, k) => `<i class="${S.done.includes(x.id) ? 'd' : x === m ? 'c' : ''}"></i>`).join('')}</div>
+      <h4>${m.t}</h4><p>${m.d}</p>
+      ${m.r ? `<div class="tl">${m.r.map(([s, k]) => tileHTML(s, k)).join('<span class="pl">+</span>')}</div>` : ''}
+      ${m.tip ? `<div class="tip">💡 ${m.tip}</div>` : ''}
+      <div class="bt">
+        ${m.r ? `<button type="button" class="go" data-a="hi">${P('칸 알려 줘', 'Show me the cells')}</button><button type="button" data-a="load">${P('대신 담아 줘', 'Load it for me')}</button>` : ''}
+        ${m.act === 'guide' ? `<button type="button" class="go" data-a="guide">${P('읽는 법 보기', 'Open the guide')}</button>` : ''}
+        ${m.act === 'dex' ? `<button type="button" class="go" data-a="dex">${P('도감 열기', 'Open Codex')}</button>` : ''}
+        ${m.act === 'quiz' ? `<button type="button" class="go" data-a="quiz">${P('학습 열기', 'Open Learn')}</button>` : ''}
+        <button type="button" class="lt" data-a="later">${P('미션 숨기기', 'Hide missions')}</button>
+      </div>`;
+    place();
+    card.classList.add('on'); pill.classList.add('open');
+    card.querySelector('.x').addEventListener('click', closeCard);
+    card.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => act(b.dataset.a, m)));
+    try{ SFX.pick && SFX.pick(); }catch(e){}
+  }
+  function closeCard(){ if(card){ card.classList.remove('on'); pill.classList.remove('open'); } }
+  function act(a, m){
+    closeCard();
+    if(a === 'later'){ S.off = true; save(S); hide(); try{ rxMiniToast(P('설정 › 튜토리얼에서 다시 켤 수 있어요', 'Turn it back on in Settings › Tutorial')); }catch(e){} return; }
+    if(a === 'guide'){ rxGuide(); return; }
+    if(a === 'dex'){ try{ document.getElementById('dexBtn').click(); }catch(e){} return; }
+    if(a === 'quiz'){ try{ document.getElementById('quizBtn').click(); }catch(e){} return; }
+    if(a === 'hi'){ highlight(m); return; }
+    if(a === 'load'){
+      try{
+        mix = [];
+        m.r.forEach(([s, n]) => { const e = rxSym(s); if(e) for(let i = 0; i < n; i++) mix.push(e.n); });
+        renderChips(); SFX.pick && SFX.pick();
+      }catch(e){}
+      clearHi(); const mb = document.getElementById('mixBtn'); if(mb){ mb.classList.add('qs-hi'); hiOn = true; clearTimeout(hiT); hiT = setTimeout(clearHi, 9000); }
+      try{ rxMiniToast(P('담았어요. 이제 조합하기!', 'Loaded. Now hit Mix!')); }catch(e){}
+    }
+  }
+  function highlight(m){
+    clearHi();
+    try{ if(mix.length){ mix = []; renderChips(); } }catch(e){}   // 다른 게 담겨 있으면 섞여서 실패하니까 비우고 시작
+    try{ if(!ADD_MODE) setAddMode(true); if(ADD_QTY !== 1) setQty(1); }catch(e){}
+    let first = null;
+    m.r.forEach(([s, n]) => { const e = rxSym(s); const c = e && document.querySelector(`#grid .cell[data-n="${e.n}"]`);
+      if(c){ c.classList.add('qs-hi'); c.dataset.qs = '×' + n; first = first || c; } });
+    try{ if(first) first.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); }catch(e){}
+    hiOn = true; clearTimeout(hiT); hiT = setTimeout(clearHi, 20000);
+    try{ rxMiniToast(P('반짝이는 칸을 숫자만큼 눌러요', 'Tap each glowing cell that many times')); }catch(e){}
+  }
+  function clearHi(){
+    hiOn = false; clearTimeout(hiT);
+    document.querySelectorAll('#grid .cell.qs-hi').forEach(c => { c.classList.remove('qs-hi'); delete c.dataset.qs; });
+    const mb = document.getElementById('mixBtn'); if(mb) mb.classList.remove('qs-hi');
+  }
+  // 담은 게 정답과 같아지면 칸 반짝임 → 조합하기 버튼 반짝임
+  function hiStep(){
+    if(!hiOn) return;
+    const m = cur(); if(!m || !m.r) return;
+    const want = {}; m.r.forEach(([s, n]) => want[s] = n);
+    const have = {}; (mix || []).forEach(n => { const s = byNum[n] && byNum[n].s; if(s) have[s] = (have[s] || 0) + 1; });
+    const ok = Object.keys(want).every(s => have[s] === want[s]) && Object.keys(have).every(s => want[s]);
+    m.r.forEach(([s, n]) => { const e = rxSym(s); const c = e && document.querySelector(`#grid .cell[data-n="${e.n}"]`); if(!c) return;
+      const left = n - (have[s] || 0); c.classList.toggle('qs-hi', left > 0); if(left > 0) c.dataset.qs = '×' + left; });
+    const mb = document.getElementById('mixBtn'); if(mb) mb.classList.toggle('qs-hi', ok);
+  }
+  function place(){
+    if(!pill) return;
+    const tr = document.getElementById('tray');
+    const top = tr && tr.getClientRects().length ? tr.getBoundingClientRect().top : innerHeight;
+    const b = Math.max(10, innerHeight - top + 8);
+    pill.style.bottom = b + 'px';
+    if(card) card.style.bottom = (b + 50) + 'px';
+  }
+  const busy = () => {
+    const on = id => { const e = document.getElementById(id); return e && e.classList.contains('on'); };
+    return !rxLS.get('pt_seentut', false) || document.getElementById('rxTut') || document.getElementById('tuWin') || document.getElementById('rxIntro') || document.querySelector('#verPop.in') ||
+      on('modal') || on('rxPanel') || on('quiz') || on('dex') || on('settings') || on('moBig') || document.querySelector('#setModal.on, #setPanel.on');
+  };
+  function show(){ build(); paintPill(); place(); pill.classList.remove('off'); }
+  function hide(){ if(pill){ pill.classList.add('off'); closeCard(); } clearHi(); }
+  function sparks(){
+    const r = pill.getBoundingClientRect(), cx = r.left + 22, cy = r.top + r.height / 2;
+    for(let k = 0; k < 14; k++){ const s = document.createElement('i'); s.className = 'qs-spark';
+      const a = Math.PI * 2 * k / 14, d = 30 + Math.random() * 26;
+      s.style.left = cx + 'px'; s.style.top = cy + 'px'; s.style.setProperty('--x', (Math.cos(a) * d).toFixed(0) + 'px'); s.style.setProperty('--y', (Math.sin(a) * d).toFixed(0) + 'px');
+      document.body.appendChild(s); setTimeout(() => s.remove(), 800); }
+  }
+  function complete(m){
+    if(S.done.includes(m.id)) return;
+    S.done.push(m.id); save(S); clearHi(); closeCard();
+    celebrating = true;
+    show();
+    pill.querySelector('.tx b').textContent = P('완료! ', 'Done! ') + m.t;
+    pill.querySelector('.rg span').textContent = '✓';
+    pill.classList.remove('win'); void pill.offsetWidth; pill.classList.add('win');
+    sparks();
+    try{ SFX.gem && SFX.gem(); }catch(e){}
+    setTimeout(() => {
+      pill.classList.remove('win'); celebrating = false;
+      if(!cur()){
+        S.on = false; S.all = true; save(S); hide();
+        try{ rxConfetti(); }catch(e){}
+        try{ rxToast(P('첫걸음 미션', 'First steps'), P('전부 완료!', 'All clear!'), P('이제 진짜 실험 시작이에요. 도감 550종에 도전해 보세요', 'Now the real lab begins. Go for all 550 entries')); }catch(e){}
+        try{ rxEvt('questAll'); }catch(e){}
+        return;
+      }
+      paintPill(); pill.classList.remove('nudge'); void pill.offsetWidth; pill.classList.add('nudge');
+    }, 1700);
+  }
+  function tick(){
+    const tb = document.getElementById('rxTut'); if(tb && !tb._enh) enhance(tb);
+    if(!S.on || S.off){ if(pill && !pill.classList.contains('off')) hide(); return; }
+    if(busy()){ if(pill && !celebrating){ pill.classList.add('off'); closeCard(); } return; }
+    const m = cur(); if(!m){ S.on = false; save(S); hide(); return; }
+    if(!celebrating && isDone(m)){ complete(m); return; }
+    if(!celebrating){ if(!pill || pill.classList.contains('off')) show(); else place(); }
+    hiStep();
+  }
+  setInterval(tick, 500);
+  addEventListener('resize', place);
+  // 실패 / 도감 / 학습을 본 순간 기억해 둔다
+  try{ const _rr = rxRender; rxRender = function(kind){ if(kind === 'fail' && S.on && cur() && cur().id === 'fail') failSeen = true; return _rr.apply(this, arguments); }; }catch(e){}
+  ['dexBtn', 'quizBtn'].forEach(id => { const b = document.getElementById(id); if(b) b.addEventListener('click', () => { const m = cur(); if(!S.on || !m) return; if(id === 'dexBtn' && m.id === 'dex') dexSeen = true; if(id === 'quizBtn' && m.id === 'quiz') quizSeen = true; }); });
+
+  const QS = window.rxQuest = {
+    begin(open){
+      S = st(); S.on = true; S.off = false; S.all = false;
+      // 이미 해 본 건 미리 체크
+      M.forEach(m => { if(m.name && found.has(m.name) && !S.done.includes(m.id)) S.done.push(m.id); });
+      save(S);
+      if(open) setTimeout(() => { tick(); if(pill && !pill.classList.contains('off')) openCard(); }, 500);
+    },
+    reset(){ S = { on: true, off: false, done: [] }; failSeen = guideSeen = dexSeen = quizSeen = false; save(S); },
+  };
+  // 이미 튜토리얼을 끝낸 새내기(발견이 아직 적은 사람)에게도 한 번 켜 준다
+  setTimeout(() => {
+    S = st();
+    if(!rxLS.get('pt_seentut', false) || S.on || S.off || S.all || S.seeded) return;
+    S.seeded = true; save(S);
+    if(found.size < 12) QS.begin(false);
+  }, 4000);
+
+  /* ─────────── 3) 주기율표 읽는 법 ─────────── */
+  window.rxGuide = function rxGuide(){
+    const show3 = ['alkali', 'transition', 'nonmetal', 'halogen', 'noble', 'metalloid'];
+    let mini = '';
+    for(let p = 1; p <= 7; p++) for(let g = 1; g <= 18; g++){
+      const e = EL.find(x => x.p === p && x.g === g);
+      mini += e ? `<i data-p="${p}" data-g="${g}" data-c="${e.c}" style="--c:${col(e.c)}"></i>` : '<i class="e"></i>';
+    }
+    const L = [
+      ['a', P('<b>원자 번호</b> · 양성자 수예요. 원소마다 하나뿐인 번호', '<b>Atomic number</b> · the number of protons. Unique to each element')],
+      ['s', P('<b>원소 기호</b> · 1~2글자. 조합할 때 쓰는 이름표', '<b>Symbol</b> · one or two letters. The tag you mix with')],
+      ['k', P('<b>이름</b> · 우리말 이름', '<b>Name</b> · the element name')],
+      ['m', P('<b>원자량</b> · 원자 하나의 상대적인 무게', '<b>Atomic mass</b> · how heavy one atom is, relatively')],
+    ];
+    const body = `<div class="gd">
+      <div class="gd-sec"><h5><span>1</span>${P('칸 하나 읽기', 'Reading one cell')}</h5>
+        <div class="gd-cellw"><div class="gd-cell" id="gdCell"><span class="a">6</span><span class="s">C</span><span class="k">${P('탄소', 'Carbon')}</span><span class="m">12.011</span></div>
+        <div class="gd-lab" id="gdLab">${L.map(([k, t], i) => `<button type="button" data-k="${k}"><i>${i + 1}</i><span>${t}</span></button>`).join('')}</div></div></div>
+      <div class="gd-sec"><h5><span>2</span>${P('가로줄 · 세로줄 · 색깔', 'Rows, columns, colors')}</h5>
+        <div class="gd-seg" id="gdSeg"><button type="button" data-v="p" class="on">${P('주기 (가로)', 'Period (row)')}</button><button type="button" data-v="g">${P('족 (세로)', 'Group (column)')}</button><button type="button" data-v="c">${P('색깔', 'Colors')}</button></div>
+        <div class="gd-mini" id="gdMini">${mini}</div>
+        <div class="gd-legend" id="gdLeg" hidden>${show3.map(c => `<span style="--c:${col(c)}">${LANG === 'en' ? ({alkali:'Alkali metal',transition:'Transition metal',nonmetal:'Nonmetal',halogen:'Halogen',noble:'Noble gas',metalloid:'Metalloid'})[c] : CAT[c].ko}</span>`).join('')}</div>
+        <p id="gdTxt"></p></div>
+      <div class="gd-sec"><h5><span>3</span>${P('조합은 이렇게', 'How mixing works')}</h5>
+        <p>${P('원소 <b>종류</b>와 <b>개수</b>를 맞추면 물질이 나와요. 화학식 아래 작은 숫자가 개수예요', 'Match the <b>elements</b> and their <b>counts</b> and you get a substance. The small numbers in a formula are counts')}</p>
+        <div class="gd-ex">${tileHTML('H', 2)}<span class="eq">+</span>${tileHTML('O', 1)}<span class="eq">=</span><span class="res">H₂O · ${P('물', 'Water')}</span></div></div>
+      <button type="button" class="gd-go" id="gdGo">${P('알겠어요! 섞으러 가기', 'Got it! Let me mix')}</button></div>`;
+    const b = rxPanel(P('주기율표 읽는 법', 'How to read the table'), P('처음이라면 이것만 알면 돼요', 'All you need to get started'), body);
+    guideSeen = true;
+    const cell = b.querySelector('#gdCell'), lab = b.querySelector('#gdLab');
+    let li = 0, auto = 0;
+    const lit = k => { cell.querySelectorAll(':scope > span').forEach(s => s.classList.toggle('lit', s.classList.contains(k))); lab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.k === k)); };
+    const cycle = () => { lit(L[li % L.length][0]); li++; };
+    cycle(); auto = setInterval(() => { if(!document.body.contains(cell)) return clearInterval(auto); cycle(); }, 2200);
+    lab.querySelectorAll('button').forEach(x => x.addEventListener('click', () => { clearInterval(auto); lit(x.dataset.k); }));
+    cell.addEventListener('click', () => { clearInterval(auto); cycle(); });
+    const miniEl = b.querySelector('#gdMini'), txt = b.querySelector('#gdTxt'), leg = b.querySelector('#gdLeg');
+    let mt = 0, step = 0;
+    const view = v => {
+      clearInterval(mt); step = 0;
+      b.querySelectorAll('#gdSeg button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
+      miniEl.classList.toggle('col', v === 'c'); leg.hidden = v !== 'c';
+      const cells = [...miniEl.querySelectorAll('i:not(.e)')];
+      const run = () => {
+        if(!document.body.contains(miniEl)) return clearInterval(mt);
+        if(v === 'c'){ const c = show3[step % show3.length]; cells.forEach(i => i.classList.toggle('hl', i.dataset.c === c));
+          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing'); }
+        else if(v === 'p'){ const p = step % 7 + 1; cells.forEach(i => i.classList.toggle('hl', +i.dataset.p === p));
+          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down`); }
+        else { const G = [1, 2, 14, 17, 18], g = G[step % G.length]; cells.forEach(i => i.classList.toggle('hl', +i.dataset.g === g));
+          txt.innerHTML = P(`세로줄은 <b>족</b>. 지금 ${g}족 · 같은 족은 바깥 전자 수가 같아서 성질이 비슷해요`, `Columns are <b>groups</b>. This is group ${g} · same outer electrons, so similar behavior`); }
+        step++;
+      };
+      run(); mt = setInterval(run, 1600);
+    };
+    b.querySelectorAll('#gdSeg button').forEach(x => x.addEventListener('click', () => view(x.dataset.v)));
+    view('p');
+    b.querySelector('#gdGo').addEventListener('click', () => { clearInterval(auto); clearInterval(mt); rxPanelClose(); });
+  };
+
+  /* ─────────── 설정 › 튜토리얼 줄에 버튼 둘 더 ─────────── */
+  try{
+    const _rs = renderSettings;
+    renderSettings = function(){
+      const r = _rs.apply(this, arguments);
+      try{
+        const tb = document.querySelector('#setBody [data-rxtut]');
+        if(tb && !tb.parentNode.querySelector('[data-qsx]')){
+          tb.insertAdjacentHTML('afterend', ` <button class="sbtn" data-qsx="q">${P('첫걸음 미션', 'First missions')}</button> <button class="sbtn" data-qsx="g">${P('주기율표 읽는 법', 'Reading the table')}</button>`);
+          tb.parentNode.querySelector('[data-qsx="q"]').addEventListener('click', () => { QS.reset(); closeSettings(); setTimeout(() => QS.begin(true), 300); });
+          tb.parentNode.querySelector('[data-qsx="g"]').addEventListener('click', () => { closeSettings(); setTimeout(rxGuide, 300); });
+        }
+      }catch(e){}
+      return r;
+    };
+  }catch(e){}
 })();
 </script>
 <style>
