@@ -43723,6 +43723,34 @@ void main(){
   mark();
 })();
 </script>
+
+<script>
+/* 폰: 헤더 제목이 잘리면 글자 크기를 줄여서 한 줄에 다 들어가게 (시스템 글자 크기가 큰 폰 포함) */
+(function(){
+  const fit = () => {
+    const h = document.querySelector('header h1'); if(!h) return;
+    h.style.fontSize = '';
+    if(!matchMedia('(max-width:700px)').matches) return;
+    let fs = parseFloat(getComputedStyle(h).fontSize) || 16, n = 0;
+    h.style.textOverflow = 'clip';
+    while(h.scrollWidth > h.clientWidth && fs > 11 && n++ < 24){ fs -= .5; h.style.fontSize = fs + 'px'; }
+    h.style.textOverflow = '';
+  };
+  addEventListener('resize', fit);
+  try{ const _as = applyStaticText; applyStaticText = function(){ const r = _as.apply(this, arguments); requestAnimationFrame(fit); return r; }; }catch(e){}
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  setTimeout(fit, 300); setTimeout(fit, 1500);
+})();
+</script>
+<style>
+  /* 폰: 헤더 버튼을 조금 작게 해서 제목 자리를 더 준다 */
+  @media (max-width:700px){
+    body:not(.w95) header{gap:8px 5px}
+    body:not(.w95) header .tbtn{width:36px;height:36px}
+    body:not(.w95) header #lvBtn{width:auto;padding:0 8px}
+    #hdLogo{width:28px;height:28px}
+  }
+</style>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
