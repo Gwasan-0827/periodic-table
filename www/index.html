@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '원자 모형 칸도 카드로 바꿨어요. 페리윙클 탭, 유리 느낌 도구 버튼, 양성자·중성자·전자 칩이 생겼어요',
            '보기 줄(표준 · 히트맵 · 온도 · 발견의 역사)을 헤더와 맞췄어요. 탭은 페리윙클로 빛나고, 분류 칩은 한 줄로 밀어 보게 바뀌었어요',
            '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 뒤로 그 원소 블록의 오비탈(s 공 · p 아령 · d 네잎 · f 여섯 잎) 모양 전자 구름이 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
            '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
@@ -6248,6 +6249,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The atom model panel is now a card too, with periwinkle tabs, glassy tool buttons and proton, neutron and electron chips',
            'The view bar (Standard, Heatmap, Temperature, Discovery) now matches the header: glowing periwinkle tabs and chips in a single swipeable row',
            'The element card is redesigned: a table-cell tile with an electron cloud behind it shaped like the orbital of its block (s sphere, p dumbbell, d clover, f six lobes), category and block chips, a quote box and stat tiles for group, period and state',
            'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
@@ -42446,6 +42448,73 @@ void main(){
   try{ new MutationObserver(() => requestAnimationFrame(hook)).observe(opt, { childList: true, subtree: true }); }catch(e){}
   addEventListener('resize', () => opt.querySelectorAll(SEL).forEach(upd));
   hook(); setTimeout(hook, 500);
+})();
+</script>
+<style>
+  /* ═══ 원자 모형 패널 리워크 (4.2.5+): 카드 · 페리윙클 탭 · 유리 도구 버튼 · 입자 칩 ═══ */
+  #detail #atomBox{margin:10px 10px 0;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--cc,#8f9bff) 30%,rgba(150,160,255,.16));border-bottom:1px solid color-mix(in srgb,var(--cc,#8f9bff) 30%,rgba(150,160,255,.16));
+    background:radial-gradient(70% 70% at 50% 50%,color-mix(in srgb,var(--cc,#8f9bff) 10%,transparent),transparent 70%),linear-gradient(170deg,#121430,#0b0c1d);
+    box-shadow:0 10px 28px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+  #detail #atomBox::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:16px 16px;
+    -webkit-mask:radial-gradient(80% 80% at 50% 50%,transparent 30%,#000 90%);mask:radial-gradient(80% 80% at 50% 50%,transparent 30%,#000 90%)}
+  /* 탭 */
+  #atomBox .atom-tabs{left:10px;top:10px;padding:3px;gap:2px;border-radius:12px;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #atomBox .atom-tabs button{padding:5px 11px;border-radius:9px;font-size:11.5px;color:#a3a9d6;transition:color .2s,background .2s}
+  #atomBox .atom-tabs button:hover{color:#eef0ff}
+  #atomBox .atom-tabs button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  /* 도구 버튼 (PC: 오른쪽 위 세로 줄) */
+  #atomBox .atom-nuc,#atomBox .atom-mu,#atomBox .atom-fl,#atomBox .atom-big{height:30px;box-sizing:border-box;display:inline-flex;align-items:center;gap:5px;padding:0 11px;border-radius:999px;
+    font-size:11.5px;font-weight:700;color:#d6daf8;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.24);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .2s,border-color .2s,transform .15s,color .2s}
+  #atomBox .atom-nuc{top:10px;right:10px}
+  #atomBox .atom-mu{top:46px;right:10px;color:#ffd0a1;border-color:rgba(255,169,77,.35)}
+  #atomBox .atom-fl{top:82px;right:10px;color:#ffb3b3;border-color:rgba(255,107,107,.35)}
+  #atomBox .atom-big{bottom:10px;right:10px;width:30px;padding:0;justify-content:center;font-size:0}
+  #atomBox .atom-big::before{content:"⤢";font-size:15px;line-height:1}
+  @media (max-width:700px){ #atomBox .atom-big::before{content:none} }
+  #atomBox .atom-subs{top:118px;right:10px}
+  #atomBox .atom-nuc:hover,#atomBox .atom-big:hover{background:rgba(143,155,255,.18);border-color:#8f9bff;color:#fff}
+  #atomBox .atom-mu:hover{background:rgba(255,169,77,.16);border-color:#ffa94d}
+  #atomBox .atom-fl:hover{background:rgba(255,107,107,.16);border-color:#ff6b6b}
+  #atomBox .atom-nuc:active,#atomBox .atom-mu:active,#atomBox .atom-fl:active,#atomBox .atom-big:active{transform:scale(.94)}
+  #atomBox .atom-nuc[aria-pressed="true"],#atomBox .atom-nuc.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  #atomBox .atom-mu[aria-pressed="true"],#atomBox .atom-mu.on{color:#2a1600;border-color:transparent;background:linear-gradient(135deg,#ffc078,#ff922b)}
+  #atomBox .atom-fl[aria-pressed="true"],#atomBox .atom-fl.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff8787,#f03e3e)}
+  #atomBox .atom-subs button{border-radius:999px;padding:3px 8px;background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.2)}
+  /* 양성자 · 중성자 · 전자 칩 */
+  #atomBox #atomTag{left:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 20px);z-index:2;pointer-events:none}
+  #atomTag .at-c{display:inline-flex;align-items:center;gap:5px;padding:4px 9px 4px 7px;border-radius:999px;font-size:10.5px;font-weight:700;color:#aeb4dc;
+    background:rgba(18,20,46,.72);border:1px solid rgba(150,160,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #atomTag .at-c i{width:8px;height:8px;border-radius:50%;background:var(--pc);box-shadow:0 0 6px var(--pc)}
+  #atomTag .at-c b{font-size:12px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+  /* 아래 안내 */
+  #detail #atomNote{margin:7px 14px 0;font-size:11px;color:#8e95c4}
+  #detail #atomNote::before{content:"ⓘ ";opacity:.7}
+  @media (max-width:700px){
+    #detail #atomBox{margin:8px 8px 0;border-radius:16px}
+    #atomBox .atom-tabs{left:8px;top:8px}
+    /* 폰은 도구가 한 줄(.atom-tools)로 모여 있으니 위치는 그쪽을 따른다 */
+    #atomBox .atom-tools > button{height:32px;padding:0 11px!important;border-radius:999px!important}
+    #atomBox #atomTag{left:8px;bottom:8px}
+    #atomTag .at-c{padding:3px 8px 3px 6px;font-size:10px}
+    #atomTag .at-c b{font-size:11px}
+  }
+</style>
+<script>
+(function(){
+  const tag = document.getElementById('atomTag'); if(!tag) return;
+  const COL = ['#ff8787', '#c0c4d8', '#74d7ff'];
+  function chip(){
+    if(tag.querySelector('.at-c')) return;
+    const html = tag.innerHTML; if(!html.trim()) return;
+    const parts = html.split(/\s*·\s*/).map(s => s.trim()).filter(Boolean);
+    if(parts.length < 2 || parts.length > 5) return;
+    tag.innerHTML = parts.map((s, i) => `<span class="at-c" style="--pc:${COL[i] || '#b6a8ff'}"><i></i>${s}</span>`).join('');
+  }
+  try{ new MutationObserver(chip).observe(tag, { childList: true, characterData: true, subtree: true }); }catch(e){}
+  chip();
 })();
 </script>
 <style>
