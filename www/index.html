@@ -43484,8 +43484,30 @@ void main(){
   const hex = c => { const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
   const rgba = (c, a) => { const [r, g, b] = hex(c); return `rgba(${r},${g},${b},${a})`; };
   const low = () => !!window.RX_LOWPOW;
-  // 유리구슬 쿼크
+  // 빛 덩어리 쿼크: 하얗게 타는 가운데 + 그 색으로 번지는 빛 + 안에서 도는 에너지 띠
   function bead(ctx, x, y, r, col, a){
+    const T = (typeof RX_NUC !== 'undefined' && RX_NUC.t) || 0;
+    ctx.save(); ctx.globalAlpha = a == null ? 1 : a; ctx.globalCompositeOperation = 'lighter';
+    // 바깥 빛
+    const h = ctx.createRadialGradient(x, y, r * .3, x, y, r * 2.8);
+    h.addColorStop(0, rgba(col, .6)); h.addColorStop(.45, rgba(col, .18)); h.addColorStop(1, rgba(col, 0));
+    ctx.fillStyle = h; ctx.beginPath(); ctx.arc(x, y, r * 2.8, 0, 6.2832); ctx.fill();
+    // 몸통: 가장자리가 더 진한 색(테두리 빛), 가운데는 하얗게
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.35, rgba(col, .85)); g.addColorStop(.8, rgba(col, .55)); g.addColorStop(1, rgba(col, .9));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+    // 안에서 도는 에너지 띠 두 줄
+    if(r > 8){
+      ctx.lineCap = 'round';
+      for(let k = 0; k < 2; k++){
+        const a0 = T * (2.2 + k * .9) + k * 2.6 + x * .01;
+        ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.ellipse(x, y, r * .72, r * .3, a0, 0, 4.2); ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+  function _oldBead(ctx, x, y, r, col, a){
     ctx.save(); ctx.globalAlpha = a == null ? 1 : a;
     // 후광
     const h = ctx.createRadialGradient(x, y, r * .6, x, y, r * 2.6);
