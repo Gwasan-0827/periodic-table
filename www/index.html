@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '원소 정보 카드를 새로 꾸몄어요. 주기율표 칸처럼 생긴 타일 둘레로 바깥 전자가 돌고, 분류·블록 칩, 한마디 인용구, 족·주기·상태 칸이 생겼어요',
            '맨 위 헤더를 새로 꾸몄어요. 로고, 고른 원소 색으로 물드는 제목, 둥근 검색창, 아이콘 버튼, 도감 진행도가 생겼고 폰에서는 더 낮아졌어요',
            '튜토리얼을 다듬었어요. 원소를 직접 눌러 원자 모형을 보는 단계와 챕터 표시, 끝나면 완료 축하가 생겼어요',
            '처음 하는 사람을 위한 첫걸음 미션 8개가 생겼어요. 소금·이산화탄소·암모니아·메테인 만들기 등, 눌러야 할 칸이 반짝여요',
@@ -6246,6 +6247,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           'The element card is redesigned: a table-cell tile with its outer electrons orbiting around it, category and block chips, a quote box and stat tiles for group, period and state',
            'The header is redesigned: a logo, a title tinted by the element you pick, a rounded search bar, icon buttons and codex progress. It is shorter on phones too',
            'The tutorial is polished: a step where you tap an element to see its atom, chapter progress, and a finish celebration',
            '8 first-step missions for newcomers: make salt, CO₂, ammonia, methane and more, with the cells to tap glowing',
@@ -42191,6 +42193,171 @@ void main(){
   }
   try{ const _sf = saveFound; saveFound = function(){ const r = _sf.apply(this, arguments); setTimeout(count, 0); return r; }; }catch(e){}
   tidy(); count(); setTimeout(() => { tidy(); count(); }, 1200);
+})();
+</script>
+<style>
+  /* ═══ 원소 정보 카드 리워크 (4.2.5+): 주기율표 칸 모양 타일 + 궤도 · 스탯 칸 · 인용구 ═══ */
+  #info .ihero.ixc{padding:18px 18px 16px;border-radius:20px;isolation:isolate;
+    background:
+      radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--cc) 34%,transparent),transparent 60%),
+      radial-gradient(80% 60% at 100% 100%,color-mix(in srgb,var(--cc) 12%,transparent),transparent 70%),
+      linear-gradient(160deg,#181b36,#11132a 70%);
+    border:1px solid color-mix(in srgb,var(--cc) 50%,transparent);
+    box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.03) inset,0 0 30px color-mix(in srgb,var(--cc) 12%,transparent)}
+  #info .ihero.ixc::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+    background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.2px);background-size:14px 14px;
+    -webkit-mask:linear-gradient(160deg,#000,transparent 70%);mask:linear-gradient(160deg,#000,transparent 70%)}
+  #info .ihero.ixc::after{right:-4px;top:-22px;font-size:132px;opacity:.22;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--cc) 70%,transparent);z-index:-1}
+  #info .ihero.ixc .ix-sheen{position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--cc) 80%,#fff),transparent);opacity:.8;pointer-events:none}
+
+  #info .ihero.ixc .ih-top{display:flex;align-items:center;gap:20px}
+  /* 타일 + 궤도 */
+  .ix-tw{position:relative;flex:none;width:96px;height:108px;margin:4px 6px 4px 4px}
+  .ix-tile{position:absolute;inset:0;z-index:1;border-radius:14px;display:grid;place-items:center;align-content:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--cc) 30%,#1e2146),#151733 70%);
+    border:1px solid color-mix(in srgb,var(--cc) 65%,transparent);border-bottom:4px solid var(--cc);
+    box-shadow:0 8px 20px rgba(0,0,0,.35),0 0 22px color-mix(in srgb,var(--cc) 28%,transparent),inset 0 1px 0 rgba(255,255,255,.12)}
+  .ix-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(130deg,rgba(255,255,255,.14),transparent 38%,transparent 70%,rgba(255,255,255,.05))}
+  #info .ihero.ixc .ix-tile .ih-num{position:absolute;left:9px;top:7px;margin:0;font-size:12px;font-weight:800;opacity:1;color:color-mix(in srgb,var(--cc) 70%,#fff)}
+  #info .ihero.ixc .ix-tile .bigsym{font-size:46px;line-height:1;margin-top:4px;color:#fff;text-shadow:0 0 18px color-mix(in srgb,var(--cc) 70%,transparent),0 2px 0 color-mix(in srgb,var(--cc) 40%,#000)}
+  .ix-tile .ix-m{margin-top:6px;font-size:10.5px;font-variant-numeric:tabular-nums;color:#b9bfe6;letter-spacing:.02em}
+  .ix-orb{position:absolute;left:50%;top:50%;width:200px;height:150px;margin:-75px 0 0 -100px;overflow:visible;pointer-events:none}
+  .ix-orb.back{z-index:0} .ix-orb.front{z-index:2}
+  .ix-orb ellipse{fill:none;stroke:color-mix(in srgb,var(--cc) 60%,transparent);stroke-width:1;opacity:.55}
+  .ix-orb circle{fill:#fff;filter:drop-shadow(0 0 3px var(--cc))}
+  html.idle .ix-orb{visibility:hidden}
+
+  /* 이름 쪽 */
+  #info .ihero.ixc .names{margin:0;min-width:0;flex:1}
+  #info .ihero.ixc .names .k{font-size:24px;font-weight:850;letter-spacing:-.01em;line-height:1.1;color:#f2f3ff}
+  #info .ihero.ixc .names .e{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#a6adda;margin-top:4px}
+  .ix-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  #info .ihero.ixc .ix-pills .cat{margin:0;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;color:color-mix(in srgb,var(--cc) 55%,#fff);
+    background:color-mix(in srgb,var(--cc) 16%,transparent);border:1px solid color-mix(in srgb,var(--cc) 55%,transparent)}
+  .ix-pills .blk{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;color:#cfd4ff;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.25)}
+  .ix-pills .blk b{color:#fff;font-weight:900}
+  /* 별명 · 한마디 */
+  #info .ihero.ixc .subtitle{margin:9px 0 0;font-size:13px;font-style:normal;font-weight:800;color:color-mix(in srgb,var(--cc) 45%,#fff)}
+  #info .ihero.ixc .subtitle::before{content:"“";margin-right:2px;opacity:.7}
+  #info .ihero.ixc .subtitle::after{content:"”";margin-left:2px;opacity:.7}
+  .ix-quote{position:relative;margin:14px 0 0;padding:11px 13px 11px 15px;border-radius:13px;background:rgba(8,9,24,.38);border:1px solid rgba(150,160,255,.14)}
+  .ix-quote::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:linear-gradient(var(--cc),color-mix(in srgb,var(--cc) 30%,transparent))}
+  #info .ihero.ixc .ix-quote .subtitle2{margin:0;padding:0;border:0;font-size:12.5px;line-height:1.6;color:#d9dcf5}
+  #info .ihero.ixc .ix-quote .subtitle3{margin:6px 0 0;padding:0;border:0;font-size:12px;line-height:1.55;color:#a3aad4}
+  /* 스탯 칸 */
+  #info .ihero.ixc .ih-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:6px;margin-top:12px}
+  #info .ihero.ixc .ih-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border-radius:12px;white-space:nowrap;
+    font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:#f2f3ff;background:rgba(255,255,255,.045);border:1px solid rgba(150,160,255,.16);
+    transition:border-color .2s,background .2s}
+  #info .ihero.ixc .ih-b:hover{border-color:color-mix(in srgb,var(--cc) 60%,transparent);background:color-mix(in srgb,var(--cc) 8%,transparent)}
+  #info .ihero.ixc .ih-b i{margin:0;font-size:9.5px;font-weight:800;letter-spacing:.08em;color:#9097c8}
+  /* 들어올 때 */
+  #info .ihero.ixc.in .ix-tw{animation:ixTile .6s cubic-bezier(.2,1.4,.3,1) both}
+  #info .ihero.ixc.in .names > *,#info .ihero.ixc.in .ix-quote,#info .ihero.ixc.in .ih-b{animation:ixUp .45s cubic-bezier(.2,.9,.3,1) both}
+  #info .ihero.ixc.in .names > :nth-child(2){animation-delay:.04s} #info .ihero.ixc.in .names > :nth-child(n+3){animation-delay:.08s}
+  #info .ihero.ixc.in .ix-quote{animation-delay:.12s}
+  #info .ihero.ixc.in .ih-b:nth-child(1){animation-delay:.14s} #info .ihero.ixc.in .ih-b:nth-child(2){animation-delay:.18s} #info .ihero.ixc.in .ih-b:nth-child(3){animation-delay:.22s} #info .ihero.ixc.in .ih-b:nth-child(n+4){animation-delay:.26s}
+  @keyframes ixTile{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes ixUp{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+
+  /* TMI */
+  #info .el-tmi{position:relative;margin:12px 0 4px;padding:10px 12px 10px 12px;border-radius:13px;align-items:flex-start;gap:9px;
+    background:linear-gradient(135deg,rgba(255,212,59,.08),rgba(255,212,59,.02));border:1px solid rgba(255,212,59,.24);color:#e4dcc0;font-size:12.5px}
+  #info .el-tmi b{margin-top:1px;padding:2px 6px;border-radius:6px;box-shadow:0 0 10px rgba(255,212,59,.35)}
+  /* 조합에 담기 */
+  #info #addBtn{margin-top:16px;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--cc) 60%,transparent);font-weight:800;font-size:13.5px;
+    color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 45%,#2a2d63),color-mix(in srgb,var(--cc) 20%,#1b1d44));
+    box-shadow:0 6px 18px color-mix(in srgb,var(--cc) 22%,transparent);transition:transform .15s,filter .2s}
+  #info #addBtn:hover{filter:brightness(1.12);color:#fff}
+  #info #addBtn:active{transform:scale(.97)}
+
+  @media (max-width:700px){
+    #info .ihero.ixc{padding:16px 14px 14px}
+    #info .ihero.ixc .ih-top{gap:16px}
+    .ix-tw{width:86px;height:98px}
+    #info .ihero.ixc .ix-tile .bigsym{font-size:40px}
+    #info .ihero.ixc .names .k{font-size:21px}
+    #info .ihero.ixc::after{font-size:110px}
+  }
+  @media (prefers-reduced-motion:reduce){ #info .ihero.ixc.in *{animation:none!important} .ix-orb animateMotion{display:none} }
+</style>
+<script>
+(function(){
+  if(typeof select !== 'function') return;
+  const blockOf = e => !e.g ? 'f' : (e.g <= 2 || e.n === 2) ? 's' : e.g >= 13 ? 'p' : 'd';
+  let lastN = 0;
+  function orbit(e, front){
+    const v = Math.max(1, Math.min(8, (e.sh && e.sh[e.sh.length - 1]) || 1));
+    const rx = 74, ry = 22, P = `M ${100 - rx} 75 a ${rx} ${ry} 0 1 0 ${rx * 2} 0 a ${rx} ${ry} 0 1 0 ${-rx * 2} 0`;
+    const dur = 7 + (e.n % 5);
+    const dots = Array.from({ length: v }, (_, i) => `<circle r="2.6"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="-${(dur * i / v).toFixed(2)}s" path="${P}"/></circle>`).join('');
+    const id = 'ixc' + (front ? 'f' : 'b');
+    return `<svg class="ix-orb ${front ? 'front' : 'back'}" viewBox="0 0 200 150" aria-hidden="true">
+      ${front ? `<defs><clipPath id="${id}"><rect x="0" y="75" width="200" height="75" transform="rotate(-18 100 75)"/></clipPath></defs>` : ''}
+      <g transform="rotate(-18 100 75)" ${front ? `clip-path="url(#${id})"` : ''}>${front ? '' : `<ellipse cx="100" cy="75" rx="${rx}" ry="${ry}"/>`}</g>
+      <g ${front ? `clip-path="url(#${id})"` : ''}><g transform="rotate(-18 100 75)">${front ? `<ellipse cx="100" cy="75" rx="${rx}" ry="${ry}"/>` : ''}${dots}</g></g></svg>`;
+  }
+  function restyle(){
+    const info = document.getElementById('info'); if(!info) return;
+    const hero = info.querySelector('.ihero'); if(!hero || hero.classList.contains('ixc')) return;
+    const e = byNum[selected]; if(!e) return;
+    const L = LANG === 'en';
+    hero.classList.add('ixc');
+    const top = hero.querySelector('.ih-top'), left = top && top.firstElementChild, names = hero.querySelector('.names');
+    if(!top || !left || !names) return;
+    const num = left.querySelector('.ih-num'), big = left.querySelector('.bigsym');
+    // 왼쪽: 진짜 칸처럼 생긴 타일 + 바깥 전자 궤도
+    const tw = document.createElement('div'); tw.className = 'ix-tw';
+    const tile = document.createElement('div'); tile.className = 'ix-tile';
+    if(num){ num.textContent = e.n; tile.appendChild(num); }
+    if(big) tile.appendChild(big);
+    const m = document.createElement('div'); m.className = 'ix-m';
+    try{ m.textContent = typeof rxAmTxt === 'function' ? rxAmTxt(e) : e.m; }catch(err){ m.textContent = e.m; }
+    tile.appendChild(m);
+    tw.insertAdjacentHTML('beforeend', orbit(e, false));
+    tw.appendChild(tile);
+    tw.insertAdjacentHTML('beforeend', orbit(e, true));
+    left.replaceWith(tw);
+    // 오른쪽: 이름 · 분류 · 블록 · 별명
+    const k = names.querySelector('.k'), en = names.querySelector('.e'), s1 = names.querySelector('.subtitle'), s2 = names.querySelector('.subtitle2'), s3 = names.querySelector('.subtitle3');
+    const pills = document.createElement('div'); pills.className = 'ix-pills';
+    const cat = hero.querySelector('.ih-badges .cat'); if(cat) pills.appendChild(cat);
+    const bl = blockOf(e); pills.insertAdjacentHTML('beforeend', `<span class="blk"><b>${bl}</b>${L ? '-block' : ' 블록'}</span>`);
+    (en || k).after(pills);
+    if(s1) pills.after(s1);
+    // 긴 설명은 카드 폭 전체 인용구로
+    if(s2 || s3){ const q = document.createElement('div'); q.className = 'ix-quote'; if(s2) q.appendChild(s2); if(s3) q.appendChild(s3); top.after(q); }
+    // 스탯에서 원자량은 타일에 있으니 뺀다
+    const bw = hero.querySelector('.ih-badges');
+    if(bw) [...bw.querySelectorAll('.ih-b')].forEach(b => { const t = (b.querySelector('i') || {}).textContent || ''; if(/원자량|Weight/.test(t)) b.remove(); });
+    if(bw && !bw.children.length) bw.remove();
+    hero.insertAdjacentHTML('afterbegin', '<i class="ix-sheen"></i>');
+    evict(hero);
+    try{ new MutationObserver(() => evict(hero)).observe(hero, { childList: true, subtree: true }); }catch(err){}
+    if(lastN !== e.n){ hero.classList.add('in'); setTimeout(() => hero.classList.remove('in'), 900); }
+    lastN = e.n;
+  }
+  // 분류 칩 옆에 붙던 것들(영어일 때 아스리엘 말풍선, 붕괴 지켜보기 등)은 카드 밑으로 뺀다
+  function evict(hero){
+    const names = hero.querySelector('.names'), pills = hero.querySelector('.ix-pills'); if(!names) return;
+    const out = [];
+    [...names.children].forEach(c => { if(!c.matches('.k, .e, .ix-pills, .subtitle')) out.push(c); });
+    if(pills) [...pills.children].forEach(c => { if(!c.matches('.cat, .blk')) out.push(c); });
+    if(!out.length) return;
+    let at = hero; out.forEach(c => { at.after(c); at = c; });
+  }
+  const _sel = select;
+  select = function(){
+    const r = _sel.apply(this, arguments);
+    try{ restyle(); }catch(err){ console.warn('infox', err); }
+    setTimeout(() => { try{ restyle(); }catch(err){} }, 0);
+    setTimeout(() => { try{ restyle(); }catch(err){} }, 30);
+    return r;
+  };
+  // 언어를 바꾸거나 다른 코드가 정보 칸을 다시 그려도
+  const info = document.getElementById('info');
+  if(info) try{ new MutationObserver(() => { const h = info.querySelector('.ihero'); if(h && !h.classList.contains('ixc')) restyle(); }).observe(info, { childList: true }); }catch(e){}
+  try{ if(typeof selected !== 'undefined' && selected) restyle(); }catch(e){}
 })();
 </script>
 <style>
