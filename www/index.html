@@ -3473,6 +3473,7 @@ function hex2rgb(h){
 
 function draw(now){
   requestAnimationFrame(draw);
+  if(window.RX_LOWPOW && document.body.classList.contains('ovl')) return;
   const w = cv.width / (devicePixelRatio>2?2:devicePixelRatio);
   const h = cv.height / (devicePixelRatio>2?2:devicePixelRatio);
   ctx.clearRect(0,0,w,h);
@@ -6220,6 +6221,7 @@ const CHANGELOG = [
            '원자 오비탈 크게 보기 창을 새로 꾸몄어요. 원소 타일, 전자·껍질·바깥 전자 칸, 페리윙클 버튼이 생겼어요',
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
+           '폰에서 조합 결과 창이 덜 뜨거워졌어요. 결과 창이 떠 있으면 뒤 원자 모형과 장식 애니메이션은 쉬고, 물결과 모형은 가만히 두면 천천히 그리다가 멈춰요',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
            '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
@@ -6266,6 +6268,7 @@ const CHANGELOG = [
            'The big atomic orbital view is redesigned with an element tile, electron and shell stats and periwinkle buttons',
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
+           'The result card runs cooler on phones: the atom model and decorations behind it rest, and the waves and model slow down and stop when left alone',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
            '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
@@ -8837,6 +8840,7 @@ function orbitMaxR(w, h, minR){
 
 function draw(now){
   requestAnimationFrame(draw);
+  if(window.RX_LOWPOW && document.body.classList.contains('ovl')) return;   // 폰: 결과·도감 창이 덮고 있으면 뒤 원자 모형은 쉰다
   const w = cv.width / (devicePixelRatio > 2 ? 2 : devicePixelRatio);
   const h = cv.height / (devicePixelRatio > 2 ? 2 : devicePixelRatio);
   ctx.clearRect(0, 0, w, h);
@@ -39722,8 +39726,9 @@ void main(){
     const m = RX_M;
     if(m && !m.static && modal.classList.contains('on') && !RX_DRAG){
       const c = cost(m);
-      const gap = c > 1500 ? 64 : c > 600 ? 48 : 0;           // 15fps · 20fps · 그대로(30)
-      const still = !m.kin && !RX_GRAB && now - lastIn > 20000;
+      const idle = now - lastIn > 6000;                       // 6초 안 만지면 더 느긋하게
+      const gap = (c > 1500 ? 80 : c > 600 ? 60 : 40) * (idle ? 1.6 : 1);   // 12·16·25fps (가만히 두면 8·10·15fps)
+      const still = !m.kin && !RX_GRAB && now - lastIn > 12000;
       if(still || (gap && now - lastDraw < gap)){
         if(still) RX_LAST = now;                               // 멈춰 있는 동안 회전이 쌓이지 않게
         RX_RAF = requestAnimationFrame(rxLoop);
@@ -41561,9 +41566,13 @@ void main(){
   function frame(now){
     raf = requestAnimationFrame(frame);
     if(!modalEl.classList.contains('on') || document.hidden){ stop(); return; }
-    if(window.RX_LOWPOW && now - last < 45) return;   // 폰: 초당 22번 정도
+    if(window.RX_LOWPOW){
+      if(document.documentElement.classList.contains('idle')) return;   // 15초 안 만지면 멈춘 채로
+      const calm = (now - t0) / 1000 - rip > 6 && kick < .05;
+      if(now - last < (calm ? 160 : 66)) return;   // 폰: 열릴 때 초당 15번 → 잠잠해지면 초당 6번
+    }
     last = now;
-    const dpr = Math.min(window.RX_LOWPOW ? 1 : 1.5, devicePixelRatio || 1);
+    const dpr = Math.min(window.RX_LOWPOW ? .75 : 1.5, devicePixelRatio || 1);
     const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr); if(!W || !H) return;
     if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
     cx += (mx - cx) * .04; cy += (my - cy) * .04;
@@ -43659,6 +43668,12 @@ void main(){
   };
 })();
 </script>
+<style>
+  /* ═══ 폰 발열 줄이기 (4.2.5+): 결과 창이 떠 있을 때 계속 도는 장식 애니메이션은 멈춘다 ═══ */
+  html.lowpow body.ovl #trayDock #mixBtn, html.lowpow body.ovl #mixBtn{animation:none!important}
+  html.lowpow #modal.on #mStage, html.lowpow #modal.on #card .formula::before, html.lowpow #modal.on #mWipe{animation:none!important}
+  html.lowpow.idle #modal.on *{animation-play-state:paused!important}
+</style>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
