@@ -6215,6 +6215,7 @@ const CHANGELOG = [
            '조합 바를 새로 꾸몄어요. 담은 원소가 주기율표 칸처럼 보이고, 표에서 누르면 칸이 날아 들어와요. 비우면 하나씩 톡톡 사라져요',
            '업적 그림이 하나 더 손그림이 됐어요 (포기를 모르는 사람)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF, 벤젠 결과에 "오비탈 ⤢" 버튼이 생겼어요. 누르면 전체 화면에서 분자 오비탈 에너지 도표에 전자가 차례로 채워지고, 칸을 누르면 그 오비탈이 3D 전자 구름으로 보여요. 결합 차수와, 산소가 왜 자석에 끌리는지도 알려 줘요',
+           '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
            'PC 조합 바 버튼도 페리윙클로 맞췄어요. 랜덤·비우기에 아이콘이 붙었어요',
            '실패하거나 개수가 틀리면 결과 창에 "이렇게 고쳐 봐요"가 떠요. H 하나 빼기처럼 고칠 방법을 보여 주고, 누르면 그대로 고쳐서 다시 섞어요. 도감 줄엔 진행 막대도 생겼어요',
            '설정 창을 새로 꾸몄어요. 탭마다 아이콘이 생기고, 고르는 버튼은 한 덩어리로 묶였고, 스위치와 버튼도 페리윙클로 바뀌었어요',
@@ -6253,6 +6254,7 @@ const CHANGELOG = [
            'The mix tray is redesigned: added elements look like periodic table cells and fly in from the table, and clearing pops them away one by one',
            'One more achievement icon is hand-drawn (Never gives up)',
            'H₂, N₂, O₂, F₂, Cl₂, CO, NO, HF and benzene results have a new full-screen Orbitals view: a molecular orbital energy diagram fills with electrons, and tapping a level shows that orbital as a 3D electron cloud, with the bond order and why oxygen sticks to magnets',
+           '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
            'The desktop tray buttons now match too, with icons on Random and Clear',
            'Fail or get the counts wrong and the result card now suggests small fixes, like removing one H. Tap one to fix the tray and mix again. The codex line also gets a progress bar',
            'Settings are redesigned: icons on every tab, option buttons grouped into one control, and periwinkle switches and buttons',
@@ -42972,6 +42974,45 @@ void main(){
   }
   body.mode-add #trayDock #chips{border-color:rgba(99,230,190,.55);background:rgba(99,230,190,.05)}
 </style>
+<script>
+/* ═══ 될 법한 랜덤 (4.2.5+): 🎲 가 아무거나 담지 않고, 가끔은 진짜 되는 조합(또는 거의 되는 조합)을 담는다 ═══
+   40% 못 찾은 물질 그대로 · 30% 한 끗 차이(개수 하나 틀림 → 결과 창의 "이렇게 고쳐 봐요"로 이어짐) · 30% 예전처럼 막 섞기 */
+(function(){
+  const btn = document.getElementById('randBtn'); if(!btn) return;
+  let ENT = null;
+  const ents = () => {
+    if(ENT) return ENT;
+    ENT = allEntries().filter(x => x.exact).map(x => {
+      const parts = String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+      return { name: x.name, parts, tot: parts.reduce((t, [, n]) => t + n, 0) };
+    }).filter(x => x.parts.length >= 2 && x.parts.length <= 4 && x.tot <= 16 && x.parts.every(([s]) => rxSym(s)));
+    return ENT;
+  };
+  const locked = s => { try{ const e = rxSym(s); return !e || (window.rxLvLocked && window.rxLvLocked(e.n)); }catch(err){ return false; } };
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  btn.addEventListener('click', e => {
+    const r = Math.random();
+    if(r >= 0.7) return;   // 30%: 예전 랜덤이 그대로 돈다
+    const pool = ents().filter(x => !found.has(x.name) && !x.parts.some(([s]) => locked(s)));
+    if(!pool.length) return;
+    e.stopImmediatePropagation();
+    const x = pick(pool);
+    let parts = x.parts.map(p => p.slice());
+    if(r >= 0.4){
+      // 한 끗 차이: 원소 하나의 개수를 하나 늘리거나 줄인다
+      const i = Math.floor(Math.random() * parts.length);
+      if(parts[i][1] > 1 && Math.random() < 0.5) parts[i][1]--; else parts[i][1]++;
+    }
+    try{
+      mix = [];
+      // 담는 순서도 섞어서 정답이 바로 티 나지 않게
+      parts.sort(() => Math.random() - .5).forEach(([s, n]) => { const el = rxSym(s); for(let k = 0; k < n && mix.length < MIX_MAX; k++) mix.push(el.n); });
+      SFX.pick && SFX.pick();
+      renderChips();
+    }catch(err){}
+  }, true);
+})();
+</script>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
