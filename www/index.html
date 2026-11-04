@@ -40849,6 +40849,10 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
   #moCap{position:absolute;right:10px;top:46px;z-index:4;text-align:right;pointer-events:none;animation:moIn .45s .1s both}
   #moCap b{display:block;font:600 20px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 14px rgba(154,168,255,.6)}
   #moCap span{display:block;margin-top:4px;font-size:10.5px;color:#c9d0ff;max-width:150px;margin-left:auto;word-break:keep-all}
+  #moCap .kd{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:999px;font-weight:800;font-size:10.5px}
+  #mStage.mo-on #mHint{display:none!important}
+  #moCap b.an{color:#ffc2e2} #moCap b.bd{color:#c9f0ff}
+  #moCap .kd.bd{color:#0b1530;background:linear-gradient(90deg,#c9f0ff,#9ee7ff)} #moCap .kd.an{color:#2a0b1e;background:linear-gradient(90deg,#ffd0ea,#ff9ad5)} #moCap .kd.nb{color:#1a1a2a;background:#c9d0ff}
   #moCap .ph{display:inline-flex;gap:8px;margin-top:6px;font:700 9.5px/1 ui-monospace,monospace;color:var(--dim)}
   #moCap .ph i{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:3px}
   @media (max-width:700px){
@@ -40943,8 +40947,9 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
       const segs = x.deg === 2 ? [[cx - w, cx - 3], [cx + 3, cx + w]] : [[cx - w * .55, cx + w * .55]];
       const col = x.star ? '#ff9ad5' : '#9ee7ff';
       let g = `<g class="lv${i === sel ? ' sel' : ''}" data-i="${i}"><rect class="hit" x="${cx - w - 4}" y="${yy - 9}" width="${w * 2 + 8}" height="18"/>`;
-      segs.forEach(([a, b]) => g += `<line class="ml" x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-width="2.4" stroke-linecap="round"/>`);
-      g += `<text class="ml" x="${cx + w + 4}" y="${yy + 3}" font-size="8.5" fill="${col}">${x.lab}</text>`;
+      if(i === sel) g += `<rect x="${cx - w - 6}" y="${yy - 10}" width="${w * 2 + 12}" height="20" rx="10" fill="rgba(255,226,154,.12)" stroke="rgba(255,226,154,.55)"/>`;
+      segs.forEach(([a, b]) => g += `<line x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-width="6" stroke-linecap="round" opacity=".25" filter="url(#moBl)"/><line class="ml" x1="${a}" x2="${b}" y1="${yy}" y2="${yy}" stroke="${col}" stroke-width="2.6" stroke-linecap="round"/>`);
+      g += `<text class="ml" x="${cx + w + 4}" y="${yy + 3}" font-size="9" font-weight="700" fill="${col}">${x.lab}</text>`;
       // 전자 화살표
       let n = x.n;
       const put = [];
@@ -40955,12 +40960,13 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
         for(let j = 0; j < put[k]; j++){
           const xx = m + (put[k] === 2 ? (j ? 4 : -4) : 0), up = j === 0;
           const d = (ei++ * 0.06).toFixed(2);
-          g += `<path d="${up ? `M${xx} ${yy + 6}V${yy - 7}m-2.6 2.8 2.6-2.8 2.6 2.8` : `M${xx} ${yy - 6}V${yy + 7}m-2.6-2.8 2.6 2.8 2.6-2.8`}" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round" style="opacity:0;animation:moE .3s ${d}s ease-out forwards"/>`;
+          g += `<path d="${up ? `M${xx} ${yy + 6}V${yy - 7}m-2.6 2.8 2.6-2.8 2.6 2.8` : `M${xx} ${yy - 6}V${yy + 7}m-2.6-2.8 2.6 2.8 2.6-2.8`}" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" filter="url(#moGl)" style="opacity:0;animation:moE .3s ${d}s ease-out forwards"/>`;
         }
       });
       s += g + '</g>';
     });
-    return `<svg class="dg" viewBox="0 -2 ${W} ${H + 10}" preserveAspectRatio="xMidYMid meet"><style>@keyframes moE{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}</style>${s}</svg>`;
+    const ax = `<line x1="${cx - w - 12}" x2="${cx - w - 12}" y1="${bot + 4}" y2="${top - 2}" stroke="rgba(201,208,255,.35)" stroke-width="1"/><path d="M${cx - w - 15} ${top + 2}l3-5 3 5" fill="none" stroke="rgba(201,208,255,.5)"/>`;
+    return `<svg class="dg" viewBox="0 -2 ${W} ${H + 10}" preserveAspectRatio="xMidYMid meet"><defs><filter id="moBl" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="2"/></filter><filter id="moGl"><feDropShadow dx="0" dy="0" stdDeviation="1" flood-color="#c9d0ff"/></filter></defs><style>@keyframes moE{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}</style>${ax}${s}</svg>`;
   }
   const NOTE = {
     H2: ['전자 두 개가 결합 오비탈에 같이 들어가요. 결합 하나', 'Two electrons share the bonding orbital. One bond'],
@@ -40983,42 +40989,47 @@ float basis(float k,vec3 q,float z){float r=length(q);float e=exp(-z*r);
   if(k<2.5) return q.y*e*z*.9;           // q (수직)
   return 0.;}
 float psi(vec3 p){ vec3 a=p-vec3(-D*.5,0.,0.), b=p-vec3(D*.5,0.,0.); return C.x*basis(K.x,a/18.,Z.x)+C.y*basis(K.y,b/18.,Z.y); }
+vec3 nrm(vec3 p){float e=.5;return normalize(vec3(
+  pow(psi(p+vec3(e,0,0)),2.)-pow(psi(p-vec3(e,0,0)),2.),
+  pow(psi(p+vec3(0,e,0)),2.)-pow(psi(p-vec3(0,e,0)),2.),
+  pow(psi(p+vec3(0,0,e)),2.)-pow(psi(p-vec3(0,0,e)),2.)));}
 void main(){
   vec2 fc=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
   vec2 uv=(fc-CEN)/SC;
   vec3 ro=vec3(0.,0.,420.),rd=normalize(vec3(uv,-420.));
   mat3 Mi=mat3(M[0][0],M[1][0],M[2][0],M[0][1],M[1][1],M[2][1],M[0][2],M[1][2],M[2][2]);
   vec3 o=Mi*ro,d=Mi*rd;
-  // 경계 구와 만나는 구간만 걷는다
-  float Rb=D*.5+95.;float b=dot(o,d),c=dot(o,o)-Rb*Rb,h=b*b-c;
-  if(h<0.){gl_FragColor=vec4(0.);return;}
-  h=sqrt(h);float t0=-b-h,t1=-b+h;
-  float dt=(t1-t0)/STEPS;float t=t0;float prev=psi(o+d*t)*psi(o+d*t)-ISO*ISO;vec3 hit;bool got=false;float glow=0.;
-  for(int i=0;i<160;i++){ if(float(i)>=STEPS) break; t+=dt; vec3 q=o+d*t; float v=psi(q); float f=v*v-ISO*ISO; glow+=v*v*dt;
-    if(f>0.&&prev<=0.){ float ta=t-dt,tb=t; for(int j=0;j<6;j++){ float tm=(ta+tb)*.5; float vm=psi(o+d*tm); if(vm*vm-ISO*ISO>0.) tb=tm; else ta=tm; } t=tb; hit=o+d*t; got=true; break; }
-    prev=f; }
-  // 원자핵: 작은 빛 점
-  vec3 nA=vec3(-D*.5,0.,0.),nB=vec3(D*.5,0.,0.);
-  float dA=length(cross(nA-o,d)),dB=length(cross(nB-o,d));
-  float tA=dot(nA-o,d),tB=dot(nB-o,d);
+  vec3 PA=vec3(.55,.72,1.), PB=vec3(1.,.5,.78);   // + 하늘 · − 분홍
   vec3 col=vec3(0.);float a=0.;
-  if(got){
-    float e=.6;vec3 n=normalize(vec3(
-      pow(psi(hit+vec3(e,0,0)),2.)-pow(psi(hit-vec3(e,0,0)),2.),
-      pow(psi(hit+vec3(0,e,0)),2.)-pow(psi(hit-vec3(0,e,0)),2.),
-      pow(psi(hit+vec3(0,0,e)),2.)-pow(psi(hit-vec3(0,0,e)),2.)));
-    n=-n; vec3 N=M*n; vec3 V=normalize(ro-M*hit);
-    float s=psi(hit); vec3 base=s>0.?vec3(.62,.78,1.):vec3(1.,.55,.78);
-    float dif=max(0.,dot(N,L))*.75+.3; float fr=pow(1.-max(0.,dot(N,V)),2.5);
-    float sp=pow(max(0.,dot(N,normalize(L+V))),40.)*.6;
-    col=base*dif+vec3(1.)*sp+base*fr*.5; a=.88;
+  float Rb=D*.5+95.;float b=dot(o,d),c=dot(o,o)-Rb*Rb,h=b*b-c;
+  if(h>0.){
+    h=sqrt(h);float t0=-b-h,t1=-b+h,dt=(t1-t0)/STEPS,t=t0;
+    float v0=psi(o+d*t),prev=v0*v0-ISO*ISO;int hits=0;
+    for(int i=0;i<160;i++){ if(float(i)>=STEPS||a>.97) break; t+=dt; vec3 q=o+d*t; float v=psi(q); float f=v*v-ISO*ISO;
+      // 안개처럼 비치는 속 (부호 색)
+      float dens=clamp(v*v/(ISO*ISO)-.15,0.,3.)*dt*.012;
+      vec3 vc=(v>0.?PA:PB)*1.15; col+=vc*dens*(1.-a); a+=dens*(1.-a)*.7;
+      if((f>0.)!=(prev>0.)){
+        float ta=t-dt,tb=t; for(int j=0;j<5;j++){ float tm=(ta+tb)*.5; float vm=psi(o+d*tm); if((vm*vm-ISO*ISO>0.)==(f>0.)) tb=tm; else ta=tm; }
+        vec3 hp=o+d*tb; float s=psi(hp); vec3 n=-nrm(hp); if(f<0.) n=-n;
+        vec3 N=M*n, V=normalize(ro-M*hp);
+        float ndv=abs(dot(N,V)); float fr=pow(1.-ndv,2.2);
+        float dif=max(0.,dot(N,L))*.55+.25;
+        float sp=pow(max(0.,dot(N,normalize(L+V))),60.)*.9;
+        // 홀로그램 등고선
+        float band=smoothstep(.0,.08,abs(fract(length(hp)/9.+atan(hp.y,hp.z)*.0)-.5)-.42);
+        vec3 base=s>0.?PA:PB;
+        vec3 sc=base*(dif*.55)+base*fr*1.6+vec3(1.)*sp+base*band*.25;
+        float al=(f>0.?.42:.22)+fr*.45;   // 앞면은 진하게, 뒷면은 옅게
+        col+=sc*al*(1.-a); a+=al*(1.-a); hits++;
+      }
+      prev=f; }
   }
-  // 핵 (앞에 있을 때만 위에)
-  float k1=smoothstep(3.2,1.6,dA)*(got?step(tA,t):1.), k2=smoothstep(3.2,1.6,dB)*(got?step(tB,t):1.);
-  col=mix(col,vec3(1.,.95,.8),max(k1,k2)); a=max(a,max(k1,k2));
-  // 은은한 구름
-  float gl=clamp(glow*.0009,0.,.35); col+=vec3(.55,.6,1.)*gl*(1.-a); a=max(a,gl);
-  gl_FragColor=vec4(col*a,a);
+  // 결합 축 (점선)과 원자핵 빛
+  vec3 nA=vec3(-D*.5,0.,0.),nB=vec3(D*.5,0.,0.);
+  for(int k=0;k<2;k++){ vec3 nn=k==0?nA:nB; float dd=length(cross(nn-o,d)); float g=exp(-dd*dd*.35)+.35*exp(-dd*.25);
+    col+=vec3(1.,.96,.86)*g*(1.-a*.6); a=max(a,min(1.,g)); }
+  gl_FragColor=vec4(col,clamp(a,0.,1.));
 }`;
   let cv = null, gl = null, U = {}, failed = false, cur = null;
   function init(){
@@ -41090,7 +41101,7 @@ void main(){
     const pick = () => {
       const x = F.lv[sel]; cur = { M, lv: x };
       p.querySelectorAll('.lv').forEach(g => g.classList.toggle('sel', +g.dataset.i === sel));
-      cap.innerHTML = `<b>${x.lab}</b><span>${x.star ? P('반결합 오비탈: 원자 사이에 전자가 없어서 결합을 약하게 해요', 'Antibonding: no electrons between the atoms, so it weakens the bond') : x.lab.startsWith('n') ? P('비결합: 결합에 거의 안 끼어요', 'Non-bonding: barely part of the bond') : P('결합 오비탈: 원자 사이에 전자가 모여서 둘을 붙여요', 'Bonding: electrons gather between the atoms and hold them together')}${x.deg === 2 ? P(' · 같은 에너지 2개 중 하나', ' · one of a matching pair') : ''} · e⁻ ${x.n}</span><span class="ph"><span><i style="background:#9ee7ff"></i>+</span><span><i style="background:#ff9ad5"></i>−</span></span>`;
+      cap.innerHTML = `<b class="${x.star ? 'an' : 'bd'}">${x.lab}</b><span class="kd ${x.star ? 'an' : x.lab.startsWith('n') ? 'nb' : 'bd'}">${x.star ? P('반결합 · 결합을 약하게', 'Antibonding') : x.lab.startsWith('n') ? P('비결합', 'Non-bonding') : P('결합 · 원자를 붙임', 'Bonding')}</span><span>e⁻ ${x.n} / ${x.deg * 2}${x.deg === 2 ? P(' · 쌍둥이 중 하나', ' · one of a pair') : ''}</span><span class="ph"><span><i style="background:#9ee7ff"></i>+</span><span><i style="background:#ff9ad5"></i>−</span></span>`;
       if(RX_M) RX_M._moKey = '';
       try{ rxDraw(RX_YAW, RX_PITCH); }catch(_){}
     };
