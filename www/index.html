@@ -6222,6 +6222,7 @@ const CHANGELOG = [
            '육중결합(Mo₂)에도 "오비탈 ⤢"가 생겼어요. 4d·5s로 만든 σ·π·δ 오비탈 여섯 개를 볼 수 있고, 네 갈래로 겹치는 δ 결합 모양도 나와요',
            '그림이 없는 업적 뱃지가 이모지 대신 선 아이콘으로 바뀌었어요',
            '폰에서 조합 결과 창이 덜 뜨거워졌어요. 결과 창이 떠 있으면 뒤 원자 모형과 장식 애니메이션은 쉬고, 물결과 모형은 가만히 두면 천천히 그리다가 멈춰요',
+           '고친 것: 결과 창에서 막대·구조식 보기로 바꿀 때마다 아래 설명이 깜빡이던 문제',
            '고친 것: 피라냐 용액·매직산·파라콰트처럼 분자 두 개가 섞인 물질의 모형이 서로 겹쳐 보이던 문제',
            '도감을 550종 전부 모으면…? (직접 확인해 보세요)',
            '🎲 랜덤이 똑똑해졌어요. 가끔은 아직 못 찾은 물질이 그대로 담기고, 가끔은 한 끗 차이로 담겨서 고쳐 보는 재미가 있어요',
@@ -6269,6 +6270,7 @@ const CHANGELOG = [
            'Hextuple bond (Mo₂) now has "Orbitals ⤢": see the six σ, π and δ orbitals built from 4d and 5s, including the four-lobed δ bond',
            'Achievement badges without a drawing now use line icons instead of emoji',
            'The result card runs cooler on phones: the atom model and decorations behind it rest, and the waves and model slow down and stop when left alone',
+           'Fixed: the text under the result card flickered every time you switched to the stick or structure view',
            'Fixed: mixtures like piranha solution, magic acid and paraquat had their two molecules drawn on top of each other',
            'Collect all 550 entries and…? (find out yourself)',
            '🎲 Random is smarter: sometimes it loads a substance you have not found yet, sometimes one that is just one atom off so you can fix it',
@@ -43674,6 +43676,27 @@ void main(){
   html.lowpow #modal.on #mStage, html.lowpow #modal.on #card .formula::before, html.lowpow #modal.on #mWipe{animation:none!important}
   html.lowpow.idle #modal.on *{animation-play-state:paused!important}
 </style>
+<style>
+  /* ═══ 결과 창 깜빡임 고치기 (4.2.5+): 처음 열릴 때 한 번 나오는 등장 애니메이션이
+     보기 탭(막대·구조식)을 바꿀 때마다 다시 처음부터 돌아서 아래 설명이 사라졌다 나타나던 것 ═══ */
+  #card.rx-done.rx-anim .rx-info > *, #card.rx-done.rx-anim .rx-state, #card.rx-done.rx-anim .cdex,
+  #card.rx-done.rx-anim .cbtns, #card.rx-done.rx-anim .rb-fix{animation:none!important;opacity:1;transform:none}
+  #card.rx-done .rb-fix .row{animation:none!important;opacity:1;transform:none}
+</style>
+<script>
+(function(){
+  if(typeof rxReveal !== 'function') return;
+  const card = document.getElementById('card'); if(!card) return;
+  let tm = 0;
+  const _rv = rxReveal;
+  rxReveal = function(){
+    card.classList.remove('rx-done'); clearTimeout(tm);
+    const r = _rv.apply(this, arguments);
+    tm = setTimeout(() => card.classList.add('rx-done'), 1800);   // 등장 애니메이션이 다 끝난 뒤
+    return r;
+  };
+})();
+</script>
 <style>
   /* ═══ 시작 화면: 페리윙클 모션 그래픽. 카메라가 확 빠지며 날카로운 조각들이 박자에 맞춰 모이고, "//"로 화면을 벤다 ═══ */
   #rxIntro.pw{background:#0a0b1a;overflow:hidden}
