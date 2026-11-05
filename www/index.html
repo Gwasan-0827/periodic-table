@@ -3176,6 +3176,11 @@
 
 
 <script>
+/* 마지막으로 만진 시각 (폰 발열 줄이기용) */
+window.RX_LAST_IN = performance.now();
+['pointerdown','pointermove','keydown','wheel','touchstart'].forEach(e => addEventListener(e, () => { window.RX_LAST_IN = performance.now(); }, { passive: true, capture: true }));
+</script>
+<script>
 /* 캔버스 방어: 반지름이 음수·NaN 이면 그라디언트가 예외를 던져 그 프레임 그림이 통째로 멈춘다. 0으로 잡아 준다 */
 (function(){ try{ const P = CanvasRenderingContext2D.prototype, f = P.createRadialGradient;
   P.createRadialGradient = function(x0, y0, r0, x1, y1, r1){ const c = v => (v > 0 && isFinite(v)) ? v : 0, z = v => isFinite(v) ? v : 0;
@@ -3474,6 +3479,7 @@ function hex2rgb(h){
 function draw(now){
   requestAnimationFrame(draw);
   if(window.RX_LOWPOW && document.body.classList.contains('ovl')) return;
+  if(window.RX_LOWPOW){ if(now - (draw._l || 0) < (now - (window.RX_LAST_IN || 0) > 8000 ? 110 : 45)) return; draw._l = now; }
   const w = cv.width / (devicePixelRatio>2?2:devicePixelRatio);
   const h = cv.height / (devicePixelRatio>2?2:devicePixelRatio);
   ctx.clearRect(0,0,w,h);
@@ -8845,6 +8851,7 @@ function orbitMaxR(w, h, minR){
 function draw(now){
   requestAnimationFrame(draw);
   if(window.RX_LOWPOW && document.body.classList.contains('ovl')) return;   // 폰: 결과·도감 창이 덮고 있으면 뒤 원자 모형은 쉰다
+  if(window.RX_LOWPOW){ if(now - (draw._l || 0) < (now - (window.RX_LAST_IN || 0) > 8000 ? 110 : 45)) return; draw._l = now; }   // 폰: 원자 모형은 초당 22번, 8초 안 만지면 초당 9번
   const w = cv.width / (devicePixelRatio > 2 ? 2 : devicePixelRatio);
   const h = cv.height / (devicePixelRatio > 2 ? 2 : devicePixelRatio);
   ctx.clearRect(0, 0, w, h);
