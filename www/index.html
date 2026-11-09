@@ -46088,20 +46088,21 @@ void main(){
   #stBig .hint{position:absolute;right:14px;top:14px;z-index:2;font-size:10.5px;color:#8f97c8;pointer-events:none}
   /* 결과 창 그림 칸을 화면 가득 (창이 transform·흐림 효과를 갖고 있으면 fixed 가 창 안에 갇히므로 그동안만 끈다) */
   body.st-full-on #card,body.st-full-on #modal{transform:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;filter:none!important;animation:none!important}
-  #mStage.st-full .rx-hint{display:none!important}
-  #mStage.st-full #mStruct2d{right:58px!important;top:14px!important}
-  #mStage.st-full{position:fixed!important;inset:12px!important;z-index:200!important;width:auto!important;height:auto!important;max-height:none!important;margin:0!important;border-radius:20px!important;
-    background:radial-gradient(circle at 50% 45%,#1d2150,#0a0b1c 75%)!important;border:1px solid rgba(150,160,255,.35)!important;box-shadow:0 0 0 100vmax rgba(5,6,16,.82),0 30px 80px rgba(0,0,0,.6)!important}
-  #mStage.st-full svg#mMol{position:absolute;inset:56px 8px 8px;width:calc(100% - 16px)!important;height:calc(100% - 64px)!important}
+  #card #mStage.st-full.rx-stage .rx-hint{display:none!important}
+  body.st-full-on .rx-dnav{display:none!important}
+  #card #mStage.st-full.rx-stage #mStruct2d{right:58px!important;top:14px!important}
+  #card #mStage.st-full.rx-stage{position:fixed!important;inset:12px!important;z-index:200!important;width:auto!important;height:auto!important;max-height:none!important;margin:0!important;border-radius:20px!important;
+    background:radial-gradient(circle at 50% 45%,#1d2150,#0a0b1c 75%)!important;background-color:#0a0b1c!important;border:1px solid rgba(150,160,255,.35)!important;box-shadow:0 0 0 100vmax rgba(5,6,16,.82),0 30px 80px rgba(0,0,0,.6)!important}
+  #card #mStage.st-full.rx-stage svg#mMol{position:absolute!important;inset:56px 8px 8px!important;width:calc(100% - 16px)!important;height:calc(100% - 64px)!important}
   #mStage .st-fx,#mStage .st-ft{display:none}
-  #mStage.st-full .st-fx{display:grid;place-items:center;position:absolute;right:12px;top:12px;z-index:30;opacity:1!important;pointer-events:auto!important;width:36px;height:36px;border-radius:11px;font:inherit;font-size:18px;cursor:pointer;color:#e6e8ff;background:rgba(14,16,40,.85);border:1px solid rgba(150,160,255,.3)}
-  #mStage.st-full .st-ft{display:block;position:absolute;left:16px;top:12px;z-index:4;pointer-events:none}
-  #mStage.st-full .st-ft .k{display:block;font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
-  #mStage.st-full .st-ft b{font-size:18px;color:#fff}
-  #mStage.st-full .rx-tabs{top:auto!important;bottom:12px!important;left:12px!important}
-  #mStage.st-full .rx-cap{display:none!important}
-  #card.curie #mStage.st-full{background:radial-gradient(circle at 50% 45%,#4a4d5e,#1f2029 80%)!important;border-color:rgba(230,233,250,.45)!important}
-  @media (max-width:700px){ #mStage.st-full{inset:0!important;border-radius:0!important} #mStage.st-full svg#mMol{inset:60px 0 60px} }
+  #card #mStage.st-full.rx-stage .st-fx{display:grid;place-items:center;position:absolute;right:12px;top:12px;z-index:30;opacity:1!important;pointer-events:auto!important;width:36px;height:36px;border-radius:11px;font:inherit;font-size:18px;cursor:pointer;color:#e6e8ff;background:rgba(14,16,40,.85);border:1px solid rgba(150,160,255,.3)}
+  #card #mStage.st-full.rx-stage .st-ft{display:block;position:absolute;left:16px;top:12px;z-index:4;pointer-events:none}
+  #card #mStage.st-full.rx-stage .st-ft .k{display:block;font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
+  #card #mStage.st-full.rx-stage .st-ft b{font-size:18px;color:#fff}
+  #card #mStage.st-full.rx-stage .rx-tabs{top:auto!important;bottom:12px!important;left:12px!important}
+  #card #mStage.st-full.rx-stage .rx-cap{display:none!important}
+  #card.curie #mStage.st-full.rx-stage.rx-stage{background:radial-gradient(circle at 50% 45%,#4a4d5e,#1f2029 80%)!important;border-color:rgba(230,233,250,.45)!important}
+  @media (max-width:700px){ #card #mStage.st-full.rx-stage{inset:0!important;border-radius:0!important} #card #mStage.st-full.rx-stage svg#mMol{inset:60px 0 60px} }
   /* 큐리 테마 (헴 Hg) */
   #stBig.cu .sc{border-color:rgba(220,224,245,.45);background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.14) 42%,transparent 55%),linear-gradient(160deg,#6f7388,#3c3e4c 45%,#1e1f28)}
   #stBig.cu .sc::before{background:linear-gradient(90deg,#80849c,#ffffff,#9a9db4,#ffffff,#80849c);background-size:200% 100%}
