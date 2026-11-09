@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['학습에 "작용기" 탭이 생겼어요. -OH, -COOH, -NH₂ 같은 작용기 10가지를 그림으로 보고, 어떤 성질이 생기는지와 예시 분자를 볼 수 있어요. 조합으로 만들어 본 분자는 도감 표시가 붙어요',
+      ko: ['결과 창에 "구조식 크게" 버튼이 생겼어요. 구조식을 화면 가득 펼쳐서 끌고, 확대하고, 수소와 탄소 글자를 켜고 끌 수 있어요',
+           '학습에 "작용기" 탭이 생겼어요. -OH, -COOH, -NH₂ 같은 작용기 10가지를 그림으로 보고, 어떤 성질이 생기는지와 예시 분자를 볼 수 있어요. 조합으로 만들어 본 분자는 도감 표시가 붙어요',
            '도감이 557종이 됐어요. 헴과 엽록소의 뼈대인 포르핀, 그리고 가운데에 철·마그네슘·코발트·구리·아연·수은을 끼운 포르핀 6종이 들어왔어요. 수은 포르핀은 큐리의 피예요',
            '배경을 새로 그렸어요. 별이 뜬 밤하늘 아래로 Y2K 느낌의 원근 격자 바닥과 빛나는 지평선이 깔려요',
            '메인 주기율표 칸을 새로 꾸몄어요. 유리 같은 칸에 분류 색이 은은하게 비치고, 아래 색 줄이 빛나요. 마우스를 올리면 살짝 떠올라요',
@@ -6257,7 +6258,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['New Learn tab: functional groups. Ten groups like -OH, -COOH and -NH2 with diagrams, what they do and example molecules',
+      en: ['New Structure button on the result card: open the structural formula full screen, drag, zoom and toggle H and C labels',
+           'New Learn tab: functional groups. Ten groups like -OH, -COOH and -NH2 with diagrams, what they do and example molecules',
            'The codex now has 557 entries: porphine, the ring behind heme and chlorophyll, plus six versions with iron, magnesium, cobalt, copper, zinc or mercury in the middle',
            'New background: a starry night sky over a glowing Y2K perspective grid',
            'New look for the main table tiles: glassy cells tinted by category, glowing colour bars and a lift on hover',
@@ -37220,6 +37222,7 @@ void main(){
     return r;
   };
   window.rxStructModel = structModel;
+  window.rxLayout2d = layout2d;
 })();
 </script>
 <script>
@@ -46040,6 +46043,393 @@ void main(){
     e.preventDefault(); e.stopImmediatePropagation(); profile();
   }, true);
   addEventListener('keydown', e => { if(e.key === 'Escape'){ const d = document.getElementById('cuCard'); if(d && d.classList.contains('on')){ d.classList.remove('on'); e.stopImmediatePropagation(); } } }, true);
+})();
+</script>
+
+<style>
+  /* ═══ 구조식 크게 보기 ═══ */
+  #stBig{position:fixed;inset:0;z-index:98;display:none;align-items:center;justify-content:center;background:rgba(6,7,20,.84);padding:16px}
+  #stBig.on{display:flex;animation:stIn .22s ease-out}
+  @keyframes stIn{from{opacity:0}}
+  #stBig .sc{position:relative;width:min(1100px,100%);height:min(760px,100%);display:flex;flex-direction:column;overflow:hidden;border-radius:22px;border:1px solid rgba(150,160,255,.28);
+    background:radial-gradient(110% 60% at 0% 0%,rgba(143,155,255,.14),transparent 55%),linear-gradient(160deg,rgba(28,30,70,.98),rgba(11,12,30,.99));box-shadow:0 30px 70px rgba(0,0,0,.55)}
+  #stBig .sc::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;z-index:3;background:linear-gradient(90deg,#8f9bff,#ff9ad5,#ffe08a,#8cf5d2,#8f9bff);background-size:200% 100%;animation:stHolo 8s linear infinite}
+  @keyframes stHolo{to{background-position:200% 0}}
+  #stBig .hd{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;border-bottom:1px solid rgba(150,160,255,.14)}
+  #stBig .hd .k{font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
+  #stBig .hd b{display:block;font-size:20px;font-weight:900;color:#fff}
+  #stBig .hd .f{font-size:13px;font-weight:800;color:#c3c8f2}
+  #stBig .hd .st-sp{flex:1;background:none;border:0;padding:0;height:auto}
+  #stBig .hd button,#stBig .tb button{font:inherit;font-size:12px;font-weight:800;padding:7px 12px;border-radius:999px;cursor:pointer;color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24)}
+  #stBig .hd button.x{width:34px;height:34px;padding:0;border-radius:11px;font-size:17px}
+  #stBig .tb button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent}
+  #stBig .tb{position:absolute;left:12px;top:12px;z-index:2;display:flex;flex-wrap:wrap;gap:6px}
+  #stBig .zm{position:absolute;right:12px;bottom:12px;z-index:2;display:flex;gap:6px}
+  #stBig .zm button{width:36px;height:36px;border-radius:11px;font:inherit;font-size:16px;font-weight:900;cursor:pointer;color:#e6e8ff;background:rgba(14,16,40,.8);border:1px solid rgba(150,160,255,.28)}
+  #stBig .lg{position:absolute;left:12px;bottom:12px;z-index:2;display:flex;flex-wrap:wrap;gap:5px;max-width:60%;pointer-events:none}
+  #stBig .lg span{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(14,16,40,.75);border:1px solid rgba(150,160,255,.2);color:#e6e8ff}
+  #stBig .lg span i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+  #stBig .stage{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;cursor:grab;
+    background-image:radial-gradient(rgba(170,180,255,.12) 1px,transparent 1.2px);background-size:22px 22px}
+  #stBig .stage:active{cursor:grabbing}
+  #stBig svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #stBig .bd{stroke:#dfe3ff;stroke-width:2.4;stroke-linecap:round}
+  #stBig .bd.ar{stroke-dasharray:5 4}
+  #stBig .bd.co{stroke-dasharray:3 4;opacity:.7}
+  #stBig .lbl{font-weight:900;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:#14152f;stroke-width:4px;stroke-linejoin:round;letter-spacing:.04em}
+  #stBig .lbl tspan.s{font-size:.62em}
+  #stBig .hint{position:absolute;right:14px;top:14px;z-index:2;font-size:10.5px;color:#8f97c8;pointer-events:none}
+  /* 큐리 테마 (헴 Hg) */
+  #stBig.cu .sc{border-color:rgba(220,224,245,.45);background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.14) 42%,transparent 55%),linear-gradient(160deg,#6f7388,#3c3e4c 45%,#1e1f28)}
+  #stBig.cu .sc::before{background:linear-gradient(90deg,#80849c,#ffffff,#9a9db4,#ffffff,#80849c);background-size:200% 100%}
+  #stBig.cu .lbl{stroke:#23242e}
+  @media (max-width:700px){ #stBig{padding:0} #stBig .sc{width:100%;height:100%;border-radius:0;border:0} #stBig .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 10px} #stBig .hd .f{display:none} .rtool.st-big em{display:none} #stBig .hint{display:none} }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  const CPK = s => { try{ return rxCpk(s); }catch(e){ return '#ccc'; } };
+  const LCOL = s => { if(s === 'C') return '#eef1fa'; const c = CPK(s); try{ const h = [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)); return 'rgb(' + h.map(v => Math.round(v + (255 - v) * .35)).join(',') + ')'; }catch(e){ return c; } };
+  const SUB = n => String(n).replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'[d]);
+  const S = { on:false, m:null, Q:null, showH:false, showC:false, z:1, px:0, py:0, name:'', formula:'' };
+
+  function build(){
+    if(document.getElementById('stBig')) return;
+    const d = document.createElement('div'); d.id = 'stBig';
+    d.innerHTML = `<div class="sc"><div class="hd"><div><div class="k">STRUCTURAL FORMULA // ${EN() ? 'STRUCTURE' : '구조식'}</div><b id="stName"></b></div><span class="f" id="stF"></span><span class="st-sp"></span><button type="button" class="x" id="stX" aria-label="close">×</button></div>
+      <div class="stage" id="stStage"><div class="tb"><button type="button" id="stH"></button><button type="button" id="stC"></button></div><div class="hint" id="stHint"></div><svg id="stSvg"></svg><div class="lg" id="stLg"></div>
+      <div class="zm"><button type="button" data-z="out">−</button><button type="button" data-z="fit">⤢</button><button type="button" data-z="in">+</button></div></div></div>`;
+    document.body.appendChild(d);
+    d.addEventListener('click', e => { if(e.target === d) close(); });
+    d.querySelector('#stX').addEventListener('click', close);
+    d.querySelector('#stH').addEventListener('click', () => { S.showH = !S.showH; draw(); });
+    d.querySelector('#stC').addEventListener('click', () => { S.showC = !S.showC; draw(); });
+    d.querySelector('.zm').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; const k = b.dataset.z; if(k === 'fit'){ S.z = 1; S.px = S.py = 0; } else S.z = Math.max(.4, Math.min(6, S.z * (k === 'in' ? 1.25 : .8))); apply(); });
+    const st = d.querySelector('#stStage');
+    const pts = new Map(); let last = null, pinch = null;
+    st.addEventListener('pointerdown', e => { st.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); last = { x: e.clientX, y: e.clientY }; if(pts.size === 2){ const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z: S.z }; } });
+    st.addEventListener('pointermove', e => {
+      if(!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if(pts.size === 2 && pinch){ const [a, b] = [...pts.values()]; S.z = Math.max(.4, Math.min(6, pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / (pinch.d || 1))); apply(); return; }
+      if(last){ S.px += e.clientX - last.x; S.py += e.clientY - last.y; last = { x: e.clientX, y: e.clientY }; apply(); }
+    });
+    const up = e => { pts.delete(e.pointerId); if(pts.size < 2) pinch = null; if(!pts.size) last = null; else last = [...pts.values()][0]; };
+    st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
+    st.addEventListener('wheel', e => { e.preventDefault(); S.z = Math.max(.4, Math.min(6, S.z * (e.deltaY < 0 ? 1.12 : .89))); apply(); }, { passive: false });
+    st.addEventListener('dblclick', () => { S.z = 1; S.px = S.py = 0; apply(); });
+    addEventListener('keydown', e => { if(S.on && e.key === 'Escape'){ e.stopImmediatePropagation(); close(); } }, true);
+    addEventListener('resize', () => { if(S.on) draw(); });
+  }
+  function apply(){ const g = document.querySelector('#stSvg > g'); if(g) g.setAttribute('transform', `translate(${S.px} ${S.py}) scale(${S.z})`); }
+
+  function draw(){
+    const svg = document.getElementById('stSvg'), m = S.m, Q = S.Q; if(!svg || !m) return;
+    const W = svg.clientWidth || 800, H = svg.clientHeight || 600, n = m.atoms.length;
+    const isH = i => m.atoms[i].s === 'H';
+    const nb = m.atoms.map(() => []);
+    m.bonds.forEach(b => { nb[b[0]].push(b[1]); nb[b[1]].push(b[0]); });
+    // 보일 원자: 수소는 탄소에 붙은 건 숨김(토글), 다른 원자에 붙은 건 글자로 합침
+    const hidden = new Set();
+    if(!S.showH) for(let i = 0; i < n; i++) if(isH(i)) hidden.add(i);
+    const vis = []; for(let i = 0; i < n; i++) if(!hidden.has(i)) vis.push(i);
+    const xs = vis.map(i => Q[i].x), ys = vis.map(i => Q[i].y);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const pad = 70, sc = Math.min((W - pad * 2) / ((maxX - minX) || 1), (H - pad * 2) / ((maxY - minY) || 1), 2.4);
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    const P = i => ({ x: W / 2 + (Q[i].x - cx) * sc, y: H / 2 + (Q[i].y - cy) * sc });
+    const lens = m.bonds.filter(b => !hidden.has(b[0]) && !hidden.has(b[1])).map(b => { const a = P(b[0]), c = P(b[1]); return Math.hypot(a.x - c.x, a.y - c.y); }).sort((a, b) => a - b);
+    const L = lens.length ? lens[lens.length >> 1] : 40;
+    const fs = Math.max(11, Math.min(26, L * .42));
+    const labeled = i => !hidden.has(i) && (m.atoms[i].s !== 'C' || S.showC || nb[i].filter(j => !isH(j)).length === 0);
+    const gap = i => labeled(i) ? fs * .62 : 0;
+    let lines = '';
+    m.bonds.forEach(b => {
+      const [i, j] = b, o = b[2] || 1; if(hidden.has(i) || hidden.has(j)) return;
+      const a = P(i), c = P(j), dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+      const s1 = gap(i), s2 = gap(j);
+      const x1 = a.x + ux * s1, y1 = a.y + uy * s1, x2 = c.x - ux * s2, y2 = c.y - uy * s2;
+      const metal = /^(Fe|Mg|Co|Cu|Zn|Hg|Pt|Ni|Mn|Ca|Na|K|Li|Al|Ti|Cr|Ag|Au|Pd|Ru|Rh|Os|Ir|Cd|Sn|Pb)$/;
+      const coord = metal.test(m.atoms[i].s) || metal.test(m.atoms[j].s);
+      const ln = (ox, oy, cls) => `<line class="bd${cls ? ' ' + cls : ''}" x1="${(x1 + ox).toFixed(1)}" y1="${(y1 + oy).toFixed(1)}" x2="${(x2 + ox).toFixed(1)}" y2="${(y2 + oy).toFixed(1)}"/>`;
+      const off = Math.max(2.6, L * .08), nx = -uy * off, ny = ux * off;
+      if(coord && o === 1) lines += ln(0, 0, 'co');
+      else if(o === 2) lines += ln(nx / 1.2, ny / 1.2) + ln(-nx / 1.2, -ny / 1.2);
+      else if(o === 3) lines += ln(0, 0) + ln(nx * 1.4, ny * 1.4) + ln(-nx * 1.4, -ny * 1.4);
+      else if(o === 1.5) lines += ln(nx / 1.2, ny / 1.2) + ln(-nx / 1.2, -ny / 1.2, 'ar');
+      else lines += ln(0, 0);
+    });
+    let labels = '';
+    vis.forEach(i => {
+      if(!labeled(i)) return;
+      const a = m.atoms[i], p = P(i);
+      let txt = a.s, hc = 0;
+      if(!S.showH && a.s !== 'C') hc = nb[i].filter(isH).length;
+      if(!S.showH && a.s === 'C' && (S.showC || nb[i].filter(j => !isH(j)).length === 0)) hc = nb[i].filter(isH).length;
+      const ht = hc ? `<tspan>H</tspan>${hc > 1 ? `<tspan class="s" dy="${fs * .22}">${hc}</tspan>` : ''}` : '';
+      labels += `<text class="lbl" x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" fill="${LCOL(a.s)}" style="font-size:${fs.toFixed(1)}px">${txt}${ht}</text>`;
+    });
+    svg.innerHTML = `<g>${lines}${labels}</g>`;
+    apply();
+    const d = document.getElementById('stBig'), en = EN();
+    d.querySelector('#stH').textContent = (S.showH ? '✓ ' : '') + (en ? 'Show H' : '수소 보기');
+    d.querySelector('#stH').classList.toggle('on', S.showH);
+    d.querySelector('#stC').textContent = (S.showC ? '✓ ' : '') + (en ? 'Label C' : '탄소 글자');
+    d.querySelector('#stC').classList.toggle('on', S.showC);
+    d.querySelector('#stHint').textContent = en ? 'Drag to move · wheel or pinch to zoom · double-click to reset' : '끌어서 이동 · 휠이나 두 손가락으로 확대 · 두 번 눌러 원위치';
+    const els = [...new Set(m.atoms.map(a => a.s))].filter(s => s !== 'H' || S.showH);
+    d.querySelector('#stLg').innerHTML = (en ? '' : '') + els.map(s => `<span><i style="background:${LCOL(s)}"></i>${s}${s === 'C' && !S.showC ? (en ? ' (corners)' : ' (꼭짓점)') : ''}</span>`).join('');
+  }
+
+  function open(model, name, formula, curie){
+    if(!model || !model.atoms || !model.bonds || !model.bonds.length) return;
+    build();
+    const atoms = model.atoms.map(a => ({ s: a.s, x: a.x, y: a.y, z: a.z || 0 }));
+    const bonds = model.bonds.map(b => [b[0] != null ? b[0] : b.a, b[1] != null ? b[1] : b.b, (b[2] != null ? b[2] : b.o) || 1]);
+    let Q = null; try{ Q = window.rxLayout2d ? window.rxLayout2d(atoms, bonds) : null; }catch(e){}
+    if(!Q) Q = atoms.map(a => ({ x: a.x, y: a.y }));
+    S.m = { atoms, bonds }; S.Q = Q; S.z = 1; S.px = S.py = 0; S.on = true;
+    const d = document.getElementById('stBig');
+    d.classList.toggle('cu', !!curie);
+    d.querySelector('#stName').textContent = name || '';
+    d.querySelector('#stF').textContent = formula || '';
+    d.classList.add('on');
+    requestAnimationFrame(draw);
+  }
+  function close(){ S.on = false; const d = document.getElementById('stBig'); if(d) d.classList.remove('on'); }
+  window.rxStructBig = open;
+
+  // 결과 창 도구 줄에 버튼
+  function sync(){
+    const tools = document.getElementById('mTools'); if(!tools) return;
+    let b = tools.querySelector('.st-big');
+    const v = (typeof RX !== 'undefined' && RX && RX.views) ? RX.views.ball : null;
+    const ok = !!(v && v.atoms && v.bonds && v.bonds.length && v.atoms.length > 2);
+    if(!b){
+      b = document.createElement('button'); b.type = 'button'; b.className = 'rtool st-big';
+      b.addEventListener('click', e => { e.stopPropagation(); const m = RX && RX.views && RX.views.ball; let f = ''; try{ f = document.getElementById('mFormula').textContent.replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'[d]); }catch(_){} open(m, (document.getElementById('mName') || {}).textContent || RX.raw, f, RX.raw === '헴 Hg'); });
+      tools.insertBefore(b, tools.firstChild);
+    }
+    b.innerHTML = `<span>⌬</span><em>${EN() ? 'Structure ⤢' : '구조식 크게'}</em>`;
+    b.hidden = !ok;
+  }
+  if(typeof rxRender === 'function'){
+    const _r = rxRender;
+    rxRender = function(){ const r = _r.apply(this, arguments); try{ sync(); }catch(e){} return r; };
+  }
+  setInterval(() => { const m = document.getElementById('modal'); if(m && m.classList.contains('on')) try{ sync(); }catch(e){} }, 800);
+})();
+</script>
+
+<style>
+  /* ═══ Hg's Hideout: 수은 웅덩이 결과 창에서 커맨드로 들어가는 큐리의 아지트 ═══ */
+  .hg-term-btn{position:absolute;left:12px;bottom:58px;z-index:4;font:700 11px ui-monospace,Menlo,Consolas,monospace;padding:3px 7px;border-radius:6px;cursor:pointer;color:rgba(220,224,245,.45);background:rgba(10,11,20,.35);border:1px solid rgba(220,224,245,.12);transition:color .2s,border-color .2s}
+  .hg-term-btn:hover{color:#e8ebff;border-color:rgba(220,224,245,.5)}
+  .hg-term-btn i{font-style:normal;animation:hgBlink 1s steps(2) infinite}
+  @keyframes hgBlink{50%{opacity:0}}
+  .hg-term{position:absolute;left:10px;right:10px;bottom:52px;z-index:6;padding:10px 12px;border-radius:12px;font:12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#d6d9ea;
+    background:rgba(8,9,14,.92);border:1px solid rgba(220,224,245,.35);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .hg-term .out div{white-space:pre-wrap;word-break:break-all}
+  .hg-term .out .ok{color:#8cf5d2}.hg-term .out .bad{color:#ff8fa3}.hg-term .out .dim{color:#80849c}
+  .hg-term label{display:flex;gap:6px;align-items:center}
+  .hg-term label b{color:#c9cde2;font-weight:700;white-space:nowrap}
+  .hg-term input{flex:1;min-width:0;font:inherit;color:#fff;background:none;border:0;outline:none;caret-color:#e8ebff}
+
+  #hgHide{position:fixed;inset:0;z-index:96;display:none;align-items:center;justify-content:center;padding:14px;
+    background:radial-gradient(120% 80% at 50% 0%,#3a3d4e,#14151c 75%)}
+  #hgHide.on{display:flex;animation:hgIn .6s ease-out}
+  @keyframes hgIn{from{opacity:0;filter:blur(8px) brightness(2)}}
+  #hgHide .room{position:relative;width:min(980px,100%);aspect-ratio:16/10;max-height:100%;border-radius:22px;overflow:hidden;
+    background:linear-gradient(180deg,#4a4d5e 0%,#2f313d 58%,#24252e 58.2%,#1b1c23 100%);border:1px solid rgba(220,224,245,.35);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 80px rgba(0,0,0,.45)}
+  #hgHide .room::before{content:"";position:absolute;left:0;right:0;top:0;height:58%;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 79px,rgba(255,255,255,.04) 79px 80px),linear-gradient(115deg,transparent 35%,rgba(255,255,255,.07) 45%,transparent 55%)}
+  #hgHide .room::after{content:"";position:absolute;left:0;right:0;top:58%;bottom:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(255,255,255,.035) 27px 28px)}
+  #hgHide .ttl{position:absolute;left:18px;top:14px;z-index:3;font:900 11px ui-monospace,Menlo,monospace;letter-spacing:.2em;color:#c9cde2}
+  #hgHide .ttl b{display:block;font-size:22px;letter-spacing:.02em;color:#fff;font-family:inherit}
+  #hgHide .out{position:absolute;right:14px;top:12px;z-index:5;font:inherit;font-size:12px;font-weight:800;padding:7px 13px;border-radius:999px;cursor:pointer;color:#e8ebff;background:rgba(10,11,20,.55);border:1px solid rgba(220,224,245,.35)}
+  #hgHide .it{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);z-index:2;cursor:pointer;background:none;border:0;padding:0;font:inherit;color:#e8ebff;transition:transform .18s,filter .2s}
+  #hgHide .it:hover{transform:translate(-50%,-52%) scale(1.06);filter:drop-shadow(0 0 10px rgba(230,233,255,.55))}
+  #hgHide .it > span:first-child{display:block;margin:0 auto}
+  #hgHide .it .cap{display:block;margin-top:4px;font-size:10.5px;font-weight:800;color:#a9adc4;text-align:center;white-space:nowrap}
+  #hgHide .it.seen .cap::after{content:" ✓";color:#8cf5d2}
+  /* 물건들 */
+  .hgx-pool{width:250px;height:58px;border-radius:50%;background:radial-gradient(ellipse at 45% 35%,#ffffff,#d7dae9 22%,#9a9eb4 50%,#5c5f72 78%,#3b3d4a);box-shadow:0 0 30px rgba(220,224,250,.35),inset 0 -6px 12px rgba(0,0,0,.35);position:relative;overflow:hidden}
+  .hgx-pool::after{content:"";position:absolute;inset:18% 30%;border-radius:50%;border:2px solid rgba(255,255,255,.55);animation:hgRip 3s ease-out infinite}
+  @keyframes hgRip{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+  #hgHide .it > span.hgx-shelf,.hgx-shelf{display:flex;align-items:flex-end;gap:7px;padding:0 10px 6px;border-bottom:8px solid #6b6e80;border-radius:2px;box-shadow:0 8px 0 -4px #3a3c48}
+  .hgx-cube{width:30px;height:30px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:900;color:#1b1c24;box-shadow:inset -4px -4px 0 rgba(0,0,0,.18),inset 3px 3px 0 rgba(255,255,255,.4)}
+  .hgx-cube.bit{clip-path:polygon(0 0,70% 0,72% 22%,100% 30%,100% 100%,0 100%)}
+  .hgx-flask{width:54px;height:86px;border-radius:12px 12px 8px 8px;background:linear-gradient(90deg,#3e4150,#6a6d7c 35%,#4a4c58 70%,#2e3039);position:relative;box-shadow:0 6px 12px rgba(0,0,0,.4)}
+  .hgx-flask::before{content:"";position:absolute;left:50%;top:-12px;width:20px;height:14px;transform:translateX(-50%);border-radius:4px 4px 0 0;background:#5a5d6c}
+  .hgx-flask::after{content:"Fe";position:absolute;left:0;right:0;top:34px;text-align:center;font-weight:900;font-size:13px;color:#c9a27a}
+  .hgx-therm + .cap{margin-top:16px!important}
+  .hgx-therm{width:20px;height:110px;border-radius:10px;background:rgba(255,255,255,.12);border:2px solid rgba(220,224,245,.5);position:relative;margin:0 auto}
+  .hgx-therm::before{content:"";position:absolute;left:4px;right:4px;bottom:4px;height:var(--lv,60%);border-radius:6px;background:linear-gradient(#f4f6ff,#9a9eb4)}
+  .hgx-therm::after{content:"";position:absolute;left:50%;bottom:-12px;width:26px;height:26px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#b9bdd0 40%,#6a6d80);border:2px solid rgba(220,224,245,.5)}
+  .hgx-frame{width:96px;height:72px;border-radius:6px;border:5px solid #8a8ea3;background:linear-gradient(160deg,#20212b,#101118);display:grid;place-items:center;box-shadow:0 6px 12px rgba(0,0,0,.4)}
+  .hgx-frame b{font-size:38px;color:#e8ebff;text-shadow:0 0 12px rgba(230,233,255,.6)}
+  .hgx-frame svg{width:80%;height:80%}
+  .hgx-sign{padding:8px 12px;border-radius:6px;background:#ffd43b;color:#1b1500;font-weight:900;font-size:12px;transform:rotate(-4deg);box-shadow:0 4px 0 #b8901a,0 8px 14px rgba(0,0,0,.35)}
+  .hgx-pc{width:120px;padding:8px;border-radius:8px;background:#0b0c12;border:3px solid #6b6e80;font:10px/1.4 ui-monospace,Menlo,monospace;color:#8cf5d2;text-align:left;box-shadow:0 0 18px rgba(140,245,210,.15)}
+  .hgx-bed{width:120px;height:46px;border-radius:12px 12px 6px 6px;background:linear-gradient(#cfd2e2,#8e92a8);position:relative;box-shadow:0 8px 14px rgba(0,0,0,.35)}
+  .hgx-bed::before{content:"";position:absolute;left:8px;top:-12px;width:38px;height:20px;border-radius:10px;background:#eef0fa}
+  /* 대사 */
+  #hgHide .say{position:absolute;left:14px;right:14px;bottom:14px;z-index:4;display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(10,11,18,.82);border:1px solid rgba(220,224,245,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #hgHide .say .cu-av{flex:none}
+  #hgHide .say .t{font-size:10px;font-weight:900;letter-spacing:.14em;color:#a9adc4}
+  #hgHide .say .l{font-size:14.5px;font-weight:800;color:#f4f6ff;min-height:1.4em;line-height:1.5}
+  #hgHide .drop{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d6d9ea 35%,#80849c 75%,#5a5d72);opacity:.6;animation:hgBob 6s ease-in-out infinite;pointer-events:none}
+  @keyframes hgBob{50%{transform:translate(8px,-14px)}}
+  html.lowpow #hgHide .drop,html.lowpow .hgx-pool::after{animation:none}
+  @media (max-width:700px) and (orientation:portrait){
+    #hgHide{padding:0}
+    #hgHide .room{aspect-ratio:auto;width:100%;height:100%;border-radius:0;border:0;background:linear-gradient(180deg,#4a4d5e 0%,#2f313d 62%,#24252e 62.2%,#1b1c23 100%)}
+    #hgHide .it{left:var(--px,var(--x));top:var(--py,var(--y))}
+    .hgx-pool{width:200px;height:48px}
+    #hgHide .ttl{top:calc(14px + env(safe-area-inset-top))}
+    #hgHide .out{top:calc(12px + env(safe-area-inset-top))}
+    #hgHide .say{bottom:calc(14px + env(safe-area-inset-bottom))}
+  }
+</style>
+<script>
+(function(){
+  const NM = '수은 웅덩이', CMD = 'SGcncyBIaWRlb3V0';
+  const EN = () => LANG === 'en';
+  let armed = false, buf = '', tries = 0;
+
+  /* ── 결과 창: 수은 웅덩이일 때만 작은 터미널 ── */
+  function term(open){
+    const st = document.getElementById('mStage'); if(!st) return;
+    let t = st.querySelector('.hg-term');
+    if(!open){ if(t) t.remove(); return; }
+    if(!t){
+      t = document.createElement('div'); t.className = 'hg-term';
+      t.innerHTML = `<div class="out"><div class="dim">${EN() ? '// a terminal is hiding in the puddle' : '// 웅덩이 속에 터미널이 숨어 있다'}</div></div><label><b>hg@puddle:~$</b><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command"></label>`;
+      st.appendChild(t);
+      const inp = t.querySelector('input');
+      inp.addEventListener('keydown', e => { e.stopPropagation(); if(e.key === 'Enter'){ run(inp.value); inp.value = ''; } if(e.key === 'Escape') term(false); });
+      t.addEventListener('click', e => e.stopPropagation());
+    }
+    setTimeout(() => { try{ t.querySelector('input').focus(); }catch(e){} }, 30);
+    return t;
+  }
+  function out(t, s, cls){ const o = t.querySelector('.out'); const d = document.createElement('div'); if(cls) d.className = cls; d.textContent = s; o.appendChild(d); while(o.children.length > 6) o.firstChild.remove(); }
+  function run(v){
+    const t = term(true); v = String(v || '').trim(); if(!v) return;
+    out(t, 'hg@puddle:~$ ' + v);
+    if(v === CMD){
+      out(t, 'base64 → "Hg\'s Hideout"', 'dim');
+      out(t, EN() ? 'access granted. ☿' : '접근 허가. ☿', 'ok');
+      setTimeout(() => { term(false); hideout(); }, 900);
+      return;
+    }
+    tries++;
+    if(/^hg'?s hideout$/i.test(v)) out(t, EN() ? 'plain text is not allowed. encode it.' : '그대로 쓰면 안 돼. 인코딩해.', 'bad');
+    else if(/^(help|\?|도움말)$/i.test(v)) out(t, EN() ? 'the door opens for base64.' : '문은 base64 로만 열려.', 'dim');
+    else out(t, (EN() ? 'command not found: ' : '없는 명령어: ') + v.slice(0, 24), 'bad');
+    if(tries === 3) out(t, EN() ? 'hint: base64("Hg\'s ...")' : '힌트: base64("Hg\'s ...")', 'dim');
+  }
+  function arm(on){
+    armed = on;
+    const st = document.getElementById('mStage'); if(!st) return;
+    let b = st.querySelector('.hg-term-btn');
+    if(!on){ if(b) b.remove(); term(false); buf = ''; return; }
+    if(!b){ b = document.createElement('button'); b.type = 'button'; b.className = 'hg-term-btn'; b.innerHTML = '&gt;<i>_</i>'; b.title = 'terminal';
+      b.addEventListener('click', e => { e.stopPropagation(); term(true); }); st.appendChild(b); }
+  }
+  setInterval(() => {
+    const m = document.getElementById('modal'), on = m && m.classList.contains('on');
+    let is = false; try{ is = on && typeof RX !== 'undefined' && RX && RX.raw === NM; }catch(e){}
+    if(is !== armed) arm(is);
+  }, 300);
+  // PC: 결과 창이 떠 있으면 그냥 쳐도 된다
+  addEventListener('keydown', e => {
+    if(!armed || e.ctrlKey || e.metaKey || e.altKey) return;
+    const tg = e.target; if(tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA')) return;
+    if(e.key.length !== 1) return;
+    buf = (buf + e.key).slice(-CMD.length);
+    if(buf === CMD){ buf = ''; const t = term(true); out(t, 'hg@puddle:~$ ' + CMD); out(t, 'base64 → "Hg\'s Hideout"', 'dim'); out(t, EN() ? 'access granted. ☿' : '접근 허가. ☿', 'ok'); setTimeout(() => { term(false); hideout(); }, 900); }
+  }, true);
+
+  /* ── 아지트 ── */
+  const L = {
+    ko: {
+      hi: ['…어떻게 찾았어? base64 읽을 줄 아는구나.', '여긴 내 아지트야. 아무거나 만져 봐. 대신 웅덩이엔 들어오지 마.'],
+      pool: ['내 침대야. …들어오지 마.', '수은은 표면장력이 커서 이렇게 동그랗게 뭉쳐. 편해.'],
+      Au: ['금 큐브. 제일 맛있어. 사탕급이야.', '금은 나한테 엄청 잘 녹아. 옛날엔 이걸로 금광석에서 금을 뽑았대.'],
+      Ag: ['은 큐브는 담백해.', '아르겐툼은 은이고, 난 아르겐툼 비붐. 살아 있는 은이야. 헷갈리지 마.'],
+      Cu: ['구리는 좀 씁쓸해.', '치과에서 쓰던 은색 충전재가 은·주석·구리에 나를 섞은 아말감이야.'],
+      Sn: ['주석은 씹을 때 소리가 나. 끽끽.', '주석 막대를 구부리면 진짜로 "주석의 울음"이라는 소리가 나. 결정끼리 비벼지는 소리래.'],
+      Fe: ['…철은 안 녹아. 퉤.', '그래서 반쯤 먹다 뱉은 거야. 맛도 없고.'],
+      flask: ['내 여행 가방. 철이라서 안 녹아.', '진짜 수은도 이런 철 통에 담아서 옮겨. 한 통에 34.5킬로그램.'],
+      therm: ['영하 38.83도 밑으로 가면 나 얼어. 그러니까 겨울엔 건드리지 마.', '356.7도에서 끓어. 근데 그 전에도 조금씩 증발하니까 환기는 필수.'],
+      sym: ['☿. 내 기호야. 날개 달린 전령의 신 머큐리.', '수성도 같은 기호를 써. 태양 제일 가까이서 제일 빨리 도는 애.'],
+      sign: ['노크 금지. 문 두드리면 진동으로 웅덩이가 쪼개져.', '…방금 웅덩이 쪼개진 거 너 때문 아니지?'],
+      pc: ['비밀번호 바꿔야겠다. 너무 쉬웠어.', 'SGcncyBIaWRlb3V0. …아 소리 내서 읽어 버렸다.'],
+      heme: ['내 피 구조식이야. 원자 153개. 크게 봐.', '가운데 수은을 벤즈이미다졸이 아래서 붙잡고 있어. B12 따라 했어.'],
+      bed: ['진짜 침대도 있어. 웅덩이는 낮잠용.', '…안 잘 거면 나가.'],
+      cap: { pool: '수은 웅덩이', shelf: '간식 선반', flask: '철 플라스크', therm: '온도계', sym: '액자', sign: '표지판', pc: '단말기', heme: '헴 Hg', bed: '침대' },
+      title: '아지트', out: '나가기', name: '큐리' },
+    en: {
+      hi: ['…how did you find this? So you can read base64.', 'This is my hideout. Touch anything. Just stay out of the puddle.'],
+      pool: ['My bed. …Stay out.', 'Mercury has huge surface tension, so it beads up like this. Comfy.'],
+      Au: ['Gold cube. The tastiest. Basically candy.', 'Gold dissolves in me easily. People used that to pull gold out of ore.'],
+      Ag: ['Silver is mild.', 'Argentum is silver. I am argentum vivum — living silver. Do not mix us up.'],
+      Cu: ['Copper is a bit bitter.', 'Old silver dental fillings were silver, tin and copper mixed with me.'],
+      Sn: ['Tin squeaks when you chew it.', 'Bend a tin bar and it really makes a sound called the tin cry — crystals rubbing.'],
+      Fe: ['…Iron does not dissolve. Bleh.', 'That is why it is half chewed and spat out.'],
+      flask: ['My suitcase. Iron, so I cannot dissolve it.', 'Real mercury ships in iron flasks like this — 34.5 kg each.'],
+      therm: ['Below −38.83 °C I freeze. So leave me alone in winter.', 'I boil at 356.7 °C, but I evaporate a little even before that. Ventilate.'],
+      sym: ['☿. My symbol. Mercury, the winged messenger.', 'The planet uses it too — closest to the Sun, fastest orbit.'],
+      sign: ['No knocking. The vibration splits the puddle.', '…That split just now was not you, right?'],
+      pc: ['I should change the password. Too easy.', 'SGcncyBIaWRlb3V0. …I just read it out loud.'],
+      heme: ['My blood, drawn out. 153 atoms. Zoom in.', 'A benzimidazole holds the mercury from below. I copied B12.'],
+      bed: ['There is a real bed too. The puddle is for naps.', '…If you are not sleeping, get out.'],
+      cap: { pool: 'Puddle', shelf: 'Snack shelf', flask: 'Iron flask', therm: 'Thermometer', sym: 'Frame', sign: 'Sign', pc: 'Terminal', heme: 'Heme Hg', bed: 'Bed' },
+      title: 'HIDEOUT', out: 'Leave', name: 'CURIE' } };
+  const T = () => L[EN() ? 'en' : 'ko'];
+  const cnt = {};
+  let typer = 0;
+  function say(key){
+    const arr = T()[key]; if(!arr) return;
+    const k = cnt[key] = (cnt[key] || 0); cnt[key]++;
+    const s = arr[k % arr.length];
+    const el = document.querySelector('#hgHide .say .l'); if(!el) return;
+    clearInterval(typer); el.textContent = '';
+    let i = 0; const fast = window.RX_LOWPOW;
+    typer = setInterval(() => { i += fast ? 3 : 1; el.textContent = s.slice(0, i); if(i >= s.length) clearInterval(typer); }, 28);
+    try{ SFX.pick(); }catch(e){}
+  }
+  function hideout(){
+    let d = document.getElementById('hgHide');
+    const t = T(), c = t.cap;
+    if(!d){ d = document.createElement('div'); d.id = 'hgHide'; document.body.appendChild(d); }
+    const cube = (s, col, bit) => `<span class="hgx-cube${bit ? ' bit' : ''}" data-k="${s}" style="background:${col}">${s}</span>`;
+    let drops = ''; for(let i = 0; i < 8; i++){ const s = 6 + (i * 37 % 14); drops += `<i class="drop" style="left:${(i * 131 % 97)}%;top:${(i * 53 % 50) + 4}%;width:${s}px;height:${(s * .8).toFixed(0)}px;animation-delay:${-i * .8}s"></i>`; }
+    d.innerHTML = `<div class="room">${drops}
+      <div class="ttl">Hg's Hideout<b>${EN() ? t.name + ' HIDEOUT' : t.name + '의 ' + t.title}</b></div>
+      <button type="button" class="out">${t.out}</button>
+      <button type="button" class="it" data-k="sym" style="--x:16%;--y:24%;--px:22%;--py:18%"><span class="hgx-frame"><b>☿</b></span><span class="cap">${c.sym}</span></button>
+      <button type="button" class="it" data-k="heme" style="--x:33%;--y:22%;--px:72%;--py:18%"><span class="hgx-frame"><svg viewBox="0 0 40 30"><g fill="none" stroke="#c9cde2" stroke-width="1.5"><path d="M20 4l8 5v10l-8 5-8-5V9z"/><path d="M28 9l7-3M12 19l-7 3M20 24v4M20 4V1"/></g><circle cx="20" cy="14" r="3" fill="#e8ebff"/></svg></span><span class="cap">${c.heme}</span></button>
+      <div class="it" data-k="shelf" style="--x:62%;--y:30%;--px:62%;--py:38%;cursor:default"><span class="hgx-shelf">${cube('Au', '#ffd43b')}${cube('Ag', '#e9ecf5')}${cube('Cu', '#e8915a')}${cube('Sn', '#b9bfcc')}${cube('Fe', '#8d7f74', true)}</span><span class="cap">${c.shelf}</span></div>
+      <button type="button" class="it" data-k="sign" style="--x:86%;--y:26%;--px:24%;--py:38%"><span class="hgx-sign">⚠ ${EN() ? 'NO KNOCKING' : '노크 금지'}</span><span class="cap">${c.sign}</span></button>
+      <button type="button" class="it" data-k="therm" style="--x:91%;--y:52%;--px:90%;--py:80%"><span class="hgx-therm" style="--lv:${Math.round(40 + Math.random() * 30)}%"></span><span class="cap">${c.therm}</span></button>
+      <button type="button" class="it" data-k="pc" style="--x:18%;--y:62%;--px:24%;--py:56%"><span class="hgx-pc">&gt; whoami<br>curie (Hg)<br>&gt; pass<br>SGcncyBIaW…</span><span class="cap">${c.pc}</span></button>
+      <button type="button" class="it" data-k="pool" style="--x:52%;--y:70%;--px:50%;--py:68%"><span class="hgx-pool"></span><span class="cap">${c.pool}</span></button>
+      <button type="button" class="it" data-k="flask" style="--x:79%;--y:66%;--px:80%;--py:60%"><span class="hgx-flask"></span><span class="cap">${c.flask}</span></button>
+      <button type="button" class="it" data-k="bed" style="--x:33%;--y:72%;--px:28%;--py:76%"><span class="hgx-bed"></span><span class="cap">${c.bed}</span></button>
+      <div class="say"><span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><span><div class="t">${EN() ? 'CURIE // MERCURY' : '큐리 // 수은'}</div><div class="l"></div></span></div>
+    </div>`;
+    d.querySelector('.out').addEventListener('click', () => d.classList.remove('on'));
+    d.querySelectorAll('.it[data-k]').forEach(b => { if(b.tagName === 'BUTTON') b.addEventListener('click', () => { b.classList.add('seen'); const k = b.dataset.k; say(k);
+      if(k === 'heme' && cnt.heme > 1 && window.rxStructBig){ try{ const m = rxSmilesModel(RX_SMILES['헴 Hg'], Math.random); window.rxStructBig(m, '헴 Hg', 'C₅₇H₆₉HgN₁₁O₁₃PS', true); }catch(e){} } }); });
+    d.querySelectorAll('.hgx-cube').forEach(cb => { cb.style.cursor = 'pointer'; cb.addEventListener('click', e => { e.stopPropagation(); say(cb.dataset.k); }); });
+    d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+    cnt.hi = 0; say('hi'); setTimeout(() => { if(d.classList.contains('on') && cnt.hi === 1) say('hi'); }, 3200);
+    try{ localStorage.setItem('pt_hideout', '1'); }catch(e){}
+  }
+  window.rxHgHideout = hideout;
+  addEventListener('keydown', e => { if(e.key === 'Escape'){ const d = document.getElementById('hgHide'); if(d && d.classList.contains('on') && !document.querySelector('#stBig.on')){ d.classList.remove('on'); e.stopImmediatePropagation(); } } }, true);
 })();
 </script>
 
