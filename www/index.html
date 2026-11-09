@@ -36522,6 +36522,7 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   /* ═══ 결과 창 액체 리워크: WebGL 메타볼 (굴절·프레넬·하이라이트·물결빛·기포) ═══ */
   #mLiqGL{position:absolute;pointer-events:none;z-index:1}
   #mStage.liq-gl #mMol{position:relative;z-index:2}
+  #mStage.liq-gl::before{opacity:0!important}
   #mStage.liq-gl .mol-atoms.liquid .mol-in > *{opacity:0!important}
   /* 얼음: 각설탕 같은 네모 대신 WebGL 얼음 덩어리. 안의 분자 그림만 남긴다 */
   #mStage.liq-gl .mol-tiles.ice .tl:not(.al) rect,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-hi,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-ck{opacity:0!important;transition:opacity .6s}
@@ -47401,7 +47402,7 @@ void main(){
       b.addEventListener('click', e => { e.stopPropagation(); go(!on); });
       const sb = tools.querySelector('.st-big'); sb ? sb.after(b) : tools.insertBefore(b, tools.firstChild);
     }
-    b.hidden = !ok;
+    b.hidden = !ok; b.style.display = ok ? '' : 'none';
     b.classList.toggle('on', on);
     b.innerHTML = on ? `<span>⇲</span><em>${EN() ? 'Fold' : '접기'}</em>` : `<span>⇱</span><em>${EN() ? 'Spread out' : '펼쳐보기'}</em>`;
   }
@@ -47500,6 +47501,38 @@ void main(){
     background:radial-gradient(120% 80% at 50% 110%,rgba(240,246,255,.85),rgba(210,226,255,.35) 45%,transparent 70%);animation:rxDry 1.4s ease-out forwards}
   @keyframes rxDry{0%{opacity:0;transform:translateY(30%)}50%{opacity:1;transform:none}100%{opacity:.9;filter:blur(2px)}}
 </style>
+
+<style>
+  /* ═══ 커서 상호작용 아이콘 v2 (CURICON 4.2.5): 가운데를 가리지 않게 오른쪽 아래 작은 배지로 ═══ */
+  #rxCur .cur-glyph{display:block!important}
+  #rxCur .cur-glyph .bd{fill:rgba(10,12,28,.88);stroke:var(--cur);stroke-width:1.1}
+  #rxCur .cur-glyph .ic{fill:none;stroke:#f2f4ff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+  #rxCur .cur-glyph .icf{fill:var(--cur);stroke:none}
+  #rxCur .cur-glyph .bdg{transform-box:fill-box;transform-origin:center;animation:curBdg .22s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes curBdg{from{transform:scale(.3);opacity:0}}
+  #rxCur[data-s="turn"] .cur-glyph .spin{transform-box:fill-box;transform-origin:center;animation:curSpin 2.4s linear infinite}
+  #rxCur[data-s="grab"] .cur-glyph .ic{stroke:#fff}
+  #rxCur[data-s="fuse"] .cur-glyph .bd{display:none}
+</style>
+<script>
+(function(){
+  if(typeof RX_CUR_GLYPH === 'undefined') return;
+  // 24px 아이콘을 배지 안에 (중심 15,15 · 지름 19)
+  const bd = (inner, sc = .5) => `<g class="bdg" transform="translate(15 15)"><circle class="bd" r="9.5"/><g transform="scale(${sc}) translate(-12 -12)">${inner}</g></g>`;
+  const P = (d, cls = 'ic') => `<path class="${cls}" d="${d}"/>`;
+  RX_CUR_GLYPH.add = bd(P('M12 5v14M5 12h14'), .55);
+  // 돌리기: 공 둘레를 도는 궤도 화살표
+  RX_CUR_GLYPH.turn = bd(`<g class="spin">${P('M20 12a8 8 0 1 1-2.3-5.6')}${P('M20 3.5V7h-3.5')}</g><circle class="icf" cx="12" cy="12" r="2.6"/>`, .55);
+  // 잡을 수 있음: 편 손 / 잡는 중: 쥔 손
+  RX_CUR_GLYPH.pinch = bd(P('M18 11V6a2 2 0 0 0-4 0 M14 10V4a2 2 0 0 0-4 0v2 M10 10.5V6a2 2 0 0 0-4 0v8 M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'), .52);
+  RX_CUR_GLYPH.grab = bd(P('M18 11.5V9a2 2 0 0 0-4 0v1.4 M14 10V8a2 2 0 0 0-4 0v2 M10 9.9V9a2 2 0 0 0-4 0v5 M6 14a2 2 0 0 0-4 0 M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0'), .52);
+  // 누르기: 손가락
+  RX_CUR_GLYPH.press = bd(P('M22 14a8 8 0 0 1-8 8 M18 11v-1a2 2 0 0 0-4 0 M14 10V9a2 2 0 0 0-4 0v1 M10 9.5V4a2 2 0 0 0-4 0v10 M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'), .52);
+  // 성냥은 그대로 (배지 없이 옆에)
+  RX_CUR_GLYPH.fuse = `<g transform="translate(13 6)">${RX_CUR_GLYPH.fuse}</g>`;
+  try{ if(RX_CUR){ const s = RX_CUR_STATE; RX_CUR_STATE = '__'; rxCursorSet(s); } }catch(e){}
+})();
+</script>
 
 </body>
 </html>
