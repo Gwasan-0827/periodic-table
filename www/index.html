@@ -33815,7 +33815,7 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
 <style>
   /* ═══ 히트맵(숫자 물성): 칸에 물처럼 차오르는 색 ═══ */
   body.heat-liq #grid .cell{overflow:hidden}
-  body.heat-liq #grid .cell > *:not(.hq){position:relative;z-index:1}
+  body.heat-liq #grid .cell > *:not(.hq):not(.num){position:relative;z-index:1}
   body.heat-liq #grid .cell .sym, body.heat-liq #grid .cell .st{text-shadow:0 1px 3px rgba(0,0,0,.55)}
   body.heat-liq #grid .cell .st{font-weight:700}
   .hq{position:absolute;left:0;right:0;bottom:0;height:0;z-index:0;pointer-events:none;background:var(--lq);
@@ -33881,7 +33881,7 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
 <style>
   /* ═══ 온도 보기 리워크: 고체는 결정 격자 · 액체는 출렁이는 물 · 기체는 피어오르는 방울 ═══ */
   body.temp-fx #grid .cell{overflow:hidden}
-  body.temp-fx #grid .cell > *:not(.tq){position:relative;z-index:1}
+  body.temp-fx #grid .cell > *:not(.tq):not(.num){position:relative;z-index:1}
   body.temp-fx #grid .cell .sym, body.temp-fx #grid .cell .st{text-shadow:0 1px 3px rgba(0,0,0,.6)}
   .tq{position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .4s}
   body:not(.temp-fx) .tq{display:none}
@@ -45901,7 +45901,8 @@ void main(){
   /* 위쪽 유리 반사 */
   #grid .cell::before{content:"";position:absolute;inset:0 0 55% 0;pointer-events:none;border-radius:inherit;
     background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);z-index:0}
-  #grid .cell > *:not(.hq):not(.tq){position:relative;z-index:1}
+  #grid .cell > *:not(.hq):not(.tq):not(.num){position:relative;z-index:1}
+  #grid .cell > .num{z-index:1}
   #grid .cell .num{position:absolute}
   /* 아래 색 줄: 가장자리에서 띄우고 빛나게 */
   #grid .cell::after{left:18%;right:18%;bottom:4px;height:2px;border-radius:2px;box-shadow:0 0 6px var(--cc),0 0 2px var(--cc)}
