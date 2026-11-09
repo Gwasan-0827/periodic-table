@@ -45877,6 +45877,18 @@ void main(){
   @property --cua{syntax:'<angle>';inherits:false;initial-value:0deg}
   @keyframes cuSpin{to{--cua:360deg}}
   html.lowpow #card.curie::after{animation-duration:14s}
+  /* 창 바탕: 남색 대신 광택 있는 은색 → 짙은 은색 */
+  #card.curie{background:
+      linear-gradient(115deg,transparent 30%,rgba(255,255,255,.22) 42%,rgba(255,255,255,.05) 48%,transparent 56%),
+      radial-gradient(120% 80% at 15% 0%,rgba(255,255,255,.35),transparent 55%),
+      linear-gradient(160deg,#a4a8bc 0%,#7d8196 28%,#555869 58%,#33353f 100%)!important}
+  #card.curie .rx-stage{background:radial-gradient(circle at 50% 45%,#4a4d5e,#1f2029 80%)!important;border-color:rgba(230,233,250,.35)!important}
+  #card.curie .rx-cap,#card.curie #mSub{background:rgba(20,21,28,.55)!important}
+  #card.curie .formula,#card.curie .cname{text-shadow:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+  #card.curie .formula,#card.curie .formula sub{background:linear-gradient(180deg,#ffffff 20%,#d9dceb 55%,#9ea2b8 90%);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+  #card.curie .rx-tmi{color:#f4f5fb!important;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+  #card.curie .rx-head .rt{box-shadow:0 2px 8px rgba(0,0,0,.35)}
+  body.curie-on #modal{background:radial-gradient(120% 90% at 50% 0%,rgba(190,194,212,.55),rgba(60,62,76,.85))!important}
   .cu-fx{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:visible}
   .cu-drop{position:absolute;top:-4px;width:10px;height:12px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
     background:radial-gradient(circle at 35% 30%,#fff,#d6d9ea 35%,#80849c 75%,#5a5d72);box-shadow:0 0 6px rgba(230,233,255,.6);animation:cuFall 3.6s cubic-bezier(.55,0,.8,.6) infinite}
