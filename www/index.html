@@ -47395,7 +47395,7 @@ void main(){
   function sync(){
     const tools = document.getElementById('mTools'); if(!tools) return;
     let b = tools.querySelector('.rx-exp');
-    const m = RX_M, ok = !!(m && m.atoms && m.atoms.length >= MIN && !m.fill && !m.liquid && !m.faces && bondsOf(m).length && (RX_VIEW === 'ball' || RX_VIEW === 'stick'));
+    const m = RX_M, ok = !!(m && m.atoms && m.atoms.length >= MIN && !m.crystal && !m.fill && !m.liquid && !m.faces && bondsOf(m).length && (RX_VIEW === 'ball' || RX_VIEW === 'stick'));
     if(!b){
       b = document.createElement('button'); b.type = 'button'; b.className = 'rtool rx-exp';
       b.addEventListener('click', e => { e.stopPropagation(); go(!on); });
@@ -47415,6 +47415,84 @@ void main(){
   setInterval(() => { const md = document.getElementById('modal'); if(md && md.classList.contains('on')) try{ sync(); }catch(e){} }, 900);
 })();
 </script>
+
+<script>
+/* ═══ 중수 · 삼중수 · 드라이아이스 (ISOWATER 4.2.5)
+   · 중수 D₂O = 수소 4 + 산소 1 (중수소 하나 = 수소 2개로 셈. 삼중수소를 수소 3개로 만드는 것과 같은 규칙)
+   · 삼중수 T₂O = 수소 6 + 산소 1
+   · 드라이아이스 = 이산화탄소 결과에서 ❄ 얼리기 (특수 발견) ═══ */
+{
+  EXACT['H4+O1'] = ['D₂O', '중수', '수소 자리에 중수소가 들어간 무거운 물'];
+  EXACT['H6+O1'] = ['T₂O', '삼중수', '수소 자리에 삼중수소가 들어간 물 / 방사성'];
+  REC_EN['중수'] = ['Heavy water', 'Water with deuterium in place of hydrogen'];
+  REC_EN['삼중수'] = ['Tritiated water', 'Water with tritium in place of hydrogen — radioactive'];
+  RX_TMI['중수'] = '중수소는 양성자 1개에 중성자 1개가 붙은 수소예요. 그래서 이 앱에선 수소 2개로 셈해요. 중수는 보통 물보다 약 11% 무겁고, 얼음으로 만들면 물에 가라앉아요. 원자로에서 중성자 속도를 늦추는 데 써요.';
+  RX_TMI['삼중수'] = '삼중수소는 양성자 1개에 중성자 2개라서 수소 3개로 셈해요. 삼중수는 약한 베타선을 내서 스스로 조금씩 분해돼요. 핵융합 연료로 쓰는 삼중수소를 다룰 때 생겨요.';
+  try{ RX_SMILES['중수'] = 'O'; RX_SMILES['삼중수'] = 'O'; }catch(e){}
+  try{ RX_LIQ_NAMED['중수'] = { col: '#5c9df5', n: 34 }; RX_LIQ_NAMED['삼중수'] = { col: '#7fe3c4', n: 34 }; }catch(e){}
+  try{ RX_HAZ['삼중수'] = RX_HAZ['삼중수소'] || 'b1'; }catch(e){}
+  REC_EN['드라이아이스'] = ['Dry ice', 'Frozen carbon dioxide'];
+  RX_TMI['드라이아이스'] = '이산화탄소를 영하 78.5°C 밑으로 얼린 거예요. 녹아서 액체가 되는 게 아니라 바로 기체로 날아가요(승화). 그래서 이름에 "드라이"가 붙었어요. CO₂ 분자가 정육면체 모서리와 면 가운데에 줄 맞춰 쌓여 있어요.';
+  const SUB = '이산화탄소를 얼린 분자 결정';
+  const _sl = specialList;
+  specialList = function(){
+    const L = _sl.apply(this, arguments);
+    if(!L.some(x => x.name === '드라이아이스')) L.push({ sym: 'C', lo: 1, hi: 1, formula: 'CO₂', name: '드라이아이스', sub: SUB, hint: LANG === 'en' ? 'Freeze some carbon dioxide' : '이산화탄소를 얼려 보세요' });
+    return L;
+  };
+  const _en = rxEntry;
+  rxEntry = function(name){
+    if(name === '드라이아이스') return { name, formula: 'CO₂', sub: SUB, key: 'C1+O2', exact: true, mix: [['C', 1], ['O', 2]] };
+    return _en.apply(this, arguments);
+  };
+  // 드라이아이스 결정 (Pa3, a = 5.62Å): 탄소는 면심입방, 산소는 각 탄소에서 대각선 방향 ±1.16Å
+  function rxDryIce(){
+    const a = 5.62, S = 14, d = 1.16 / Math.sqrt(3), A = [], B = [];
+    const C0 = [[0, 0, 0, [1, 1, 1]], [.5, .5, 0, [1, -1, -1]], [.5, 0, .5, [-1, -1, 1]], [0, .5, .5, [-1, 1, -1]]];
+    for(let i = -1; i <= 1; i++) for(let j = -1; j <= 1; j++) for(let k = -1; k <= 1; k++) C0.forEach(([u, v, w, dir]) => {
+      const X = (u + i) * a, Y = (v + j) * a, Z = (w + k) * a;
+      if(Math.max(Math.abs(X), Math.abs(Y), Math.abs(Z)) > a * 1.05) return;
+      const c = A.length; A.push(rxAt('C', X * S, Y * S, Z * S, 8));
+      [1, -1].forEach(sg => { A.push(rxAt('O', (X + dir[0] * d * sg) * S, (Y + dir[1] * d * sg) * S, (Z + dir[2] * d * sg) * S, 7.5)); B.push([c, A.length - 1]); });
+    });
+    return { atoms: A, bonds: B, crystal: true, tilt: -0.35, yaw0: 0.6, maxScale: 1.1 };
+  }
+  const _cr = rxCrystal;
+  rxCrystal = function(formula, name){ if(name === '드라이아이스') return rxDryIce(); return _cr.apply(this, arguments); };
+  // 이산화탄소 결과에 ❄ 얼리기 버튼
+  const _th = rxToolsHTML;
+  rxToolsHTML = function(){
+    let h = _th.apply(this, arguments);
+    try{ if(h != null && RX && RX.raw === '이산화탄소' && !h.includes('data-act="dryice"')){
+      const lb = LANG === 'en' ? 'Freeze' : '얼리기';
+      h += `<button type="button" class="rtool" data-act="dryice" title="${lb}" aria-label="${lb}"><span aria-hidden="true">❄</span><em>${lb}</em></button>`;
+    } }catch(e){}
+    return h;
+  };
+  const _tool = rxTool;
+  rxTool = function(act){
+    if(act === 'dryice'){
+      const st = document.getElementById('mStage');
+      if(st){ st.classList.add('rx-dry'); setTimeout(() => st.classList.remove('rx-dry'), 1400); }
+      try{ rxSay(LANG === 'en' ? '−78.5 °C… freezing' : '영하 78.5°C… 꽁꽁', 1300); }catch(e){}
+      try{ rxEvt('freeze'); }catch(e){}
+      const isNew = !found.has('드라이아이스');
+      setTimeout(() => {
+        if(isNew){ found.add('드라이아이스'); saveFound(); try{ rxToast(LANG === 'en' ? 'Special find' : '특수 발견', LANG === 'en' ? 'Dry ice' : '드라이아이스', LANG === 'en' ? 'Carbon dioxide, frozen solid' : '이산화탄소가 꽁꽁 얼었어요'); }catch(e){} try{ checkAch(); }catch(e){} }
+        rxShowEntry('드라이아이스');
+      }, 1300);
+      return;
+    }
+    return _tool.apply(this, arguments);
+  };
+}
+</script>
+<style>
+  /* 얼리는 동안: 하얀 서리가 끼고 김이 피어오른다 */
+  #mStage.rx-dry::after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;border-radius:inherit;
+    background:radial-gradient(120% 80% at 50% 110%,rgba(240,246,255,.85),rgba(210,226,255,.35) 45%,transparent 70%);animation:rxDry 1.4s ease-out forwards}
+  @keyframes rxDry{0%{opacity:0;transform:translateY(30%)}50%{opacity:1;transform:none}100%{opacity:.9;filter:blur(2px)}}
+</style>
 
 </body>
 </html>
