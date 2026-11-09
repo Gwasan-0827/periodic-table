@@ -46396,6 +46396,11 @@ void main(){
 <style>
   /* ═══ Hg's Hideout v3: 직접 그린 아지트 그림 위에 누를 수 있는 자리를 얹는다 ═══ */
   .hg-hid{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0;font-size:16px;pointer-events:none}
+  #mStage .hg-clue{position:absolute;left:50%;top:56px;transform:translateX(-50%);z-index:8;max-width:92%;font:inherit;font-size:11.5px;font-weight:700;color:#e9ecff;cursor:pointer;
+    padding:6px 12px;border-radius:999px;background:rgba(18,19,32,.78);border:1px dashed rgba(220,226,255,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;animation:hgClue .8s 2.5s ease-out forwards}
+  #mStage .hg-clue code{font-family:ui-monospace,Menlo,monospace;color:#fff;background:rgba(220,226,255,.15);padding:1px 6px;border-radius:6px}
+  #mStage .hg-clue.typing{border-style:solid;border-color:#c5cbff;box-shadow:0 0 14px rgba(140,158,255,.5)}
+  @keyframes hgClue{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
   #mStage.hg-flash::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(220,224,245,.2) 60%,transparent);animation:hgFlash .7s ease-out forwards}
   @keyframes hgFlash{from{opacity:0}30%{opacity:1}to{opacity:0}}
   #hgHide{position:fixed;inset:0;z-index:96;display:none;background:#14151c;overflow:hidden}
@@ -46477,13 +46482,16 @@ void main(){
     try{ const h = document.querySelector('#mStage .hg-hid'); if(h) h.blur(); }catch(e){}
     setTimeout(hideout, 650);
   }
-  function feed(ch){ buf = (buf + ch).slice(-CMD.length); if(buf === CMD){ buf = ''; open(); } }
+  // 암호: 원래 base64 말고도 hideout · 아지트 · Hg's Hideout 그냥 쳐도 열린다
+  const KEYS = [CMD, 'hideout', '아지트', "hg's hideout"];
+  function feed(ch){ buf = (buf + ch).slice(-24); const low = buf.toLowerCase();
+    if(buf.endsWith(CMD) || KEYS.slice(1).some(k => low.endsWith(k))){ buf = ''; open(); } }
   let taps = [];
   function arm(on){
     armed = on; buf = '';
     const st = document.getElementById('mStage'); if(!st) return;
     let h = st.querySelector('.hg-hid');
-    if(!on){ if(h) h.remove(); return; }
+    if(!on){ if(h) h.remove(); const c = st.querySelector('.hg-clue'); if(c) c.remove(); return; }
     if(!h){
       h = document.createElement('input'); h.className = 'hg-hid'; h.type = 'text'; h.setAttribute('autocomplete', 'off'); h.setAttribute('autocapitalize', 'off'); h.setAttribute('autocorrect', 'off'); h.spellcheck = false; h.setAttribute('aria-hidden', 'true'); h.tabIndex = -1;
       h.addEventListener('input', () => { const v = h.value; h.value = ''; for(const ch of v) feed(ch); });
@@ -46494,6 +46502,13 @@ void main(){
         if(taps.length >= 3){ taps = []; setTimeout(() => { try{ h.focus({ preventScroll: true }); }catch(e){ h.focus(); } }, 0); }
       };
       st.addEventListener('pointerup', tap, true);
+    }
+    // 단서 쪽지: 잠깐 뒤에 모형 구석에 떠오른다. 누르면 바로 입력칸이 열린다
+    if(!st.querySelector('.hg-clue')){
+      const c = document.createElement('button'); c.type = 'button'; c.className = 'hg-clue';
+      c.innerHTML = EN() ? '☿ <b>Curie\'s note:</b> password <code>hideout</code> · tap to type' : '☿ <b>큐리 메모:</b> 암호 <code>hideout</code> · 눌러서 입력';
+      c.addEventListener('click', e => { e.stopPropagation(); try{ h.focus({ preventScroll: true }); }catch(_){ h.focus(); } c.classList.add('typing'); });
+      st.appendChild(c);
     }
   }
   setInterval(() => {
