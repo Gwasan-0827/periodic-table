@@ -44512,6 +44512,129 @@ void main(){
     .eb-hbtn.nav{display:none}
   }
   html.lowpow #elBig .eb-card, html.lowpow #elBig.on{animation:none}
+  /* ── 원소 파일 꾸미기 (Y2K 페리윙클) ── */
+  #elBig .eb-card{background:
+      radial-gradient(120% 70% at 0% 0%,color-mix(in srgb,var(--ec) 20%,transparent),transparent 55%),
+      radial-gradient(90% 60% at 100% 100%,rgba(177,140,255,.14),transparent 60%),
+      linear-gradient(160deg,rgba(28,30,70,.98),rgba(11,12,30,.99))}
+  #elBig .eb-card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(150,160,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(150,160,255,.06) 1px,transparent 1px);background-size:26px 26px;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 45%);mask-image:linear-gradient(180deg,#000,transparent 45%)}
+  .eb-wm{position:absolute;right:-10px;top:-38px;font-size:190px;font-weight:900;line-height:1;letter-spacing:-.04em;pointer-events:none;user-select:none;
+    color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ec) 45%,transparent);opacity:.55;
+    -webkit-mask-image:linear-gradient(200deg,#000 20%,transparent 75%);mask-image:linear-gradient(200deg,#000 20%,transparent 75%)}
+  .eb-glow{position:absolute;left:-60px;top:-80px;width:280px;height:220px;border-radius:50%;pointer-events:none;background:var(--ec);opacity:.22;filter:blur(60px)}
+  html.lowpow .eb-glow{display:none}
+  .eb-head,.eb-tabs,.eb-body{position:relative;z-index:1}
+  .eb-head{padding:18px 18px 12px;align-items:flex-start}
+  .eb-tile{width:68px;height:74px;border-radius:16px;overflow:hidden}
+  .eb-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),transparent 42%);pointer-events:none}
+  .eb-tile b{font-size:30px;text-shadow:0 0 18px color-mix(in srgb,var(--ec) 70%,transparent)}
+  .eb-ttl{gap:3px;padding-top:2px}
+  .eb-ttl .k{display:flex;align-items:center;gap:6px}
+  .eb-ttl .k::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ec);box-shadow:0 0 8px var(--ec)}
+  .eb-ttl b{font-size:23px;letter-spacing:-.01em;background:linear-gradient(90deg,#fff,#d9dcff 60%,color-mix(in srgb,var(--ec) 70%,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eb-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+  .eb-chips span{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;color:#c9cdf2;background:rgba(18,20,46,.6);border:1px solid rgba(150,160,255,.2)}
+  .eb-chips span:first-child{color:#fff;background:color-mix(in srgb,var(--ec) 28%,rgba(18,20,46,.6));border-color:color-mix(in srgb,var(--ec) 55%,transparent)}
+  .eb-hbtn{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(18,20,46,.6)}
+
+  /* 탭: 아이콘 + 미끄러지는 표시줄 */
+  .eb-tabs{position:relative;gap:2px;padding:0 14px;border-bottom:1px solid rgba(150,160,255,.16)}
+  .eb-tabs button{display:inline-flex;align-items:center;gap:6px;padding:10px 12px 12px;border:0;border-radius:0;background:none;color:#8f97c8}
+  .eb-tabs button svg{width:16px;height:16px;opacity:.8}
+  .eb-tabs button.on{background:none;box-shadow:none;color:#fff}
+  .eb-tabs button.on svg{opacity:1;color:var(--ec);filter:drop-shadow(0 0 6px var(--ec))}
+  .eb-ind{position:absolute;left:0;bottom:-1px;height:3px;width:0;border-radius:3px 3px 0 0;background:linear-gradient(90deg,#8f9bff,#b18cff);box-shadow:0 0 12px rgba(143,155,255,.8);transition:transform .3s cubic-bezier(.3,.9,.3,1.1),width .3s}
+
+  /* 섹션 제목 */
+  .eb-sec{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.16em;color:#a6addf;margin:4px 0 -2px}
+  .eb-sec::before{content:"//";color:var(--ec);letter-spacing:0;font-weight:900}
+  .eb-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(150,160,255,.3),transparent)}
+
+  /* 무대: HUD 모서리 + 점 격자 */
+  .eb-stage{background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--ec) 14%,#1b1f45),#0a0b1c 72%);border-color:rgba(150,160,255,.22);box-shadow:inset 0 0 40px rgba(0,0,0,.4)}
+  .eb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(170,180,255,.16) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%);mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%)}
+  .eb-hud{position:absolute;width:16px;height:16px;border:2px solid color-mix(in srgb,var(--ec) 70%,#fff);opacity:.7;pointer-events:none;z-index:2}
+  .eb-hud.tl{left:8px;top:8px;border-right:0;border-bottom:0;border-radius:6px 0 0 0;display:none}
+  .eb-hud.tr{right:8px;top:8px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
+  .eb-hud.bl{left:8px;bottom:8px;border-right:0;border-top:0;border-radius:0 0 0 6px;display:none}
+  .eb-hud.br{right:8px;bottom:8px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+  .eb-iso{position:absolute;right:16px;top:14px;z-index:2;font-size:11px;font-weight:800;letter-spacing:.06em;color:#a6addf;pointer-events:none}
+  .eb-iso b{color:#fff}
+  .eb-mode{left:12px;top:12px}
+
+  /* 숫자 카드 */
+  .eb-stats div{position:relative;overflow:hidden;padding:11px 12px 10px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015))}
+  .eb-stats div i{position:absolute;right:10px;top:12px;width:9px;height:9px;border-radius:50%}
+  .eb-stats .sp i{background:#ff6b6b;box-shadow:0 0 10px #ff6b6b}
+  .eb-stats .sn i{background:#c9ccdf;box-shadow:0 0 10px #c9ccdf}
+  .eb-stats .se i{background:#4dabf7;box-shadow:0 0 10px #4dabf7}
+  .eb-stats b{font-size:24px}
+  .eb-sh .bar i{background:linear-gradient(90deg,color-mix(in srgb,var(--ec) 55%,#8f9bff),var(--ec));box-shadow:0 0 8px color-mix(in srgb,var(--ec) 50%,transparent)}
+  .eb-sh > span:first-child{display:grid;place-items:center;width:18px;height:18px;border-radius:6px;font-size:10px;background:rgba(255,255,255,.06);color:#d6daf8}
+  .eb-btn{border-radius:999px;padding:9px 15px}
+
+  /* 정보: 큰 숫자 4칸 + 점선 목록 */
+  .eb-quote{position:relative;overflow:hidden;padding:16px 16px 14px 44px}
+  .eb-quote::before{content:"\201C";position:absolute;left:12px;top:-4px;font-size:58px;font-weight:900;line-height:1;color:var(--ec);opacity:.8;font-family:Georgia,serif}
+  .eb-quote b{font-size:17px}
+  .eb-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+  .eb-hero div{display:grid;gap:3px;padding:12px;border-radius:14px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(150,160,255,.18);min-width:0}
+  .eb-hero b{font-size:21px;font-weight:900;color:#f2f3ff;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .eb-hero div:first-child b{color:var(--ec)}
+  .eb-hero span{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  .eb-list{display:grid;grid-template-columns:1fr 1fr;column-gap:22px;margin-top:8px}
+  .eb-list div{display:flex;align-items:baseline;gap:8px;padding:9px 2px;border-bottom:1px solid rgba(150,160,255,.1);min-width:0}
+  .eb-list span{flex:none;font-size:11.5px;font-weight:800;color:#9097c8}
+  .eb-list i{flex:1;min-width:8px;border-bottom:1px dotted rgba(150,160,255,.25)}
+  .eb-list b{font-size:13px;font-weight:800;color:#eef0ff;text-align:right;overflow-wrap:anywhere}
+  .eb-story{position:relative;border-left:3px solid var(--ec);background:linear-gradient(90deg,color-mix(in srgb,var(--ec) 10%,transparent),rgba(255,255,255,.02))}
+  .eb-story h4{display:flex;align-items:center;gap:6px}
+  .eb-story h4 svg{width:15px;height:15px;color:var(--ec)}
+
+  /* 숫자들 */
+  .eb-nums{grid-template-columns:1fr 1fr;gap:9px}
+  .eb-num{position:relative;padding:12px 14px 13px;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012))}
+  .eb-num .t span{display:inline-flex;align-items:center;gap:6px}
+  .eb-num .t span svg{width:15px;height:15px;color:var(--ec)}
+  .eb-num .t u{text-decoration:none;font-size:9.5px;font-weight:900;letter-spacing:.08em;padding:2px 7px;border-radius:999px;color:#1a1530;background:linear-gradient(135deg,#ffe08a,#ffb86b)}
+  .eb-num .t u.lo{color:#d6daf8;background:rgba(150,160,255,.18)}
+  .eb-num .t em{padding:2px 8px;border-radius:999px;background:rgba(18,20,46,.7);border:1px solid rgba(150,160,255,.18)}
+  .eb-num .v{margin-top:6px;font-size:21px;font-weight:900;color:#f2f3ff;font-variant-numeric:tabular-nums}
+  .eb-num .bar{overflow:visible;height:8px;margin-top:9px}
+  .eb-num .bar s{position:absolute;top:-2px;bottom:-2px;width:1px;background:rgba(150,160,255,.18)}
+  .eb-num .bar i{box-shadow:0 0 10px color-mix(in srgb,var(--ec) 50%,transparent)}
+  .eb-num .bar a{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:3px solid var(--ec);box-shadow:0 0 10px var(--ec)}
+  .eb-num.na .v{font-size:15px;color:#8087b8}
+
+  /* 조합 */
+  .eb-cnt{gap:14px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(143,155,255,.14),rgba(177,140,255,.06));border:1px solid rgba(150,160,255,.22);margin-bottom:14px}
+  .eb-cnt .ring{width:62px;height:62px;flex:none;transform:rotate(-90deg)}
+  .eb-cnt .ring circle{fill:none;stroke:rgba(255,255,255,.08);stroke-width:7}
+  .eb-cnt .ring circle.on{stroke:#a99bff;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(169,155,255,.8))}
+  .eb-cnt .ring text{transform:rotate(90deg);transform-origin:32px 32px;fill:#fff;font-size:13px;font-weight:900;text-anchor:middle}
+  .eb-cnt b{display:block;font-size:24px;color:#fff;font-weight:900}
+  .eb-cnt b small{font-size:14px;color:#9097c8}
+  .eb-cnt span{font-size:11.5px;color:#aab0dc}
+  .eb-use{border-radius:12px}
+  .eb-use:not(.lock){background:linear-gradient(135deg,color-mix(in srgb,var(--ec) 14%,transparent),rgba(255,255,255,.03));border-color:color-mix(in srgb,var(--ec) 35%,transparent)}
+  .eb-use.lock{background:none;border-style:dashed;border-color:rgba(150,160,255,.18)}
+  .eb-use .f{min-width:34px}
+
+  @media (max-width:700px){
+    .eb-wm{font-size:150px;top:-26px}
+    .eb-head{padding:calc(14px + env(safe-area-inset-top)) 14px 10px}
+    .eb-tile{width:58px;height:64px}
+    .eb-tile b{font-size:25px}
+    .eb-ttl b{font-size:20px}
+    .eb-tabs{padding:0 8px}
+    .eb-tabs button{padding:10px 10px 12px;font-size:12px}
+    .eb-hero{grid-template-columns:repeat(2,1fr)}
+    .eb-list{grid-template-columns:1fr}
+    .eb-nums{grid-template-columns:1fr}
+  }
 </style>
 <script>
 (function(){
@@ -44550,6 +44673,13 @@ void main(){
   try{ S.tab = Math.min(3, Math.max(0, +(localStorage.getItem('pt_ebtab') || 0))); S.mode = localStorage.getItem('pt_ebmode') === 'orb' ? 'orb' : 'bohr'; }catch(e){}
 
   const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>';
+  const SV = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const TICON = [
+    SV('<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>'),
+    SV('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>'),
+    SV('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+    SV('<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/>')
+  ];
   const colOf = e => { try{ return cssv(CAT[e.c].v) || '#8f9bff'; }catch(err){ return '#8f9bff'; } };
   const catOf = e => LANG === 'en' ? ((typeof CAT_EN !== 'undefined' && CAT_EN[e.c]) || e.c) : CAT[e.c].ko;
   const nameOf = e => LANG === 'en' ? e.en : e.ko;
@@ -44580,12 +44710,12 @@ void main(){
     if(document.getElementById('elBig')) return;
     const d = document.createElement('div');
     d.id = 'elBig'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.innerHTML = `<div class="eb-card">
-      <div class="eb-head"><div class="eb-tile" id="ebTile"></div><div class="eb-ttl"><span class="k" id="ebKick"></span><b id="ebName"></b><span id="ebSub"></span></div>
+    d.innerHTML = `<div class="eb-card"><div class="eb-wm" id="ebWm"></div><div class="eb-glow"></div>
+      <div class="eb-head"><div class="eb-tile" id="ebTile"></div><div class="eb-ttl"><span class="k" id="ebKick"></span><b id="ebName"></b><span id="ebSub"></span><div class="eb-chips" id="ebChips"></div></div>
         <button type="button" class="eb-hbtn nav" id="ebPrev">‹</button><button type="button" class="eb-hbtn nav" id="ebNext">›</button><button type="button" class="eb-hbtn" id="ebClose" aria-label="close">×</button></div>
       <div class="eb-tabs" id="ebTabs"></div>
       <div class="eb-body" id="ebBody">
-        <div class="eb-pane" data-p="0"><div class="eb-atom"><div class="eb-stage" id="ebStage"><div class="eb-mode" id="ebMode"><button type="button" data-m="bohr"></button><button type="button" data-m="orb"></button></div><canvas id="ebCv"></canvas><div class="eb-legend" id="ebLeg"></div></div><div class="eb-side" id="ebSide"></div></div></div>
+        <div class="eb-pane" data-p="0"><div class="eb-atom"><div class="eb-stage" id="ebStage"><div class="eb-mode" id="ebMode"><button type="button" data-m="bohr"></button><button type="button" data-m="orb"></button></div><canvas id="ebCv"></canvas><i class="eb-hud tl"></i><i class="eb-hud tr"></i><i class="eb-hud bl"></i><i class="eb-hud br"></i><div class="eb-iso" id="ebIso"></div><div class="eb-legend" id="ebLeg"></div></div><div class="eb-side" id="ebSide"></div></div></div>
         <div class="eb-pane" data-p="1" id="ebInfo"></div>
         <div class="eb-pane" data-p="2" id="ebNums"></div>
         <div class="eb-pane" data-p="3" id="ebUses"></div>
@@ -44645,7 +44775,11 @@ void main(){
     d.querySelector('#ebName').textContent = nameOf(e) + (LANG === 'en' ? '' : ' · ' + e.en);
     d.querySelector('#ebSub').textContent = catOf(e) + ' · ' + (typeof subOf === 'function' ? subOf(e) : '');
     d.querySelector('#ebPrev').title = tt('prev'); d.querySelector('#ebNext').title = tt('next');
-    d.querySelector('#ebTabs').innerHTML = tt('tabs').map((s, i) => `<button type="button" data-t="${i}">${s}</button>`).join('');
+    d.querySelector('#ebWm').textContent = e.s;
+    { const p = PROPS[e.s] || {}, st = p.st ? (tt('st_')[p.st] || p.st) : null;
+      d.querySelector('#ebChips').innerHTML = [`#${e.n}`, `${e.m} u`, (LANG === 'en' ? 'Period ' + e.p : e.p + '주기'), tt('blockS').replace('{b}', blockOf(e)), st].filter(Boolean).map(s => `<span>${esc(s)}</span>`).join(''); }
+    d.querySelector('#ebIso').innerHTML = `<b>${e.s}</b>-${Math.round(e.m)}`;
+    d.querySelector('#ebTabs').innerHTML = tt('tabs').map((s, i) => `<button type="button" data-t="${i}">${TICON[i]}<span>${s}</span></button>`).join('') + '<i class="eb-ind"></i>';
     const mb = d.querySelectorAll('#ebMode button'); mb[0].textContent = tt('bohr'); mb[1].textContent = tt('orb');
     sideHTML(e); infoHTML(e); numsHTML(e); usesHTML(e);
     tabs(); modeUI();
@@ -44655,6 +44789,7 @@ void main(){
   function tabs(){
     const d = document.getElementById('elBig');
     d.querySelectorAll('#ebTabs button').forEach(b => b.classList.toggle('on', +b.dataset.t === S.tab));
+    requestAnimationFrame(() => { const b = d.querySelector('#ebTabs button.on'), ind = d.querySelector('#ebTabs .eb-ind'); if(b && ind){ ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`; } });
     d.querySelectorAll('.eb-pane').forEach(p => p.classList.toggle('on', +p.dataset.p === S.tab));
     cancelAnimationFrame(S.raf);
     if(S.tab === 0){ fit(); S.raf = requestAnimationFrame(tick); }
@@ -44675,7 +44810,7 @@ void main(){
     let cfg = [];
     try{ cfg = rxCfgFull(e.s); }catch(err){}
     document.getElementById('ebSide').innerHTML = `
-      <div class="eb-stats"><div><b>${e.n}</b><span>${tt('p')}</span></div><div><b>${nn}</b><span>${tt('nn')}</span></div><div><b>${e.n}</b><span>${tt('e')}</span></div></div>
+      <div class="eb-stats"><div class="sp"><i></i><b>${e.n}</b><span>${tt('p')}</span></div><div class="sn"><i></i><b>${nn}</b><span>${tt('nn')}</span></div><div class="se"><i></i><b>${e.n}</b><span>${tt('e')}</span></div></div>
       <div class="eb-sec">${tt('shells')}</div>
       <div class="eb-shells">${e.sh.map((c, i) => `<div class="eb-sh"><span>${L[i]}</span><span class="bar"><i style="width:${c / mx * 100}%"></i></span><span class="c">${c}</span></div>`).join('')}</div>
       <div class="eb-sec">${tt('cfg')}</div>
@@ -44699,12 +44834,22 @@ void main(){
     const story = LANG !== 'en' && typeof RX_EL_TMI !== 'undefined' ? RX_EL_TMI[e.s] : '';
     document.getElementById('ebInfo').innerHTML = `
       ${q1 ? `<div class="eb-quote"><b>${esc(q1)}</b>${q2 ? `<p>${esc(q2)}</p>` : ''}${q3 ? `<p>${esc(q3)}</p>` : ''}</div>` : ''}
-      <div class="eb-grid">${cells.map(c => `<div><span>${c[0]}</span><b>${c[1]}</b></div>`).join('')}</div>
-      ${story ? `<div class="eb-story"><h4>${tt('story')}</h4><p>${esc(story)}</p></div>` : ''}
+      <div class="eb-hero">${cells.slice(0, 4).map(c => `<div><b>${c[1]}</b><span>${c[0]}</span></div>`).join('')}</div>
+      <div class="eb-sec">${LANG === 'en' ? 'PROFILE' : '프로필'}</div>
+      <div class="eb-list">${cells.slice(4).map(c => `<div><span>${c[0]}</span><i></i><b>${c[1]}</b></div>`).join('')}</div>
+      ${story ? `<div class="eb-story"><h4>${SV('<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-5a2 2 0 0 0-2 2"/><path d="M20 4v14h-5a2 2 0 0 0-2 2"/>')}${tt('story')}</h4><p>${esc(story)}</p></div>` : ''}
       ${og ? `<div class="eb-note">${esc(originLbl(og, 2))}</div>` : ''}`;
   }
 
   /* ── 숫자들 ── */
+  const NICON = {
+    mp: SV('<path d="M12 3c3 4 5 6.5 5 10a5 5 0 0 1-10 0c0-3.5 2-6 5-10z"/>'),
+    bp: SV('<path d="M8 3c-1 2 1 3 0 5M12 3c-1 2 1 3 0 5M16 3c-1 2 1 3 0 5M4 12h16l-2 8H6z"/>'),
+    d: SV('<path d="M6 8h12l2 12H4z"/><circle cx="12" cy="5" r="2"/>'),
+    en: SV('<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
+    ie: SV('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'),
+    r: SV('<circle cx="12" cy="12" r="9"/><path d="M12 12h9"/>')
+  };
   function numsHTML(e){
     const p = PROPS[e.s] || {}, R = ranks();
     const c = k => Math.round(p[k] - 273.15);
@@ -44731,8 +44876,10 @@ void main(){
       const rk = r.m.get(e.s), lg = k === 'd';
       const f = lg ? (Math.log10(v) - Math.log10(r.min)) / ((Math.log10(r.max) - Math.log10(r.min)) || 1) : (v - Math.min(0, r.min)) / ((r.max - Math.min(0, r.min)) || 1);
       const ds = desc(k, v, rk, r.n);
-      return `<div class="eb-num"><div class="t"><span>${tt(k)}</span><b>${fmt(k, v)}</b><em>${tt('rank').replace('{n}', r.n).replace('{k}', rk)}</em></div>
-        <div class="bar"><i style="width:${Math.max(3, Math.min(100, f * 100)).toFixed(1)}%"></i></div>${ds ? `<p>${esc(ds)}</p>` : ''}</div>`;
+      const pc = Math.max(3, Math.min(100, f * 100)).toFixed(1), top = rk <= 10 ? `<u>TOP ${rk <= 3 ? 3 : 10}</u>` : (rk > r.n - 10 ? `<u class="lo">${LANG === 'en' ? 'BOTTOM 10' : '하위 10'}</u>` : '');
+      return `<div class="eb-num"><div class="t"><span>${NICON[k] || ''}${tt(k)}</span>${top}<em>${tt('rank').replace('{n}', r.n).replace('{k}', rk)}</em></div>
+        <div class="v">${fmt(k, v)}</div>
+        <div class="bar"><s style="left:25%"></s><s style="left:50%"></s><s style="left:75%"></s><i style="width:${pc}%"></i><a style="left:${pc}%"></a></div>${ds ? `<p>${esc(ds)}</p>` : ''}</div>`;
     });
     document.getElementById('ebNums').innerHTML = `<div class="eb-nums">${rows.join('')}</div><div class="eb-note">${tt('note')}</div>`;
   }
@@ -44749,7 +44896,8 @@ void main(){
       const hint = x.single ? x.key : x.key.replace(/(\d+)/g, '×$1').split('+').join(' + ');
       items.push(`<div class="eb-use lock"><span class="f">???</span><span class="n">${esc(hint)}${(!x.single && !x.exact) ? ' · ' + tt('any') : ''}</span></div>`);
     });
-    box.innerHTML = `<div class="eb-cnt"><span>${tt('usesC').replace('{a}', got.length).replace('{b}', list.length)}</span><span class="bar"><i style="width:${got.length / list.length * 100}%"></i></span></div>
+    const fr = got.length / list.length, C = 2 * Math.PI * 26;
+    box.innerHTML = `<div class="eb-cnt"><svg class="ring" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26"/><circle class="on" cx="32" cy="32" r="26" stroke-dasharray="${(fr * C).toFixed(1)} ${C.toFixed(1)}"/><text x="32" y="36">${Math.round(fr * 100)}%</text></svg><div><b>${got.length}<small> / ${list.length}</small></b><span>${tt('usesC').replace('{a}', got.length).replace('{b}', list.length)}</span></div></div>
       <div class="eb-sec" style="margin:0 0 8px">${tt('uses')}</div><div class="eb-uses">${items.join('')}</div>`;
   }
 
