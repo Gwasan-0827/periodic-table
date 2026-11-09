@@ -46452,5 +46452,56 @@ void main(){
 })();
 </script>
 
+<style>
+  /* ═══ 헴 Hg: 포르피린 고리 강조 ═══ */
+  #mMol.por-hl .mol-at:not(.por){opacity:.28;transition:opacity .4s}
+  #mMol.por-hl .mol-at.por .mol-ball{stroke:#eaf2ff;stroke-width:1.6;filter:drop-shadow(0 0 4px rgba(150,220,255,.95)) drop-shadow(0 0 10px rgba(143,155,255,.7))}
+  #mMol.por-hl .mol-bonds line{opacity:.25}
+  #mMol.por-hl .mol-bonds line.por{opacity:1;stroke:#bfe8ff!important;stroke-width:3.2;filter:drop-shadow(0 0 4px rgba(150,220,255,.9))}
+  html.lowpow #mMol.por-hl .mol-at.por .mol-ball{filter:none;stroke:#bfe8ff;stroke-width:2.2}
+  .por-tg{position:absolute;right:12px;top:44px;z-index:6;font:inherit;font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;cursor:pointer;color:#e8ebff;background:rgba(14,16,40,.75);border:1px solid rgba(190,232,255,.45)}
+  .por-tg.on{color:#10122a;background:linear-gradient(135deg,#bfe8ff,#d9dcff);border-color:transparent;box-shadow:0 0 12px rgba(150,220,255,.6)}
+  #mStage.st-full .por-tg{top:60px;right:14px}
+  @media (max-width:700px){ #mStage:not(.st-full) .por-tg{top:auto;bottom:62px;right:10px;font-size:10.5px;padding:4px 9px} }
+</style>
+<script>
+(function(){
+  const NM = '헴 Hg', CORE = new Set([3, 4, 5, 6, 7, 8, 14, 15, 16, 18, 19, 20, 21, 25, 50, 51, 84, 85, 86, 87, 88, 89, 129, 130, 131]);
+  let on = true; try{ on = localStorage.getItem('pt_porhl') !== '0'; }catch(e){}
+  function tag(){
+    const svg = document.getElementById('mMol'); if(!svg) return false;
+    const is = typeof RX !== 'undefined' && RX && RX.raw === NM && typeof RX_VIEW !== 'undefined' && RX_VIEW !== 'struct';
+    const st = document.getElementById('mStage');
+    let b = st && st.querySelector('.por-tg');
+    if(!is){ svg.classList.remove('por-hl'); if(b) b.remove(); return false; }
+    if(!b){ b = document.createElement('button'); b.type = 'button'; b.className = 'por-tg';
+      b.addEventListener('click', e => { e.stopPropagation(); on = !on; try{ localStorage.setItem('pt_porhl', on ? '1' : '0'); }catch(_){} tag(); });
+      b.addEventListener('pointerdown', e => e.stopPropagation()); st.appendChild(b); }
+    b.textContent = (on ? '✓ ' : '') + (LANG === 'en' ? 'Highlight porphyrin' : '포르피린 강조'); b.classList.toggle('on', on);
+    svg.classList.toggle('por-hl', on);
+    return true;
+  }
+  // 모형을 새로 그린 직후(원자 순서가 원래 순서일 때) 포르피린 원자·결합에 표시를 단다
+  if(typeof rxMount === 'function'){
+    const _m = rxMount;
+    rxMount = function(model, svgEl){
+      const r = _m.apply(this, arguments);
+      try{
+        if(!svgEl && typeof RX !== 'undefined' && RX && RX.raw === NM && model && model.atoms && model.atoms.length >= 200){
+          const svg = document.getElementById('mMol');
+          const ats = svg.querySelectorAll('.mol-atoms > .mol-at');
+          ats.forEach((g, i) => g.classList.toggle('por', CORE.has(i)));
+          const ls = svg.querySelectorAll('.mol-bonds > line:not(.bx)');
+          (model.bonds || []).forEach((bd, k) => { const l = ls[k]; if(l) l.classList.toggle('por', CORE.has(bd[0]) && CORE.has(bd[1])); });
+        }
+      }catch(e){}
+      try{ tag(); }catch(e){}
+      return r;
+    };
+  }
+  setInterval(() => { const m = document.getElementById('modal'); if(m && m.classList.contains('on')) try{ tag(); }catch(e){} }, 600);
+})();
+</script>
+
 </body>
 </html>
