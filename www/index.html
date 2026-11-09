@@ -47431,6 +47431,13 @@ void main(){
   try{ RX_SMILES['중수'] = 'O'; RX_SMILES['삼중수'] = 'O'; }catch(e){}
   try{ RX_LIQ_NAMED['중수'] = { col: '#5c9df5', n: 34 }; RX_LIQ_NAMED['삼중수'] = { col: '#7fe3c4', n: 34 }; }catch(e){}
   try{ RX_HAZ['삼중수'] = RX_HAZ['삼중수소'] || 'b1'; }catch(e){}
+
+  // 모형 글자도 D · T 로: 수소 자리를 중수소/삼중수소 기호로 바꾼다 (색·크기는 수소 그대로)
+  try{ RX_CPK.D = RX_CPK.T = RX_CPK.H; if(typeof RX_REAL !== 'undefined'){ RX_REAL.D = RX_REAL.T = RX_REAL.H; } }catch(e){}
+  const ISO = { '중수': 'D', '삼중수': 'T' };
+  const relab = m => { try{ const k = ISO[RX && RX.raw]; if(!k || !m || !m.atoms) return; m.atoms.forEach(a => { if(a.s === 'H'){ a.s = k; } }); }catch(e){} };
+  const _mt = rxMount;
+  rxMount = function(model){ relab(model); try{ if(RX && RX.views) Object.values(RX.views).forEach(relab); }catch(e){} return _mt.apply(this, arguments); };
   REC_EN['드라이아이스'] = ['Dry ice', 'Frozen carbon dioxide'];
   RX_TMI['드라이아이스'] = '이산화탄소를 영하 78.5°C 밑으로 얼린 거예요. 녹아서 액체가 되는 게 아니라 바로 기체로 날아가요(승화). 그래서 이름에 "드라이"가 붙었어요. CO₂ 분자가 정육면체 모서리와 면 가운데에 줄 맞춰 쌓여 있어요.';
   const SUB = '이산화탄소를 얼린 분자 결정';
