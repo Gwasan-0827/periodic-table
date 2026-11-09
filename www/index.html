@@ -46462,7 +46462,13 @@ void main(){
   #mMol.eg .eg-core,#mMol.eg .eg-rim,#mMol.eg .eg-spec{pointer-events:none}
   #mMol.eg .eg-spec{fill:#fff;opacity:.75}
   #mMol.eg .mol-sym{fill:#fff!important;paint-order:stroke;stroke:var(--c);stroke-opacity:.55;stroke-width:2.4px}
-  #mMol.eg .mol-bonds line:not(.bx){stroke:#c9d2ea;opacity:.7}
+  /* 결합: 양쪽 원자 색으로 반씩 빛나는 빔 + 가운데 하얀 심 */
+  #mMol.eg .mol-bonds line{stroke:#f4f6ff;stroke-width:1.5px;opacity:.9}
+  #mMol.eg .mol-bonds line.bx{stroke:#f4f6ff;stroke-width:1.3px}
+  #mMol.eg .eg-beams line{stroke-linecap:round;pointer-events:none}
+  #mMol.eg .eg-beams .w{stroke-width:9px;stroke-opacity:.16}
+  #mMol.eg .eg-beams .m{stroke-width:4px;stroke-opacity:.75}
+  html.lowpow #mMol.eg .eg-beams .w{display:none}
   /* 숨쉬듯 빛나는 핵 */
   @keyframes egPulse{0%,100%{opacity:.75}50%{opacity:1}}
   html.lowpow #mMol.eg .eg-halo,html.idle #mMol.eg .eg-halo{animation:none}
@@ -46474,6 +46480,7 @@ void main(){
   #card.rx-anim #mMol.eg .eg-flash{animation:egFlash .7s var(--d) ease-out both}
   @keyframes egDraw{from{stroke-dashoffset:var(--bl,120)}to{stroke-dashoffset:0}}
   #card.rx-anim #mMol.eg .mol-bonds{animation:none}
+  #card.rx-anim #mMol.eg .eg-beams{animation:molFade .5s .5s ease-out both}
   #card.rx-anim #mMol.eg .mol-bonds line.eg-b{stroke-dasharray:var(--bl,120);animation:egDraw .55s var(--bd) cubic-bezier(.3,.8,.3,1) both}
   #card.rx-settled #mMol.eg .mol-in,#card.rx-settled #mMol.eg .eg-flash,#card.rx-settled #mMol.eg .mol-bonds line{animation:none!important}
   #card.rx-settled #mMol.eg .mol-bonds line.eg-b{stroke-dasharray:none}
@@ -46528,6 +46535,25 @@ void main(){
         inn.appendChild(mk('circle', 'eg-flash', { r: (rr * .9).toFixed(1) }));
         const fl = g.querySelector('.mol-fl'); if(fl){ const fd = fl.style.getPropertyValue('--fd'); if(fd) inn.style.setProperty('--fd', fd); }
       });
+      // 결합 빔: 결합마다 양 끝 원자 색의 반쪽 선 (넓은 빛 + 진한 띠)
+      try{
+        const old = svg.querySelector('.eg-beams'); if(old) old.remove();
+        const bondsG = svg.querySelector('.mol-bonds');
+        const lines = [...svg.querySelectorAll('.mol-bonds > line:not(.bx)')];
+        if(bondsG && lines.length && model.bonds){
+          const bg = document.createElementNS(NS, 'g'); bg.setAttribute('class', 'eg-beams');
+          const col = i => { const a = model.atoms[i]; if(!a) return '#c9d2ea'; const c = a.col || (typeof rxCpk === 'function' ? rxCpk(a.s) : '#c9d2ea'); const p = hx(c); if(!p) return c; const lum = (p[0] * .3 + p[1] * .59 + p[2] * .11) / 255; return lum < .45 ? mix(p, [255, 255, 255], .35) : c; };
+          const beams = [];
+          model.bonds.forEach((b, k) => {
+            if(!lines[k]) return;
+            const ca = col(b[0]), cb = col(b[1]), set = [];
+            ['w', 'm'].forEach(cls => { if(lp && cls === 'w') return; [ca, cb].forEach(c => { const l = mk('line', cls, { stroke: c }); bg.appendChild(l); set.push(l); }); });
+            beams.push([lines[k], set]);
+          });
+          bondsG.parentNode.insertBefore(bg, bondsG);
+          svg._egBeams = beams;
+        } else svg._egBeams = null;
+      }catch(e){ svg._egBeams = null; }
       // 결합: 원자가 다 나온 다음 차례로 그어진다
       const n = model.atoms.length, base = Math.min(n * 22, 700) * .55;
       svg.querySelectorAll('.mol-bonds > line:not(.bx)').forEach((l, k) => { l.classList.add('eg-b'); l.style.setProperty('--bd', Math.round(180 + Math.min(base + k * 14, 900)) + 'ms'); });
@@ -46547,7 +46573,16 @@ void main(){
       const dep = m.depth || 1;
       const op = z => Math.max(.38, Math.min(1, .69 + .31 * z / dep));
       m.gAt.forEach((g, i) => { const v = op(Z[i]).toFixed(2); if(g._eo !== v){ g._eo = v; g.setAttribute('opacity', v); } });
-      if(m.lines && m.bonds) m.lines.forEach((ln, k) => { const b = m.bonds[k]; if(!b) return; const v = (op((Z[b[0]] + Z[b[1]]) / 2) * .85).toFixed(2); if(ln._eo !== v){ ln._eo = v; ln.style.opacity = v; } });
+      if(m.lines && m.bonds) m.lines.forEach((ln, k) => { const b = m.bonds[k]; if(!b) return; const v = (op((Z[b[0]] + Z[b[1]]) / 2) * .9).toFixed(2); if(ln._eo !== v){ ln._eo = v; ln.style.opacity = v; } });
+      if(svg._egBeams) svg._egBeams.forEach(([ln, set]) => {
+        const x1 = +ln.getAttribute('x1'), y1 = +ln.getAttribute('y1'), x2 = +ln.getAttribute('x2'), y2 = +ln.getAttribute('y2');
+        const mx = ((x1 + x2) / 2).toFixed(1), my = ((y1 + y2) / 2).toFixed(1), o = ln.style.opacity || 1;
+        for(let i = 0; i < set.length; i++){
+          const l = set[i], h = i % 2;
+          l.setAttribute('x1', h ? mx : x1); l.setAttribute('y1', h ? my : y1); l.setAttribute('x2', h ? x2 : mx); l.setAttribute('y2', h ? y2 : my);
+          if(l._eo !== o){ l._eo = o; l.setAttribute('opacity', o); }
+        }
+      });
     }catch(e){}
     return r;
   };
