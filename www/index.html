@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['조합 트레이에 원소를 250개까지 담을 수 있어요 (원래 200개)',
+      ko: ['막대-공 모형을 새로 그렸어요. 원자가 가운데부터 빛나는 에너지 구체가 되고, 멀리 있는 원자는 흐리게 보여서 깊이감이 생겼어요. 처음 나올 때 원자가 빛을 터뜨리며 하나씩 나타나고 결합이 차례로 그어져요',
+           '조합 트레이에 원소를 250개까지 담을 수 있어요 (원래 200개)',
            '결과 창에 "구조식 크게" 버튼이 생겼어요. 구조식을 화면 가득 펼쳐서 끌고, 확대하고, 수소와 탄소 글자를 켜고 끌 수 있어요',
            '학습에 "작용기" 탭이 생겼어요. -OH, -COOH, -NH₂ 같은 작용기 10가지를 그림으로 보고, 어떤 성질이 생기는지와 예시 분자를 볼 수 있어요. 조합으로 만들어 본 분자는 도감 표시가 붙어요',
            '도감이 557종이 됐어요. 헴과 엽록소의 뼈대인 포르핀, 그리고 가운데에 철·마그네슘·코발트·구리·아연·수은을 끼운 포르핀 6종이 들어왔어요. 수은 포르핀은 큐리의 피예요',
@@ -6259,7 +6260,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['The mix now holds 250 elements instead of 200',
+      en: ['New ball-and-stick look: atoms are glowing energy spheres, far atoms fade for depth, and atoms burst in one by one as bonds draw themselves',
+           'The mix now holds 250 elements instead of 200',
            'New Structure button on the result card: open the structural formula full screen, drag, zoom and toggle H and C labels',
            'New Learn tab: functional groups. Ten groups like -OH, -COOH and -NH2 with diagrams, what they do and example molecules',
            'The codex now has 557 entries: porphine, the ring behind heme and chlorophyll, plus six versions with iron, magnesium, cobalt, copper, zinc or mercury in the middle',
@@ -46449,6 +46451,97 @@ void main(){
   }
   window.rxHgHideout = hideout;
   addEventListener('keydown', e => { if(e.key === 'Escape'){ const d = document.getElementById('hgHide'); if(d && d.classList.contains('on') && !document.querySelector('#stBig.on')){ d.classList.remove('on'); e.stopImmediatePropagation(); } } }, true);
+})();
+</script>
+
+<style>
+  /* ═══ 막대-공 리워크: 에너지 구체 + 깊이감 + 등장 연출 ═══ */
+  #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-ball{fill:var(--c);fill-opacity:.82;stroke:none}
+  #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-hi{display:none}
+  #mMol.eg .eg-halo{fill:var(--c);opacity:.16;pointer-events:none}
+  #mMol.eg .eg-halo2{fill:var(--c);opacity:.22;pointer-events:none}
+  #mMol.eg .eg-core,#mMol.eg .eg-rim,#mMol.eg .eg-spec{pointer-events:none}
+  #mMol.eg .eg-spec{fill:#fff;opacity:.75}
+  #mMol.eg .mol-sym{paint-order:stroke;stroke:rgba(10,12,24,.55);stroke-width:2.2px}
+  #mMol.eg .mol-at.dk .mol-sym{fill:#fff}
+  #mMol.eg .mol-bonds line:not(.bx){stroke:#c9d2ea;opacity:.7}
+  /* 숨쉬듯 빛나는 핵 */
+  @keyframes egPulse{0%,100%{opacity:.85}50%{opacity:1}}
+  #mMol.eg .eg-core{animation:egPulse 2.6s var(--fd,0s) ease-in-out infinite}
+  html.lowpow #mMol.eg .eg-core,html.idle #mMol.eg .eg-core{animation:none}
+  html.lowpow #mMol.eg .eg-halo{display:none}
+  /* 등장: 빛 알갱이가 툭 터지며 나타나고, 결합이 쭉 그어진다 */
+  @keyframes egPop{0%{opacity:0;transform:scale(.1)}55%{opacity:1;transform:scale(1.32)}80%{transform:scale(.94)}100%{opacity:1;transform:none}}
+  @keyframes egFlash{0%{opacity:0;transform:scale(.4)}35%{opacity:.9;transform:scale(1.6)}100%{opacity:0;transform:scale(2.4)}}
+  #card.rx-anim #mMol.eg .mol-in{animation:egPop .62s var(--d) cubic-bezier(.2,.9,.3,1) both}
+  #mMol.eg .eg-flash{fill:#fff;opacity:0;pointer-events:none;transform-box:fill-box;transform-origin:center}
+  #card.rx-anim #mMol.eg .eg-flash{animation:egFlash .7s var(--d) ease-out both}
+  @keyframes egDraw{from{stroke-dashoffset:var(--bl,120)}to{stroke-dashoffset:0}}
+  #card.rx-anim #mMol.eg .mol-bonds{animation:none}
+  #card.rx-anim #mMol.eg .mol-bonds line.eg-b{stroke-dasharray:var(--bl,120);animation:egDraw .55s var(--bd) cubic-bezier(.3,.8,.3,1) both}
+  #card.rx-settled #mMol.eg .mol-in,#card.rx-settled #mMol.eg .eg-flash,#card.rx-settled #mMol.eg .mol-bonds line{animation:none!important}
+  #card.rx-settled #mMol.eg .mol-bonds line.eg-b{stroke-dasharray:none}
+  @media (prefers-reduced-motion:reduce){ #mMol.eg .mol-in,#mMol.eg .eg-flash,#mMol.eg .mol-bonds line,#mMol.eg .eg-core{animation:none!important} }
+</style>
+<script>
+(function(){
+  if(typeof rxMount !== 'function' || typeof rxDraw !== 'function') return;
+  const off = () => { try{ return localStorage.getItem('pt_ballfx') === 'plain'; }catch(e){ return false; } };
+  let uid = 0;
+  const _m = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _m.apply(this, arguments);
+    try{
+      const svg = svgEl || document.getElementById('mMol');
+      const ok = !svgEl && model && model.atoms && model.atoms.length && !model.fill && !model.liquid && !model.mesh && !model.faces && !model.static && !model.kin && !model.struct && !off();
+      svg.classList.toggle('eg', !!ok);
+      if(!ok) return r;
+      const id = 'eg' + (++uid);
+      let defs = svg.querySelector('defs.eg-defs');
+      if(defs) defs.remove();
+      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'); defs.setAttribute('class', 'eg-defs');
+      defs.innerHTML = `<radialGradient id="${id}c" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".28" stop-color="#fff" stop-opacity=".5"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
+        `<radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset=".68" stop-color="#fff" stop-opacity="0"/><stop offset=".9" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/></radialGradient>`;
+      svg.insertBefore(defs, svg.firstChild);
+      const NS = 'http://www.w3.org/2000/svg';
+      const mk = (tag, cls, attrs) => { const e = document.createElementNS(NS, tag); e.setAttribute('class', cls); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+      const lp = window.RX_LOWPOW;
+      svg.querySelectorAll('.mol-atoms > .mol-at').forEach(g => {
+        if(g.classList.contains('loose') || g.classList.contains('frag') || g.classList.contains('clr')) return;
+        const inn = g.querySelector('.mol-in'), ball = g.querySelector('.mol-ball'); if(!inn || !ball) return;
+        const rr = +ball.getAttribute('r') || 8;
+        if(!lp) inn.insertBefore(mk('circle', 'eg-halo', { r: (rr * 1.75).toFixed(1) }), ball);
+        inn.insertBefore(mk('circle', 'eg-halo2', { r: (rr * 1.28).toFixed(1) }), ball);
+        const after = ball.nextSibling;
+        inn.insertBefore(mk('circle', 'eg-core', { r: rr.toFixed(1), fill: `url(#${id}c)` }), after);
+        inn.insertBefore(mk('circle', 'eg-rim', { r: rr.toFixed(1), fill: `url(#${id}r)` }), after);
+        inn.insertBefore(mk('circle', 'eg-spec', { r: (rr * .13).toFixed(1), cx: (-rr * .34).toFixed(1), cy: (-rr * .38).toFixed(1) }), after);
+        inn.appendChild(mk('circle', 'eg-flash', { r: (rr * .9).toFixed(1) }));
+        const fl = g.querySelector('.mol-fl'); if(fl){ const fd = fl.style.getPropertyValue('--fd'); if(fd) inn.style.setProperty('--fd', fd); }
+      });
+      // 결합: 원자가 다 나온 다음 차례로 그어진다
+      const n = model.atoms.length, base = Math.min(n * 22, 700) * .55;
+      svg.querySelectorAll('.mol-bonds > line:not(.bx)').forEach((l, k) => { l.classList.add('eg-b'); l.style.setProperty('--bd', Math.round(180 + Math.min(base + k * 14, 900)) + 'ms'); });
+    }catch(e){}
+    return r;
+  };
+  // 깊이감: 먼 원자·결합은 흐리게, 가까운 건 선명하게
+  const _d = rxDraw;
+  rxDraw = function(yaw, pitch, mm){
+    const r = _d.apply(this, arguments);
+    try{
+      const m = mm || RX_M;
+      if(!m || mm || !m.gAt || m.fill || m.liquid || m.faces || !m.depth) return r;
+      const svg = document.getElementById('mMol'); if(!svg || !svg.classList.contains('eg')) return r;
+      const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch);
+      const Z = m.atoms.map(a => { const z1 = -a.x * sY + a.z * cY; return a.y * sX + z1 * cX; });
+      const dep = m.depth || 1;
+      const op = z => Math.max(.38, Math.min(1, .69 + .31 * z / dep));
+      m.gAt.forEach((g, i) => { const v = op(Z[i]).toFixed(2); if(g._eo !== v){ g._eo = v; g.setAttribute('opacity', v); } });
+      if(m.lines && m.bonds) m.lines.forEach((ln, k) => { const b = m.bonds[k]; if(!b) return; const v = (op((Z[b[0]] + Z[b[1]]) / 2) * .85).toFixed(2); if(ln._eo !== v){ ln._eo = v; ln.style.opacity = v; } });
+    }catch(e){}
+    return r;
+  };
 })();
 </script>
 
