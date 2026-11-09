@@ -46867,6 +46867,8 @@ void main(){
   .elp-tag{margin-top:10px;font-size:12.5px;line-height:1.45;color:#dfe3f2;min-height:36px}
   .elp-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
   .elp-chips span{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--c) 20%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:color-mix(in srgb,var(--c) 55%,#fff)}
+  .elp-card.wip{border-style:dashed;opacity:.72}
+  .elp-wip{display:inline-block;margin-left:4px;font-size:9.5px;padding:1px 6px;border-radius:999px;background:rgba(255,212,59,.18);color:#ffd43b;border:1px solid rgba(255,212,59,.4)}
   .elp-card.soon{cursor:default;opacity:.55;border-style:dashed}
   .elp-card.soon:hover{transform:none;box-shadow:none}
   .elp-foot{margin-top:16px;font-size:11.5px;color:var(--dim);text-align:center}
@@ -46900,6 +46902,13 @@ void main(){
         prof:[['Name','Mercury'],['Nicknames','Curie · Bibi · Argentum'],['English','Mercury / Argentum Vivum'],['Alias','Quicksilver'],['Group','Group 12 · transition metal']],
         facts:['Her blood is mercury too: Heme Hg (with a porphyrin ring)','A star-shaped beauty mark under one eye','Pretty horns','Likes: mercury tea, metal-cube snacks (amalgam time)','Regular at Neon Café'],
         skills:['Mercury Shot — finger-gun, bang!','Mercury Pool (senior skill)'], q:'…that is my blood.' } },
+    { s:'F', c:'#c0eb75', ic:'💎',
+      ko:{ nm:'플루오린', tag:'뿔이 형석이에요. 할로젠에서 제일 사나워요.', chips:['할로젠','형석 뿔'],
+        prof:[['이름','플루오린'],['뿔','형석 (CaF₂)'],['소속','17족 · 할로젠']],
+        facts:['전기음성도 1등 (3.98)','형석은 플루오린이 들어 있는 광물이에요'], skills:[], q:'' },
+      en:{ nm:'Fluorine', tag:'Her horns are fluorite. Fiercest of the Halogens.', chips:['Halogen','Fluorite horns'],
+        prof:[['Name','Fluorine'],['Horns','Fluorite (CaF₂)'],['Group','Group 17 · halogen']],
+        facts:['Highest electronegativity (3.98)','Fluorite is a fluorine mineral'], skills:[], q:'' } },
     { s:'Cl', c:'#b2f2bb', ic:'🧴',
       ko:{ nm:'클로린', tag:'할로젠 소속 전자 스틸러. 전자를 얻으면 클로라이드가 돼요.', chips:['할로젠','전자 스프레이','염소 눈'],
         prof:[['이름','클로린 → 클로라이드'],['별명','염소 (goat)'],['머리','연두색 / 하얀색'],['소속','할로젠 (전자 스틸 그룹)']],
@@ -46909,20 +46918,26 @@ void main(){
         prof:[['Name','Chlorine → Chloride'],['Alias','Goat (염소)'],['Hair','Lime / white'],['Group','Halogens (electron-stealing gang)']],
         facts:['Wears a Cl hairpin','Horizontal goat pupils','Becomes Chloride once she gains an electron','Steals Sodium\'s electron in Ep.1 "Oh Dear"'],
         skills:['All-purpose Chlorine Spray','Electron Spray!!'], q:'I\'ll be taking that electron.' } },
-    { s:'Na', c:'#ffd43b', ic:'🧂',
-      ko:{ nm:'나트륨', tag:'성격이 물러요. 전자를 뺏겨도 일단 웃고 봐요.', chips:['알칼리 금속','무름','NaCl'],
-        prof:[['이름','나트륨'],['머리','검은색 / 노란색'],['특징','무름'],['소속','1족 · 알칼리 금속']],
-        facts:['칼로 썰릴 만큼 무른 금속이에요','만화 1화 「아이고 저런」 주인공','클로린에게 전자를 뺏기고 NaCl 결성'], skills:[], q:'아이고 저런…' },
-      en:{ nm:'Sodium', tag:'Soft-hearted. Loses an electron and still smiles.', chips:['Alkali metal','Soft','NaCl'],
-        prof:[['Name','Sodium'],['Hair','Black / yellow'],['Trait','Soft'],['Group','Group 1 · alkali metal']],
-        facts:['A metal soft enough to cut with a knife','Lead of Ep.1 "Oh Dear"','Loses an electron to Chlorine and forms NaCl'], skills:[], q:'Oh dear…' } },
-    { s:'Ne', c:'#ff8a65', ic:'☕',
-      ko:{ nm:'네온', tag:'네온 카페 사장. 손님 앞에선 알바생인 척해요.', chips:['비활성 기체','네온 카페','네온에이드'],
-        prof:[['이름','네온'],['직업','네온 카페 사장 (알바인 척)'],['소속','18족 · 비활성 기체']],
-        facts:['시그니처 메뉴: 네온에이드','명찰까지 달고 알바생인 척해요','큐리가 단골손님'], skills:[], q:'사장님이요? 지금 안 계신데요~' },
-      en:{ nm:'Neon', tag:'Owner of Neon Café. Pretends to be the part-timer.', chips:['Noble gas','Neon Café','Neon-ade'],
-        prof:[['Name','Neon'],['Job','Owner of Neon Café (posing as staff)'],['Group','Group 18 · noble gas']],
-        facts:['Signature drink: Neon-ade','Wears a name tag to pass as staff','Curie is a regular'], skills:[], q:'The owner? Oh, not in right now~' } },
+    { s:'Br', c:'#ff9a6b', ic:'🧪',
+      ko:{ nm:'브로민', tag:'상온에서 액체인 비금속은 브로민 하나뿐이에요.', chips:['할로젠','적갈색 액체'],
+        prof:[['이름','브로민'],['소속','17족 · 할로젠']], facts:['상온에서 적갈색 액체예요','이름 뜻은 그리스어로 "악취"','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Bromine', tag:'The only nonmetal that is liquid at room temperature.', chips:['Halogen','Red-brown liquid'],
+        prof:[['Name','Bromine'],['Group','Group 17 · halogen']], facts:['A red-brown liquid at room temperature','Name means "stench" in Greek','More details coming soon'], skills:[], q:'' } },
+    { s:'I', c:'#b197fc', ic:'💜',
+      ko:{ nm:'아이오딘', tag:'데우면 보라색 기체로 바로 승화해요.', chips:['할로젠','보라색 증기'],
+        prof:[['이름','아이오딘'],['소속','17족 · 할로젠']], facts:['고체에서 바로 보라색 기체가 돼요 (승화)','이름 뜻은 그리스어로 "보라색"','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Iodine', tag:'Warm it up and it sublimes straight into violet vapor.', chips:['Halogen','Violet vapor'],
+        prof:[['Name','Iodine'],['Group','Group 17 · halogen']], facts:['Goes from solid straight to violet gas (sublimation)','Name means "violet" in Greek','More details coming soon'], skills:[], q:'' } },
+    { s:'At', c:'#a9e34b', ic:'☢',
+      ko:{ nm:'아스타틴', tag:'지구 전체에 1g도 안 될 만큼 희귀한 방사성 할로젠.', chips:['할로젠','방사성','희귀'],
+        prof:[['이름','아스타틴'],['소속','17족 · 할로젠']], facts:['이름 뜻은 그리스어로 "불안정한"','자연에 있는 원소 중 손꼽히게 희귀해요','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Astatine', tag:'A radioactive halogen; less than a gram exists on all of Earth.', chips:['Halogen','Radioactive','Rare'],
+        prof:[['Name','Astatine'],['Group','Group 17 · halogen']], facts:['Name means "unstable" in Greek','One of the rarest natural elements','More details coming soon'], skills:[], q:'' } },
+    { s:'Ts', c:'#63e6be', ic:'⚛',
+      ko:{ nm:'테네신', tag:'할로젠 막내. 2010년에 처음 만들어졌어요.', chips:['할로젠','인공 원소'],
+        prof:[['이름','테네신'],['소속','17족 · 할로젠']], facts:['미국 테네시주에서 이름을 따왔어요','실험실에서 원자 몇 개만 만들어졌어요','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Tennessine', tag:'Youngest halogen, first made in 2010.', chips:['Halogen','Synthetic'],
+        prof:[['Name','Tennessine'],['Group','Group 17 · halogen']], facts:['Named after Tennessee, USA','Only a handful of atoms ever made','More details coming soon'], skills:[], q:'' } },
     { s:'He', c:'#ffe3a3', ic:'🎈',
       ko:{ nm:'헬륨', tag:'헬륨-3 (³He). 의도한 거예요.', chips:['비활성 기체','³He'],
         prof:[['이름','헬륨'],['동위원소','헬륨-3 (³He)'],['소속','18족 · 비활성 기체']],
@@ -46930,30 +46945,57 @@ void main(){
       en:{ nm:'Helium', tag:'Helium-3 (³He). On purpose.', chips:['Noble gas','³He'],
         prof:[['Name','Helium'],['Isotope','Helium-3 (³He)'],['Group','Group 18 · noble gas']],
         facts:['Based on helium-3: 2 protons, 1 neutron'], skills:[], q:'' } },
-    { s:'F', c:'#c0eb75', ic:'💎',
-      ko:{ nm:'플루오린', tag:'뿔이 형석이에요. 할로젠에서 제일 사나워요.', chips:['할로젠','형석 뿔'],
-        prof:[['이름','플루오린'],['뿔','형석 (CaF₂)'],['소속','17족 · 할로젠']],
-        facts:['전기음성도 1등 (3.98)','형석은 플루오린이 들어 있는 광물이에요'], skills:[], q:'' },
-      en:{ nm:'Fluorine', tag:'Her horns are fluorite. Fiercest of the Halogens.', chips:['Halogen','Fluorite horns'],
-        prof:[['Name','Fluorine'],['Horns','Fluorite (CaF₂)'],['Group','Group 17 · halogen']],
-        facts:['Highest electronegativity (3.98)','Fluorite is a fluorine mineral'], skills:[], q:'' } },
+    { s:'Ne', c:'#ff8a65', ic:'☕',
+      ko:{ nm:'네온', tag:'네온 카페 사장. 손님 앞에선 알바생인 척해요.', chips:['비활성 기체','네온 카페','네온에이드'],
+        prof:[['이름','네온'],['직업','네온 카페 사장 (알바인 척)'],['소속','18족 · 비활성 기체']],
+        facts:['시그니처 메뉴: 네온에이드','명찰까지 달고 알바생인 척해요','큐리가 단골손님'], skills:[], q:'사장님이요? 지금 안 계신데요~' },
+      en:{ nm:'Neon', tag:'Owner of Neon Café. Pretends to be the part-timer.', chips:['Noble gas','Neon Café','Neon-ade'],
+        prof:[['Name','Neon'],['Job','Owner of Neon Café (posing as staff)'],['Group','Group 18 · noble gas']],
+        facts:['Signature drink: Neon-ade','Wears a name tag to pass as staff','Curie is a regular'], skills:[], q:'The owner? Oh, not in right now~' } },
+    { s:'Ar', c:'#d0bfff', ic:'💤',
+      ko:{ nm:'아르곤', tag:'이름 뜻이 "게으른". 공기의 약 1%를 차지해요.', chips:['비활성 기체','게으름'],
+        prof:[['이름','아르곤'],['소속','18족 · 비활성 기체']], facts:['이름 뜻은 그리스어로 "게으른"','공기 중에 질소·산소 다음으로 많아요','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Argon', tag:'Name means "lazy". About 1% of the air.', chips:['Noble gas','Lazy'],
+        prof:[['Name','Argon'],['Group','Group 18 · noble gas']], facts:['Name means "lazy" in Greek','Third most common gas in air','More details coming soon'], skills:[], q:'' } },
     { s:'Kr', c:'#9ad7ff', ic:'💡',
-      ko:{ nm:'크립톤', tag:'플루오린한테 자꾸 휘말려요.', chips:['비활성 기체'],
+      ko:{ nm:'크립톤', tag:'이름 뜻이 "숨겨진 것". 형광등 속에서 빛나요.', chips:['비활성 기체'],
         prof:[['이름','크립톤'],['소속','18족 · 비활성 기체']], facts:['자세한 설정은 준비 중이에요'], skills:[], q:'' },
-      en:{ nm:'Krypton', tag:'Keeps getting dragged in by Fluorine.', chips:['Noble gas'],
+      en:{ nm:'Krypton', tag:'Name means "hidden one". Glows in lamps.', chips:['Noble gas'],
         prof:[['Name','Krypton'],['Group','Group 18 · noble gas']], facts:['More details coming soon'], skills:[], q:'' } },
-    { s:'O', c:'#ff8787', ic:'🫧',
-      ko:{ nm:'옥시젠', tag:'산소. 어디에나 끼는 인싸.', chips:['16족'],
-        prof:[['이름','옥시젠 (산소)'],['소속','16족']], facts:['자세한 설정은 준비 중이에요'], skills:[], q:'' },
-      en:{ nm:'Oxygen', tag:'Shows up in everything.', chips:['Group 16'],
-        prof:[['Name','Oxygen'],['Group','Group 16']], facts:['More details coming soon'], skills:[], q:'' } },
-    { s:'Mg', c:'#e9ecf5', ic:'✨',
+    { s:'Xe', c:'#74c0fc', ic:'🚀',
+      ko:{ nm:'제논', tag:'이름 뜻이 "낯선 것". 우주선 이온 엔진 연료예요.', chips:['비활성 기체','이온 엔진'],
+        prof:[['이름','제논'],['소속','18족 · 비활성 기체']], facts:['이름 뜻은 그리스어로 "낯선 것"','자동차 헤드라이트와 이온 엔진에 쓰여요','비활성 기체인데도 화합물을 만들 수 있어요','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Xenon', tag:'Name means "stranger". Fuel for ion engines.', chips:['Noble gas','Ion engine'],
+        prof:[['Name','Xenon'],['Group','Group 18 · noble gas']], facts:['Name means "stranger" in Greek','Used in headlights and ion thrusters','A noble gas that can still form compounds','More details coming soon'], skills:[], q:'' } },
+    { s:'Rn', c:'#e599f7', ic:'🌫',
+      ko:{ nm:'라돈', tag:'땅속에서 새어 나오는 방사성 기체.', chips:['비활성 기체','방사성'],
+        prof:[['이름','라돈'],['소속','18족 · 비활성 기체']], facts:['라듐이 붕괴하면서 생겨요','네온 카페 메뉴 "라돈 티 (주의!)"','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Radon', tag:'A radioactive gas that seeps from the ground.', chips:['Noble gas','Radioactive'],
+        prof:[['Name','Radon'],['Group','Group 18 · noble gas']], facts:['Formed when radium decays','Neon Café menu: "Radon Tea (caution!)"','More details coming soon'], skills:[], q:'' } },
+    { s:'Og', c:'#dee2e6', ic:'👑',
+      ko:{ nm:'오가네손', tag:'원자번호 118. 지금까지 알려진 가장 무거운 원소.', chips:['비활성 기체','인공 원소','118번'],
+        prof:[['이름','오가네손'],['소속','18족 · 비활성 기체']], facts:['주기율표의 마지막 칸','과학자 유리 오가네시안의 이름을 땄어요','자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Oganesson', tag:'Element 118, the heaviest known.', chips:['Noble gas','Synthetic','No.118'],
+        prof:[['Name','Oganesson'],['Group','Group 18 · noble gas']], facts:['The last cell of the table','Named after scientist Yuri Oganessian','More details coming soon'], skills:[], q:'' } },
+    { s:'Na', wip:true, c:'#ffd43b', ic:'🧂',
+      ko:{ nm:'나트륨', tag:'성격이 물러요. 전자를 뺏겨도 일단 웃고 봐요.', chips:['알칼리 금속','무름','NaCl'],
+        prof:[['이름','나트륨'],['머리','검은색 / 노란색'],['특징','무름'],['소속','1족 · 알칼리 금속']],
+        facts:['칼로 썰릴 만큼 무른 금속이에요','만화 1화 「아이고 저런」 주인공','클로린에게 전자를 뺏기고 NaCl 결성'], skills:[], q:'아이고 저런…' },
+      en:{ nm:'Sodium', tag:'Soft-hearted. Loses an electron and still smiles.', chips:['Alkali metal','Soft','NaCl'],
+        prof:[['Name','Sodium'],['Hair','Black / yellow'],['Trait','Soft'],['Group','Group 1 · alkali metal']],
+        facts:['A metal soft enough to cut with a knife','Lead of Ep.1 "Oh Dear"','Loses an electron to Chlorine and forms NaCl'], skills:[], q:'Oh dear…' } },
+    { s:'Mg', wip:true, c:'#e9ecf5', ic:'✨',
       ko:{ nm:'마그네슘', tag:'겉보기엔 남자 같지만 사실은 여자. 톰보이예요.', chips:['알칼리 토금속','톰보이'],
         prof:[['이름','마그네슘'],['특징','톰보이'],['소속','2족 · 알칼리 토금속']],
         facts:['불에 타면 눈부신 흰빛을 내요'], skills:[], q:'' },
       en:{ nm:'Magnesium', tag:'Looks like a boy, actually a girl. Tomboy.', chips:['Alkaline earth','Tomboy'],
         prof:[['Name','Magnesium'],['Trait','Tomboy'],['Group','Group 2 · alkaline earth metal']],
         facts:['Burns with a dazzling white light'], skills:[], q:'' } },
+    { s:'O', wip:true, c:'#ff8787', ic:'🫧',
+      ko:{ nm:'옥시젠', tag:'산소. 어디에나 끼는 인싸.', chips:['16족'],
+        prof:[['이름','옥시젠 (산소)'],['소속','16족']], facts:['자세한 설정은 준비 중이에요'], skills:[], q:'' },
+      en:{ nm:'Oxygen', tag:'Shows up in everything.', chips:['Group 16'],
+        prof:[['Name','Oxygen'],['Group','Group 16']], facts:['More details coming soon'], skills:[], q:'' } },
   ];
   const BY = {}; P.forEach(p => BY[p.s] = p);
   const el = s => EL.find(e => e.s === s);
@@ -46975,7 +47017,7 @@ void main(){
     const L = EN() ? 'en' : 'ko';
     // 미니 주기율표
     let mt = '';
-    const cell = e => { const p = BY[e.s]; return p ? `<i class="on" data-s="${e.s}" style="--c:${p.c}" title="${p[L].nm}">${e.s}</i>` : `<i>${e.s}</i>`; };
+    const cell = e => { const p = BY[e.s]; return p && !p.wip ? `<i class="on" data-s="${e.s}" style="--c:${p.c}" title="${p[L].nm}">${e.s}</i>` : `<i>${e.s}</i>`; };
     for(let per = 1; per <= 7; per++) for(let g = 1; g <= 18; g++){
       const e = EL.find(x => x.p === per && x.g === g);
       if(e) mt += cell(e);
@@ -46987,16 +47029,16 @@ void main(){
     box.innerHTML = `
       <div class="elp-hero"><div style="flex:1"><h3>${EN() ? 'ELEMENT PERSONA INDEX' : '원소 의인화 도감'}</h3>
         <p>${EN() ? 'Elements, as people. Characters from "Periodic // Table City" by the director.' : '원소가 사람이 된다면? 디렉터의 만화 「페리오딕 // 테이블 시티」 친구들이에요.'}</p></div>
-        <div class="elp-big">${P.length}<small> / 118</small></div></div>
+        <div class="elp-big">${P.filter(p => !p.wip).length}<small> / 118</small></div></div>
       <div class="elp-mt">${mt}</div>
-      <div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">
-        <div class="elp-top">${tile(p)}<div><div class="elp-nm">${t.nm}</div><div class="elp-el">${e.n} · ${EN() ? e.en : e.ko}</div></div></div>
+      <div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card${p.wip ? ' wip' : ''}" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">
+        <div class="elp-top">${tile(p)}<div><div class="elp-nm">${t.nm}</div><div class="elp-el">${e.n} · ${EN() ? e.en : e.ko}${p.wip ? ` <b class="elp-wip">${EN() ? 'IN PROGRESS' : '작업 중'}</b>` : ''}</div></div></div>
         <div class="elp-tag">${t.tag}</div><div class="elp-chips">${t.chips.map(c => `<span>${c}</span>`).join('')}</div></div>`; }).join('')}
         <div class="elp-card soon" style="--c:#6b7086" data-s="?"><div class="elp-top"><div class="elp-tile"><b>?</b></div><div><div class="elp-nm">???</div><div class="elp-el">${EN() ? 'Coming soon' : '곧 만나요'}</div></div></div>
         <div class="elp-tag">${EN() ? 'More elements are on their way.' : '다른 원소 친구들도 준비 중이에요.'}</div></div>
       </div>
       <div class="elp-foot">${EN() ? 'Tap a card or a lit cell to see the profile.' : '카드나 빛나는 칸을 누르면 프로필을 볼 수 있어요.'}</div>`;
-    const c = document.getElementById('dexCnt'); if(c) c.textContent = (EN() ? 'Friends ' : '등록된 친구 ') + P.length + ' / 118';
+    const c = document.getElementById('dexCnt'); if(c) c.textContent = (EN() ? 'Friends ' : '등록된 친구 ') + P.filter(p => !p.wip).length + ' / 118';
   }
 
   let ON = false;
