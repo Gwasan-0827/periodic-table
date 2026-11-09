@@ -46222,18 +46222,9 @@ void main(){
 
 <style>
   /* ═══ Hg's Hideout: 수은 웅덩이 결과 창에서 커맨드로 들어가는 큐리의 아지트 ═══ */
-  .hg-term-btn{position:absolute;left:12px;bottom:58px;z-index:4;font:700 11px ui-monospace,Menlo,Consolas,monospace;padding:3px 7px;border-radius:6px;cursor:pointer;color:rgba(220,224,245,.45);background:rgba(10,11,20,.35);border:1px solid rgba(220,224,245,.12);transition:color .2s,border-color .2s}
-  .hg-term-btn:hover{color:#e8ebff;border-color:rgba(220,224,245,.5)}
-  .hg-term-btn i{font-style:normal;animation:hgBlink 1s steps(2) infinite}
-  @keyframes hgBlink{50%{opacity:0}}
-  .hg-term{position:absolute;left:10px;right:10px;bottom:52px;z-index:6;padding:10px 12px;border-radius:12px;font:12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#d6d9ea;
-    background:rgba(8,9,14,.92);border:1px solid rgba(220,224,245,.35);box-shadow:0 10px 30px rgba(0,0,0,.5)}
-  .hg-term .out div{white-space:pre-wrap;word-break:break-all}
-  .hg-term .out .ok{color:#8cf5d2}.hg-term .out .bad{color:#ff8fa3}.hg-term .out .dim{color:#80849c}
-  .hg-term label{display:flex;gap:6px;align-items:center}
-  .hg-term label b{color:#c9cde2;font-weight:700;white-space:nowrap}
-  .hg-term input{flex:1;min-width:0;font:inherit;color:#fff;background:none;border:0;outline:none;caret-color:#e8ebff}
-
+  .hg-hid{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0;font-size:16px;pointer-events:none}
+  #mStage.hg-flash::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(220,224,245,.2) 60%,transparent);animation:hgFlash .7s ease-out forwards}
+  @keyframes hgFlash{from{opacity:0}30%{opacity:1}to{opacity:0}}
   #hgHide{position:fixed;inset:0;z-index:96;display:none;align-items:center;justify-content:center;padding:14px;
     background:radial-gradient(120% 80% at 50% 0%,#3a3d4e,#14151c 75%)}
   #hgHide.on{display:flex;animation:hgIn .6s ease-out}
@@ -46297,45 +46288,31 @@ void main(){
   const EN = () => LANG === 'en';
   let armed = false, buf = '', tries = 0;
 
-  /* ── 결과 창: 수은 웅덩이일 때만 작은 터미널 ── */
-  function term(open){
-    const st = document.getElementById('mStage'); if(!st) return;
-    let t = st.querySelector('.hg-term');
-    if(!open){ if(t) t.remove(); return; }
-    if(!t){
-      t = document.createElement('div'); t.className = 'hg-term';
-      t.innerHTML = `<div class="out"><div class="dim">${EN() ? '// a terminal is hiding in the puddle' : '// 웅덩이 속에 터미널이 숨어 있다'}</div></div><label><b>hg@puddle:~$</b><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command"></label>`;
-      st.appendChild(t);
-      const inp = t.querySelector('input');
-      inp.addEventListener('keydown', e => { e.stopPropagation(); if(e.key === 'Enter'){ run(inp.value); inp.value = ''; } if(e.key === 'Escape') term(false); });
-      t.addEventListener('click', e => e.stopPropagation());
-    }
-    setTimeout(() => { try{ t.querySelector('input').focus(); }catch(e){} }, 30);
-    return t;
+  /* ── 결과 창: 수은 웅덩이일 때, 보이는 건 아무것도 없이 커맨드만 받는다 ──
+     PC: 그냥 키보드로 친다.  폰: 분자 그림을 빠르게 세 번 톡톡톡 → 숨은 입력칸에 키보드가 뜬다 */
+  function open(){
+    const st = document.getElementById('mStage'); if(st){ st.classList.add('hg-flash'); setTimeout(() => st.classList.remove('hg-flash'), 700); }
+    try{ const h = document.querySelector('#mStage .hg-hid'); if(h) h.blur(); }catch(e){}
+    setTimeout(hideout, 650);
   }
-  function out(t, s, cls){ const o = t.querySelector('.out'); const d = document.createElement('div'); if(cls) d.className = cls; d.textContent = s; o.appendChild(d); while(o.children.length > 6) o.firstChild.remove(); }
-  function run(v){
-    const t = term(true); v = String(v || '').trim(); if(!v) return;
-    out(t, 'hg@puddle:~$ ' + v);
-    if(v === CMD){
-      out(t, 'base64 → "Hg\'s Hideout"', 'dim');
-      out(t, EN() ? 'access granted. ☿' : '접근 허가. ☿', 'ok');
-      setTimeout(() => { term(false); hideout(); }, 900);
-      return;
-    }
-    tries++;
-    if(/^hg'?s hideout$/i.test(v)) out(t, EN() ? 'plain text is not allowed. encode it.' : '그대로 쓰면 안 돼. 인코딩해.', 'bad');
-    else if(/^(help|\?|도움말)$/i.test(v)) out(t, EN() ? 'the door opens for base64.' : '문은 base64 로만 열려.', 'dim');
-    else out(t, (EN() ? 'command not found: ' : '없는 명령어: ') + v.slice(0, 24), 'bad');
-    if(tries === 3) out(t, EN() ? 'hint: base64("Hg\'s ...")' : '힌트: base64("Hg\'s ...")', 'dim');
-  }
+  function feed(ch){ buf = (buf + ch).slice(-CMD.length); if(buf === CMD){ buf = ''; open(); } }
+  let taps = [];
   function arm(on){
-    armed = on;
+    armed = on; buf = '';
     const st = document.getElementById('mStage'); if(!st) return;
-    let b = st.querySelector('.hg-term-btn');
-    if(!on){ if(b) b.remove(); term(false); buf = ''; return; }
-    if(!b){ b = document.createElement('button'); b.type = 'button'; b.className = 'hg-term-btn'; b.innerHTML = '&gt;<i>_</i>'; b.title = 'terminal';
-      b.addEventListener('click', e => { e.stopPropagation(); term(true); }); st.appendChild(b); }
+    let h = st.querySelector('.hg-hid');
+    if(!on){ if(h) h.remove(); return; }
+    if(!h){
+      h = document.createElement('input'); h.className = 'hg-hid'; h.type = 'text'; h.setAttribute('autocomplete', 'off'); h.setAttribute('autocapitalize', 'off'); h.setAttribute('autocorrect', 'off'); h.spellcheck = false; h.setAttribute('aria-hidden', 'true'); h.tabIndex = -1;
+      h.addEventListener('input', () => { const v = h.value; h.value = ''; for(const ch of v) feed(ch); });
+      h.addEventListener('keydown', e => e.stopPropagation());
+      st.appendChild(h);
+      const tap = () => {
+        if(!armed) return; const now = Date.now(); taps = taps.filter(x => now - x < 800); taps.push(now);
+        if(taps.length >= 3){ taps = []; setTimeout(() => { try{ h.focus({ preventScroll: true }); }catch(e){ h.focus(); } }, 0); }
+      };
+      st.addEventListener('pointerup', tap, true);
+    }
   }
   setInterval(() => {
     const m = document.getElementById('modal'), on = m && m.classList.contains('on');
@@ -46345,10 +46322,10 @@ void main(){
   // PC: 결과 창이 떠 있으면 그냥 쳐도 된다
   addEventListener('keydown', e => {
     if(!armed || e.ctrlKey || e.metaKey || e.altKey) return;
-    const tg = e.target; if(tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA')) return;
+    const tg = e.target; if(tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA') && !tg.classList.contains('hg-hid')) return;
     if(e.key.length !== 1) return;
-    buf = (buf + e.key).slice(-CMD.length);
-    if(buf === CMD){ buf = ''; const t = term(true); out(t, 'hg@puddle:~$ ' + CMD); out(t, 'base64 → "Hg\'s Hideout"', 'dim'); out(t, EN() ? 'access granted. ☿' : '접근 허가. ☿', 'ok'); setTimeout(() => { term(false); hideout(); }, 900); }
+    if(tg && tg.classList && tg.classList.contains('hg-hid')) return;   // 숨은 입력칸은 input 이벤트가 처리
+    feed(e.key);
   }, true);
 
   /* ── 아지트 ── */
