@@ -46651,9 +46651,9 @@ void main(){
       if(!ok) return r;
       svg.querySelectorAll('.stick-g defs > linearGradient').forEach(lg => {
         if(/a$/.test(lg.id)) return;   // 길이 방향 색(원자 색 반반)은 그대로
-        if(lg.querySelector('stop[stop-color="#000"], stop[stop-color="#fff"]')) lg.innerHTML = '<stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".14" stop-color="#000" stop-opacity=".08"/>' +
-          '<stop offset=".24" stop-color="#fff" stop-opacity=".55"/><stop offset=".3" stop-color="#fff" stop-opacity=".95"/><stop offset=".38" stop-color="#fff" stop-opacity=".35"/>' +
-          '<stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset=".82" stop-color="#000" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity=".6"/>';
+        if(lg.querySelector('stop[stop-color="#000"], stop[stop-color="#fff"]')) lg.innerHTML = '<stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".16" stop-color="#fff" stop-opacity=".22"/>' +
+          '<stop offset=".34" stop-color="#fff" stop-opacity=".7"/><stop offset=".46" stop-color="#fff" stop-opacity=".92"/><stop offset=".58" stop-color="#fff" stop-opacity=".6"/>' +
+          '<stop offset=".78" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".32"/>';
       });
     }catch(e){}
     return r;
