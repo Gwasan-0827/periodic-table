@@ -41862,7 +41862,7 @@ void main(){
   ];
   // 앱은 레벨이 낮으면 Ts·Og 가 잠겨 있어서 섞을 수 없다 → 그땐 예전처럼 헬륨 다섯 개로
   try{ const fm = M.find(m => m.id === 'fail'), lk = s => { const e = rxSym(s); return e && window.rxLvLocked && window.rxLvLocked(e.n); };
-    if(fm && fm.r.some(([s]) => lk(s))){ fm.r = [['He', 5]]; fm.tip = P('예: 헬륨(He) 다섯 개. 비활성 기체는 아무랑도 안 붙어요', 'Try five helium (He). Noble gases bond with nothing'); } }catch(e){}
+    if(fm && fm.r.some(([s]) => lk(s))){ fm.r = [['Ne', 1], ['Ar', 1]]; fm.tip = P('예: 네온(Ne)과 아르곤(Ar). 비활성 기체끼리는 아무랑도 안 붙어요', 'Try neon (Ne) and argon (Ar). Noble gases bond with nothing'); } }catch(e){}
   const LS = 'pt_quest';
   const st = () => Object.assign({ on: false, off: false, done: [] }, rxLS.get(LS, {}) || {});
   const save = s => rxLS.set(LS, s);
