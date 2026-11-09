@@ -24833,8 +24833,6 @@ function rxStickModel(ball){
       const NS = 'http://www.w3.org/2000/svg';
       const G = document.createElementNS(NS, 'g'); G.setAttribute('class', 'stick-g');
       const defs = document.createElementNS(NS, 'defs'); G.appendChild(defs);
-      // 테두리는 전부 맨 뒤 한 층에: 막대끼리 겹치는 곳에 테두리 선(이음매)이 안 보이게
-      const G0 = document.createElementNS(NS, 'g'); G0.setAttribute('class', 'stick-ol'); G.appendChild(G0); model.stickOL = G0;
       const deg = model.atoms.map(() => 0);
       model.sbonds.forEach(([i, j]) => { deg[i]++; deg[j]++; });
       const segs = [];
@@ -24855,12 +24853,11 @@ function rxStickModel(ball){
           // 마디: 공처럼 둥글게 (빛은 왼쪽 위)
           const rg = document.createElementNS(NS, 'radialGradient');
           rg.id = gid + 'j'; rg.setAttribute('cx', '.38'); rg.setAttribute('cy', '.34'); rg.setAttribute('r', '.7');
-          rg.innerHTML = `<stop offset="0" stop-color="${C.hi}"/><stop offset=".22" stop-color="${C.soft}"/><stop offset=".6" stop-color="${C.base}"/><stop offset="1" stop-color="${C.shade}"/>`;
+          rg.innerHTML = `<stop offset="0" stop-color="${C.hi}"/><stop offset=".22" stop-color="${C.soft}"/><stop offset=".55" stop-color="${C.base}"/><stop offset="1" stop-color="${C.edge}"/>`;
           defs.appendChild(rg);
           const cc = document.createElementNS(NS, 'circle'); cc.setAttribute('fill', `url(#${rg.id})`);
-          const co = document.createElementNS(NS, 'circle'); co.setAttribute('fill', C.edge); co.setAttribute('fill-opacity', '.85'); G0.appendChild(co);
           g.append(cc); G.appendChild(g);
-          segs.push({ i, j, g, cc, co, z: 0, ord: ord || 1, lane: 0, joint: true });
+          segs.push({ i, j, g, cc, z: 0, ord: ord || 1, lane: 0, joint: true });
           return;
         }
         if(i !== j){
@@ -24872,9 +24869,7 @@ function rxStickModel(ball){
           const ag = document.createElementNS(NS, 'linearGradient');
           ag.id = gid + 'a'; ag.setAttribute('gradientUnits', 'userSpaceOnUse');
           const same = C.base === CB.base;
-          // 막대 하나로 끝까지: 가운데에서 두 원자 색이 부드럽게 바뀐다 (반쪽 막대 두 개를 잇던 이음매 없음)
-          ag.innerHTML = same ? `<stop offset="0" stop-color="${C.base}"/><stop offset="1" stop-color="${C.base}"/>` :
-            `<stop offset="0" stop-color="${C.base}"/><stop offset=".4" stop-color="${C.base}"/><stop offset=".5" stop-color="${mixc(C.base, CB.base)}"/><stop offset=".6" stop-color="${CB.base}"/><stop offset="1" stop-color="${CB.base}"/>`;
+          ag.innerHTML = `<stop offset="0" stop-color="${C.base}"/><stop offset=".62" stop-color="${C.base}"/><stop offset="1" stop-color="${same ? C.base : mixc(C.base, CB.base)}"/>`;
           defs.appendChild(ag);
           const sh = document.createElementNS(NS, 'linearGradient');
           sh.id = gid; sh.setAttribute('gradientUnits', 'userSpaceOnUse');
@@ -24885,7 +24880,7 @@ function rxStickModel(ball){
           const l2 = L();
           l1.setAttribute('stroke', `url(#${ag.id})`); l2.setAttribute('stroke', `url(#${gid})`);
           l0.setAttribute('stroke-opacity', '.85');
-          G0.appendChild(l0); g.append(l1, l2); G.appendChild(g);
+          g.append(l0, l1, l2); G.appendChild(g);
           segs.push({ i, j, g, l0, l1, l2, lg: sh, ag, z: 0, ord: ord || 1, lane: lane || 0, joint: false, ring: ringMap.get(i + '_' + j) || null });
           return;
         }
@@ -24917,7 +24912,7 @@ function rxStickModel(ball){
       model.sbonds.forEach(([i, j, o]) => {
         const lanes = o >= 3 ? [-1, 0, 1] : o >= 1.5 ? [-0.5, 0.5] : [0];
         if(lanes.length > 1){ multi[i] = multi[j] = true; }
-        lanes.forEach(L => { mk(i, j, 0, o, L); });
+        lanes.forEach(L => { mk(i, j, 0, o, L); mk(j, i, 0, o, L); });
       });
       // 겹결합이 붙은 원자는 막대가 갈라지는 곳을 둥근 마디로 메운다
       const maxo = model.atoms.map(() => 1);
@@ -24945,20 +24940,19 @@ function rxStickModel(ball){
     m.segs.forEach(s => {
       const a = P[s.i], b = P[s.j];
       const mx = (a.X + b.X) / 2, my = (a.Y + b.Y) / 2;
-      const f = s.i === s.j ? a.f : (a.f + b.f) / 2;
+      const f = s.i === s.j ? a.f : (a.f * 3 + b.f) / 4;
       const w = RX_STICK_R * 2 * m.sc * f;
       // 화면에서 막대 방향의 수직: 빛(왼쪽 위) 쪽으로 하이라이트를 민다
       let nx = -(my - a.Y), ny = mx - a.X; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
       if(nx + ny > 0){ nx = -nx; ny = -ny; }
       const hx = nx * w * 0.2, hy = ny * w * 0.2;
-      const x2 = s.i === s.j ? a.X + 0.01 : b.X, y2 = s.i === s.j ? a.Y : b.Y;
+      const x2 = s.i === s.j ? a.X + 0.01 : mx, y2 = s.i === s.j ? a.Y : my;
       const set = (l, ox, oy, ww) => { l.setAttribute('x1', (a.X + ox).toFixed(1)); l.setAttribute('y1', (a.Y + oy).toFixed(1));
         l.setAttribute('x2', (x2 + ox).toFixed(1)); l.setAttribute('y2', (y2 + oy).toFixed(1)); l.setAttribute('stroke-width', ww.toFixed(2)); };
       if(s.joint){
         // 막대 끝을 덮는 공: 겹결합이면 막대 묶음 폭만큼
-        const rr = (s.ord >= 3 ? w * 0.66 : s.ord > 1 ? w * 0.64 : w * 0.5) + 0.15;
+        const rr = (s.ord >= 3 ? w * 0.66 : s.ord > 1 ? w * 0.64 : w * 0.5) + 0.6;
         s.cc.setAttribute('cx', a.X.toFixed(1)); s.cc.setAttribute('cy', a.Y.toFixed(1)); s.cc.setAttribute('r', rr.toFixed(2));
-        if(s.co){ s.co.setAttribute('cx', a.X.toFixed(1)); s.co.setAttribute('cy', a.Y.toFixed(1)); s.co.setAttribute('r', (rr + 0.6).toFixed(2)); }
         s.z = a.z + 0.01;
         return;
       }
@@ -24998,12 +24992,12 @@ function rxStickModel(ball){
       if(s.i === s.j){ gx = -0.7071; gy = -0.7071; }
       s.lg.setAttribute('x1', (cx0 + gx * hw).toFixed(1)); s.lg.setAttribute('y1', (cy0 + gy * hw).toFixed(1));
       s.lg.setAttribute('x2', (cx0 - gx * hw).toFixed(1)); s.lg.setAttribute('y2', (cy0 - gy * hw).toFixed(1));
-      s.z = s.i === s.j ? a.z : (a.z + b.z) / 2;
+      s.z = s.i === s.j ? a.z : (a.z * 3 + b.z) / 4;
     });
     // 뒤에 있는 막대부터 그린다
     const sorted = m.segs.slice().sort((p, q) => p.z - q.z);
     const key = sorted.map(s => s.i + '_' + s.j + '_' + s.lane).join(',');
-    if(key !== m.sorder){ m.sorder = key; sorted.forEach(s => m.stickG.appendChild(s.g)); if(m.stickOL) m.stickG.insertBefore(m.stickOL, m.stickG.firstChild); }
+    if(key !== m.sorder){ m.sorder = key; sorted.forEach(s => m.stickG.appendChild(s.g)); }
     return r;
   };
   const _sv = rxSetView;
