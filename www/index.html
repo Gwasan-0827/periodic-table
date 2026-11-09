@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
+      ko: ['원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
+           '학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
            '오늘의 원소를 새로 만들었어요. 전자 껍질 그림, 오늘의 운세 카드, 며칠 연속으로 들어왔는지 기록이 생겼고, 이제 매일 아침 9시에 바뀌어요',
            '외우기도 새로 만들었어요. 작은 주기율표를 끌어서 범위를 고르고, 원소마다 얼마나 외웠는지 고리로 보여 줘요. 자꾸 틀리는 원소만 따로 복습할 수 있고, 플래시카드는 뒤집고 밀어서 넘겨요',
            '빈칸 채우기를 누르면 원소 칸이 펑 터져요. 몇 개는 화면에 철썩 붙었다가 스르르… 툭 떨어져요. 빠진 칸은 카드 묶음이 되어 아래에서 올라오고, 한 장씩 끌어다 빈칸에 놓으면 돼요',
@@ -6250,7 +6251,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
+      en: ['New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
+           'The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
            'Element of the day is new: an electron shell drawing, a fortune card and a visit streak. It now changes every morning at 9',
            'Memorise is new too. Drag across a mini periodic table to pick a range, see how well you know each element as a ring, review only the ones you keep missing, and flip and swipe the flashcards',
            'Starting Fill in the blanks blows the cells apart. Some splat onto the screen, slide… then drop. The missing cells come back up as a deck of cards: drag each one onto its blank',
@@ -44390,5 +44392,471 @@ void main(){
   if(cur && !cur.classList.contains('pw')){ cur.remove(); document.body.classList.remove('rx-intro-on'); rxIntro(true); }
 })();
 </script>
+<style>
+  /* ═══ 원소 파일 (자세히): 원자 모형 칸의 [자세히] → 원소 하나를 크게 ═══ */
+  #atomBox .atom-more{position:absolute;right:46px;bottom:10px;z-index:2;height:30px;box-sizing:border-box;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border-radius:999px;cursor:pointer;
+    font:inherit;font-size:11.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,rgba(143,155,255,.92),rgba(177,140,255,.92));border:1px solid rgba(201,210,255,.45);box-shadow:0 3px 12px rgba(143,155,255,.35);transition:transform .15s,filter .2s}
+  #atomBox .atom-more:hover{filter:brightness(1.08)}
+  #atomBox .atom-more:active{transform:scale(.95)}
+  #atomBox .atom-more svg{width:13px;height:13px}
+  #atomBox .atom-tools > .atom-more{color:#fff!important;background:linear-gradient(135deg,#8f9bff,#b18cff)!important;border-color:rgba(201,210,255,.45)!important}
+
+  #elBig{position:fixed;inset:0;z-index:66;display:none;align-items:center;justify-content:center;background:rgba(6,7,20,.8);padding:18px}
+  #elBig.on{display:flex;animation:ebIn .25s ease-out}
+  @keyframes ebIn{from{opacity:0}to{opacity:1}}
+  @keyframes ebCard{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+  #elBig .eb-card{position:relative;width:min(980px,100%);height:min(720px,100%);display:flex;flex-direction:column;overflow:hidden;border-radius:22px;border:1px solid rgba(150,160,255,.28);
+    background:linear-gradient(160deg,rgba(26,28,64,.97),rgba(12,13,32,.98));box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 40px rgba(143,155,255,.12);animation:ebCard .38s cubic-bezier(.2,.9,.3,1.15)}
+  #elBig .eb-card::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(201,210,255,.8),transparent)}
+  .eb-head{display:flex;align-items:center;gap:12px;padding:14px 16px 10px}
+  .eb-tile{flex:none;position:relative;width:56px;height:60px;border-radius:13px;display:grid;place-items:center;
+    background:linear-gradient(155deg,color-mix(in srgb,var(--ec,#8f9bff) 32%,#1c1f44),#14162f);border:1px solid color-mix(in srgb,var(--ec,#8f9bff) 60%,transparent);border-bottom:3px solid var(--ec,#8f9bff);
+    box-shadow:0 0 18px color-mix(in srgb,var(--ec,#8f9bff) 30%,transparent)}
+  .eb-tile i{position:absolute;left:6px;top:4px;font-style:normal;font-size:10px;opacity:.85}
+  .eb-tile b{font-size:24px;font-weight:900;color:var(--ec,#fff)}
+  .eb-ttl{display:grid;gap:2px;min-width:0;flex:1}
+  .eb-ttl .k{font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#8f97c8}
+  .eb-ttl b{font-size:20px;font-weight:900;color:#f2f3ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .eb-ttl span{font-size:12px;color:#a6adda;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .eb-hbtn{flex:none;width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:11px;font:inherit;font-size:17px;color:#c4c9ee;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22)}
+  .eb-hbtn:hover{background:rgba(143,155,255,.18);color:#fff}
+  .eb-tabs{display:flex;gap:5px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(150,160,255,.14)}
+  .eb-tabs::-webkit-scrollbar{display:none}
+  .eb-tabs button{flex:none;font:inherit;font-size:12.5px;font-weight:800;padding:7px 13px;border-radius:999px;cursor:pointer;color:#aab0dc;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.16);transition:background .2s,color .2s}
+  .eb-tabs button:hover{color:#eef0ff}
+  .eb-tabs button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent;box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  .eb-body{flex:1;min-height:0;overflow:auto;padding:14px 16px 18px;-webkit-overflow-scrolling:touch}
+  .eb-pane{display:none}
+  .eb-pane.on{display:block;animation:ebCard .3s ease-out}
+
+  /* 원자 모형 */
+  .eb-atom{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px}
+  .eb-stage{position:relative;min-height:340px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 50%,#1b1f45,#0b0c1e 75%);border:1px solid rgba(150,160,255,.16)}
+  .eb-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .eb-mode{position:absolute;left:10px;top:10px;display:flex;gap:4px;padding:3px;border-radius:999px;background:rgba(18,20,46,.75);border:1px solid rgba(150,160,255,.2);z-index:2}
+  .eb-mode button{font:inherit;font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;border:0;cursor:pointer;color:#aab0dc;background:none}
+  .eb-mode button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  .eb-legend{position:absolute;left:10px;bottom:10px;right:10px;display:flex;flex-wrap:wrap;gap:5px;z-index:2;pointer-events:none}
+  .eb-legend span{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:rgba(18,20,46,.75);border:1px solid rgba(150,160,255,.18);color:#c9cdf2}
+  .eb-legend span i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:0}
+  .eb-side{display:grid;gap:12px;align-content:start}
+  .eb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .eb-stats div{display:grid;gap:2px;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.16)}
+  .eb-stats b{font-size:20px;font-weight:900;color:#f2f3ff;font-variant-numeric:tabular-nums}
+  .eb-stats span{font-size:10px;font-weight:800;letter-spacing:.06em;color:#9097c8}
+  .eb-sec{font-size:10px;font-weight:900;letter-spacing:.12em;color:#8f97c8;margin:2px 0 -4px}
+  .eb-shells{display:grid;gap:5px}
+  .eb-sh{display:grid;grid-template-columns:18px 1fr 28px;align-items:center;gap:8px;font-size:11.5px;color:#c9cdf2;font-weight:800}
+  .eb-sh .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .eb-sh .bar i{display:block;height:100%;border-radius:99px;background:var(--ec)}
+  .eb-sh .c{text-align:right;font-variant-numeric:tabular-nums}
+  .eb-cfg{display:flex;flex-wrap:wrap;gap:4px}
+  .eb-cfg span{font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:8px;color:#eef0ff;background:color-mix(in srgb,var(--oc) 22%,transparent);border:1px solid color-mix(in srgb,var(--oc) 55%,transparent)}
+  .eb-cfg sup{font-size:.75em}
+  .eb-acts{display:flex;flex-wrap:wrap;gap:7px}
+  .eb-btn{font:inherit;font-size:12px;font-weight:800;padding:8px 13px;border-radius:12px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border:0;box-shadow:0 3px 12px rgba(143,155,255,.3)}
+  .eb-btn.ghost{color:#d6daf8;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.24);box-shadow:none}
+  .eb-btn:active{transform:scale(.96)}
+
+  /* 정보 */
+  .eb-quote{padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--ec) 14%,transparent),rgba(255,255,255,.02));border:1px solid color-mix(in srgb,var(--ec) 35%,transparent);margin-bottom:12px}
+  .eb-quote b{display:block;font-size:15px;color:#f2f3ff;margin-bottom:3px}
+  .eb-quote p{margin:2px 0 0;font-size:12.5px;color:#b9bee6;line-height:1.55}
+  .eb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+  .eb-grid div{padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.14);min-width:0}
+  .eb-grid span{display:block;font-size:10px;font-weight:800;letter-spacing:.05em;color:#9097c8;margin-bottom:3px}
+  .eb-grid b{display:block;font-size:13.5px;color:#eef0ff;font-weight:800;word-break:keep-all;overflow-wrap:anywhere}
+  .eb-story{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(150,160,255,.14)}
+  .eb-story h4{margin:0 0 5px;font-size:11px;letter-spacing:.1em;color:#8f97c8}
+  .eb-story p{margin:0;font-size:13px;color:#d6daf8;line-height:1.6;word-break:keep-all}
+  .eb-org{display:inline-flex;align-items:center;gap:6px}
+  .eb-org i{width:8px;height:8px;border-radius:50%}
+
+  /* 숫자들 */
+  .eb-nums{display:grid;gap:9px}
+  .eb-num{padding:10px 12px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.14)}
+  .eb-num .t{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .eb-num .t span{font-size:11.5px;font-weight:800;color:#aab0dc}
+  .eb-num .t b{font-size:15.5px;color:#f2f3ff;font-variant-numeric:tabular-nums}
+  .eb-num .t em{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;color:#9097c8}
+  .eb-num .bar{position:relative;height:9px;margin-top:7px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .eb-num .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#8f9bff,var(--ec))}
+  .eb-num p{margin:6px 0 0;font-size:11.5px;color:#9ea5d4;line-height:1.5}
+  .eb-num.na{opacity:.55}
+  .eb-note{font-size:11px;color:#8087b8;margin-top:10px;line-height:1.5}
+
+  /* 조합 */
+  .eb-uses{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:7px}
+  .eb-use{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(150,160,255,.14);min-width:0}
+  .eb-use .f{flex:none;font-weight:900;color:#f2f3ff;font-size:13px}
+  .eb-use .n{font-size:12px;color:#b9bee6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .eb-use.lock .f{color:#6f76a8}
+  .eb-use.lock .n{color:#7a81b2}
+  .eb-cnt{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:#aab0dc;font-weight:800}
+  .eb-cnt .bar{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .eb-cnt .bar i{display:block;height:100%;background:linear-gradient(90deg,#8f9bff,#b18cff)}
+  .eb-empty{padding:26px 10px;text-align:center;color:#8f97c8;font-size:13px}
+
+  @media (max-width:700px){
+    #elBig{padding:0}
+    #elBig .eb-card{width:100%;height:100%;border-radius:0;border:0}
+    .eb-head{padding:calc(10px + env(safe-area-inset-top)) 12px 8px}
+    .eb-tile{width:48px;height:52px}
+    .eb-tile b{font-size:21px}
+    .eb-ttl b{font-size:18px}
+    .eb-tabs{padding:0 12px 9px}
+    .eb-body{padding:12px 12px calc(18px + env(safe-area-inset-bottom))}
+    .eb-atom{grid-template-columns:1fr}
+    .eb-stage{min-height:0;aspect-ratio:1/1;max-height:52vh}
+    .eb-uses{grid-template-columns:1fr}
+    .eb-hbtn.nav{display:none}
+  }
+  html.lowpow #elBig .eb-card, html.lowpow #elBig.on{animation:none}
+</style>
+<script>
+(function(){
+  const T = {
+    ko:{ more:'자세히', kick:'ELEMENT FILE // 원소 파일', tabs:['원자 모형','정보','숫자들','조합'],
+      bohr:'보어 모형', orb:'전자 구름', p:'양성자', nn:'중성자', e:'전자', shells:'전자껍질', cfg:'전자 배치', toOrb:'오비탈 크게 보기', toNuc:'핵 속으로', add:'조합에 담기 +',
+      num:'원자번호', mass:'원자량', grp:'족', per:'주기', blk:'구역', cat:'분류', st:'상온 상태', ox:'산화수', yr:'발견', org:'출신', cfgS:'전자 배치',
+      ancient:'아주 옛날부터 알려짐', yrS:'{y}년', st_:{gas:'기체',liquid:'액체',solid:'고체'}, unk:'알 수 없음', story:'이름 이야기', blockS:'{b} 구역',
+      lan:'란타넘족', act:'악티늄족',
+      mp:'녹는점', bp:'끓는점', d:'밀도', en:'전기음성도', ie:'1차 이온화 에너지', r:'원자 반지름',
+      rank:'{n}개 중 {k}위', na:'자료 없음',
+      dW:'물보다 {x}배 무거워요', dL:'물보다 가벼워요', dGas:'기체라서 공기만큼 가벼워요',
+      mpC:'{c} 도에서 녹아요', bpC:'{c} 도에서 끓어요', stNow:'방 안 온도(25도)에서는 {s}예요',
+      enH:'전자를 꽤 세게 끌어당겨요', enL:'전자를 쉽게 내줘요', ieH:'전자 하나 떼기가 어려워요', ieL:'전자 하나쯤은 쉽게 떨어져요',
+      rS:'작은 편이에요', rB:'큰 편이에요',
+      note:'순위는 자료가 있는 원소끼리 비교한 거예요. 녹는점·끓는점 단위는 섭씨(도)예요.',
+      uses:'이 원소가 들어가는 조합', usesC:'찾은 조합 {a} / {b}', noUse:'아직 이 원소가 들어가는 조합이 없어요', any:'비율 자유',
+      prev:'이전 원소', next:'다음 원소' },
+    en:{ more:'Details', kick:'ELEMENT FILE', tabs:['Atom','Info','Numbers','Recipes'],
+      bohr:'Bohr model', orb:'Electron cloud', p:'Protons', nn:'Neutrons', e:'Electrons', shells:'Shells', cfg:'Configuration', toOrb:'Open orbitals', toNuc:'Into the nucleus', add:'Add to mix +',
+      num:'Atomic number', mass:'Atomic mass', grp:'Group', per:'Period', blk:'Block', cat:'Category', st:'At room temp', ox:'Oxidation states', yr:'Discovered', org:'Origin', cfgS:'Configuration',
+      ancient:'Known since ancient times', yrS:'{y}', st_:{gas:'Gas',liquid:'Liquid',solid:'Solid'}, unk:'Unknown', story:'Name story', blockS:'{b}-block',
+      lan:'Lanthanide', act:'Actinide',
+      mp:'Melting point', bp:'Boiling point', d:'Density', en:'Electronegativity', ie:'1st ionization energy', r:'Atomic radius',
+      rank:'#{k} of {n}', na:'No data',
+      dW:'{x} times denser than water', dL:'Lighter than water', dGas:'A gas, about as light as air',
+      mpC:'Melts at {c} °C', bpC:'Boils at {c} °C', stNow:'At room temperature (25 °C) it is a {s}',
+      enH:'Pulls on electrons quite hard', enL:'Gives electrons away easily', ieH:'Hard to pull an electron off', ieL:'Loses an electron easily',
+      rS:'On the small side', rB:'On the large side',
+      note:'Ranks only compare elements that have data. Temperatures are in °C.',
+      uses:'Recipes with this element', usesC:'Found {a} / {b}', noUse:'No recipes use this element yet', any:'any ratio',
+      prev:'Previous', next:'Next' }
+  };
+  const tt = k => (T[LANG === 'en' ? 'en' : 'ko'][k]);
+  const S = { on:false, el:null, tab:0, mode:'bohr', raf:0, last:0, cloud:null, yaw:0 };
+  try{ S.tab = Math.min(3, Math.max(0, +(localStorage.getItem('pt_ebtab') || 0))); S.mode = localStorage.getItem('pt_ebmode') === 'orb' ? 'orb' : 'bohr'; }catch(e){}
+
+  const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>';
+  const colOf = e => { try{ return cssv(CAT[e.c].v) || '#8f9bff'; }catch(err){ return '#8f9bff'; } };
+  const catOf = e => LANG === 'en' ? ((typeof CAT_EN !== 'undefined' && CAT_EN[e.c]) || e.c) : CAT[e.c].ko;
+  const nameOf = e => LANG === 'en' ? e.en : e.ko;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const SUPD = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+
+  /* ── 순위표 (한 번만) ── */
+  let RANK = null;
+  const KEYS = ['mp','bp','d','en','ie','r'];
+  function ranks(){
+    if(RANK) return RANK;
+    RANK = {};
+    KEYS.forEach(k => {
+      const arr = EL.map(e => [e.s, PROPS[e.s] && PROPS[e.s][k]]).filter(x => x[1] != null && x[1] !== '' && isFinite(x[1]));
+      arr.sort((a, b) => b[1] - a[1]);
+      const m = new Map(arr.map((x, i) => [x[0], i + 1]));
+      RANK[k] = { m, n: arr.length, max: arr[0] ? arr[0][1] : 1, min: arr.length ? arr[arr.length - 1][1] : 0 };
+    });
+    return RANK;
+  }
+
+  function blockOf(e){
+    try{ const r = rxCfgRule(e.n); if(e.n === 2) return 's'; return r.length ? r[r.length - 1].l : '?'; }catch(err){ return '?'; }
+  }
+
+  /* ── 틀 ── */
+  function build(){
+    if(document.getElementById('elBig')) return;
+    const d = document.createElement('div');
+    d.id = 'elBig'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
+    d.innerHTML = `<div class="eb-card">
+      <div class="eb-head"><div class="eb-tile" id="ebTile"></div><div class="eb-ttl"><span class="k" id="ebKick"></span><b id="ebName"></b><span id="ebSub"></span></div>
+        <button type="button" class="eb-hbtn nav" id="ebPrev">‹</button><button type="button" class="eb-hbtn nav" id="ebNext">›</button><button type="button" class="eb-hbtn" id="ebClose" aria-label="close">×</button></div>
+      <div class="eb-tabs" id="ebTabs"></div>
+      <div class="eb-body" id="ebBody">
+        <div class="eb-pane" data-p="0"><div class="eb-atom"><div class="eb-stage" id="ebStage"><div class="eb-mode" id="ebMode"><button type="button" data-m="bohr"></button><button type="button" data-m="orb"></button></div><canvas id="ebCv"></canvas><div class="eb-legend" id="ebLeg"></div></div><div class="eb-side" id="ebSide"></div></div></div>
+        <div class="eb-pane" data-p="1" id="ebInfo"></div>
+        <div class="eb-pane" data-p="2" id="ebNums"></div>
+        <div class="eb-pane" data-p="3" id="ebUses"></div>
+      </div></div>`;
+    document.body.appendChild(d);
+    d.addEventListener('click', ev => { if(ev.target === d) close(); });
+    d.querySelector('#ebClose').addEventListener('click', close);
+    d.querySelector('#ebPrev').addEventListener('click', () => step(-1));
+    d.querySelector('#ebNext').addEventListener('click', () => step(1));
+    d.querySelector('#ebTabs').addEventListener('click', ev => { const b = ev.target.closest('button'); if(!b) return; S.tab = +b.dataset.t; try{ localStorage.setItem('pt_ebtab', S.tab); }catch(e){} tabs(); });
+    d.querySelector('#ebMode').addEventListener('click', ev => { const b = ev.target.closest('button'); if(!b) return; S.mode = b.dataset.m; try{ localStorage.setItem('pt_ebmode', S.mode); }catch(e){} modeUI(); });
+    d.querySelector('#ebSide').addEventListener('click', ev => {
+      const b = ev.target.closest('[data-a]'); if(!b) return;
+      const a = b.dataset.a, e = S.el;
+      if(a === 'orb'){ try{ rxOrbOpen(e); }catch(err){} }
+      if(a === 'nuc'){ try{ rxNucOpen(e); }catch(err){} }
+      if(a === 'add'){ try{ addToMix(e.n); b.textContent = '✓'; setTimeout(() => { b.textContent = tt('add'); }, 900); }catch(err){} }
+    });
+    // 옆으로 밀어서 이전/다음 원소
+    let sx = null, sy = 0;
+    const body = d.querySelector('#ebBody');
+    body.addEventListener('touchstart', ev => { if(ev.target.closest('canvas')) return; sx = ev.touches[0].clientX; sy = ev.touches[0].clientY; }, {passive:true});
+    body.addEventListener('touchend', ev => { if(sx == null) return; const t = ev.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; sx = null; if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) step(dx < 0 ? 1 : -1); }, {passive:true});
+    addEventListener('resize', () => { if(S.on) fit(); });
+  }
+
+  function step(k){
+    const n = ((S.el.n - 1 + k + 118) % 118) + 1;
+    try{ select(n); }catch(err){}
+    fill(byNum[n]);
+  }
+
+  function open(e){
+    e = e || byNum[selected]; if(!e) return;
+    build();
+    S.on = true;
+    const d = document.getElementById('elBig');
+    d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+    fill(e);
+    try{ document.body.classList.add('ovl'); }catch(err){}
+    try{ rxEvt('elBig'); }catch(err){}
+  }
+  function close(){
+    S.on = false; cancelAnimationFrame(S.raf);
+    const d = document.getElementById('elBig'); if(d) d.classList.remove('on');
+    try{ if(window.RX_LOWPOW && !document.querySelector('#modal.on, #dex.on, #settings.on, #quiz.on, #rxPanel.on, #orbBig.on, #nucBig.on')) document.body.classList.remove('ovl'); }catch(err){}
+  }
+  window.rxElBigOpen = open; window.rxElBigClose = close;
+
+  function fill(e){
+    S.el = e; S.cloud = null;
+    const col = colOf(e);
+    const d = document.getElementById('elBig');
+    d.style.setProperty('--ec', col);
+    d.querySelector('#ebTile').innerHTML = `<i>${e.n}</i><b>${e.s}</b>`;
+    d.querySelector('#ebKick').textContent = tt('kick');
+    d.querySelector('#ebName').textContent = nameOf(e) + (LANG === 'en' ? '' : ' · ' + e.en);
+    d.querySelector('#ebSub').textContent = catOf(e) + ' · ' + (typeof subOf === 'function' ? subOf(e) : '');
+    d.querySelector('#ebPrev').title = tt('prev'); d.querySelector('#ebNext').title = tt('next');
+    d.querySelector('#ebTabs').innerHTML = tt('tabs').map((s, i) => `<button type="button" data-t="${i}">${s}</button>`).join('');
+    const mb = d.querySelectorAll('#ebMode button'); mb[0].textContent = tt('bohr'); mb[1].textContent = tt('orb');
+    sideHTML(e); infoHTML(e); numsHTML(e); usesHTML(e);
+    tabs(); modeUI();
+    d.querySelector('#ebBody').scrollTop = 0;
+  }
+
+  function tabs(){
+    const d = document.getElementById('elBig');
+    d.querySelectorAll('#ebTabs button').forEach(b => b.classList.toggle('on', +b.dataset.t === S.tab));
+    d.querySelectorAll('.eb-pane').forEach(p => p.classList.toggle('on', +p.dataset.p === S.tab));
+    cancelAnimationFrame(S.raf);
+    if(S.tab === 0){ fit(); S.raf = requestAnimationFrame(tick); }
+  }
+  function modeUI(){
+    const d = document.getElementById('elBig');
+    d.querySelectorAll('#ebMode button').forEach(b => b.classList.toggle('on', b.dataset.m === S.mode));
+    const leg = d.querySelector('#ebLeg');
+    if(S.mode === 'orb'){
+      const ls = [...new Set(rxCfgFull(S.el.s).map(s => s.l))];
+      leg.innerHTML = ls.map(l => `<span><i style="background:rgb(${RX_SUB_COL[l].join(',')})"></i>${l}</span>`).join('');
+    } else leg.innerHTML = '';
+  }
+
+  /* ── 원자 모형 옆 칸 ── */
+  function sideHTML(e){
+    const nn = Math.max(0, Math.round(e.m) - e.n), mx = Math.max(...e.sh), L = ['K','L','M','N','O','P','Q'];
+    let cfg = [];
+    try{ cfg = rxCfgFull(e.s); }catch(err){}
+    document.getElementById('ebSide').innerHTML = `
+      <div class="eb-stats"><div><b>${e.n}</b><span>${tt('p')}</span></div><div><b>${nn}</b><span>${tt('nn')}</span></div><div><b>${e.n}</b><span>${tt('e')}</span></div></div>
+      <div class="eb-sec">${tt('shells')}</div>
+      <div class="eb-shells">${e.sh.map((c, i) => `<div class="eb-sh"><span>${L[i]}</span><span class="bar"><i style="width:${c / mx * 100}%"></i></span><span class="c">${c}</span></div>`).join('')}</div>
+      <div class="eb-sec">${tt('cfg')}</div>
+      <div class="eb-cfg">${cfg.map(s => `<span style="--oc:rgb(${RX_SUB_COL[s.l].join(',')})">${s.n}${s.l}<sup>${s.e}</sup></span>`).join('')}</div>
+      <div class="eb-acts"><button type="button" class="eb-btn" data-a="orb">${tt('toOrb')}</button><button type="button" class="eb-btn" data-a="nuc">${tt('toNuc')}</button><button type="button" class="eb-btn ghost" data-a="add">${tt('add')}</button></div>`;
+  }
+
+  /* ── 정보 ── */
+  function infoHTML(e){
+    const p = PROPS[e.s] || {};
+    const q1 = typeof subOf === 'function' ? subOf(e) : '', q2 = typeof sub2Of === 'function' ? sub2Of(e) : '', q3 = typeof sub3Of === 'function' ? sub3Of(e) : '';
+    const og = typeof originOf === 'function' ? originOf(e) : null;
+    const grp = e.g != null ? e.g : (e.c === 'lanthanide' ? tt('lan') : e.c === 'actinide' ? tt('act') : '—');
+    const yr = p.yr == null ? tt('unk') : (p.yr === 0 ? tt('ancient') : tt('yrS').replace('{y}', p.yr));
+    const st = p.st ? (tt('st_')[p.st] || p.st) : tt('unk');
+    const cells = [
+      [tt('num'), e.n], [tt('mass'), e.m], [tt('grp'), grp], [tt('per'), e.p], [tt('blk'), tt('blockS').replace('{b}', blockOf(e))],
+      [tt('cat'), `<span style="color:${colOf(e)}">${esc(catOf(e))}</span>`], [tt('st'), st], [tt('cfgS'), esc(p.cfg || '—')], [tt('ox'), esc(p.ox || '—')], [tt('yr'), yr],
+    ];
+    if(og) cells.push([tt('org'), `<span class="eb-org"><i style="background:${ORIGIN_COL[og]}"></i>${esc(originLbl(og, 1))}</span>`]);
+    const story = LANG !== 'en' && typeof RX_EL_TMI !== 'undefined' ? RX_EL_TMI[e.s] : '';
+    document.getElementById('ebInfo').innerHTML = `
+      ${q1 ? `<div class="eb-quote"><b>${esc(q1)}</b>${q2 ? `<p>${esc(q2)}</p>` : ''}${q3 ? `<p>${esc(q3)}</p>` : ''}</div>` : ''}
+      <div class="eb-grid">${cells.map(c => `<div><span>${c[0]}</span><b>${c[1]}</b></div>`).join('')}</div>
+      ${story ? `<div class="eb-story"><h4>${tt('story')}</h4><p>${esc(story)}</p></div>` : ''}
+      ${og ? `<div class="eb-note">${esc(originLbl(og, 2))}</div>` : ''}`;
+  }
+
+  /* ── 숫자들 ── */
+  function numsHTML(e){
+    const p = PROPS[e.s] || {}, R = ranks();
+    const c = k => Math.round(p[k] - 273.15);
+    const fmt = (k, v) => {
+      if(k === 'mp' || k === 'bp') return `${c(k).toLocaleString()} °C <small style="opacity:.6;font-weight:700">(${Math.round(v).toLocaleString()} K)</small>`;
+      if(k === 'd') return (v < 0.01 ? v.toExponential(2).replace('e', '×10^') : (+v.toPrecision(4)).toLocaleString()) + ' g/cm³';
+      if(k === 'ie') return Math.round(v).toLocaleString() + ' kJ/mol';
+      if(k === 'r') return Math.round(v) + ' pm';
+      return v;
+    };
+    const desc = (k, v, rk, n) => {
+      const hi = rk / n < 0.33, lo = rk / n > 0.67;
+      if(k === 'mp'){ let s = tt('mpC').replace('{c}', c('mp').toLocaleString()); if(p.st) s += ' · ' + tt('stNow').replace('{s}', LANG === 'en' ? (tt('st_')[p.st] || p.st).toLowerCase() : (tt('st_')[p.st] || p.st)); return s; }
+      if(k === 'bp') return tt('bpC').replace('{c}', c('bp').toLocaleString());
+      if(k === 'd') return p.st === 'gas' ? tt('dGas') : (v >= 1.05 ? tt('dW').replace('{x}', (+(v).toFixed(v >= 10 ? 0 : 1)).toLocaleString()) : tt('dL'));
+      if(k === 'en') return hi ? tt('enH') : lo ? tt('enL') : '';
+      if(k === 'ie') return hi ? tt('ieH') : lo ? tt('ieL') : '';
+      if(k === 'r') return hi ? tt('rB') : lo ? tt('rS') : '';
+      return '';
+    };
+    const rows = KEYS.map(k => {
+      const v = p[k], r = R[k];
+      if(v == null || !isFinite(v)) return `<div class="eb-num na"><div class="t"><span>${tt(k)}</span><b>${tt('na')}</b></div></div>`;
+      const rk = r.m.get(e.s), lg = k === 'd';
+      const f = lg ? (Math.log10(v) - Math.log10(r.min)) / ((Math.log10(r.max) - Math.log10(r.min)) || 1) : (v - Math.min(0, r.min)) / ((r.max - Math.min(0, r.min)) || 1);
+      const ds = desc(k, v, rk, r.n);
+      return `<div class="eb-num"><div class="t"><span>${tt(k)}</span><b>${fmt(k, v)}</b><em>${tt('rank').replace('{n}', r.n).replace('{k}', rk)}</em></div>
+        <div class="bar"><i style="width:${Math.max(3, Math.min(100, f * 100)).toFixed(1)}%"></i></div>${ds ? `<p>${esc(ds)}</p>` : ''}</div>`;
+    });
+    document.getElementById('ebNums').innerHTML = `<div class="eb-nums">${rows.join('')}</div><div class="eb-note">${tt('note')}</div>`;
+  }
+
+  /* ── 조합 ── */
+  function usesHTML(e){
+    const box = document.getElementById('ebUses');
+    let list = [];
+    try{ list = buildUses()[e.s] || []; }catch(err){}
+    if(!list.length){ box.innerHTML = `<div class="eb-empty">${tt('noUse')}</div>`; return; }
+    const got = list.filter(x => found.has(x.name));
+    const items = got.map(x => { const r = locRec([x.formula, x.name, x.sub]); return `<div class="eb-use"><span class="f">${fmtFormula(r[0])}</span><span class="n">${esc(r[1])}</span></div>`; });
+    list.filter(x => !found.has(x.name)).slice(0, 60).forEach(x => {
+      const hint = x.single ? x.key : x.key.replace(/(\d+)/g, '×$1').split('+').join(' + ');
+      items.push(`<div class="eb-use lock"><span class="f">???</span><span class="n">${esc(hint)}${(!x.single && !x.exact) ? ' · ' + tt('any') : ''}</span></div>`);
+    });
+    box.innerHTML = `<div class="eb-cnt"><span>${tt('usesC').replace('{a}', got.length).replace('{b}', list.length)}</span><span class="bar"><i style="width:${got.length / list.length * 100}%"></i></span></div>
+      <div class="eb-sec" style="margin:0 0 8px">${tt('uses')}</div><div class="eb-uses">${items.join('')}</div>`;
+  }
+
+  /* ── 그림 ── */
+  let cv = null, cx = null, W = 0, H = 0;
+  function fit(){
+    cv = document.getElementById('ebCv'); if(!cv) return;
+    cx = cv.getContext('2d');
+    const r = cv.parentElement.getBoundingClientRect(), dpr = Math.min(window.RX_LOWPOW ? 1.5 : 2, devicePixelRatio || 1);
+    W = r.width; H = r.height;
+    cv.width = Math.max(1, W * dpr); cv.height = Math.max(1, H * dpr);
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function rgb(hex){ const h = hex.replace('#', '').trim(); if(h.length < 6) return [143,155,255]; return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+  function tick(now){
+    if(!S.on || S.tab !== 0) return;
+    S.raf = requestAnimationFrame(tick);
+    if(document.hidden) return;
+    const busy = document.querySelector('#orbBig.on, #nucBig.on');
+    if(busy) return;
+    if(window.RX_LOWPOW){ const idle = now - (window.RX_LAST_IN || 0) > 8000; if(now - S.last < (idle ? 100 : 33)) return; }
+    const dt = Math.min(60, now - (S.last || now)); S.last = now;
+    if(!W || !H) fit();
+    cx.clearRect(0, 0, W, H);
+    if(S.mode === 'orb') drawOrb(dt); else drawBohr(now);
+  }
+  function drawBohr(now){
+    const e = S.el, c = rgb(colOf(e)), sh = e.sh, n = sh.length;
+    const X = W / 2, Y = H / 2 + 6, R = Math.min(W, H) / 2 - 22;
+    const nr = Math.max(9, Math.min(R * 0.2, 7 + Math.cbrt(e.m) * 2.6));
+    const r0 = nr + 14, gap = n > 1 ? (R - r0) / (n - 1) : 0;
+    // 핵
+    const g = cx.createRadialGradient(X - nr * .3, Y - nr * .3, 1, X, Y, nr * 2.2);
+    g.addColorStop(0, `rgba(255,255,255,.95)`); g.addColorStop(.3, `rgba(${c},.95)`); g.addColorStop(.55, `rgba(${c},.35)`); g.addColorStop(1, `rgba(${c},0)`);
+    cx.fillStyle = g; cx.beginPath(); cx.arc(X, Y, nr * 2.2, 0, 7); cx.fill();
+    cx.fillStyle = '#fff'; cx.font = `900 ${Math.max(10, nr * .8)}px system-ui,sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillText(e.s, X, Y + 1);
+    for(let i = 0; i < n; i++){
+      const r = r0 + gap * i;
+      cx.strokeStyle = `rgba(160,170,255,${.16 + .1 * (i === n - 1)})`; cx.lineWidth = 1;
+      cx.beginPath(); cx.arc(X, Y, r, 0, 7); cx.stroke();
+      const k = sh[i], sp = (0.00055 / (1 + i * .55)) * (i % 2 ? -1 : 1), off = now * sp + i * .7;
+      const er = k > 24 ? 2.2 : 3.2;
+      for(let j = 0; j < k; j++){
+        const a = off + j / k * Math.PI * 2, ex = X + Math.cos(a) * r, ey = Y + Math.sin(a) * r;
+        cx.fillStyle = `rgba(${c},.25)`; cx.beginPath(); cx.arc(ex, ey, er * 2.2, 0, 7); cx.fill();
+        cx.fillStyle = '#eef0ff'; cx.beginPath(); cx.arc(ex, ey, er, 0, 7); cx.fill();
+      }
+    }
+  }
+  function drawOrb(dt){
+    if(!S.cloud){ try{ S.cloud = rxCloudPoints(S.el.s, window.RX_LOWPOW ? 1500 : 2600).pts; }catch(err){ S.cloud = []; } }
+    S.yaw += dt * 0.00035;
+    const X = W / 2, Y = H / 2 + 6, sc = Math.min(W, H) * 0.44, cy = Math.cos(S.yaw), sy = Math.sin(S.yaw), cp = Math.cos(.35), sp = Math.sin(.35);
+    cx.globalCompositeOperation = 'lighter';
+    const cols = {};
+    for(const q of S.cloud){
+      const x = q.x * cy + q.z * sy, z = -q.x * sy + q.z * cy, y = q.y * cp - z * sp, zz = q.y * sp + z * cp;
+      const col = cols[q.l] || (cols[q.l] = RX_SUB_COL[q.l].join(','));
+      const a = .32 + .3 * (zz + 1) / 2;
+      cx.fillStyle = `rgba(${col},${a.toFixed(2)})`;
+      cx.fillRect(X + x * sc - 1, Y + y * sc - 1, 2, 2);
+    }
+    cx.globalCompositeOperation = 'source-over';
+    const g = cx.createRadialGradient(X, Y, 0, X, Y, 7); g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    cx.fillStyle = g; cx.beginPath(); cx.arc(X, Y, 7, 0, 7); cx.fill();
+  }
+
+  addEventListener('keydown', ev => {
+    if(!S.on) return;
+    if(document.querySelector('#orbBig.on, #nucBig.on')) return;
+    if(ev.key === 'Escape'){ ev.stopImmediatePropagation(); close(); }
+    else if(ev.key === 'ArrowRight') step(1);
+    else if(ev.key === 'ArrowLeft') step(-1);
+  }, true);
+  // 저전력: 이 창이 떠 있는 동안 뒤쪽 그림은 쉰다
+  setInterval(() => { if(S.on && window.RX_LOWPOW) document.body.classList.add('ovl'); }, 500);
+
+  /* ── [자세히] 버튼 ── */
+  const mq = matchMedia('(max-width:700px)');
+  function place(){
+    const box = document.getElementById('atomBox'); if(!box) return;
+    let b = document.getElementById('atomMore');
+    if(!b){
+      b = document.createElement('button'); b.type = 'button'; b.id = 'atomMore'; b.className = 'atom-more';
+      b.addEventListener('click', ev => { ev.stopPropagation(); open(atomEl || byNum[selected]); });
+    }
+    b.innerHTML = ICON + '<span>' + tt('more') + '</span>';
+    const w = box.querySelector(':scope > .atom-tools');
+    if(mq.matches && w){ if(b.parentNode !== w || w.firstChild !== b) w.insertBefore(b, w.firstChild); }
+    else if(b.parentNode !== box) box.appendChild(b);
+  }
+  const _sel = select;
+  select = function(n){
+    const r = _sel.apply(this, arguments);
+    try{ place(); }catch(err){}
+    return r;
+  };
+  try{ mq.addEventListener('change', () => setTimeout(place, 50)); }catch(e){}
+  try{
+    const box = document.getElementById('atomBox');
+    if(box) new MutationObserver(() => { const b = document.getElementById('atomMore'); const w = box.querySelector(':scope > .atom-tools'); if(!b || (mq.matches && w && b.parentNode !== w)) place(); }).observe(box, { childList: true });
+  }catch(e){}
+  place(); setTimeout(place, 700);
+  if(typeof applyStaticText === 'function'){ const _ap = applyStaticText; applyStaticText = function(){ const r = _ap.apply(this, arguments); try{ place(); if(S.on) fill(S.el); }catch(e){} return r; }; }
+})();
+</script>
+
 </body>
 </html>
