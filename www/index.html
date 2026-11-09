@@ -24964,7 +24964,9 @@ function rxStickModel(ball){
         const lo = s.i < s.j ? a : b, hi = s.i < s.j ? b : a;
         let px = -(hi.Y - lo.Y), py = hi.X - lo.X; const pl = Math.hypot(px, py) || 1; px /= pl; py /= pl;
         const thin = s.ord >= 3 ? 0.34 : 0.58;
-        const gap = w * (s.ord >= 3 ? 0.46 : 0.68);
+        // 에너지 모드: 겹결합 막대를 붙여서 가운데 어두운 틈(속 빈 관처럼 보임)이 안 생기게
+        const EG = !mm && m.egSt;
+        const gap = w * (s.ord >= 3 ? (EG ? 0.3 : 0.46) : (EG ? 0.5 : 0.68));
         ox = px * gap * s.lane; oy = py * gap * s.lane;
         ww = w * thin;
         // 고리면 고리 중심 쪽(side)을 구해서, 방향족은 가는 막대를 안쪽에 / 굵은 막대를 바깥에
@@ -46548,6 +46550,8 @@ void main(){
   #mMol.eg .eg-beams .m{stroke-width:4px;stroke-opacity:.75}
   html.lowpow #mMol.eg .eg-beams .w{display:none}
   #mMol.eg-st .stick-g{filter:drop-shadow(0 2px 4px rgba(0,0,0,.45)) drop-shadow(0 0 6px rgba(150,170,255,.18))}
+  /* 에너지 막대: 막대 전체가 은은하게 빛나게 (클래식과 확실히 다르게) */
+  #mMol.eg-st .stick-g{filter:drop-shadow(0 0 3px rgba(225,235,255,.55)) drop-shadow(0 0 11px rgba(140,175,255,.42)) drop-shadow(0 3px 5px rgba(0,0,0,.4))}
   html.lowpow #mMol.eg-st .stick-g,html.lowpow #mMol.eg-st .stick-g g > line:first-child{filter:none}
   /* 숨쉬듯 빛나는 핵 */
   @keyframes egPulse{0%,100%{opacity:.75}50%{opacity:1}}
@@ -46648,7 +46652,13 @@ void main(){
       const svg = svgEl || document.getElementById('mMol');
       const ok = !svgEl && model && model.stick && !off();
       svg.classList.toggle('eg-st', !!ok);
+      if(model) model.egSt = !!ok;
       if(!ok) return r;
+      // 겹결합 막대 테두리: 어두운 선 대신 밝은 본색으로 (막대끼리 붙어도 틈이 안 보이게)
+      (model.segs || []).forEach(s => { if(!s.l0 || s.joint || !(s.ord > 1)) return;
+        const a = model.atoms[s.i], C = rxStickCol(a.col || rxCpk(a.s));
+        s.l0.setAttribute('stroke', C.soft); s.l0.setAttribute('stroke-opacity', '.55'); });
+      rxDraw(RX_YAW, RX_PITCH);
       svg.querySelectorAll('.stick-g defs > linearGradient').forEach(lg => {
         if(/a$/.test(lg.id)) return;   // 길이 방향 색(원자 색 반반)은 그대로
         if(lg.querySelector('stop[stop-color="#000"], stop[stop-color="#fff"]')) lg.innerHTML = '<stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".16" stop-color="#fff" stop-opacity=".22"/>' +
