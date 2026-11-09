@@ -44285,6 +44285,7 @@ void main(){
     // 카메라 키프레임: 구간마다 다른 가감속 (빠지기 → 휩 팬 좌우 → 안착 → 펀치 아웃 → 천천히 밀기)
     // 차분한 카메라: 타일이 왼쪽 열부터 채워지는 걸 따라 천천히 미끄러지고 → 로고에서 가운데로 → 아주 느리게 밀기
     const LOCK_AT = LOGO_AT + LOGO_DUR / 1.12, SNAP_AT = LOGO_AT + 30;
+    let spX = 0;
     const CAM = [
       { t: 0,       z: 1.34, r: -.24,  x: -300, y: 30 },
       { t: 760,     z: 1.16, r: .08,   x: 230,  y: 10,  e: ioCub },
@@ -44306,7 +44307,8 @@ void main(){
       // 로고가 맞춰지는 순간 딱 한 번 펀치
       { const bt = t - LOCK_AT; if(bt > 0 && bt < 700){ const kk = Math.exp(-bt / 110) * Math.min(1, bt / 40); z += .07 * kk; r += .03 * kk * Math.cos(bt * .012); } }
       // 베기 직전: 살짝 뒤로 당겼다가 (베는 순간 놓인다)
-      if(charge){ const c = ioCub(seg(performance.now(), chargeAt, chargeAt + 420)); z -= .07 * c; r -= .035 * c; cx *= 1 - c; cy *= 1 - c; }
+      // 베기 직전: "//" 날을 향해 카메라가 확 파고든다
+      if(charge){ const c = iCub(seg(performance.now(), chargeAt, chargeAt + 450)); z += .55 * c; r += .06 * c; cx = lerp(cx, spX, c); cy = lerp(cy, 0, c); }
       if(RX_REDUCED){ z = 1; r = 0; cx = 0; cy = 0; }
       return { z, r, cx, cy };
     }
@@ -44621,6 +44623,7 @@ void main(){
         x.restore();
       });
       const sp = drawLogo(t, cam);
+      if(sp) spX = sp[0];
       x.restore();
       // 확대되는 순간 번쩍
       { const q = seg(t, SNAP_AT, SNAP_AT + 380); if(q > 0 && q < 1 && !RX_REDUCED){ x.save(); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.fillStyle = `rgba(214,220,255,${(1 - q) * (1 - q) * .45})`; x.fillRect(0, 0, W, H); x.restore(); } }
