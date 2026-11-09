@@ -47091,5 +47091,16 @@ void main(){
 })();
 </script>
 
+<style>
+  /* ═══ 정보창 반투명 (GLASSPANEL 4.2.5) — 뒤 배경이 비쳐 보이게 ═══ */
+  html:not(.setbg-light) #detail{position:relative;isolation:isolate;background:linear-gradient(180deg,rgba(18,20,40,.5),rgba(12,13,28,.62))!important;
+    border-left-color:rgba(160,170,255,.14)}
+  html:not(.setbg-light) #detail::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2)}
+  html:not(.setbg-light) #atomBox{background:rgba(6,7,16,.55)!important}
+  html.lowpow #detail::before{-webkit-backdrop-filter:none;backdrop-filter:none}
+  html.lowpow:not(.setbg-light) #detail{background:rgba(14,16,32,.78)!important}
+</style>
+
 </body>
 </html>
