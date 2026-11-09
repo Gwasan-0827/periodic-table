@@ -24879,7 +24879,7 @@ function rxStickModel(ball){
           ag.id = gid + 'a'; ag.setAttribute('gradientUnits', 'userSpaceOnUse');
           const same = C.base === CB.base;
           ag.innerHTML = SL ? (same ? `<stop offset="0" stop-color="${C.base}"/><stop offset="1" stop-color="${C.base}"/>` :
-              `<stop offset="0" stop-color="${C.base}"/><stop offset=".5" stop-color="${C.base}"/><stop offset=".5" stop-color="${CB.base}"/><stop offset="1" stop-color="${CB.base}"/>`)
+              `<stop offset="0" stop-color="${C.base}"/><stop offset=".36" stop-color="${C.base}"/><stop offset=".5" stop-color="${mixc(C.base, CB.base)}"/><stop offset=".64" stop-color="${CB.base}"/><stop offset="1" stop-color="${CB.base}"/>`)
             : `<stop offset="0" stop-color="${C.base}"/><stop offset=".62" stop-color="${C.base}"/><stop offset="1" stop-color="${same ? C.base : mixc(C.base, CB.base)}"/>`;
           defs.appendChild(ag);
           const sh = document.createElementNS(NS, 'linearGradient');
