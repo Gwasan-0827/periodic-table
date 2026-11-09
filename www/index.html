@@ -15969,7 +15969,7 @@ function rxToolsSync(){
     mn.hidden = false;
   } else {
     if(RX_M && RX_M.stick){
-      mn.textContent = LANG === 'en' ? '(If this looks a bit off, that is normal. Still fixing it)' : '(이질감 드는 게 정상입니다 (고치는 중))';
+      mn.textContent = LANG === 'en' ? '(Bonds only, so the skeleton is easy to see)' : '(결합만 그려서 뼈대가 잘 보여요)';
       mn.hidden = false;
     } else {
       mn.textContent = LANG === 'en' ? '(Recreated as closely as possible)' : '(최대한 비슷하게 구현했어요!)';
@@ -46469,6 +46469,10 @@ void main(){
   #mMol.eg .eg-beams .w{stroke-width:9px;stroke-opacity:.16}
   #mMol.eg .eg-beams .m{stroke-width:4px;stroke-opacity:.75}
   html.lowpow #mMol.eg .eg-beams .w{display:none}
+  #mMol.eg-st .stick-g g > line:first-child{stroke-opacity:.38!important;filter:blur(1.5px)}
+  #mMol.eg-st .stick-g g > line:nth-child(2){stroke-opacity:.8}
+  #mMol.eg-st .stick-g{filter:drop-shadow(0 0 5px rgba(150,170,255,.35))}
+  html.lowpow #mMol.eg-st .stick-g,html.lowpow #mMol.eg-st .stick-g g > line:first-child{filter:none}
   /* 숨쉬듯 빛나는 핵 */
   @keyframes egPulse{0%,100%{opacity:.75}50%{opacity:1}}
   html.lowpow #mMol.eg .eg-halo,html.idle #mMol.eg .eg-halo{animation:none}
@@ -46560,6 +46564,29 @@ void main(){
     }catch(e){}
     return r;
   };
+  /* 막대 모형도 같은 결로: 막대 속은 어둡게 비치고 양 가장자리가 빛나는 유리관, 마디는 작은 에너지 구슬 */
+  const _m2 = rxMount;
+  rxMount = function(model, svgEl){
+    const r = _m2.apply(this, arguments);
+    try{
+      const svg = svgEl || document.getElementById('mMol');
+      const ok = !svgEl && model && model.stick && !off();
+      svg.classList.toggle('eg-st', !!ok);
+      if(!ok) return r;
+      svg.querySelectorAll('.stick-g defs > linearGradient').forEach(lg => {
+        if(/a$/.test(lg.id)) return;   // 길이 방향 색(원자 색 반반)은 그대로
+        lg.innerHTML = '<stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".08" stop-color="#fff" stop-opacity=".75"/><stop offset=".2" stop-color="#fff" stop-opacity=".18"/>' +
+          '<stop offset=".5" stop-color="#05061a" stop-opacity=".55"/><stop offset=".8" stop-color="#fff" stop-opacity=".14"/><stop offset=".93" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/>';
+      });
+      svg.querySelectorAll('.stick-g defs > radialGradient').forEach(rg => {
+        const st = rg.querySelectorAll('stop'); const base = st[2] ? st[2].getAttribute('stop-color') : '#8f9bff', hi = st[0] ? st[0].getAttribute('stop-color') : '#fff';
+        rg.setAttribute('cx', '.5'); rg.setAttribute('cy', '.5'); rg.setAttribute('r', '.5'); rg.setAttribute('fx', '.4'); rg.setAttribute('fy', '.38');
+        rg.innerHTML = `<stop offset="0" stop-color="${hi}"/><stop offset=".25" stop-color="${base}" stop-opacity=".55"/><stop offset=".62" stop-color="#05061a" stop-opacity=".55"/><stop offset=".86" stop-color="${base}"/><stop offset=".96" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="${base}" stop-opacity=".4"/>`;
+      });
+    }catch(e){}
+    return r;
+  };
+
   // 깊이감: 먼 원자·결합은 흐리게, 가까운 건 선명하게
   const _d = rxDraw;
   rxDraw = function(yaw, pitch, mm){
