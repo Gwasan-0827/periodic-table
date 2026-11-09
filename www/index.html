@@ -45868,5 +45868,168 @@ void main(){
 })();
 </script>
 
+<style>
+  /* ═══ 큐리 모드: 헴 Hg 결과 창 전용 ═══ */
+  #card.curie{border-color:transparent!important;box-shadow:0 0 0 2px rgba(220,224,245,.55),0 0 28px rgba(200,206,235,.35),0 30px 70px rgba(0,0,0,.55)!important}
+  #card.curie::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:5;
+    background:conic-gradient(from var(--cua,0deg),#6d7088,#f4f6ff,#9a9db4,#ffffff,#7c7f98,#e8ebff,#6d7088);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:cuSpin 6s linear infinite}
+  @property --cua{syntax:'<angle>';inherits:false;initial-value:0deg}
+  @keyframes cuSpin{to{--cua:360deg}}
+  html.lowpow #card.curie::after{animation-duration:14s}
+  .cu-fx{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:visible}
+  .cu-drop{position:absolute;top:-4px;width:10px;height:12px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+    background:radial-gradient(circle at 35% 30%,#fff,#d6d9ea 35%,#80849c 75%,#5a5d72);box-shadow:0 0 6px rgba(230,233,255,.6);animation:cuFall 3.6s cubic-bezier(.55,0,.8,.6) infinite}
+  @keyframes cuFall{0%{transform:translateY(0) scale(.4);opacity:0}8%{opacity:1;transform:translateY(0) scale(1)}70%{transform:translateY(calc(var(--h,500px) - 20px)) scale(1,1.15);opacity:1}78%{transform:translateY(calc(var(--h,500px) - 10px)) scale(1.6,.4);opacity:.9}100%{transform:translateY(calc(var(--h,500px) - 10px)) scale(2,.2);opacity:0}}
+  .cu-pool{position:absolute;left:50%;bottom:-7px;width:46%;height:12px;transform:translateX(-50%);border-radius:50%;
+    background:radial-gradient(ellipse at 50% 30%,#fff,#c9cde2 30%,#7a7e96 70%,transparent 72%);box-shadow:0 0 14px rgba(220,224,250,.45);animation:cuPool 3.6s ease-in-out infinite}
+  @keyframes cuPool{0%,100%{width:44%}50%{width:50%}}
+  html.lowpow .cu-drop:nth-child(n+3){display:none}
+  /* 큐리 한마디 */
+  .cu-say{display:flex;gap:10px;align-items:flex-start;margin:10px 0 2px;padding:10px 12px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(220,224,245,.12),rgba(120,124,150,.08));border:1px solid rgba(220,224,245,.3)}
+  .cu-av{position:relative;flex:none;width:40px;height:44px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(155deg,#5d6078,#262838);border:1px solid #c9cde2;border-bottom:3px solid #e8ebff;box-shadow:0 0 12px rgba(220,224,250,.4)}
+  .cu-av i{position:absolute;left:4px;top:2px;font-style:normal;font-size:8px;color:#d6d9ea}
+  .cu-av b{font-size:17px;font-weight:900;color:#f4f6ff}
+  .cu-av em{position:absolute;right:-6px;bottom:-6px;width:18px;height:16px;font-style:normal;font-size:10px;font-weight:900;color:#1b1500;display:grid;place-items:center;
+    background:#ffd43b;clip-path:polygon(50% 0,100% 100%,0 100%);padding-top:3px}
+  .cu-say .t{font-size:10px;font-weight:900;letter-spacing:.12em;color:#c9cde2}
+  .cu-say .l{font-size:13.5px;font-weight:800;color:#f4f6ff;margin-top:2px;line-height:1.5}
+  /* 경고 도장 */
+  .cu-haz{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.12em;color:#1b1500;background:#ffd43b;transform:rotate(-3deg);box-shadow:0 2px 0 #b8901a}
+  /* 화면: 은빛 */
+  body.curie-on #y2kbg{filter:grayscale(1) brightness(1.25)}
+  body.curie-on #glow{filter:grayscale(1)}
+  .cu-float{position:fixed;inset:0;pointer-events:none;z-index:1}
+  .cu-float i{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d6d9ea 35%,#80849c 75%,#5a5d72);opacity:.55;box-shadow:0 0 10px rgba(230,233,255,.5);animation:cuBob 7s ease-in-out infinite}
+  @keyframes cuBob{50%{transform:translate(10px,-18px) scale(1.06,.94)}}
+  html.lowpow .cu-float i{animation:none}
+  /* 프로필 카드 */
+  #cuCard{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(8,9,20,.78);padding:16px}
+  #cuCard.on{display:flex;animation:ebIn .25s ease-out}
+  #cuCard .cc{position:relative;width:min(520px,100%);max-height:92vh;overflow:auto;border-radius:22px;padding:18px 18px 16px;
+    background:linear-gradient(160deg,#3a3d52,#1b1c2a 55%,#121320);border:1px solid rgba(220,224,245,.4);box-shadow:0 0 0 1px rgba(255,255,255,.06) inset,0 30px 70px rgba(0,0,0,.6),0 0 40px rgba(220,224,250,.15)}
+  #cuCard .cc::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:22px 22px 0 0;background:linear-gradient(90deg,#80849c,#ffffff,#9a9db4,#ffffff,#80849c);background-size:200% 100%;animation:ebHolo 5s linear infinite}
+  @keyframes ebHolo{to{background-position:200% 0}}
+  @keyframes ebIn{from{opacity:0}to{opacity:1}}
+  #cuCard .hd{display:flex;gap:14px;align-items:center}
+  #cuCard .hd .cu-av{width:64px;height:70px;border-radius:15px}
+  #cuCard .hd .cu-av b{font-size:28px}
+  #cuCard .hd .cu-av i{font-size:10px;left:6px;top:4px}
+  #cuCard .hd .k{font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#a9adc4}
+  #cuCard .hd h3{margin:2px 0;font-size:28px;font-weight:900;background:linear-gradient(90deg,#fff,#c9cde2 50%,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #cuCard .hd .s{font-size:12px;color:#c9cde2}
+  #cuCard .x{position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:10px;border:1px solid rgba(220,224,245,.3);background:rgba(255,255,255,.06);color:#e8ebff;font:inherit;font-size:16px;cursor:pointer}
+  #cuCard .sec{margin-top:14px;font-size:10px;font-weight:900;letter-spacing:.16em;color:#a9adc4;display:flex;gap:8px;align-items:center}
+  #cuCard .sec::before{content:"☿";color:#e8ebff;letter-spacing:0}
+  #cuCard .sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(220,224,245,.35),transparent)}
+  #cuCard .rows{display:grid;gap:0;margin-top:6px}
+  #cuCard .rows div{display:flex;gap:10px;padding:8px 2px;border-bottom:1px dashed rgba(220,224,245,.14);font-size:13px;color:#e8ebff}
+  #cuCard .rows span{flex:none;min-width:74px;font-size:11.5px;font-weight:800;color:#a9adc4}
+  #cuCard .sk{margin-top:8px;padding:10px 12px;border-radius:13px;background:rgba(255,255,255,.04);border:1px solid rgba(220,224,245,.18)}
+  #cuCard .sk b{display:flex;align-items:center;gap:7px;font-size:14px;color:#fff}
+  #cuCard .sk b u{text-decoration:none;font-size:9.5px;font-weight:900;letter-spacing:.1em;padding:2px 7px;border-radius:999px;color:#1b1500;background:#ffd43b}
+  #cuCard .sk p{margin:4px 0 0;font-size:12.5px;color:#c9cde2;line-height:1.55}
+  #cuCard ol{margin:8px 0 0;padding-left:20px;font-size:13px;color:#e8ebff;line-height:1.8}
+  #cuCard ol em{font-style:normal;color:#a9adc4}
+  #cuCard .warn{margin-top:8px;font-size:11px;color:#ffd43b}
+  #cuCard .ft{margin-top:14px;font-size:10.5px;color:#80849c;text-align:right;letter-spacing:.06em}
+</style>
+<script>
+(function(){
+  const NM = '헴 Hg';
+  const EN = () => LANG === 'en';
+  const LINES = {
+    ko: ['…그거 내 피인데.', '또 만들었어? 피 아깝게.', '…맛보지는 마. 진짜로.', '내 피가 은색인 이유, 이제 알겠지?', '황 곁사슬은 내 취향이야.', '몇 번째야 이거. …뭐, 나쁘진 않네.'],
+    en: ['…that is my blood.', 'Again? What a waste of blood.', '…do not taste it. Seriously.', 'Now you know why my blood is silver.', 'The sulfur side chain is my taste.', 'How many is that now? …Not bad, I guess.'] };
+  let active = false;
+  function clear(){
+    active = false;
+    const c = document.getElementById('card'); if(c){ c.classList.remove('curie'); c.querySelectorAll('.cu-fx,.cu-say,.cu-haz').forEach(x => x.remove()); }
+    document.body.classList.remove('curie-on');
+    const f = document.querySelector('.cu-float'); if(f) f.remove();
+  }
+  function apply(){
+    const c = document.getElementById('card'); if(!c) return;
+    active = true;
+    c.classList.add('curie');
+    // 수은 방울 + 웅덩이
+    if(!c.querySelector('.cu-fx')){
+      const fx = document.createElement('div'); fx.className = 'cu-fx';
+      const h = c.getBoundingClientRect().height || 500;
+      fx.style.setProperty('--h', h + 'px');
+      fx.innerHTML = [[4, 0], [96, 1.2], [30, 2.1], [72, 2.8]].map(([x, d]) => `<i class="cu-drop" style="left:calc(${x}% - 5px);animation-delay:${d}s;--h:${h}px"></i>`).join('') + '<i class="cu-pool"></i>';
+      c.appendChild(fx);
+    }
+    // 큐리 한마디 + 경고 도장
+    let n = 0; try{ n = +(localStorage.getItem('pt_curie_n') || 0); localStorage.setItem('pt_curie_n', n + 1); }catch(e){}
+    const L = LINES[EN() ? 'en' : 'ko'];
+    const line = L[Math.min(n, 1) === 0 ? 0 : 1 + ((n - 1) % (L.length - 1))];
+    const info = document.getElementById('mInfo');
+    if(info && !c.querySelector('.cu-say')){
+      const s = document.createElement('div'); s.className = 'cu-say';
+      s.innerHTML = `<span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><span><div class="t">${EN() ? 'CURIE // MERCURY' : '큐리 // 수은'}</div><div class="l">${line}</div></span>`;
+      info.appendChild(s);
+      const hz = document.createElement('div'); hz.className = 'cu-haz'; hz.textContent = '⚠ HAZARD // Hg';
+      const nm = document.getElementById('mName'); if(nm) nm.after(hz);
+    }
+    // 화면: 은빛 + 떠다니는 방울
+    document.body.classList.add('curie-on');
+    if(!document.querySelector('.cu-float')){
+      const f = document.createElement('div'); f.className = 'cu-float';
+      let seed = 3; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      f.innerHTML = Array.from({ length: 7 }, (_, i) => { const s = 8 + r() * 18; return `<i style="left:${(r() * 96).toFixed(1)}%;top:${(r() * 92).toFixed(1)}%;width:${s.toFixed(0)}px;height:${(s * .82).toFixed(0)}px;animation-delay:${(-r() * 7).toFixed(1)}s"></i>`; }).join('');
+      const m = document.getElementById('modal'); (m && m.parentNode ? m.parentNode : document.body).insertBefore(f, m || null);
+    }
+  }
+  // 결과 창을 지켜보다가 헴 Hg 면 큐리 모드, 닫히거나 다른 물질이면 원래대로
+  setInterval(() => {
+    const m = document.getElementById('modal'), on = m && m.classList.contains('on');
+    let is = false; try{ is = on && typeof RX !== 'undefined' && RX && RX.raw === NM; }catch(e){}
+    if(is && !active){ try{ apply(); }catch(e){} }
+    else if(!is && active) clear();
+  }, 300);
+
+  // 자세히 알아보기 → 큐리 프로필 카드
+  function profile(){
+    let d = document.getElementById('cuCard');
+    if(!d){ d = document.createElement('div'); d.id = 'cuCard'; document.body.appendChild(d); d.addEventListener('click', e => { if(e.target === d || e.target.closest('.x')) d.classList.remove('on'); }); }
+    const en = EN();
+    d.innerHTML = `<div class="cc"><button type="button" class="x" aria-label="close">×</button>
+      <div class="hd"><span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><div><div class="k">CHARACTER FILE // ${en ? 'MERCURY' : '수은'}</div><h3>${en ? 'Curie' : '큐리'}</h3><div class="s">${en ? 'Mercury, as a person · liquid at room temperature' : '수은 그 자체 · 상온에서 액체인 유일한 금속'}</div></div></div>
+      <div class="sec">${en ? 'PROFILE' : '프로필'}</div>
+      <div class="rows">
+        <div><span>${en ? 'Nicknames' : '애칭'}</span>${en ? 'Curie / Bibi / Argentum' : '큐리 / 비비 / 아르겐툼'}</div>
+        <div><span>${en ? 'Names' : '영어 이름'}</span>Mercury / Argentum Vivum</div>
+        <div><span>${en ? 'Alias' : '별명'}</span>${en ? 'Quicksilver' : '퀵실버'}</div>
+        <div><span>${en ? 'Blood' : '피'}</span>${en ? 'Heme Hg' : '헴 Hg'} (C₂₈H₂₅HgN₅O₂S)${en ? ' — silver' : ' — 그래서 은색'}</div>
+        <div><span>${en ? 'Saliva' : '침'}</span>${en ? 'also mercury' : '이것도 수은'}</div>
+        <div><span>${en ? 'Look' : '특징'}</span>${en ? 'Curled horns, a star mole under one eye, an 80 Hg hair clip with a ⚠' : '말린 뿔, 눈 밑 별 점, ⚠ 달린 80 Hg 머리핀'}</div>
+      </div>
+      <div class="sec">${en ? 'SKILLS' : '스킬'}</div>
+      <div class="sk"><b>${en ? 'Mercury Shot' : '수은 발사'}</b><p>${en ? 'Makes a finger gun and fires a mercury bead. Shake while firing and it turns into a machine gun — mercury splits into tiny beads when shaken.' : '손가락으로 총을 만들어 수은 방울을 쏴요. 떨면서 쏘면 머신건이 돼요. 진짜 수은도 흔들면 작은 방울로 쪼개지거든요.'}</p></div>
+      <div class="sk"><b>${en ? 'Mercury Pool' : '수은 웅덩이'}<u>${en ? 'ADVANCED' : '고학년'}</u></b><p>${en ? 'Forms a pool, slips into it and taunts the monsters. They rush in to attack and get wiped out — mercury vapour is toxic.' : '수은 웅덩이를 만들어 들어가서 어그로를 끌어요. 몬스터들이 공격하러 몰려왔다가 싹 다 ☆전멸☆. 수은 증기는 독하거든요.'}</p></div>
+      <div class="sec">${en ? 'AMALGAM RECIPE' : '충격적인 아말감 만드는 법'}</div>
+      <ol>
+        <li>${en ? 'Get a metal cube (silver, gold, copper, tin… <em>not iron</em>)' : '금속 큐브를 준비한다 (은, 금, 구리, 주석 등등 <em>철 제외</em>)'}</li>
+        <li>${en ? 'Put it in mouth <em>(crunch crunch ×2)</em>' : '입에 넣는다 <em>(까드득 까드득 ×2)</em>'}</li>
+        <li>${en ? '<em>(chew chew)</em>' : '<em>(우물우물)</em>'}</li>
+        <li>${en ? 'Bleh' : '붸에ㅔ'}</li>
+        <li>${en ? 'Done!' : '완성!'}</li>
+      </ol>
+      <div class="warn">⚠ ${en ? 'Iron really does not form an amalgam, which is why mercury is shipped in iron flasks. And real mercury must never go near your mouth.' : '철은 진짜로 아말감을 거의 안 만들어서, 수은은 철 통에 담아 옮겨요. 그리고 진짜 수은은 절대 입에 대면 안 돼요.'}</div>
+      <div class="ft">${en ? 'CHARACTER BY GWASAN' : '캐릭터: 과산'}</div></div>`;
+    d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+  }
+  document.addEventListener('click', e => {
+    if(!active) return;
+    const b = e.target.closest && e.target.closest('#mMoreBtn'); if(!b) return;
+    e.preventDefault(); e.stopImmediatePropagation(); profile();
+  }, true);
+  addEventListener('keydown', e => { if(e.key === 'Escape'){ const d = document.getElementById('cuCard'); if(d && d.classList.contains('on')){ d.classList.remove('on'); e.stopImmediatePropagation(); } } }, true);
+})();
+</script>
+
 </body>
 </html>
