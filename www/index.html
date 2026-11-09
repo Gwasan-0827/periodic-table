@@ -47225,5 +47225,110 @@ void main(){
   html.lowpow:not(.setbg-light) #detail{background:rgba(14,16,32,.78)!important}
 </style>
 
+<style>
+  /* ═══ 펼쳐보기 (EXPLODE 4.2.5): 큰 분자를 가운데에서 바깥으로 벌려서 겹친 부분을 풀어 본다 ═══ */
+  .rtool.rx-exp.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent}
+  @media (max-width:700px){ .rtool.rx-exp em{display:none} }
+</style>
+<script>
+(function(){
+  if(typeof rxMount !== 'function' || typeof rxDraw !== 'function') return;
+  const EN = () => LANG === 'en';
+  const MIN = 60;            // 원자 이만큼 넘는 큰 분자에만 버튼
+  let on = false, anim = 0;
+  const bondsOf = m => (m.sbonds || m.bonds || []).map(b => [b[0], b[1]]);
+  // 펼친 좌표: 중심 원자에서 결합 몇 단계 떨어졌는지(홉)에 따라 바깥으로 민다 → 크기는 원래대로 다시 맞춘다
+  function target(m){
+    // 스프링 배치로 겹친 걸 풀어 펼친다: 결합은 용수철, 원자끼리는 서로 밀어낸다 (연결은 그대로)
+    const A0 = m.atoms, B0 = bondsOf(m).filter(([i, j]) => A0[i] && A0[j] && i !== j); if(A0.length < 2 || !B0.length) return null;
+    // 수소는 빼고(펼칠 땐 숨긴다) 무거운 원자만 펼친다
+    const HV = A0.map((a, i) => i).filter(i => A0[i].s !== 'H'), idx = new Map(HV.map((g, k) => [g, k]));
+    const A = HV.map(i => A0[i]), n = A.length, B = B0.filter(([i, j]) => idx.has(i) && idx.has(j)).map(([i, j]) => [idx.get(i), idx.get(j)]);
+    if(n < 2 || !B.length) return null;
+    const P = A.map(a => [a.x, a.y, (a.z || 0) * .3]);
+    let L = 0; B.forEach(([i, j]) => { L += Math.hypot(P[i][0] - P[j][0], P[i][1] - P[j][1], P[i][2] - P[j][2]); }); L /= B.length;
+    const adj = A.map(() => new Set()); B.forEach(([i, j]) => { adj[i].add(j); adj[j].add(i); });
+    const S2 = []; adj.forEach((s, u) => { const a = [...s]; for(let x = 0; x < a.length; x++) for(let y = x + 1; y < a.length; y++) if(a[x] < a[y] ? true : true) S2.push([a[x], a[y]]); });
+    const near = (i, j) => adj[i].has(j);
+    const cx = P.reduce((s, p) => s + p[0], 0) / n, cy = P.reduce((s, p) => s + p[1], 0) / n, cz = P.reduce((s, p) => s + p[2], 0) / n;
+    const r0 = Math.max(...P.map(p => Math.hypot(p[0] - cx, p[1] - cy, p[2] - cz)));
+    const IT = n > 200 ? 140 : 200, F = P.map(() => [0, 0, 0]);
+    for(let it = 0; it < IT; it++){
+      const T = L * .35 * (1 - it / IT) + L * .02;
+      F.forEach(f => { f[0] = f[1] = f[2] = 0; });
+      // 밀어내기 (가까운 것만)
+      const R = L * 3.2, R2 = R * R;
+      for(let i = 0; i < n; i++) for(let j = i + 1; j < n; j++){
+        const dx = P[i][0] - P[j][0], dy = P[i][1] - P[j][1], dz = P[i][2] - P[j][2], d2 = dx * dx + dy * dy + dz * dz;
+        if(d2 > R2 || near(i, j)) continue;
+        const d = Math.sqrt(d2) || .01, f = (L * L * 1.6) / (d2 + L * .1) * (1 - d / R);
+        F[i][0] += dx / d * f; F[i][1] += dy / d * f; F[i][2] += dz / d * f; F[j][0] -= dx / d * f; F[j][1] -= dy / d * f; F[j][2] -= dz / d * f;
+      }
+      const spring = (i, j, len, k) => { const dx = P[j][0] - P[i][0], dy = P[j][1] - P[i][1], dz = P[j][2] - P[i][2], d = Math.hypot(dx, dy, dz) || .01, f = (d - len) * k;
+        F[i][0] += dx / d * f; F[i][1] += dy / d * f; F[i][2] += dz / d * f; F[j][0] -= dx / d * f; F[j][1] -= dy / d * f; F[j][2] -= dz / d * f; };
+      B.forEach(([i, j]) => spring(i, j, L, .9));
+      S2.forEach(([i, j]) => spring(i, j, L * 1.68, .35));
+      for(let i = 0; i < n; i++){ const f = F[i], m2 = Math.hypot(f[0], f[1], f[2]); if(!m2) continue; const s = Math.min(m2, T) / m2; P[i][0] += f[0] * s; P[i][1] += f[1] * s; P[i][2] += f[2] * s; }
+    }
+    // 원래 크기에 맞추고 가운데로
+    const nx = P.reduce((s, p) => s + p[0], 0) / n, ny = P.reduce((s, p) => s + p[1], 0) / n, nz = P.reduce((s, p) => s + p[2], 0) / n;
+    const r1 = Math.max(...P.map(p => Math.hypot(p[0] - nx, p[1] - ny, p[2] - nz))) || 1, s = r0 / r1 * 1.1;
+    const out = P.map(p => [cx + (p[0] - nx) * s, cy + (p[1] - ny) * s, cz + (p[2] - nz) * s]);
+    // 수소는 붙어 있던 원자 자리로 (숨겨지니까)
+    const par = A0.map(() => -1); B0.forEach(([i, j]) => { if(A0[i].s === 'H' && idx.has(j)) par[i] = j; if(A0[j].s === 'H' && idx.has(i)) par[j] = i; });
+    return A0.map((a, i) => idx.has(i) ? out[idx.get(i)] : par[i] >= 0 ? out[idx.get(par[i])].slice() : [a.x, a.y, a.z || 0]);
+  }
+  // 펼친 동안 수소와 수소 결합을 숨긴다
+  function hideH(m, hide){
+    const A = m.atoms, isH = i => A[i] && A[i].s === 'H', disp = hide ? 'none' : '';
+    (m.segs || []).forEach(s => { if(isH(s.i) || isH(s.j)){ s.g.style.display = disp; if(s.l0) s.l0.style.display = disp; if(s.co) s.co.style.display = disp; } });
+    if(m.gAt) m.gAt.forEach((g, i) => { if(isH(i)) g.style.display = disp; });
+    if(m.lines && m.bonds) m.lines.forEach((ln, k) => { const b = m.bonds[k]; if(b && (isH(b[0]) || isH(b[1]))) ln.style.display = disp; });
+    const svg = document.getElementById('mMol');
+    if(svg && svg._egBeams) svg._egBeams.forEach(([ln, set]) => { const hd = ln.style.display === 'none'; set.forEach(l => l.style.display = hd ? 'none' : ''); });
+  }
+  function go(want){
+    const m = RX_M; if(!m || !m.atoms) return;
+    if(want) hideH(m, true);
+    if(!m._ex0) m._ex0 = m.atoms.map(a => [a.x, a.y, a.z || 0]);
+    if(!m._ex1) m._ex1 = target(m); if(!m._ex1) return;
+    on = want; sync();
+    cancelAnimationFrame(anim);
+    const from = m.atoms.map(a => [a.x, a.y, a.z || 0]), to = want ? m._ex1 : m._ex0, t0 = performance.now(), D = RX_REDUCED ? 1 : 750;
+    const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+    const step = now => {
+      if(RX_M !== m) return;
+      const e = ease(Math.min(1, (now - t0) / D));
+      m.atoms.forEach((a, i) => { a.x = from[i][0] + (to[i][0] - from[i][0]) * e; a.y = from[i][1] + (to[i][1] - from[i][1]) * e; a.z = from[i][2] + (to[i][2] - from[i][2]) * e; });
+      try{ rxDraw(RX_YAW, RX_PITCH); }catch(_){}
+      if(e < 1) anim = requestAnimationFrame(step); else if(!want) hideH(m, false);
+    };
+    anim = requestAnimationFrame(step);
+    try{ SFX.tick(); }catch(_){}
+  }
+  function sync(){
+    const tools = document.getElementById('mTools'); if(!tools) return;
+    let b = tools.querySelector('.rx-exp');
+    const m = RX_M, ok = !!(m && m.atoms && m.atoms.length >= MIN && !m.fill && !m.liquid && !m.faces && bondsOf(m).length && (RX_VIEW === 'ball' || RX_VIEW === 'stick'));
+    if(!b){
+      b = document.createElement('button'); b.type = 'button'; b.className = 'rtool rx-exp';
+      b.addEventListener('click', e => { e.stopPropagation(); go(!on); });
+      const sb = tools.querySelector('.st-big'); sb ? sb.after(b) : tools.insertBefore(b, tools.firstChild);
+    }
+    b.hidden = !ok;
+    b.classList.toggle('on', on);
+    b.innerHTML = on ? `<span>⇲</span><em>${EN() ? 'Fold' : '접기'}</em>` : `<span>⇱</span><em>${EN() ? 'Spread out' : '펼쳐보기'}</em>`;
+  }
+  const _m = rxMount;
+  rxMount = function(model, svgEl){
+    if(!svgEl){ on = false; cancelAnimationFrame(anim); if(model && model._ex0){ model.atoms.forEach((a, i) => { const o = model._ex0[i]; if(o){ a.x = o[0]; a.y = o[1]; a.z = o[2]; } }); } }
+    const r = _m.apply(this, arguments);
+    if(!svgEl) try{ sync(); }catch(e){}
+    return r;
+  };
+  setInterval(() => { const md = document.getElementById('modal'); if(md && md.classList.contains('on')) try{ sync(); }catch(e){} }, 900);
+})();
+</script>
+
 </body>
 </html>
