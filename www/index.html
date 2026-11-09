@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
+      ko: ['불꽃 반응·방전관 창도 새로 꾸몄어요. 이모지 대신 선 아이콘을 쓰고, 고른 원소 색으로 창이 물들어요',
+           '오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
            '원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
            '학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
            '오늘의 원소를 새로 만들었어요. 전자 껍질 그림, 오늘의 운세 카드, 며칠 연속으로 들어왔는지 기록이 생겼고, 이제 매일 아침 9시에 바뀌어요',
@@ -6252,7 +6253,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
+      en: ['Restyled the flame test and discharge tube window with line icons and colours that follow the chosen element',
+           'Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
            'New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
            'The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
            'Element of the day is new: an electron shell drawing, a fortune card and a visit streak. It now changes every morning at 9',
@@ -45364,6 +45366,141 @@ void main(){
       new ResizeObserver(() => { const r = cvs.parentElement.getBoundingClientRect(), k = Math.round(r.width) + 'x' + Math.round(r.height); if(k !== last && r.width > 0){ last = k; fitCanvas(); } }).observe(cvs.parentElement);
     }
   }catch(e){}
+})();
+</script>
+
+<style>
+  /* ═══ 방전관·불꽃 반응 창 리워크 (Y2K 페리윙클) ═══ */
+  #fl2{background:rgba(6,7,20,.86)}
+  #fl2 #fl2Box{position:relative;width:min(900px,96vw);border-radius:22px;border:1px solid rgba(150,160,255,.28);
+    background:radial-gradient(110% 60% at 0% 0%,color-mix(in srgb,var(--fc,#8f9bff) 16%,transparent),transparent 55%),radial-gradient(90% 60% at 100% 100%,rgba(177,140,255,.12),transparent 60%),linear-gradient(160deg,rgba(28,30,70,.98),rgba(11,12,30,.99));
+    box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 40px rgba(143,155,255,.12)}
+  #fl2 #fl2Box::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;z-index:5;background:linear-gradient(90deg,#8f9bff,#ff9ad5,#ffe08a,#8cf5d2,#8f9bff);background-size:200% 100%;animation:ebHolo 8s linear infinite}
+  @keyframes ebHolo{to{background-position:200% 0}}
+  html.lowpow #fl2 #fl2Box::before{animation:none}
+  /* 머리 */
+  #fl2 #fl2Head{padding:16px 16px 12px;gap:12px;border-bottom:1px solid rgba(150,160,255,.14)}
+  #fl2 .fx-ic{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:var(--fc,#8f9bff);
+    background:linear-gradient(155deg,color-mix(in srgb,var(--fc,#8f9bff) 30%,#1c1f44),#14162f);border:1px solid color-mix(in srgb,var(--fc,#8f9bff) 55%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--fc,#8f9bff) 35%,transparent)}
+  #fl2 .fx-ic svg{width:22px;height:22px;filter:drop-shadow(0 0 6px var(--fc,#8f9bff))}
+  #fl2 .fx-tt{display:grid;gap:1px;min-width:0}
+  #fl2 .fx-tt .k{font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#8f97c8;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  #fl2 .fx-tt .k::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--fc,#8f9bff);box-shadow:0 0 8px var(--fc,#8f9bff)}
+  #fl2 #fl2Head h2{font-size:21px;font-weight:900;letter-spacing:-.01em;background:linear-gradient(90deg,#fff,#d9dcff 60%,color-mix(in srgb,var(--fc,#8f9bff) 70%,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #fl2 #fl2Head .sub{font-size:12px;color:#a6adda}
+  #fl2 #fl2Tabs{background:rgba(14,16,40,.7);border:1px solid rgba(150,160,255,.18);padding:3px;gap:3px}
+  #fl2 #fl2Tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 13px;color:#aab0dc;font-weight:800}
+  #fl2 #fl2Tabs button svg{width:15px;height:15px}
+  #fl2 #fl2Tabs button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 3px 10px rgba(143,155,255,.4)}
+  #fl2 #fl2Head .x{width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:11px;font-size:17px;color:#c4c9ee;background:rgba(255,255,255,.05);border:1px solid rgba(150,160,255,.22)}
+  #fl2 #fl2Head .x:hover{background:rgba(143,155,255,.18);color:#fff}
+  /* 원소 칩 */
+  #fl2 #fl2Chips{padding:10px 14px;gap:6px;border-bottom:1px solid rgba(150,160,255,.12)}
+  #fl2 #fl2Chips button{padding:6px 12px 6px 8px;border-color:color-mix(in srgb,var(--c) 30%,rgba(150,160,255,.2));background:color-mix(in srgb,var(--c) 7%,rgba(255,255,255,.02));transition:transform .15s,background .2s,box-shadow .2s}
+  #fl2 #fl2Chips button:active{transform:scale(.95)}
+  #fl2 #fl2Chips button small{color:#9097c8}
+  #fl2 #fl2Chips button.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 24%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--c) 45%,transparent)}
+  #fl2 #fl2Chips button.on small{color:#eef0ff}
+  /* 무대 + 분광기 */
+  #fl2 #fl2Body{padding:12px 14px 4px}
+  #fl2 #fl2Stage{border-radius:18px;overflow:hidden;border:1px solid rgba(150,160,255,.2);box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  #fl2 #fl2Stage::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(#000,#000) right 10px top 10px/18px 2px no-repeat,linear-gradient(#000,#000) right 10px top 10px/2px 18px no-repeat;opacity:0}
+  #fl2 .fx-hud{position:absolute;width:18px;height:18px;border:2px solid color-mix(in srgb,var(--fc,#8f9bff) 70%,#fff);opacity:.6;pointer-events:none;z-index:2}
+  #fl2 .fx-hud.a{right:10px;top:10px;border-left:0;border-bottom:0;border-radius:0 7px 0 0}
+  #fl2 .fx-hud.b{left:10px;bottom:10px;border-right:0;border-top:0;border-radius:0 0 0 7px}
+  #fl2 .fx-tag{position:absolute;left:14px;top:12px;z-index:2;font-size:9.5px;font-weight:900;letter-spacing:.14em;color:rgba(201,210,255,.7);pointer-events:none}
+  #fl2 #fl2Tip{bottom:14px;padding:5px 12px;border-radius:999px;background:rgba(14,16,40,.7);border:1px solid rgba(150,160,255,.2);color:#c9cdf2;font-weight:700}
+  #fl2 .fx-spec{margin-top:10px;padding:6px;border-radius:16px;background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(150,160,255,.16)}
+  #fl2 .fx-spec .fx-sec{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:10px;font-weight:900;letter-spacing:.16em;color:#a6addf}
+  #fl2 .fx-spec .fx-sec::before{content:"//";color:var(--fc,#8f9bff);letter-spacing:0}
+  #fl2 .fx-spec .fx-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(150,160,255,.3),transparent)}
+  #fl2 .fx-spec canvas{display:block;width:100%;border-radius:10px}
+  /* 조작 */
+  #fl2 #fl2Ctl{padding:12px 0 0}
+  #fl2 #fl2Ctl button{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;font-weight:800;border-color:rgba(150,160,255,.24);background:rgba(255,255,255,.04);color:#d6daf8}
+  #fl2 #fl2Ctl button svg{width:15px;height:15px}
+  #fl2 #fl2Ctl button[hidden]{display:none}
+  #fl2 #fl2Ctl button.go{color:#fff;border-color:transparent;background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 16px rgba(143,155,255,.35)}
+  #fl2 #fl2Ctl button.on{color:#fff;background:rgba(143,155,255,.2);border-color:rgba(169,155,255,.6)}
+  #fl2 #fl2Volt{margin-top:12px;padding:10px 14px;border-radius:14px;background:rgba(255,212,59,.06);border:1px solid rgba(255,212,59,.2);color:#c9cdf2}
+  #fl2 #fl2Volt span:first-child{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;background:rgba(255,212,59,.15);color:#ffd43b;font-size:0}
+  #fl2 #fl2Volt span:first-child::before{content:"";width:12px;height:14px;background:#ffd43b;clip-path:polygon(55% 0,0 58%,45% 58%,35% 100%,100% 38%,55% 38%)}
+  #fl2 #fl2Volt input{-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:linear-gradient(90deg,#8f9bff,#ffd43b);outline:none}
+  #fl2 #fl2Volt input::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #ffd43b;box-shadow:0 0 10px rgba(255,212,59,.8);cursor:pointer}
+  #fl2 #fl2Volt input::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #ffd43b;box-shadow:0 0 10px rgba(255,212,59,.8);cursor:pointer}
+  #fl2 #fl2Info{margin:12px 0 14px;padding:12px 14px 12px 16px;border-radius:14px;border:1px solid rgba(150,160,255,.16);border-left:3px solid var(--fc,#8f9bff);
+    background:linear-gradient(90deg,color-mix(in srgb,var(--fc,#8f9bff) 10%,transparent),rgba(255,255,255,.02));color:#b9bee6}
+  #fl2 #fl2Info .col{font-size:14px;color:#c9cdf2}
+  #fl2 #fl2Info .col i{width:16px;height:16px;border:2px solid rgba(255,255,255,.7)}
+  #fl2 #fl2Info .tmi{color:#d6daf8}
+  #fl2 #fl2Info details{border-top:1px dashed rgba(150,160,255,.2)}
+  #fl2 #fl2Info summary{color:#eef0ff}
+  #fl2 #fl2Info summary::marker{color:var(--fc,#8f9bff)}
+  @media (max-width:700px){
+    #fl2 #fl2Box{border-radius:20px}
+    #fl2 #fl2Head{padding:14px 12px 10px}
+    #fl2 #fl2Head .x{margin-left:auto}
+    #fl2 #fl2Body{padding:10px 10px 4px}
+  }
+</style>
+<script>
+(function(){
+  const box = document.getElementById('fl2'); if(!box) return;
+  const SV = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const IC = {
+    lab: SV('<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/>'),
+    fw: SV('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>'),
+    quiz: SV('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01"/>'),
+    bolt: SV('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'),
+    fire: SV('<path d="M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-3.5 2-5 1 1.5 2 2 2.5 1.5C12 8 11 6 12 3z"/>'),
+    salt: SV('<path d="M8 3h8l-1 4H9z"/><path d="M9 7h6l1 14H8z"/><path d="M11 4.5h.01M13 4.5h.01"/>'),
+    glass: SV('<circle cx="12" cy="12" r="8"/><path d="M8.5 9.5a4 4 0 0 1 3.5-2"/>'),
+    spark: SV('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>'),
+    reset: SV('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>')
+  };
+  // 이모지 → 선 아이콘
+  const EMO = [[/^🧪\s*/, 'lab'], [/^🎆\s*/, 'fw'], [/^❓\s*/, 'quiz'], [/^⚡\s*/, 'bolt'], [/^🔥\s*/, 'fire'], [/^🧂\s*/, 'salt'], [/^🔵\s*/, 'glass'], [/^✨\s*/, 'spark'], [/^↺\s*/, 'reset']];
+  function iconize(b){
+    if(!b || b.querySelector(':scope > svg')) return;
+    const txt = b.textContent;
+    for(const [re, k] of EMO){ if(re.test(txt)){ b.innerHTML = IC[k] + '<span>' + txt.replace(re, '') + '</span>'; return; } }
+  }
+  let busy = false;
+  function fix(){
+    if(busy) return; busy = true;
+    try{
+      document.querySelectorAll('#fl2Tabs button').forEach(b => { if(!b.querySelector('svg')){ const k = b.dataset.m; const txt = b.textContent.replace(/^[^\s가-힣A-Za-z]+\s*/, ''); b.innerHTML = (IC[k] || '') + '<span>' + txt + '</span>'; } });
+      document.querySelectorAll('#fl2Ctl button').forEach(iconize);
+      const head = document.getElementById('fl2Head'), h2 = document.getElementById('fl2Title');
+      if(head && h2 && !head.querySelector('.fx-ic')){
+        const ic = document.createElement('span'); ic.className = 'fx-ic'; head.insertBefore(ic, h2);
+        const tt = document.createElement('span'); tt.className = 'fx-tt'; head.insertBefore(tt, h2);
+        tt.innerHTML = '<span class="k"></span>'; tt.appendChild(h2); const sub = document.getElementById('fl2Sub'); if(sub) tt.appendChild(sub);
+      }
+      if(head){
+        const tube = /방전관|Discharge|tube/i.test((h2 && h2.textContent) || '');
+        const ic = head.querySelector('.fx-ic'); const want = tube ? 'bolt' : 'fire';
+        if(ic && ic.dataset.k !== want){ ic.dataset.k = want; ic.innerHTML = IC[want]; }
+        const k = head.querySelector('.fx-tt .k'); const kt = LANG === 'en' ? 'SPECTRUM LAB' : 'SPECTRUM LAB // 분광 실험';
+        if(k && k.textContent !== kt) k.textContent = kt;
+      }
+      const st = document.getElementById('fl2Stage');
+      if(st && !st.querySelector('.fx-hud')) st.insertAdjacentHTML('beforeend', '<i class="fx-hud a"></i><i class="fx-hud b"></i>');
+      const body = document.getElementById('fl2Body');
+      const spec = body && [...body.children].find(x => x.tagName === 'CANVAS');
+      if(spec && !spec.parentNode.classList.contains('fx-spec')){
+        const w = document.createElement('div'); w.className = 'fx-spec'; spec.before(w);
+        w.appendChild(spec);
+      }
+      const on = document.querySelector('#fl2Chips button.on');
+      const c = on ? getComputedStyle(on).getPropertyValue('--c').trim() : '';
+      if(c && box.style.getPropertyValue('--fc') !== c) box.style.setProperty('--fc', c);
+    }catch(e){}
+    busy = false;
+  }
+  try{ new MutationObserver(() => { if(box.classList.contains('on')) fix(); }).observe(box, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class'] }); }catch(e){}
+  fix();
 })();
 </script>
 
