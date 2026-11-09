@@ -46456,21 +46456,16 @@ void main(){
 
 <style>
   /* ═══ 막대-공 리워크: 에너지 구체 + 깊이감 + 등장 연출 ═══ */
-  #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-ball{fill:var(--c);fill-opacity:.26;stroke:var(--c);stroke-opacity:.95;stroke-width:var(--rw,2.4px)}
-  #mMol.eg .eg-base{fill:#090a1c;opacity:.88;pointer-events:none}
-  #mMol.eg .eg-ring{fill:none;stroke:#fff;stroke-opacity:.75;stroke-width:1;pointer-events:none}
+  #mMol.eg .mol-ball.egb{stroke:none;fill-opacity:1}
   #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-hi{display:none}
-  #mMol.eg .eg-halo{fill:var(--c);opacity:.13;pointer-events:none}
-  #mMol.eg .eg-halo2{fill:var(--c);opacity:.3;pointer-events:none}
+  #mMol.eg .eg-halo{pointer-events:none;animation:egPulse 2.6s var(--fd,0s) ease-in-out infinite}
   #mMol.eg .eg-core,#mMol.eg .eg-rim,#mMol.eg .eg-spec{pointer-events:none}
   #mMol.eg .eg-spec{fill:#fff;opacity:.75}
   #mMol.eg .mol-sym{fill:#fff!important;paint-order:stroke;stroke:var(--c);stroke-opacity:.55;stroke-width:2.4px}
   #mMol.eg .mol-bonds line:not(.bx){stroke:#c9d2ea;opacity:.7}
   /* 숨쉬듯 빛나는 핵 */
-  @keyframes egPulse{0%,100%{opacity:.85}50%{opacity:1}}
-  #mMol.eg .eg-core{animation:egPulse 2.6s var(--fd,0s) ease-in-out infinite}
-  html.lowpow #mMol.eg .eg-core,html.idle #mMol.eg .eg-core{animation:none}
-  html.lowpow #mMol.eg .eg-halo{display:none}
+  @keyframes egPulse{0%,100%{opacity:.75}50%{opacity:1}}
+  html.lowpow #mMol.eg .eg-halo,html.idle #mMol.eg .eg-halo{animation:none}
   /* 등장: 빛 알갱이가 툭 터지며 나타나고, 결합이 쭉 그어진다 */
   @keyframes egPop{0%{opacity:0;transform:scale(.1)}55%{opacity:1;transform:scale(1.32)}80%{transform:scale(.94)}100%{opacity:1;transform:none}}
   @keyframes egFlash{0%{opacity:0;transform:scale(.4)}35%{opacity:.9;transform:scale(1.6)}100%{opacity:0;transform:scale(2.4)}}
@@ -46502,24 +46497,34 @@ void main(){
       if(defs) defs.remove();
       defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'); defs.setAttribute('class', 'eg-defs');
       defs.innerHTML = `<radialGradient id="${id}c" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".3" stop-color="#fff" stop-opacity=".1"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
-        `<radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset=".82" stop-color="#fff" stop-opacity=".22"/><stop offset=".95" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></radialGradient>`;
+        `<radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset=".7" stop-color="#fff" stop-opacity="0"/><stop offset=".92" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`;
       svg.insertBefore(defs, svg.firstChild);
       const NS = 'http://www.w3.org/2000/svg';
       const mk = (tag, cls, attrs) => { const e = document.createElementNS(NS, tag); e.setAttribute('class', cls); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; };
       const lp = window.RX_LOWPOW;
+      // 원소 색마다 그라데이션 두 개: 공(속은 어둡고 → 원소 색 → 가장자리는 하얗게 빛남)과 후광(부드럽게 사라짐)
+      const hx = c => { const m = String(c).trim().match(/^#([0-9a-f]{6})$/i); return m ? [0, 2, 4].map(k => parseInt(m[1].slice(k, k + 2), 16)) : null; };
+      const mix = (p, q, k) => 'rgb(' + p.map((v, i) => Math.round(v + (q[i] - v) * k)).join(',') + ')';
+      const made = {}; let gi = 0;
+      const grad = col => {
+        if(made[col]) return made[col];
+        const p = hx(col) || [143, 155, 255], dk = [6, 7, 22], wh = [255, 255, 255], k = id + 'g' + (gi++);
+        const lum = (p[0] * .3 + p[1] * .59 + p[2] * .11) / 255;
+        const c2 = lum < .45 ? mix(p, wh, .35) : mix(p, wh, .05);   // 어두운 색(탄소)은 조금 밝게 빛나게
+        defs.insertAdjacentHTML('beforeend',
+          `<radialGradient id="${k}b" cx=".5" cy=".5" r=".5" fx=".4" fy=".38"><stop offset="0" stop-color="${mix(p, wh, .55)}" stop-opacity=".9"/><stop offset=".18" stop-color="${mix(p, dk, .35)}"/><stop offset=".55" stop-color="${mix(p, dk, .62)}"/><stop offset=".8" stop-color="${c2}"/><stop offset=".93" stop-color="${mix(p, wh, .6)}"/><stop offset="1" stop-color="${c2}" stop-opacity=".55"/></radialGradient>` +
+          `<radialGradient id="${k}h" cx=".5" cy=".5" r=".5"><stop offset=".45" stop-color="${c2}" stop-opacity=".55"/><stop offset=".7" stop-color="${c2}" stop-opacity=".18"/><stop offset="1" stop-color="${c2}" stop-opacity="0"/></radialGradient>`);
+        return (made[col] = k);
+      };
       svg.querySelectorAll('.mol-atoms > .mol-at').forEach(g => {
         if(g.classList.contains('loose') || g.classList.contains('frag') || g.classList.contains('clr')) return;
         const inn = g.querySelector('.mol-in'), ball = g.querySelector('.mol-ball'); if(!inn || !ball) return;
-        const rr = +ball.getAttribute('r') || 8;
-        if(!lp) inn.insertBefore(mk('circle', 'eg-halo', { r: (rr * 1.75).toFixed(1) }), ball);
-        inn.insertBefore(mk('circle', 'eg-halo2', { r: (rr * 1.22).toFixed(1) }), ball);
-        inn.insertBefore(mk('circle', 'eg-base', { r: rr.toFixed(1) }), ball);
-        g.style.setProperty('--rw', Math.max(1.4, rr * .16).toFixed(1) + 'px');
+        const rr = +ball.getAttribute('r') || 8, k = grad(g.style.getPropertyValue('--c'));
+        if(!lp) inn.insertBefore(mk('circle', 'eg-halo', { r: (rr * 1.9).toFixed(1), fill: `url(#${k}h)` }), ball);
+        ball.style.fill = `url(#${k}b)`; ball.classList.add('egb');
         const after = ball.nextSibling;
-        inn.insertBefore(mk('circle', 'eg-core', { r: rr.toFixed(1), fill: `url(#${id}c)` }), after);
         inn.insertBefore(mk('circle', 'eg-rim', { r: rr.toFixed(1), fill: `url(#${id}r)` }), after);
-        inn.insertBefore(mk('circle', 'eg-ring', { r: (rr * .9).toFixed(1) }), after);
-        inn.insertBefore(mk('circle', 'eg-spec', { r: (rr * .1).toFixed(1), cx: (-rr * .42).toFixed(1), cy: (-rr * .44).toFixed(1) }), after);
+        inn.insertBefore(mk('circle', 'eg-spec', { r: (rr * .1).toFixed(1), cx: (-rr * .4).toFixed(1), cy: (-rr * .42).toFixed(1) }), after);
         inn.appendChild(mk('circle', 'eg-flash', { r: (rr * .9).toFixed(1) }));
         const fl = g.querySelector('.mol-fl'); if(fl){ const fd = fl.style.getPropertyValue('--fd'); if(fd) inn.style.setProperty('--fd', fd); }
       });
