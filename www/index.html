@@ -44348,43 +44348,51 @@ void main(){
       const rise = RX_REDUCED ? 1 : oExpo(seg(t, 0, 1300));
       const hy = H * (.64 + (1 - rise) * .3);
       const sky = x.createLinearGradient(0, 0, 0, hy);
-      sky.addColorStop(0, '#05061a'); sky.addColorStop(.55, '#0d0f33'); sky.addColorStop(.88, '#241a55'); sky.addColorStop(1, '#3a2470');
+      sky.addColorStop(0, '#07081c'); sky.addColorStop(.55, '#11143c'); sky.addColorStop(.88, '#262c72'); sky.addColorStop(1, '#4651a6');
       x.fillStyle = sky; x.fillRect(0, 0, W, hy + 1);
-      const fl = x.createLinearGradient(0, hy, 0, H); fl.addColorStop(0, '#1a1240'); fl.addColorStop(1, '#05061a');
+      lastHy = hy;
+      const fl = x.createLinearGradient(0, hy, 0, H); fl.addColorStop(0, '#1b1f56'); fl.addColorStop(1, '#06071a');
       x.fillStyle = fl; x.fillRect(0, hy, W, H - hy);
       // 별: 카메라 따라 조금씩 흘러가고 반짝인다
       const px = -cam.cx * .06 * U, py = -cam.cy * .04 * U;
       STARS.forEach(s => { const sx = ((s.x * W + px * s.d) % W + W) % W, sy = s.y * hy + py * s.d; if(sy > hy - 4) return;
-        const a = (.35 + .65 * Math.abs(Math.sin(t * s.sp + s.ph))) * rise;
+        const blink = charge ? seg(performance.now(), chargeAt + 300, chargeAt + 700) : 0, a = Math.min(1, (.35 + .65 * Math.abs(Math.sin(t * s.sp + s.ph))) * rise + (blink > 0 && blink < 1 ? Math.sin(blink * Math.PI) * .9 : 0));
         x.fillStyle = `rgba(226,230,255,${a})`; x.beginPath(); x.arc(sx, sy, s.r, 0, 6.283); x.fill();
         if(s.r > 1.4){ x.strokeStyle = `rgba(226,230,255,${a * .5})`; x.lineWidth = .8; x.beginPath(); x.moveTo(sx - 6, sy); x.lineTo(sx + 6, sy); x.moveTo(sx, sy - 6); x.lineTo(sx, sy + 6); x.stroke(); } });
       // 지평선 빛
-      const hg = x.createRadialGradient(ox, hy, 0, ox, hy, W * .6); hg.addColorStop(0, 'rgba(255,140,220,.32)'); hg.addColorStop(.4, 'rgba(160,120,255,.14)'); hg.addColorStop(1, 'rgba(120,120,255,0)');
+      const hg = x.createRadialGradient(ox, hy, 0, ox, hy, W * .6); hg.addColorStop(0, 'rgba(160,176,255,.38)'); hg.addColorStop(.4, 'rgba(140,158,255,.14)'); hg.addColorStop(1, 'rgba(140,158,255,0)');
       x.fillStyle = hg; x.fillRect(0, 0, W, H);
-      x.fillStyle = 'rgba(255,190,240,.85)'; x.fillRect(0, hy - 1, W, 1.5);
+      x.fillStyle = 'rgba(214,220,255,.9)'; x.fillRect(0, hy - 1, W, 1.5);
       // 원근 격자 바닥: 소실점은 화면 가운데, 가로줄은 앞으로 흘러온다
       x.save(); x.beginPath(); x.rect(0, hy, W, H - hy); x.clip();
       const vx = ox - cam.cx * .15 * U, depth = H - hy;
       x.lineWidth = 1;
-      for(let k = -14; k <= 14; k++){ const bx = vx + k * W * .16; x.strokeStyle = `rgba(150,140,255,${.32 - Math.abs(k) * .012})`; x.beginPath(); x.moveTo(vx + k * 6, hy); x.lineTo(vx + (bx - vx) * 4, H + depth * 3); x.stroke(); }
+      for(let k = -14; k <= 14; k++){ const bx = vx + k * W * .16; x.strokeStyle = `rgba(140,158,255,${.34 - Math.abs(k) * .012})`; x.beginPath(); x.moveTo(vx + k * 6, hy); x.lineTo(vx + (bx - vx) * 4, H + depth * 3); x.stroke(); }
       const ph = RX_REDUCED ? 0 : (t * .0006) % 1;
+      // 베기 직전 충격파: 바닥 격자가 가운데서부터 출렁인다
+      const rp = charge && !RX_REDUCED ? seg(performance.now(), chargeAt + 300, chargeAt + 1300) : 0, rA = rp > 0 && rp < 1 ? (1 - rp) * depth * .09 : 0;
       for(let k = 0; k < 14; k++){ const z = k + 1 - ph, yy = hy + depth * (1.6 / z) - depth * .1; if(yy < hy || yy > H) continue;
-        x.strokeStyle = `rgba(170,150,255,${Math.min(.55, .7 / z + .05) * rise})`; x.beginPath(); x.moveTo(0, yy); x.lineTo(W, yy); x.stroke(); }
+        x.strokeStyle = `rgba(160,176,255,${Math.min(.6, .7 / z + .05) * rise + (rA ? .25 : 0)})`; x.beginPath();
+        if(rA){ for(let q = 0; q <= W; q += 12){ const d = Math.abs(q - vx) / W, w = Math.sin(d * 18 - rp * 26) * Math.exp(-Math.abs(d - rp * 1.2) * 5); const y2 = yy + w * rA * (yy - hy) / depth * 2; q ? x.lineTo(q, y2) : x.moveTo(q, y2); } }
+        else { x.moveTo(0, yy); x.lineTo(W, yy); }
+        x.stroke(); }
       x.restore();
     }
     // ── 원소 타일 118개가 날아와 주기율표를 조립한다 (로고 뒤) ──
-    const TCOL = n => { const e = EL[n - 1]; if(!e.g) return [196, 160, 255]; if(e.g <= 2) return [255, 150, 205]; if(e.g >= 13) return [130, 220, 255]; return [150, 165, 255]; };
+    let lastHy = 0;
+    const TCOL = n => { const e = EL[n - 1]; if(!e.g) return [197, 203, 255]; if(e.g <= 2) return [178, 160, 255]; if(e.g >= 13) return [140, 205, 255]; return [140, 158, 255]; };
     const TILES = EL.map((e, i) => { let c, r;
       if(e.g){ c = e.g; r = e.p; } else { const st = e.n >= 89 ? 89 : 57; c = 3 + (e.n - st); r = e.n >= 89 ? 9.3 : 8.3; }
-      const th = rnd(0, 6.283), far = rnd(1100, 1700);
-      return { s: e.s, tx: (c - 9.5) * 48, ty: (r - 5.2) * 48, sx: Math.cos(th) * far, sy: Math.sin(th) * far, rot: rnd(-3, 3), at: 80 + i * 6.5 + rnd(0, 120), col: TCOL(e.n) }; });
+      // 박자에 맞춰 왼쪽 열부터 착착 (모션그래픽처럼 튀어 오르며 자리 잡기)
+      const at = e.g ? 60 + (c - 1) * 42 + (r - 1) * 14 : 60 + 18 * 42 + (c - 3) * 18 + (r > 9 ? 60 : 0);
+      return { s: e.s, tx: (c - 9.5) * 48, ty: (r - 5.2) * 48, at, col: TCOL(e.n) }; });
     function drawTiles(t){
       const dim = 1 - .55 * ioCub(seg(t, LOGO_AT - 100, LOGO_AT + 500));
       x.save(); x.font = `800 15px Orbit, system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
-      TILES.forEach(T => { const p = RX_REDUCED ? 1 : oExpo(seg(t, T.at, T.at + 650)); if(p <= 0) return;
-        const px = lerp(T.sx, T.tx, p), py = lerp(T.sy, T.ty, p), land = seg(t, T.at + 380, T.at + 720), flash = land > 0 && land < 1 ? 1 - land : 0;
-        const [r, g, b] = T.col, a = (.2 + .5 * p) * dim;
-        x.save(); x.translate(px, py); x.rotate(T.rot * (1 - p));
+      TILES.forEach(T => { const q = RX_REDUCED ? 1 : seg(t, T.at, T.at + 420); if(q <= 0) return;
+        const p = oExpo(q), sc = RX_REDUCED ? 1 : oBack(q), px = T.tx, py = T.ty - (1 - p) * 70, land = seg(t, T.at + 200, T.at + 560), flash = land > 0 && land < 1 ? 1 - land : 0;
+        const [r, g, b] = T.col, a = (.25 + .5 * p) * dim;
+        x.save(); x.translate(px, py); x.scale(sc, sc);
         x.fillStyle = `rgba(${r},${g},${b},${a * .22})`; x.strokeStyle = `rgba(${r},${g},${b},${Math.min(1, a + flash * .6)})`; x.lineWidth = 1.4 / U;
         x.beginPath(); x.roundRect ? x.roundRect(-21, -21, 42, 42, 7) : x.rect(-21, -21, 42, 42); x.fill(); x.stroke();
         x.fillStyle = `rgba(${r},${g},${b},${a * .9})`; x.fillRect(-14, 15, 28, 2.4);
@@ -44421,7 +44429,7 @@ void main(){
         const x3 = x1 * cz - y2 * sz, y3 = x1 * sz + y2 * cz, k = F / (F + z2) * sc; return [x3 * k, y3 * k, k]; };
       const poly = (w, h) => { const c = [P(-w, -h), P(w, -h), P(w, h), P(-w, h)]; x.beginPath(); x.moveTo(c[0][0], c[0][1]); for(let q = 1; q < 4; q++) x.lineTo(c[q][0], c[q][1]); x.closePath(); };
       x.save(); x.globalAlpha = cl(prog * 2); x.lineJoin = 'miter';
-      poly(300, 300); x.strokeStyle = 'rgba(235,238,255,.7)'; x.lineWidth = 4.5 / U; x.shadowColor = 'rgba(255,150,230,.8)'; x.shadowBlur = 16 * DPR; x.stroke();
+      poly(300, 300); x.strokeStyle = 'rgba(235,238,255,.7)'; x.lineWidth = 4.5 / U; x.shadowColor = PW; x.shadowBlur = 16 * DPR; x.stroke();
       x.shadowBlur = 0; poly(332, 332); x.strokeStyle = pwl(.6); x.lineWidth = 1.6 / U; x.stroke();
       // 모서리 계단 (프레임과 같이 돈다)
       x.fillStyle = 'rgba(235,238,255,.9)';
@@ -44507,14 +44515,14 @@ void main(){
       let px = -total / 2, sl = [];
       // 크롬 글자: 위는 하얗게, 가운데 어두운 반사선, 아래는 은빛
       const chrome = x.createLinearGradient(0, -F * .46, 0, F * .46);
-      chrome.addColorStop(0, '#ffffff'); chrome.addColorStop(.42, '#d6daf2'); chrome.addColorStop(.5, '#6a6f98'); chrome.addColorStop(.56, '#f4f0ff'); chrome.addColorStop(.8, '#b7bde8'); chrome.addColorStop(1, '#ffd6f2');
+      chrome.addColorStop(0, '#ffffff'); chrome.addColorStop(.42, '#d6daf2'); chrome.addColorStop(.5, '#6a6f98'); chrome.addColorStop(.56, '#f4f0ff'); chrome.addColorStop(.8, '#b7bde8'); chrome.addColorStop(1, '#c5cbff');
       TITLE.forEach((c, i) => {
         const w = ws[i], mid = px + w / 2;
         if(c === '/'){
           sl.push(mid);
           x.save(); x.shadowColor = charge ? '#fff' : PW; x.shadowBlur = (charge ? 40 : 22) * (DPR); x.fillStyle = charge ? '#fff' : PW_L; x.textAlign = 'center'; x.fillText('/', mid, 0); x.restore();
         } else if(glyph[i] === c){
-          x.fillStyle = chrome; x.textAlign = 'center'; x.shadowColor = 'rgba(255,150,230,.55)'; x.shadowBlur = 14 * DPR;
+          x.fillStyle = chrome; x.textAlign = 'center'; x.shadowColor = 'rgba(140,158,255,.75)'; x.shadowBlur = 16 * DPR;
           if(SMALL.has(i)){ x.save(); x.font = FS; x.textBaseline = 'alphabetic'; x.fillText(c, mid, F * .36); x.restore(); } else if(SMALL.size){ x.save(); x.textBaseline = 'alphabetic'; x.fillText(c, mid, F * .36); x.restore(); } else x.fillText(c, mid, 0);
         } else {
           x.save(); x.font = `600 ${F * (W < 700 ? .34 : .5)}px ui-monospace, Menlo, monospace`; x.fillStyle = PW; x.shadowColor = PW; x.shadowBlur = 12 * DPR; x.textAlign = 'center'; x.fillText(glyph[i], mid, 0); x.restore();
@@ -44563,9 +44571,16 @@ void main(){
       x.setTransform(DPR, 0, 0, DPR, 0, 0);
       drawY2K(t, cam, ox, oy);
       drawDust(t, cam, ox, oy);
+      // 시작: 페리윙클 띠 두 줄이 사선으로 화면을 훑고 지나간다
+      if(!RX_REDUCED){ [[0, 1, 90], [140, -1, 40]].forEach(([dl, sg, bw]) => { const q = seg(t, dl, dl + 620); if(q <= 0 || q >= 1) return;
+        const e = ioCub(q), cx0 = lerp(-W * .3, W * 1.3, sg > 0 ? e : 1 - e);
+        x.save(); x.translate(cx0, H / 2); x.transform(1, 0, -SLANT, 1, 0, 0); x.fillStyle = sg > 0 ? pw(.85) : pwl(.9); x.fillRect(-bw / 2, -H, bw, H * 2); x.restore(); }); }
       // 월드
       x.save(); applyCam(cam, ox, oy, .6);
-      // 원소 타일이 날아와 주기율표로
+      // 박자마다 퍼지는 고리 (모션그래픽 리듬)
+      if(!RX_REDUCED) for(let k = 0; k < 7; k++){ const q = seg(t, k * BEAT, k * BEAT + 700); if(q <= 0 || q >= 1) continue; const e = oExpo(q);
+        x.beginPath(); x.arc(0, 0, 120 + e * 620, 0, 6.283); x.strokeStyle = pw((1 - q) * (k % 2 ? .35 : .6)); x.lineWidth = (k % 2 ? 2 : 6) * (1 - q) / U + .6 / U; x.stroke(); }
+      // 원소 타일이 박자에 맞춰 주기율표로
       drawTiles(t);
       // 글로우 서클 · 점선 동그라미 · 사각 프레임 · 계단 아크 · 글리프 격자 · 눈금자
       dotCircle(455, oExpo(seg(t, BEAT, BEAT + 600)), t, 14, .7);
@@ -44629,7 +44644,7 @@ void main(){
         box.querySelector('.pw-slash').setAttribute('viewBox', `0 0 ${W} ${H}`);
         box.querySelectorAll('.pw-slash line').forEach(ln => { ln.setAttribute('x1', xt + 20 * SLANT); ln.setAttribute('y1', -20); ln.setAttribute('x2', xb - 20 * SLANT); ln.setAttribute('y2', H + 20); });
         const L = Math.hypot(xb - xt, H), u = [(xb - xt) / L, H / L], n = [u[1], -u[0]];
-        box._geo = { xt, xb, pt, u, n, W, H, DPR };
+        box._geo = { xt, xb, pt, u, n, W, H, DPR, hy: lastHy || H * .64 };
         return () => {
           ['a', 'b'].forEach(k => {
             const h = document.createElement('div'); h.className = 'pw-half ' + k;
@@ -44654,6 +44669,10 @@ void main(){
     c.width = G.W * G.DPR; c.height = G.H * G.DPR; const g = c.getContext('2d'), t0 = performance.now();
     const sparks = Array.from({length: 90}, () => { const s = Math.random(), px = G.xt + (G.xb - G.xt) * s, py = -20 + (G.H + 40) * s, side = Math.random() < .5 ? 1 : -1, sp = 4 + Math.random() * 14, al = (Math.random() - .5) * 8;
       return { x: px, y: py, vx: G.n[0] * sp * side + G.u[0] * al, vy: G.n[1] * sp * side + G.u[1] * al, life: 380 + Math.random() * 600, d: Math.random() * 120, w: Math.random() < .3 }; });
+    const SY = EL.map(e => e.s);
+    const tiles = Array.from({length: window.RX_LOWPOW ? 22 : 44}, () => { const s = Math.random(), side = Math.random() < .5 ? 1 : -1, sp = 3 + Math.random() * 9, al = (Math.random() - .5) * 6;
+      return { x: G.xt + (G.xb - G.xt) * s, y: -20 + (G.H + 40) * s, vx: G.n[0] * sp * side + G.u[0] * al, vy: G.n[1] * sp * side + G.u[1] * al - 2, r: (Math.random() - .5) * .6, vr: (Math.random() - .5) * .12,
+        s: 26 + Math.random() * 18, sym: SY[(Math.random() * SY.length) | 0], life: 700 + Math.random() * 500, d: Math.random() * 140 }; });
     const step = now => {
       if(!document.body.contains(c)) return;
       const t = now - t0; g.setTransform(G.DPR, 0, 0, G.DPR, 0, 0); g.clearRect(0, 0, G.W, G.H);
@@ -44665,7 +44684,19 @@ void main(){
       sparks.forEach(p => { const tt = t - p.d; if(tt < 0){ alive++; return; } if(tt > p.life) return; alive++;
         const k = tt / 16, x = p.x + p.vx * k * (1 - tt / p.life * .5), y = p.y + p.vy * k * (1 - tt / p.life * .5) + .002 * tt * tt * .3, a = 1 - tt / p.life;
         g.beginPath(); g.moveTo(x, y); g.lineTo(x - p.vx * 2.2, y - p.vy * 2.2); g.strokeStyle = p.w ? `rgba(255,255,255,${a})` : `rgba(160,175,255,${a})`; g.lineWidth = p.w ? 2 : 1.4; g.stroke(); });
-      if(alive || t < 800) requestAnimationFrame(step); else g.clearRect(0, 0, G.W, G.H);
+      // 원소 타일 조각이 칼자국 양쪽으로 흩날린다
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      tiles.forEach(p => { const tt = t - p.d; if(tt < 0){ alive++; return; } if(tt > p.life) return; alive++;
+        const k = tt / 16, a = 1 - Math.pow(tt / p.life, 2), px = p.x + p.vx * k * (1 - tt / p.life * .4), py = p.y + p.vy * k * (1 - tt / p.life * .4) + .0009 * tt * tt;
+        g.save(); g.translate(px, py); g.rotate(p.r + p.vr * k); g.globalAlpha = a; const s = p.s;
+        g.fillStyle = 'rgba(140,158,255,.22)'; g.strokeStyle = 'rgba(197,203,255,.95)'; g.lineWidth = 1.4;
+        g.beginPath(); g.roundRect ? g.roundRect(-s / 2, -s / 2, s, s, s * .18) : g.rect(-s / 2, -s / 2, s, s); g.fill(); g.stroke();
+        g.fillStyle = 'rgba(140,158,255,.9)'; g.fillRect(-s * .32, s * .34, s * .64, 2);
+        g.fillStyle = '#eef0ff'; g.font = `800 ${s * .38}px Orbit, system-ui, sans-serif`; g.fillText(p.sym, 0, -1); g.restore(); });
+      // 바닥 충격파: 지평선 위로 납작한 고리가 퍼진다
+      [[40, 1], [200, .55]].forEach(([dl, a0]) => { const p = Math.min(1, Math.max(0, (t - dl) / 900)); if(p <= 0 || p >= 1) return; const e = 1 - Math.pow(1 - p, 3), R = e * G.W * .9;
+        g.beginPath(); g.ellipse(G.pt[0], G.hy + R * .06, R, R * .12, 0, 0, 6.283); g.strokeStyle = `rgba(160,176,255,${(1 - p) * a0})`; g.lineWidth = 3 * (1 - p) + 1; g.stroke(); });
+      if(alive || t < 1000) requestAnimationFrame(step); else g.clearRect(0, 0, G.W, G.H);
     };
     requestAnimationFrame(step);
   }
