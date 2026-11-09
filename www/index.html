@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 550종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 557종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 550종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 557종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -6201,7 +6201,9 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['배경을 새로 그렸어요. 별이 뜬 밤하늘 아래로 Y2K 느낌의 원근 격자 바닥과 빛나는 지평선이 깔려요',
+      ko: ['학습에 "작용기" 탭이 생겼어요. -OH, -COOH, -NH₂ 같은 작용기 10가지를 그림으로 보고, 어떤 성질이 생기는지와 예시 분자를 볼 수 있어요. 조합으로 만들어 본 분자는 도감 표시가 붙어요',
+           '도감이 557종이 됐어요. 헴과 엽록소의 뼈대인 포르핀, 그리고 가운데에 철·마그네슘·코발트·구리·아연·수은을 끼운 포르핀 6종이 들어왔어요. 수은 포르핀은 큐리의 피예요',
+           '배경을 새로 그렸어요. 별이 뜬 밤하늘 아래로 Y2K 느낌의 원근 격자 바닥과 빛나는 지평선이 깔려요',
            '메인 주기율표 칸을 새로 꾸몄어요. 유리 같은 칸에 분류 색이 은은하게 비치고, 아래 색 줄이 빛나요. 마우스를 올리면 살짝 떠올라요',
            '불꽃 반응·방전관 창도 새로 꾸몄어요. 이모지 대신 선 아이콘을 쓰고, 고른 원소 색으로 창이 물들어요',
            '오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
@@ -6255,7 +6257,9 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['New background: a starry night sky over a glowing Y2K perspective grid',
+      en: ['New Learn tab: functional groups. Ten groups like -OH, -COOH and -NH2 with diagrams, what they do and example molecules',
+           'The codex now has 557 entries: porphine, the ring behind heme and chlorophyll, plus six versions with iron, magnesium, cobalt, copper, zinc or mercury in the middle',
+           'New background: a starry night sky over a glowing Y2K perspective grid',
            'New look for the main table tiles: glassy cells tinted by category, glowing colour bars and a lift on hover',
            'Restyled the flame test and discharge tube window with line icons and colours that follow the chosen element',
            'Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
@@ -38280,25 +38284,204 @@ function rxSunGem(){
   .lh-new{position:absolute;right:8px;top:8px;font:800 8.5px/1 ui-monospace,monospace;letter-spacing:.1em;padding:3px 5px;border-radius:5px;background:linear-gradient(90deg,#c9d0ff,#9aa8ff);color:#141833}
   @media (max-width:520px){ .lh-grid{grid-template-columns:1fr 1fr} .lh-c{flex-direction:column;gap:8px} .lh-h{font-size:19px} }
 </style>
+<style>
+  /* ═══ 학습 › 작용기 도감 ═══ */
+  .fg{display:grid;gap:14px;padding:4px 2px 18px}
+  .fg-lead{font-size:13px;line-height:1.65;color:#c3c8ee;padding:12px 14px;border-radius:14px;background:linear-gradient(90deg,rgba(143,155,255,.12),rgba(255,255,255,.02));border:1px solid rgba(150,160,255,.18);border-left:3px solid #8f9bff}
+  .fg-lead b{color:#fff}
+  .fg-main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+  .fg-det{position:sticky;top:0;padding:14px;border-radius:18px;background:linear-gradient(160deg,rgba(40,44,96,.6),rgba(14,15,36,.85));border:1px solid rgba(150,160,255,.22);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .fg-det .k{font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
+  .fg-det h3{margin:3px 0 2px;font-size:22px;font-weight:900;color:#fff}
+  .fg-det h3 small{font-size:13px;font-weight:700;color:#a6addf;margin-left:6px}
+  .fg-det .fm{display:inline-block;margin:4px 0 8px;font-size:15px;font-weight:900;padding:3px 10px;border-radius:9px;color:#10122a;background:var(--gc)}
+  .fg-det svg.st{display:block;width:100%;max-width:320px;margin:0 auto 6px;height:auto}
+  .fg-det p{margin:6px 0 0;font-size:13px;line-height:1.65;color:#d6daf8;word-break:keep-all}
+  .fg-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .fg-tags span{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;color:#eef0ff;background:color-mix(in srgb,var(--gc) 18%,transparent);border:1px solid color-mix(in srgb,var(--gc) 50%,transparent)}
+  .fg-ex{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(150,160,255,.2)}
+  .fg-ex .h{font-size:10px;font-weight:900;letter-spacing:.14em;color:#a6addf;margin-bottom:6px}
+  .fg-ex .h::before{content:"// ";color:var(--gc)}
+  .fg-ex div{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12.5px;color:#d6daf8;border-bottom:1px solid rgba(150,160,255,.08)}
+  .fg-ex div b{min-width:84px;color:#fff;font-weight:800}
+  .fg-ex div i{margin-left:auto;font-style:normal;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:999px;color:#9097c8;background:rgba(255,255,255,.05)}
+  .fg-ex div i.got{color:#10122a;background:#8cf5d2}
+  .fg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .fg-c{display:grid;gap:2px;justify-items:start;text-align:left;font:inherit;cursor:pointer;padding:10px 12px;border-radius:14px;color:#e6e8ff;
+    background:linear-gradient(150deg,color-mix(in srgb,var(--gc) 12%,rgba(255,255,255,.03)),rgba(255,255,255,.015));border:1px solid color-mix(in srgb,var(--gc) 30%,rgba(150,160,255,.16));transition:transform .15s,box-shadow .2s,border-color .2s}
+  .fg-c:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--gc) 70%,transparent)}
+  .fg-c.on{border-color:var(--gc);box-shadow:0 0 0 1px var(--gc),0 0 16px color-mix(in srgb,var(--gc) 40%,transparent)}
+  .fg-c b{font-size:16px;font-weight:900;color:var(--gc)}
+  .fg-c span{font-size:12.5px;font-weight:800}
+  .fg-c small{font-size:10.5px;color:#9097c8}
+  .fg-note{font-size:11px;color:#8087b8;line-height:1.5}
+  svg.st .bd{stroke:#c9cdf2;stroke-width:3;stroke-linecap:round}
+  svg.st .bd.g{stroke:var(--gc)}
+  svg.st .at text{font-size:15px;font-weight:900;text-anchor:middle;dominant-baseline:central;fill:#10122a}
+  svg.st .at.r circle{fill:#272a5c;stroke:rgba(150,160,255,.45);stroke-dasharray:3 3}
+  svg.st .at.r text{fill:#c9cdf2;font-size:13px}
+  svg.st .hl{fill:color-mix(in srgb,var(--gc) 16%,transparent);stroke:var(--gc);stroke-width:1.5;stroke-dasharray:5 4}
+  @media (max-width:700px){ .fg-main{grid-template-columns:1fr} .fg-det{position:static} .fg-grid{grid-template-columns:1fr 1fr} }
+</style>
+<script>
+(function(){
+  if(typeof openHub !== 'function' || typeof hubHead !== 'function') return;
+  const EN = () => LANG === 'en';
+  const COL = { C:'#aab2c8', H:'#f4f5ff', O:'#ff7b7b', N:'#7aa8ff', S:'#ffd43b', Cl:'#69db7c' };
+  // 원자: [기호, x, y, 작용기?]  결합: [i, j, 차수, 작용기?]
+  const FG = [
+    { id:'oh', gc:'#ff8fa3', f:'–OH', ko:['하이드록시기','알코올'], en:['Hydroxy group','alcohols'],
+      at:[['R',22,50],['O',70,50,1],['H',104,30,1]], bd:[[0,1,1,1],[1,2,1,1]],
+      tags:{ ko:['물에 잘 녹음','수소 결합','중성'], en:['dissolves in water','hydrogen bonds','neutral'] },
+      d:{ ko:'산소에 수소가 하나 붙은 모양이에요. 물(H–O–H)에서 수소 하나를 떼고 그 자리에 탄소 사슬을 붙인 거라, 물이랑 잘 어울려요. 이게 붙은 물질을 <b>알코올</b>이라고 불러요.',
+          en:'An oxygen with one hydrogen. It is water with one H swapped for a carbon chain, so it gets along with water. Molecules with it are <b>alcohols</b>.' },
+      ex:[['에탄올','술 속 알코올','Ethanol','the alcohol in drinks'],['메탄올','마시면 눈이 멀 수 있음','Methanol','can cause blindness if drunk'],['글리세롤','달고 끈적한 보습제','Glycerol','sweet, sticky moisturiser']] },
+    { id:'cooh', gc:'#ffb86b', f:'–COOH', ko:['카복실기','카복실산'], en:['Carboxyl group','carboxylic acids'],
+      at:[['R',14,58],['C',56,58,1],['O',56,16,1],['O',96,80,1],['H',126,62,1]], bd:[[0,1,1],[1,2,2,1],[1,3,1,1],[3,4,1,1]],
+      tags:{ ko:['산성','신맛','수소 이온을 내놓음'], en:['acidic','sour','gives off H⁺'] },
+      d:{ ko:'탄소 하나에 =O와 –OH가 같이 붙어 있어요. 끝의 H가 수소 이온(H⁺)으로 잘 떨어져 나가서 <b>산성</b>을 띠어요. 식초가 신 이유가 이거예요.',
+          en:'One carbon carrying both =O and –OH. The end H leaves easily as H⁺, so it is <b>acidic</b> — the reason vinegar is sour.' },
+      ex:[['아세트산','식초','Acetic acid','vinegar'],['폼산','개미가 쏘는 산','Formic acid','what ants sting with'],['시트르산','레몬의 신맛','Citric acid','why lemons are sour']] },
+    { id:'nh2', gc:'#7aa8ff', f:'–NH₂', ko:['아미노기','아민'], en:['Amino group','amines'],
+      at:[['R',22,50],['N',70,50,1],['H',102,24,1],['H',102,76,1]], bd:[[0,1,1,1],[1,2,1,1],[1,3,1,1]],
+      tags:{ ko:['염기성','비린내','단백질 재료'], en:['basic','fishy smell','protein building block'] },
+      d:{ ko:'질소에 수소가 둘 붙었어요. 암모니아(NH₃)에서 수소 하나를 탄소 사슬로 바꾼 모양이라, 암모니아처럼 <b>염기성</b>이에요. 생선 비린내가 아민 냄새예요.',
+          en:'A nitrogen with two hydrogens — ammonia with one H swapped for carbon, so it is <b>basic</b> like ammonia. Fishy smells are amines.' },
+      ex:[['글리신','제일 단순한 아미노산','Glycine','the simplest amino acid'],['아닐린','염료의 원료','Aniline','starting point for dyes'],['도파민','기분을 좋게 하는 신호 물질','Dopamine','a feel-good messenger']] },
+    { id:'cho', gc:'#ffd43b', f:'–CHO', ko:['알데하이드기','알데하이드'], en:['Aldehyde group','aldehydes'],
+      at:[['R',20,60],['C',62,60,1],['O',62,18,1],['H',100,80,1]], bd:[[0,1,1],[1,2,2,1],[1,3,1,1]],
+      tags:{ ko:['향이 진함','쉽게 산화됨','은거울 반응'], en:['strong smells','oxidises easily','silver mirror test'] },
+      d:{ ko:'탄소 끝에 =O와 H가 붙어 있어요. 산소를 하나 더 받으면 카복실산이 될 만큼 반응을 잘 해요. 바닐라·계피 향이 알데하이드예요.',
+          en:'A chain-end carbon with =O and H. It reacts readily — one more oxygen turns it into a carboxylic acid. Vanilla and cinnamon smells are aldehydes.' },
+      ex:[['폼알데하이드','새집 증후군의 원인','Formaldehyde','behind "new house" smell'],['바닐린','바닐라 향','Vanillin','vanilla flavour'],['신남알데하이드','계피 향','Cinnamaldehyde','cinnamon smell']] },
+    { id:'co', gc:'#ff9ad5', f:'C=O', ko:['카보닐기 (케톤)','케톤'], en:['Carbonyl group (ketone)','ketones'],
+      at:[['R',16,66],['C',62,58,1],['O',62,16,1],['R′',108,66]], bd:[[0,1,1],[1,2,2,1],[1,3,1]],
+      tags:{ ko:['좋은 용매','휘발성'], en:['good solvent','evaporates fast'] },
+      d:{ ko:'탄소에 산소가 이중 결합으로 붙고, 양쪽에 탄소 사슬이 하나씩 있어요. 알데하이드와 달리 끝이 아니라 사슬 가운데에 있어요. 매니큐어 지우는 아세톤이 대표예요.',
+          en:'A carbon double-bonded to oxygen with carbon chains on both sides — in the middle of the chain, not at the end like an aldehyde. Acetone (nail polish remover) is the classic.' },
+      ex:[['아세톤','매니큐어 리무버','Acetone','nail polish remover'],['캠퍼','장뇌, 시원한 냄새','Camphor','cooling smell']] },
+    { id:'coo', gc:'#b197fc', f:'–COO–', ko:['에스터기','에스터'], en:['Ester group','esters'],
+      at:[['R',10,60],['C',48,60,1],['O',48,18,1],['O',86,80,1],['R′',126,62]], bd:[[0,1,1],[1,2,2,1],[1,3,1,1],[3,4,1]],
+      tags:{ ko:['과일 향','물에 잘 안 녹음'], en:['fruity smell','barely dissolves in water'] },
+      d:{ ko:'카복실산과 알코올이 물을 하나 내놓고 붙으면 생겨요. 과일 향의 정체가 대부분 에스터예요. 바나나·사과·파인애플 향이 다 이거예요.',
+          en:'Made when a carboxylic acid and an alcohol join and give off water. Most fruity smells are esters — banana, apple, pineapple.' },
+      ex:[['아세트산에틸','달콤한 과일 향 용매','Ethyl acetate','sweet fruity solvent'],['아세트산 아이소아밀','바나나 향','Isoamyl acetate','banana smell'],['아스피린','진통제','Aspirin','painkiller']] },
+    { id:'ether', gc:'#8cf5d2', f:'–O–', ko:['에터 결합','에터'], en:['Ether link','ethers'],
+      at:[['R',18,66],['O',68,40,1],['R′',118,66]], bd:[[0,1,1,1],[1,2,1,1]],
+      tags:{ ko:['잘 날아감','반응을 잘 안 함'], en:['very volatile','fairly unreactive'] },
+      d:{ ko:'산소 하나가 탄소 사슬 두 개 사이에 다리처럼 끼어 있어요. 알코올과 달리 산소에 H가 없어서 서로 수소 결합을 못 해요. 그래서 잘 날아가요.',
+          en:'One oxygen bridging two carbon chains. Unlike alcohols there is no H on the oxygen, so no hydrogen bonds between them — they evaporate easily.' },
+      ex:[['다이에틸 에터','옛날 마취제','Diethyl ether','early anaesthetic']] },
+    { id:'sh', gc:'#ffe08a', f:'–SH', ko:['싸이올기','싸이올'], en:['Thiol group','thiols'],
+      at:[['R',22,50],['S',70,50,1],['H',104,30,1]], bd:[[0,1,1,1],[1,2,1,1]],
+      tags:{ ko:['고약한 냄새','단백질 연결'], en:['awful smell','links proteins'] },
+      d:{ ko:'하이드록시기(–OH)에서 산소를 같은 족 아래 칸인 황으로 바꾼 모양이에요. 냄새가 지독해서 가스 누출 경고용 냄새로 일부러 넣기도 해요. 스컹크 냄새도 싸이올이에요.',
+          en:'Like –OH but with sulfur, oxygen\'s neighbour below. The smell is so strong it is added to gas so leaks can be noticed. Skunk spray is thiols too.' },
+      ex:[['시스테인','머리카락을 묶어 주는 아미노산','Cysteine','amino acid that holds hair together'],['메테인싸이올','가스 냄새','Methanethiol','gas-leak smell']] },
+    { id:'x', gc:'#69db7c', f:'–X', ko:['할로젠기','할로젠화 알킬'], en:['Halo group','haloalkanes'],
+      at:[['R',22,50],['Cl',76,50,1]], bd:[[0,1,1,1]],
+      tags:{ ko:['X = F, Cl, Br, I','무거움'], en:['X = F, Cl, Br, I','dense'] },
+      d:{ ko:'탄소에 할로젠(플루오린·염소·브로민·아이오딘)이 붙어요. 냉장고 냉매였던 프레온, 프라이팬 코팅 테플론이 플루오린이 붙은 것들이에요.',
+          en:'A halogen (F, Cl, Br, I) on carbon. Old fridge coolants (freons) and non-stick Teflon are fluorine versions.' },
+      ex:[['클로로폼','옛날 마취제','Chloroform','old anaesthetic'],['테플론','프라이팬 코팅','Teflon','non-stick coating']] },
+    { id:'amide', gc:'#ffa94d', f:'–CONH–', ko:['아마이드 결합','아마이드'], en:['Amide link','amides'],
+      at:[['R',10,60],['C',48,60,1],['O',48,18,1],['N',86,80,1],['H',86,118,1],['R′',126,62]], bd:[[0,1,1],[1,2,2,1],[1,3,1,1],[3,4,1,1],[3,5,1]],
+      tags:{ ko:['매우 튼튼함','단백질을 이음'], en:['very strong','links proteins'] },
+      d:{ ko:'카복실산과 아민이 물을 하나 내놓고 붙으면 생겨요. 아미노산끼리 이렇게 줄줄이 이어진 게 <b>단백질</b>이고, 이때는 펩타이드 결합이라고 불러요. 나일론도 이 결합으로 이어져 있어요.',
+          en:'Made when a carboxylic acid and an amine join and give off water. Amino acids chained this way make <b>proteins</b> (the peptide bond). Nylon is held together the same way.' },
+      ex:[['요소','오줌 속 질소 물질','Urea','nitrogen waste in urine'],['나일론','스타킹·밧줄','Nylon','stockings and rope'],['아세트아미노펜','해열진통제','Paracetamol','fever reducer']] },
+  ];
+  let SEL = 'oh';
+  const L = () => EN() ? 'en' : 'ko';
+
+  function draw(g){
+    const pts = g.at, xs = pts.map(a => a[1]), ys = pts.map(a => a[2]);
+    const minX = Math.min(...xs) - 26, maxX = Math.max(...xs) + 26, minY = Math.min(...ys) - 26, maxY = Math.max(...ys) + 26;
+    const gi = pts.map((a, i) => a[3] ? i : -1).filter(i => i >= 0);
+    let hl = '';
+    if(gi.length){ const gx = gi.map(i => pts[i][1]), gy = gi.map(i => pts[i][2]); const x0 = Math.min(...gx) - 20, y0 = Math.min(...gy) - 20, x1 = Math.max(...gx) + 20, y1 = Math.max(...gy) + 20; hl = `<rect class="hl" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="16"/>`; }
+    const bonds = g.bd.map(([i, j, o, gg]) => {
+      const a = pts[i], b = pts[j], dx = b[1] - a[1], dy = b[2] - a[2], L = Math.hypot(dx, dy) || 1, nx = -dy / L * 3.6, ny = dx / L * 3.6;
+      const ln = (ox, oy) => `<line class="bd${gg ? ' g' : ''}" x1="${a[1] + ox}" y1="${a[2] + oy}" x2="${b[1] + ox}" y2="${b[2] + oy}"/>`;
+      return o === 2 ? ln(nx, ny) + ln(-nx, -ny) : ln(0, 0);
+    }).join('');
+    const atoms = pts.map(a => {
+      const R = /^R/.test(a[0]), r = a[0] === 'H' ? 11 : 15;
+      return R ? `<g class="at r"><circle cx="${a[1]}" cy="${a[2]}" r="16"/><text x="${a[1]}" y="${a[2]}">${a[0]}</text></g>`
+               : `<g class="at"><circle cx="${a[1]}" cy="${a[2]}" r="${r}" fill="${COL[a[0]] || '#ccc'}"${a[3] ? ` stroke="${g.gc}" stroke-width="2.5"` : ''}/><text x="${a[1]}" y="${a[2]}"${a[0] === 'H' ? ' style="font-size:12px"' : ''}>${a[0]}</text></g>`;
+    }).join('');
+    return `<svg class="st" viewBox="${minX} ${minY} ${maxX - minX} ${maxY - minY}">${hl}${bonds}${atoms}</svg>`;
+  }
+  function render(){
+    const l = L(), g = FG.find(x => x.id === SEL) || FG[0];
+    const has = n => { try{ return found.has(n); }catch(e){ return false; } };
+    qBodyEl.innerHTML = `<div class="fg">
+      <div class="fg-lead">${EN() ? '<b>Functional groups</b> are small clusters of atoms that give a molecule its personality. Swap the group and the same carbon chain becomes sour, smelly, fruity or fishy. <b>R</b> stands for "the rest of the molecule".'
+        : '<b>작용기</b>는 분자에 붙어서 그 분자의 성격을 정하는 작은 원자 묶음이에요. 같은 탄소 사슬이라도 어떤 작용기가 붙느냐에 따라 시큼해지고, 고약해지고, 과일 향이 나요. 그림의 <b>R</b>은 "나머지 분자"라는 뜻이에요.'}</div>
+      <div class="fg-main">
+        <div class="fg-det" style="--gc:${g.gc}">
+          <div class="k">FUNCTIONAL GROUP // ${EN() ? 'DETAIL' : '작용기'}</div>
+          <h3>${g[l][0]}<small>${EN() ? g.ko[0] : g.en[0]}</small></h3>
+          <span class="fm">${g.f}</span>
+          ${draw(g)}
+          <p>${g.d[l]}</p>
+          <div class="fg-tags">${g.tags[l].map(s => `<span>${s}</span>`).join('')}</div>
+          <div class="fg-ex"><div class="h">${EN() ? 'EXAMPLES' : '예시 · ' + g.ko[1]}</div>
+            ${g.ex.map(e => `<div><b>${EN() ? e[2] : e[0]}</b>${EN() ? e[3] : e[1]}${has(e[0]) ? `<i class="got">${EN() ? 'in codex' : '도감 ✓'}</i>` : ''}</div>`).join('')}</div>
+        </div>
+        <div>
+          <div class="fg-grid">${FG.map(x => `<button type="button" class="fg-c${x.id === SEL ? ' on' : ''}" data-g="${x.id}" style="--gc:${x.gc}"><b>${x.f}</b><span>${x[l][0]}</span><small>${EN() ? x.en[1] : x.ko[1]}</small></button>`).join('')}</div>
+          <p class="fg-note" style="margin-top:10px">${EN() ? 'Ticks mean you already made that molecule in the lab.' : '도감 ✓ 표시는 조합으로 이미 만들어 본 분자예요.'}</p>
+        </div>
+      </div></div>`;
+    qBodyEl.querySelectorAll('.fg-c').forEach(b => b.addEventListener('click', () => { SEL = b.dataset.g; try{ SFX.pick(); }catch(_){} render(); if(innerWidth <= 700) try{ qBodyEl.querySelector('.fg-det').scrollIntoView({ behavior:'smooth', block:'start' }); }catch(_){} }));
+  }
+
+  const _hh = hubHead;
+  hubHead = function(){
+    const r = _hh.apply(this, arguments);
+    const tabs = qHeadEl.querySelector('.hubtabs');
+    if(tabs && !tabs.querySelector('[data-h="fg"]')){
+      const b = document.createElement('button');
+      b.className = 'hubt' + (HUB === 'fg' ? ' on' : ''); b.dataset.h = 'fg'; b.textContent = EN() ? 'Functional groups' : '작용기';
+      b.addEventListener('click', () => { HUB = 'fg'; openHub(); });
+      tabs.appendChild(b);
+    }
+    return r;
+  };
+  const _oh = openHub;
+  openHub = function(){
+    if(HUB !== 'fg') return _oh.apply(this, arguments);
+    try{ setFocus(false); }catch(e){}
+    try{ QZ.on = false; QZ.q = null; MEM.on = false; }catch(e){}
+    try{ clearFill(); }catch(e){}
+    qBarEl.classList.remove('on');
+    quizEl.classList.add('on');
+    hubHead();
+    render();
+  };
+})();
+</script>
+
 <script>
 (function(){
   const EN = () => LANG === 'en';
   // 묶음과 설명
   const GROUPS = [
     { id: 'practice', k: 'PRACTICE', ko: '문제 풀기', en: 'Quizzes & drills', tabs: ['quiz', 'mem', 'today', 'ion'] },
-    { id: 'explore', k: 'EXPLORE', ko: '탐구', en: 'Hands-on & facts', tabs: ['ahist', 'dyk', 'orbx', 'photo', 'stat'] },
+    { id: 'explore', k: 'EXPLORE', ko: '탐구', en: 'Hands-on & facts', tabs: ['ahist', 'dyk', 'orbx', 'photo', 'fg', 'stat'] },
     { id: 'play', k: 'PLAY', ko: '놀이', en: 'Games', tabs: ['ptest', 'star', 'type'] },
   ];
   const ICON = { quiz: '?', mem: '🧠', today: '📅', ion: '±', ahist: '🕰', dyk: '💡', orbx: '🌀', photo: '📷', stat: '⚡', ptest: '🎭', star: '⭐', type: '⌨' };
   const DESC = {
     ko: { quiz: '기호·이름·번호·분류, 8가지 유형으로 맞히기', mem: '카드를 넘기며 주기율표 외우기', today: '매일 바뀌는 오늘의 원소와 한 줄 운세', ion: '양이온·음이온과 이온의 이동',
-          ahist: '돌턴부터 전자 구름까지, 직접 실험해 보며', dyk: '눌러 보며 확인하는 신기한 과학 사실', orbx: '오비탈을 잘라서 속을 들여다보기', photo: '사람이 실제로 찍은 원자 사진들', stat: '마찰 전기로 네온 전구 켜기',
+          ahist: '돌턴부터 전자 구름까지, 직접 실험해 보며', dyk: '눌러 보며 확인하는 신기한 과학 사실', orbx: '오비탈을 잘라서 속을 들여다보기', fg: '-OH, -COOH… 분자의 성격을 정하는 원자 묶음', photo: '사람이 실제로 찍은 원자 사진들', stat: '마찰 전기로 네온 전구 켜기',
           ptest: '16문항으로 알아보는 나와 닮은 원소', star: '별 속 핵융합을 2048로', type: '원소 이름 빨리 치기' },
     en: { quiz: 'Symbols, names, numbers, groups — 8 question types', mem: 'Flip cards to memorise the table', today: 'A new element every day, with a fortune', ion: 'Cations, anions and how ions move',
-          ahist: 'From Dalton to the electron cloud, hands-on', dyk: 'Surprising facts you can poke at', orbx: 'Slice an orbital and look inside', photo: 'Real photographs of atoms', stat: 'Light a neon bulb with static',
+          ahist: 'From Dalton to the electron cloud, hands-on', dyk: 'Surprising facts you can poke at', orbx: 'Slice an orbital and look inside', fg: '-OH, -COOH… the atom clusters that set a molecule\'s character', photo: 'Real photographs of atoms', stat: 'Light a neon bulb with static',
           ptest: '16 questions to find your element', star: 'Stellar fusion as 2048', type: 'Type element names fast' },
   };
-  const NEW = new Set(['dyk']);
+  const NEW = new Set(['fg']);
   const clean = s => String(s || '').replace(/^[\p{Extended_Pictographic}⌨⌀-⏿️\s]+/u, '').trim();
 
   if(typeof HUB !== 'undefined' && HUB === 'quiz') HUB = 'home';
@@ -38436,6 +38619,7 @@ function rxSunGem(){
   // ── 선 아이콘 (24×24) ──
   const IC = {
     home: '<path d="M3 11l9-7 9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/>',
+    fg: '<path d="M10 4.5l5.5 3.2v6.4L10 17.3l-5.5-3.2V7.7z"/><path d="M15.5 7.7l4-2.2"/><circle cx="20.3" cy="5" r="1.6"/>',
     quiz: '<circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 1 1 3.8 2.5c-.8.4-1.2 1-1.2 1.8v.4"/><path d="M12 17.2v.1"/>',
     mem: '<rect x="3.5" y="6.5" width="12" height="14" rx="2"/><path d="M8 3.5h10.5a2 2 0 0 1 2 2v12"/><path d="M7 11h5M7 14.5h3"/>',
     today: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8.5 14.5h3"/>',
@@ -40827,6 +41011,41 @@ try{ RX_ACH_IMG.f50 = 'data:image/webp;base64,UklGRkQKAABXRUJQVlA4IDgKAABQNgCdAS
   });
 })();
 </script>
+<script>
+/* ── 포르피린 가족: 금속 없는 포르핀 + 가운데 금속을 바꿔 끼운 것들 ── */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const base = 'C1=CC2=[N]3C1=CC4=CC=C5C=C6C=CC7=[N]6[M]3([N]45)[N]8C(=C7)C=CC8=C2';
+  const ADD = [
+    { nm: '포르핀', key: 'C20+H14+N4', f: 'C₂₀H₁₄N₄', sm: 'C1=CC2=NC1=CC3=CC=C(N3)C=C4C=CC(=N4)C=C5C=CC(=C2)N5',
+      sub: '헴과 엽록소의 뼈대. 가운데가 텅 빈 포르피린 고리', en: ['Porphine', 'The bare porphyrin ring behind heme and chlorophyll — the middle is empty'],
+      tmi: '피롤 고리 네 개가 다리로 이어져 커다란 고리가 됐어요. 가운데 구멍에 질소 네 개가 안쪽을 보고 있어서, 금속 원자 하나를 쏙 끼워 넣을 수 있어요. 여기에 철을 넣으면 헴, 마그네슘을 넣으면 엽록소, 코발트를 넣으면 비타민 B12의 뼈대가 돼요. 금속을 바꿔 끼워 보세요.',
+      alias: 'porphine porphyrin 포르피린 포피린 고리 피롤' },
+    { nm: '철 포르핀', key: 'C20+Fe1+H12+N4', f: 'C₂₀H₁₂FeN₄', M: 'Fe', sub: '곁가지를 다 뗀 헴. 산소를 붙잡는 철 자리', en: ['Iron porphine', 'Heme with all the side chains removed'],
+      tmi: '헴 B에서 곁가지를 다 떼어 낸 모양이에요. 피에서 산소를 붙잡는 건 바로 이 가운데 철이에요. 포르피린 고리가 철을 꽉 잡아 주지 않으면, 철은 산소와 만나자마자 녹슬어 버려요.', alias: 'iron porphine 철 포르피린 헴 heme' },
+    { nm: '마그네슘 포르핀', key: 'C20+H12+Mg1+N4', f: 'C₂₀H₁₂MgN₄', M: 'Mg', sub: '엽록소의 심장. 가운데 마그네슘이 햇빛을 받음', en: ['Magnesium porphine', 'The heart of chlorophyll'],
+      tmi: '엽록소의 한가운데가 이 모양이에요. 철 대신 마그네슘이 들어가니까 피처럼 빨갛지 않고 초록빛이 돼요. 사람 피와 식물 잎이 가운데 원자 하나 차이라는 거예요.', alias: 'magnesium porphine 마그네슘 포르피린 엽록소 chlorophyll' },
+    { nm: '코발트 포르핀', key: 'C20+Co1+H12+N4', f: 'C₂₀H₁₂CoN₄', M: 'Co', sub: '비타민 B12 쪽 친척. 가운데가 코발트', en: ['Cobalt porphine', 'A cousin of vitamin B12 — cobalt in the middle'],
+      tmi: '비타민 B12에도 가운데 코발트가 박힌 고리가 있어요. 다만 B12의 고리(코린)는 포르피린에서 다리 하나가 빠진 조금 더 작은 고리예요. 그래서 이건 B12의 사촌쯤이에요.', alias: 'cobalt porphine 코발트 포르피린 비타민 b12 코린' },
+    { nm: '구리 포르핀', key: 'C20+Cu1+H12+N4', f: 'C₂₀H₁₂CuN₄', M: 'Cu', sub: '선명한 파랑·보라 염료의 뼈대', en: ['Copper porphine', 'The core of vivid blue-violet dyes'],
+      tmi: '구리가 들어간 이런 고리 분자들은 색이 아주 진하고 빛에도 잘 바래지 않아요. 비슷한 구리 프탈로사이아닌은 파란 물감과 옛날 CD-R의 기록층에 쓰였어요.', alias: 'copper porphine 구리 포르피린 프탈로사이아닌 염료' },
+    { nm: '아연 포르핀', key: 'C20+H12+N4+Zn1', f: 'C₂₀H₁₂N₄Zn', M: 'Zn', sub: '빛을 받으면 붉게 빛나는 포르피린', en: ['Zinc porphine', 'A porphyrin that glows red under light'],
+      tmi: '아연이 들어간 포르피린은 빛을 받으면 붉은 형광을 내요. 그래서 인공 광합성이나 태양 전지 연구에서 엽록소 대신 자주 써 봐요.', alias: 'zinc porphine 아연 포르피린 형광 인공 광합성' },
+    { nm: '수은 포르핀', key: 'C20+H12+Hg1+N4', f: 'C₂₀H₁₂HgN₄', M: 'Hg', sub: '큐리의 피? 가운데가 수은인 포르피린', en: ['Mercury porphine', 'Curie’s blood? A porphyrin with mercury in the middle'],
+      tmi: '수은도 포르피린 고리에 들어갈 수 있어요. 다만 수은 원자가 너무 커서 구멍에 쏙 안 들어가고 고리 위로 살짝 튀어나와요. 이 앱을 만든 과산의 수은 캐릭터 "큐리"는 피의 헴 속 철이 전부 수은이라는 설정인데, 그 피가 바로 이거예요.', alias: 'mercury porphine 수은 포르피린 큐리 curie 퀵실버' },
+  ];
+  ADD.forEach(a => {
+    if(EXACT[a.key]) return;
+    EXACT[a.key] = [a.f, a.nm, a.sub];
+    try{ REC_EN[a.nm] = a.en; }catch(e){}
+    try{ RX_SMILES[a.nm] = a.sm || base.replace('[M]', '[' + a.M + ']'); }catch(e){}
+    try{ RX_TMI[a.nm] = a.tmi; }catch(e){}
+    try{ if(typeof RX_DEX_ALIAS !== 'undefined') RX_DEX_ALIAS[a.nm] = a.alias; }catch(e){}
+    try{ if(RX_TAGSET.color) RX_TAGSET.color.add(a.nm); }catch(e){}
+  });
+})();
+</script>
+
 <style>
   /* ═══ 폰 화면 아래쪽 정리 (4.2.5+): 원자 모형 도구 버튼을 한 줄로, 탭·조합 바를 낮게 ═══ */
   @media (max-width:700px){
