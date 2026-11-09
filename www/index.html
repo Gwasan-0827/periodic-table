@@ -41854,12 +41854,15 @@ void main(){
       tip: P('꿀팁: 아래 개수 칸을 4로 맞추고 H를 한 번만 누르면 4개가 한꺼번에 담겨요', 'Tip: set the count box to 4, then tap H once to add all four') },
     { id: 'fail', t: P('일부러 실패해 보기', 'Fail on purpose'),
       d: P('없는 조합을 섞으면 실패해요. 실패하면 비슷한 물질 힌트가 나와요', 'Mix something that does not exist. Failing shows hints for similar substances'),
-      tip: P('예: 헬륨(He) 다섯 개. 비활성 기체는 아무랑도 안 붙어요', 'Try five helium (He). Noble gases bond with nothing'), r: [['He', 5]], free: true },
+      tip: P('예: 테네신(Ts)과 오가네손(Og). 맨 끝의 초무거운 원소들이라 만들자마자 1초도 안 돼서 사라져요', 'Try tennessine (Ts) and oganesson (Og). The heaviest elements fall apart in under a second'), r: [['Ts', 1], ['Og', 1]], free: true },
     { id: 'dex', t: P('도감 열어 보기', 'Open the Codex'),
       d: P('만든 물질이 전부 여기 모여요. 잠긴 카드를 누르면 힌트를 볼 수 있어요', 'Everything you make lands here. Tap a locked card for hints'), act: 'dex' },
     { id: 'quiz', t: P('학습 열어 보기', 'Open Learn'),
       d: P('퀴즈랑 미니게임으로 원소를 외워요. 오늘의 원소도 여기 있어요', 'Quizzes and minigames to learn elements. Element of the day lives here too'), act: 'quiz' },
   ];
+  // 앱은 레벨이 낮으면 Ts·Og 가 잠겨 있어서 섞을 수 없다 → 그땐 예전처럼 헬륨 다섯 개로
+  try{ const fm = M.find(m => m.id === 'fail'), lk = s => { const e = rxSym(s); return e && window.rxLvLocked && window.rxLvLocked(e.n); };
+    if(fm && fm.r.some(([s]) => lk(s))){ fm.r = [['He', 5]]; fm.tip = P('예: 헬륨(He) 다섯 개. 비활성 기체는 아무랑도 안 붙어요', 'Try five helium (He). Noble gases bond with nothing'); } }catch(e){}
   const LS = 'pt_quest';
   const st = () => Object.assign({ on: false, off: false, done: [] }, rxLS.get(LS, {}) || {});
   const save = s => rxLS.set(LS, s);
