@@ -44284,19 +44284,25 @@ void main(){
     // 카메라: 처음엔 확 들어가 있다가 감속하며 빠지고, 박자마다 펀치
     // 카메라 키프레임: 구간마다 다른 가감속 (빠지기 → 휩 팬 좌우 → 안착 → 펀치 아웃 → 천천히 밀기)
     // 차분한 카메라: 타일이 왼쪽 열부터 채워지는 걸 따라 천천히 미끄러지고 → 로고에서 가운데로 → 아주 느리게 밀기
-    const LOCK_AT = LOGO_AT + LOGO_DUR / 1.12;
+    const LOCK_AT = LOGO_AT + LOGO_DUR / 1.12, SNAP_AT = LOGO_AT + 30;
     const CAM = [
       { t: 0,       z: 1.34, r: -.24,  x: -300, y: 30 },
-      { t: 950,     z: 1.18, r: .08,   x: 230,  y: 10,  e: ioCub },
-      { t: LOGO_AT + 420, z: 1.0, r: 0, x: 0,  y: 0,   e: oBack },
+      { t: 760,     z: 1.16, r: .08,   x: 230,  y: 10,  e: ioCub },
+      // 쭉 빠졌다가 (주기율표 전체가 보이게) →
+      { t: SNAP_AT, z: .7,   r: -.06,  x: 0,    y: 10,  e: ioCub },
+      // → 로고가 뜨는 순간 확 들어간다
+      { t: SNAP_AT + 160, z: 1.2, r: .05, x: 0,   y: 0,   e: oExpo },
+      { t: SNAP_AT + 700, z: 1.0, r: 0,  x: 0,    y: 0,   e: oBack },
       { t: 3800,    z: 1.06, r: -.018, x: 0,    y: -8,  e: ioCub }
     ];
     function camAt(t){
       let k = 0; while(k < CAM.length - 2 && t >= CAM[k + 1].t) k++;
       const A = CAM[k], B = CAM[k + 1], e = (B.e || ioCub)(seg(t, A.t, B.t));
       let z = lerp(A.z, B.z, e), r = lerp(A.r, B.r, e), cx = lerp(A.x, B.x, e), cy = lerp(A.y, B.y, e);
-      // 숨 쉬듯 아주 약한 흔들림
-      cx += Math.sin(t * .0011) * 3; cy += Math.cos(t * .0009) * 2.5; r += Math.sin(t * .0007) * .002;
+      // 손에 든 카메라처럼 살아 있는 흔들림
+      cx += Math.sin(t * .0017) * 7 + Math.sin(t * .0043) * 3; cy += Math.cos(t * .0013) * 5; r += Math.sin(t * .0011) * .006;
+      // 조립하는 동안 박자마다 톡톡
+      for(let b = 0; b < 3; b++){ const bt = t - b * BEAT; if(bt > 0 && bt < 300){ z += .03 * Math.exp(-bt / 80); } }
       // 로고가 맞춰지는 순간 딱 한 번 펀치
       { const bt = t - LOCK_AT; if(bt > 0 && bt < 700){ const kk = Math.exp(-bt / 110) * Math.min(1, bt / 40); z += .07 * kk; r += .03 * kk * Math.cos(bt * .012); } }
       // 베기 직전: 살짝 뒤로 당겼다가 (베는 순간 놓인다)
@@ -44616,6 +44622,8 @@ void main(){
       });
       const sp = drawLogo(t, cam);
       x.restore();
+      // 확대되는 순간 번쩍
+      { const q = seg(t, SNAP_AT, SNAP_AT + 380); if(q > 0 && q < 1 && !RX_REDUCED){ x.save(); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.fillStyle = `rgba(214,220,255,${(1 - q) * (1 - q) * .45})`; x.fillRect(0, 0, W, H); x.restore(); } }
       // 별은 화면에 고정 (카메라가 돌아도 구석에 붙어 있게)
       { const pop = oBack(seg(t, BEAT * 3, BEAT * 3 + 450)), mv = ioCub(seg(t, LOGO_AT - 80, LOGO_AT + 520)), ROT = 75 * Math.PI / 180, S = U * cam.z;
         const P1 = [W * (W < 700 ? .8 : .85), H * (W < 700 ? .66 : .82)], P2 = [W * (W < 700 ? .18 : .15), H * (W < 700 ? .14 : .2)];
