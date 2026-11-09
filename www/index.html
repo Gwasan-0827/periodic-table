@@ -46050,6 +46050,7 @@ void main(){
     background:radial-gradient(ellipse at 50% 30%,#fff,#c9cde2 30%,#7a7e96 70%,transparent 72%);box-shadow:0 0 14px rgba(220,224,250,.45);animation:cuPool 3.6s ease-in-out infinite}
   @keyframes cuPool{0%,100%{width:44%}50%{width:50%}}
   html.lowpow .cu-drop:nth-child(n+3){display:none}
+  #cuCard h3 small{font-size:.5em;font-weight:800;margin-left:6px;opacity:.75;vertical-align:.2em}
   /* 큐리 한마디 */
   .cu-say{display:flex;gap:10px;align-items:flex-start;margin:10px 0 2px;padding:10px 12px;border-radius:14px;
     background:linear-gradient(135deg,rgba(220,224,245,.12),rgba(120,124,150,.08));border:1px solid rgba(220,224,245,.3)}
@@ -46174,15 +46175,23 @@ void main(){
     if(!d){ d = document.createElement('div'); d.id = 'cuCard'; document.body.appendChild(d); d.addEventListener('click', e => { if(e.target === d || e.target.closest('.x')) d.classList.remove('on'); }); }
     const en = EN();
     d.innerHTML = `<div class="cc"><button type="button" class="x" aria-label="close">×</button>
-      <div class="hd"><span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><div><div class="k">CHARACTER FILE // ${en ? 'MERCURY' : '수은'}</div><h3>${en ? 'Curie' : '큐리'}</h3><div class="s">${en ? 'Mercury, as a person · liquid at room temperature' : '수은 그 자체 · 상온에서 액체인 유일한 금속'}</div></div></div>
+      <div class="hd"><span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><div><div class="k">CHARACTER FILE // ${en ? 'MERCURY' : '수은'}</div><h3>${en ? 'Mercury <small>“Cury”</small>' : '수은 <small>애칭 큐리</small>'}</h3><div class="s">${en ? 'Mercury, as a person · liquid at room temperature' : '수은 그 자체 · 상온에서 액체인 유일한 금속'}</div></div></div>
       <div class="sec">${en ? 'PROFILE' : '프로필'}</div>
       <div class="rows">
-        <div><span>${en ? 'Nicknames' : '애칭'}</span>${en ? 'Curie / Bibi / Argentum' : '큐리 / 비비 / 아르겐툼'}</div>
+        <div><span>${en ? 'Name' : '이름'}</span>${en ? 'Mercury (Hg · No. 80)' : '수은 (Hg · 80번)'}</div>
+        <div><span>${en ? 'Nicknames' : '애칭'}</span>${en ? 'Cury / Bibi / Argentum' : '큐리 / 비비 / 아르겐툼'}</div>
+        <div><span>${en ? 'Isotope' : '동위원소'}</span>²⁰⁰Hg · ${en ? '80 protons, 120 neutrons' : '양성자 80 · 중성자 120'}</div>
+        <div><span>${en ? 'Age / height' : '나이 / 키'}</span>${en ? '25 (stops aging at 25) · 200.59 cm — its atomic mass' : '25세 (25세에 성장이 멈춤) · 200.59cm — 원자량 그대로'}</div>
+        <div><span>${en ? 'World' : '세계관'}</span>${en ? 'Perinia// · the strongest being in it' : '페리니아// · 세계관 최강'}</div>
         <div><span>${en ? 'Names' : '영어 이름'}</span>Mercury / Argentum Vivum</div>
         <div><span>${en ? 'Alias' : '별명'}</span>${en ? 'Quicksilver' : '퀵실버'}</div>
         <div><span>${en ? 'Blood' : '피'}</span>${en ? 'Heme Hg' : '헴 Hg'} (C₉₇H₁₀₉HgN₁₁O₂₁PS)${en ? ' — silver' : ' — 그래서 은색'}</div>
         <div><span>${en ? 'Saliva' : '침'}</span>${en ? 'also mercury' : '이것도 수은'}</div>
-        <div><span>${en ? 'Look' : '특징'}</span>${en ? 'Curled horns, a star mole under one eye, an 80 Hg hair clip with a ⚠' : '말린 뿔, 눈 밑 별 점, ⚠ 달린 80 Hg 머리핀'}</div>
+        <div><span>${en ? 'Look' : '특징'}</span>${en ? 'Glossy silver-white asymmetric bob, sleepy half-closed silver eyes, curved black-and-silver horns, a star mole under one eye, an 80 Hg hair clip with a ⚠, a ☿ mark' : '광택 나는 은백색 비대칭 단발, 반쯤 감긴 나른한 은회색 눈, 검정·은색 곡선 뿔, 눈 밑 별 점, ⚠ 달린 80 Hg 머리핀, ☿ 문양'}</div>
+        <div><span>${en ? 'Colours' : '공식 색'}</span>${en ? 'Silver-white, black, metallic shine (no lavender — that is just reflected light)' : '은백색 · 검정 · 금속 광택 (연보라는 조명 반사일 뿐 공식 색 아님)'}</div>
+        <div><span>${en ? 'Personality' : '성격'}</span>${en ? 'Laid-back and teasing, but looks after people. Gentle and avoids pointless fights despite being the strongest. Cool to the touch like metal, warms up near the creator' : '느긋하고 장난기 많지만 잘 챙겨 줘요. 최강인데도 온순해서 쓸데없는 싸움은 싫어해요. 평소엔 금속처럼 서늘한데 창조주 곁에선 따뜻해져요'}</div>
+        <div><span>${en ? 'Likes' : '좋아하는 것'}</span>${en ? 'The creator, big mercury beads, mercury baths (1–5 h a day), shiny metal' : '창조주, 커다란 수은 방울, 수은탕 목욕 (하루 1~5시간), 반짝이는 금속'}</div>
+        <div><span>${en ? 'Dislikes' : '싫어하는 것'}</span>${en ? 'Pointless fights, being frozen solid, oxidation' : '쓸데없는 싸움, 꽁꽁 얼어붙기, 산화'}</div>
       </div>
       <div class="sec">${en ? 'SKILLS' : '스킬'}</div>
       <div class="sk"><b>${en ? 'Mercury Shot' : '수은 발사'}</b><p>${en ? 'Makes a finger gun and fires a mercury bead. Shake while firing and it turns into a machine gun — mercury splits into tiny beads when shaken.' : '손가락으로 총을 만들어 수은 방울을 쏴요. 떨면서 쏘면 머신건이 돼요. 진짜 수은도 흔들면 작은 방울로 쪼개지거든요.'}</p></div>
@@ -47074,14 +47083,14 @@ void main(){
   // 등록된 친구들 (과산 설정)
   const P = [
     { s:'Hg', c:'#cfd3e6', ic:'☿',
-      ko:{ nm:'큐리', tag:'수은 그 자체. 피도 침도 전부 수은이에요.', chips:['수은 발사','수은 웅덩이','퀵실버'],
-        prof:[['이름','수은'],['애칭','큐리 · 비비 · 아르겐툼'],['영어 이름','Mercury / Argentum Vivum'],['별명','퀵실버'],['소속','12족 · 전이 금속']],
-        facts:['피도 수은이에요. 헴 Hg (포르피린 고리 있음)','눈 밑에 별 모양 점이 있어요','뿔이 예뻐요','좋아하는 것: 수은차, 금속 큐브 간식 (아말감 만들기)','네온 카페 단골손님'],
-        skills:['수은 발사 — 손가락 총으로 탕!','수은 웅덩이 (고학년 스킬)'], q:'…그거 내 피인데.' },
-      en:{ nm:'Curie', tag:'Mercury itself. Even her blood is mercury.', chips:['Mercury Shot','Mercury Pool','Quicksilver'],
-        prof:[['Name','Mercury'],['Nicknames','Curie · Bibi · Argentum'],['English','Mercury / Argentum Vivum'],['Alias','Quicksilver'],['Group','Group 12 · transition metal']],
-        facts:['Her blood is mercury too: Heme Hg (with a porphyrin ring)','A star-shaped beauty mark under one eye','Pretty horns','Likes: mercury tea, metal-cube snacks (amalgam time)','Regular at Neon Café'],
-        skills:['Mercury Shot — finger-gun, bang!','Mercury Pool (senior skill)'], q:'…that is my blood.' } },
+      ko:{ nm:'수은', tag:'애칭은 큐리. 페리니아// 최강인데 느긋하고 다정해요.', chips:['큐리','세계관 최강','수은 발사','수은 웅덩이'],
+        prof:[['이름','수은 (애칭 큐리)'],['다른 애칭','비비 · 아르겐툼'],['영어 이름','Mercury / Argentum Vivum'],['별명','퀵실버'],['동위원소','²⁰⁰Hg (양성자 80 · 중성자 120)'],['나이','25세 (25세에 성장이 멈춰요)'],['키','200.59cm (원자량 그대로)'],['세계관','페리니아// · 최강의 개체'],['소속','12족 · 전이 금속']],
+        facts:['은백색 비대칭 단발, 반쯤 감긴 나른한 은회색 눈','검정·은색 곡선 뿔, 눈 밑 별 점, ⚠ 달린 80 Hg 머리핀','공식 색은 은백색·검정·금속 광택 (연보라는 조명 반사)','느긋하고 장난기 많지만 잘 챙겨 줘요. 쓸데없는 싸움은 싫어해요','평소엔 금속처럼 서늘한데 창조주 곁에선 따뜻해져요','피도 침도 수은. 피는 헴 Hg (포르피린 고리 있음)','금·은·구리·주석 큐브를 씹어 아말감을 만들어요 (철은 퉤)','수은탕에서 하루 1~5시간 쉬어요','네온 카페 단골손님'],
+        skills:['수은 무한 생성·조작 (증기까지 회수)','수은 발사 — 손가락 총, 떨면 머신건','수은 웅덩이 (고학년 스킬)'], q:'음~? 또 뭐 하고 있었어~?' },
+      en:{ nm:'Mercury', tag:'Nickname Cury. The strongest in Perinia//, yet laid-back and kind.', chips:['Cury','Strongest','Mercury Shot','Mercury Pool'],
+        prof:[['Name','Mercury (nickname Cury)'],['Other nicknames','Bibi · Argentum'],['English','Mercury / Argentum Vivum'],['Alias','Quicksilver'],['Isotope','²⁰⁰Hg (80 p · 120 n)'],['Age','25 (stops aging at 25)'],['Height','200.59 cm (its atomic mass)'],['World','Perinia// · the strongest being'],['Group','Group 12 · transition metal']],
+        facts:['Glossy silver-white asymmetric bob, sleepy half-closed silver eyes','Curved black-and-silver horns, star mole under one eye, 80 Hg hair clip with ⚠','Official colours: silver-white, black, metallic shine (lavender is just reflected light)','Laid-back and teasing, but looks after people. Avoids pointless fights','Cool like metal, warms up near the creator','Blood and saliva are mercury. Blood: Heme Hg (with a porphyrin ring)','Chews gold, silver, copper and tin cubes into amalgam (iron: bleh)','Soaks in a mercury bath 1–5 hours a day','Regular at Neon Café'],
+        skills:['Endless mercury, shaped at will (even vapour comes back)','Mercury Shot — finger gun, shaky = machine gun','Mercury Pool (senior skill)'], q:'Hmm~? What were you up to~?' } },
     { s:'F', c:'#c0eb75', ic:'💎',
       ko:{ nm:'플루오린', tag:'뿔이 형석이에요. 할로젠에서 제일 사나워요.', chips:['할로젠','형석 뿔'],
         prof:[['이름','플루오린'],['뿔','형석 (CaF₂)'],['소속','17족 · 할로젠']],
