@@ -46456,14 +46456,15 @@ void main(){
 
 <style>
   /* ═══ 막대-공 리워크: 에너지 구체 + 깊이감 + 등장 연출 ═══ */
-  #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-ball{fill:var(--c);fill-opacity:.82;stroke:none}
+  #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-ball{fill:var(--c);fill-opacity:.26;stroke:var(--c);stroke-opacity:.95;stroke-width:var(--rw,2.4px)}
+  #mMol.eg .eg-base{fill:#090a1c;opacity:.88;pointer-events:none}
+  #mMol.eg .eg-ring{fill:none;stroke:#fff;stroke-opacity:.75;stroke-width:1;pointer-events:none}
   #mMol.eg .mol-at:not(.loose):not(.frag):not(.clr) .mol-hi{display:none}
-  #mMol.eg .eg-halo{fill:var(--c);opacity:.16;pointer-events:none}
-  #mMol.eg .eg-halo2{fill:var(--c);opacity:.22;pointer-events:none}
+  #mMol.eg .eg-halo{fill:var(--c);opacity:.13;pointer-events:none}
+  #mMol.eg .eg-halo2{fill:var(--c);opacity:.3;pointer-events:none}
   #mMol.eg .eg-core,#mMol.eg .eg-rim,#mMol.eg .eg-spec{pointer-events:none}
   #mMol.eg .eg-spec{fill:#fff;opacity:.75}
-  #mMol.eg .mol-sym{paint-order:stroke;stroke:rgba(10,12,24,.55);stroke-width:2.2px}
-  #mMol.eg .mol-at.dk .mol-sym{fill:#fff}
+  #mMol.eg .mol-sym{fill:#fff!important;paint-order:stroke;stroke:var(--c);stroke-opacity:.55;stroke-width:2.4px}
   #mMol.eg .mol-bonds line:not(.bx){stroke:#c9d2ea;opacity:.7}
   /* 숨쉬듯 빛나는 핵 */
   @keyframes egPulse{0%,100%{opacity:.85}50%{opacity:1}}
@@ -46500,8 +46501,8 @@ void main(){
       let defs = svg.querySelector('defs.eg-defs');
       if(defs) defs.remove();
       defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'); defs.setAttribute('class', 'eg-defs');
-      defs.innerHTML = `<radialGradient id="${id}c" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".28" stop-color="#fff" stop-opacity=".5"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
-        `<radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset=".68" stop-color="#fff" stop-opacity="0"/><stop offset=".9" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/></radialGradient>`;
+      defs.innerHTML = `<radialGradient id="${id}c" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".3" stop-color="#fff" stop-opacity=".1"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
+        `<radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset=".82" stop-color="#fff" stop-opacity=".22"/><stop offset=".95" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></radialGradient>`;
       svg.insertBefore(defs, svg.firstChild);
       const NS = 'http://www.w3.org/2000/svg';
       const mk = (tag, cls, attrs) => { const e = document.createElementNS(NS, tag); e.setAttribute('class', cls); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; };
@@ -46511,11 +46512,14 @@ void main(){
         const inn = g.querySelector('.mol-in'), ball = g.querySelector('.mol-ball'); if(!inn || !ball) return;
         const rr = +ball.getAttribute('r') || 8;
         if(!lp) inn.insertBefore(mk('circle', 'eg-halo', { r: (rr * 1.75).toFixed(1) }), ball);
-        inn.insertBefore(mk('circle', 'eg-halo2', { r: (rr * 1.28).toFixed(1) }), ball);
+        inn.insertBefore(mk('circle', 'eg-halo2', { r: (rr * 1.22).toFixed(1) }), ball);
+        inn.insertBefore(mk('circle', 'eg-base', { r: rr.toFixed(1) }), ball);
+        g.style.setProperty('--rw', Math.max(1.4, rr * .16).toFixed(1) + 'px');
         const after = ball.nextSibling;
         inn.insertBefore(mk('circle', 'eg-core', { r: rr.toFixed(1), fill: `url(#${id}c)` }), after);
         inn.insertBefore(mk('circle', 'eg-rim', { r: rr.toFixed(1), fill: `url(#${id}r)` }), after);
-        inn.insertBefore(mk('circle', 'eg-spec', { r: (rr * .13).toFixed(1), cx: (-rr * .34).toFixed(1), cy: (-rr * .38).toFixed(1) }), after);
+        inn.insertBefore(mk('circle', 'eg-ring', { r: (rr * .9).toFixed(1) }), after);
+        inn.insertBefore(mk('circle', 'eg-spec', { r: (rr * .1).toFixed(1), cx: (-rr * .42).toFixed(1), cy: (-rr * .44).toFixed(1) }), after);
         inn.appendChild(mk('circle', 'eg-flash', { r: (rr * .9).toFixed(1) }));
         const fl = g.querySelector('.mol-fl'); if(fl){ const fd = fl.style.getPropertyValue('--fd'); if(fd) inn.style.setProperty('--fd', fd); }
       });
