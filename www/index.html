@@ -44745,6 +44745,45 @@ void main(){
     .eb-hbtns{top:calc(10px + env(safe-area-inset-top));right:12px}
     .eb-bento{grid-template-columns:1fr}
   }
+  /* ── v4: 머리 = 왼쪽 이름표 + 오른쪽 전자 구름 무대 ── */
+  #elBig .eb-card::after{left:0;right:0;height:3px;opacity:.9;background:linear-gradient(90deg,#8f9bff,#ff9ad5,#ffe08a,#8cf5d2,#8f9bff);background-size:200% 100%;animation:ebHolo 8s linear infinite}
+  @keyframes ebHolo{to{background-position:200% 0}}
+  html.lowpow #elBig .eb-card::after{animation:none}
+  .eb-head{min-height:200px;padding:24px 24px 16px;gap:22px;align-items:center}
+  .eb-nrow{display:flex;align-items:center;gap:14px;margin:4px 0 2px}
+  .eb-nrow .eb-tile{position:relative;flex:none;width:70px;height:76px;margin:0}
+  .eb-nrow .eb-tile b{font-size:30px;background:none;text-shadow:none;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ec) 60%,transparent));-webkit-text-fill-color:currentColor;color:var(--ec)}
+  .eb-nrow > div{display:grid;gap:2px;min-width:0}
+  .eb-card.pop .eb-nrow .eb-tile{animation:ebTile .55s cubic-bezier(.2,1.4,.4,1) backwards}
+  .eb-orbit{width:260px;height:196px;margin:30px 0 0;border-radius:20px;overflow:hidden;
+    background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--ec) 14%,#121433),#0b0c20 75%);border:1px solid rgba(150,160,255,.2);box-shadow:inset 0 0 30px rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.25)}
+  .eb-orbit::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(rgba(170,180,255,.14) 1px,transparent 1.2px);background-size:14px 14px;
+    -webkit-mask-image:radial-gradient(circle,transparent 30%,#000 80%);mask-image:radial-gradient(circle,transparent 30%,#000 80%)}
+  .eb-orbit .eb-cloud{width:230px;height:230px;margin:-115px 0 0 -115px;-webkit-mask-image:none;mask-image:none}
+  .eb-deco{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+  .eb-deco .dash{fill:none;stroke:rgba(201,210,255,.25);stroke-dasharray:2 7;stroke-width:1.2;transform-box:view-box;transform-origin:125px 100px;animation:ebSpin 40s linear infinite}
+  .eb-deco .star{fill:#fff;transform-box:fill-box;transform-origin:center;animation:ebTw 2.6s ease-in-out infinite}
+  .eb-deco .star:nth-of-type(2){animation-delay:-.8s}.eb-deco .star:nth-of-type(3){animation-delay:-1.6s}.eb-deco .star:nth-of-type(4){animation-delay:-2.1s}
+  @keyframes ebTw{0%,100%{opacity:.25;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
+  html.lowpow .eb-deco .star,html.lowpow .eb-deco .dash{animation:none;opacity:.6}
+  .eb-otag{position:absolute;left:10px;bottom:9px;z-index:3;font-size:9.5px;font-weight:900;letter-spacing:.12em;color:#c3c8f2}
+  .eb-otag b{color:#fff;font-size:11px;letter-spacing:0;margin-left:4px;padding:1px 6px;border-radius:6px;background:color-mix(in srgb,var(--oc,#8f9bff) 30%,transparent);border:1px solid color-mix(in srgb,var(--oc,#8f9bff) 60%,transparent)}
+  .eb-otag2{position:absolute;left:12px;top:10px;z-index:3;font-size:9.5px;font-weight:900;letter-spacing:.12em;color:#8f97c8}
+  .eb-ttl b{font-size:34px}
+  .eb-hbtns{top:16px;right:16px}
+  @media (max-width:700px){
+    .eb-head{flex-direction:column-reverse;align-items:stretch;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;gap:12px}
+    .eb-nrow{justify-content:flex-start}
+    .eb-orbit{width:100%;height:190px;margin:0}
+    .eb-hbtns .eb-hbtn{background:rgba(11,12,32,.7)}
+    .eb-orbit .eb-cloud{width:220px;height:220px;margin:-110px 0 0 -110px}
+    .eb-ttl{text-align:left;align-items:stretch}
+    .eb-ttl .k,.eb-chips{justify-content:flex-start}
+    .eb-nrow .eb-tile{width:60px;height:66px}
+    .eb-nrow .eb-tile b{font-size:26px}
+    .eb-ttl b{font-size:28px}
+    .eb-hbtns{top:calc(20px + env(safe-area-inset-top));right:22px}
+  }
 </style>
 <script>
 (function(){
@@ -44821,8 +44860,8 @@ void main(){
     const d = document.createElement('div');
     d.id = 'elBig'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
     d.innerHTML = `<div class="eb-card"><div class="eb-wm" id="ebWm"></div><div class="eb-glow"></div>
-      <div class="eb-head"><div class="eb-ttl"><span class="k" id="ebKick"></span><b id="ebName"></b><span class="en" id="ebEn"></span><span id="ebSub"></span><div class="eb-chips" id="ebChips"></div></div>
-        <div class="eb-orbit" id="ebOrbit"><canvas id="ebOrbSvg" class="eb-cloud"></canvas><div class="eb-tile" id="ebTile"></div></div>
+      <div class="eb-head"><div class="eb-ttl"><span class="k" id="ebKick"></span><div class="eb-nrow"><div class="eb-tile" id="ebTile"></div><div><b id="ebName"></b><span class="en" id="ebEn"></span></div></div><span id="ebSub"></span><div class="eb-chips" id="ebChips"></div></div>
+        <div class="eb-orbit" id="ebOrbit"><canvas id="ebOrbSvg" class="eb-cloud"></canvas><svg class="eb-deco" viewBox="0 0 250 200" preserveAspectRatio="xMidYMid meet"><circle class="dash" cx="125" cy="100" r="92"/><path class="star" d="M30 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path class="star" d="M218 52l1.5 4.5 4.5 1.5-4.5 1.5-1.5 4.5-1.5-4.5-4.5-1.5 4.5-1.5z"/><path class="star" d="M205 160l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path class="star" d="M48 150l1.5 4.5 4.5 1.5-4.5 1.5-1.5 4.5-1.5-4.5-4.5-1.5 4.5-1.5z"/></svg><span class="eb-otag2">e⁻ CLOUD</span><span class="eb-otag" id="ebOtag"></span></div>
         <div class="eb-hbtns"><button type="button" class="eb-hbtn nav" id="ebPrev">‹</button><button type="button" class="eb-hbtn nav" id="ebNext">›</button><button type="button" class="eb-hbtn" id="ebClose" aria-label="close">×</button></div></div>
       <div class="eb-tabs" id="ebTabs"></div>
       <div class="eb-body" id="ebBody">
@@ -44948,21 +44987,9 @@ void main(){
     cv.width = cv.height = Math.round(css * dpr);
     const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, css, css);
     let pts = [];
-    try{ pts = rxCloudPoints(e.s, window.RX_LOWPOW ? 2200 : 3400).pts; }catch(err){}
-    const X = css / 2, sc = css * 0.47, cy = Math.cos(.7), sy = Math.sin(.7), cp = Math.cos(.42), sp = Math.sin(.42);
-    const g = c.createRadialGradient(X, X, 0, X, X, X); const col = colOf(e);
-    g.addColorStop(0, col + '55'); g.addColorStop(.6, col + '14'); g.addColorStop(1, col + '00');
-    c.fillStyle = g; c.fillRect(0, 0, css, css);
-    c.globalCompositeOperation = 'lighter';
-    const cols = {};
-    for(const q of pts){
-      const x = q.x * cy + q.z * sy, z = -q.x * sy + q.z * cy, y = q.y * cp - z * sp, zz = q.y * sp + z * cp;
-      const cc = cols[q.l] || (cols[q.l] = RX_SUB_COL[q.l].join(','));
-      c.fillStyle = `rgba(${cc},${(.28 + .32 * (zz + 1) / 2).toFixed(2)})`;
-      const s = 1.3 + (zz + 1) * .5;
-      c.fillRect(X + x * sc - s / 2, X + y * sc - s / 2, s, s);
-    }
-    c.globalCompositeOperation = 'source-over';
+    try{ pts = rxCloudPoints(e.s, 3000).pts; }catch(err){}
+    try{ rxCloudDraw(c, css, css, pts, { yaw: .7, pitch: .42, zoom: .98 }, { fog: true, nuc: true, fogSize: .72, fogAlpha: 1.25 }); }catch(err){}
+    try{ const cf = rxCfgFull(e.s), v = cf[cf.length - 1]; const ot = document.getElementById('ebOtag'); ot.style.setProperty('--oc', `rgb(${RX_SUB_COL[v.l].join(',')})`); ot.innerHTML = (LANG === 'en' ? 'OUTER' : '바깥') + `<b>${v.n}${v.l}${String(v.e).replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])}</b>`; }catch(err){}
   }
 
   /* ── 주기율표 속 위치 ── */
