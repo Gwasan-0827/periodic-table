@@ -6201,7 +6201,7 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['설정 › 모형 색에 "산소만", "금속&산소만", "커스터마이징"이 생겼어요. 산소만·금속&산소만은 나머지 원자를 회색으로 눌러서 보고 싶은 원자만 눈에 띄게 하고, 커스터마이징은 원소 35개의 색을 직접 골라요',
+      ko: ['설정 › 모형 색에 "산소만", "금속&산소만", "커스터마이징"이 생겼어요. 산소만은 산소만, 금속&산소만은 금속과 산소만 실제 색으로 바꾸고 나머지는 약속 색 그대로예요. 커스터마이징은 원소 35개의 색을 직접 골라요',
            '결과 창 도구 줄에 "✦ 에너지 / ○ 클래식" 버튼이 생겼어요. 빛나는 새 모형과 원래 모형을 골라 볼 수 있어요',
            '막대-공 모형을 새로 그렸어요. 원자가 가운데부터 빛나는 에너지 구체가 되고, 멀리 있는 원자는 흐리게 보여서 깊이감이 생겼어요. 처음 나올 때 원자가 빛을 터뜨리며 하나씩 나타나고 결합이 차례로 그어져요',
            '조합 트레이에 원소를 250개까지 담을 수 있어요 (원래 200개)',
@@ -6262,7 +6262,7 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['Settings › Model colours now has Oxygen only, Metal & O and Custom. The first two grey out everything else; Custom lets you pick colours for 35 elements',
+      en: ['Settings › Model colours now has Oxygen only, Metal & O and Custom. The first two switch only those atoms to real colours; Custom lets you pick colours for 35 elements',
            'New Energy / Classic button on the result card to switch between the glowing models and the original look',
            'New ball-and-stick look: atoms are glowing energy spheres, far atoms fade for depth, and atoms burst in one by one as bonds draw themselves',
            'The mix now holds 250 elements instead of 200',
@@ -8644,8 +8644,8 @@ function renderSettings(){
           LANG === 'en' ? 'Which element is selected when you open the page. Cobalt is Asriel\'s pick, argon is the maker\'s favourite.' : '페이지를 열었을 때 골라져 있는 원소예요. 코발트는 리엘이 추천, 아르곤은 만든 사람이 제일 좋아하는 원소예요.')}
     ${row(LANG === 'en' ? 'Model colours' : '모형 색',
           seg('molcol', LANG === 'en' ? [['cpk','Convention'],['real','Real'],['oxy','Oxygen only'],['metox','Metal & O'],['custom','Custom']] : [['cpk','약속 색'],['real','실제 색'],['oxy','산소만'],['metox','금속&산소만'],['custom','커스터마이징']], rxMolCol()),
-          LANG === 'en' ? 'Convention is the textbook scheme (red oxygen). Real gives sky-blue oxygen (its colour as a liquid) and see-through hydrogen and nitrogen. Oxygen only / Metal & O grey out everything else so those atoms stand out. Custom lets you pick a colour per element.'
-                        : '약속 색은 교과서 색(산소 빨강)이에요. 실제 색은 산소가 하늘색(액체일 때 색), 수소·질소는 비쳐 보여요. 산소만 · 금속&산소만은 나머지를 회색으로 눌러서 그 원자들만 눈에 띄게 해요. 커스터마이징은 원소마다 색을 직접 골라요.')}
+          LANG === 'en' ? 'Convention is the textbook scheme (red oxygen). Real gives sky-blue oxygen (its colour as a liquid) and see-through hydrogen and nitrogen. Oxygen only / Metal & O use real colours for just those atoms and the convention for the rest. Custom lets you pick a colour per element.'
+                        : '약속 색은 교과서 색(산소 빨강)이에요. 실제 색은 산소가 하늘색(액체일 때 색), 수소·질소는 비쳐 보여요. 산소만은 산소만 실제 색, 금속&산소만은 금속과 산소만 실제 색이고 나머지는 약속 색이에요. 커스터마이징은 원소마다 색을 직접 골라요.')}
     ${row(t('setBg'), sw('bg', typeof BG_ON !== 'undefined' && BG_ON), t('setBgNote'))}
 
 
@@ -12838,11 +12838,12 @@ const rxMolCustom = () => { try{ return JSON.parse(localStorage.getItem('pt_molc
 const rxClear = s => rxMolCol() === 'real' && RX_REAL[s] === 0;
 const rxCpk = s => {
   const mc = rxMolCol();
-  if(mc === 'oxy') return s === 'O' ? RX_CPK.O : s === 'H' ? RX_MUTE_H : RX_MUTE;
+  // 산소만 / 금속&산소만: 그 원자만 실제 색, 나머지는 약속 색
+  const realOf = s => { const v = RX_REAL[s]; return v === 0 ? RX_REAL_GLASS : v || RX_REAL_METAL; };
+  if(mc === 'oxy') return s === 'O' ? realOf('O') : (RX_CPK[s] || rxColor(s));
   if(mc === 'metox'){
-    if(s === 'O') return RX_CPK.O;
     let metal = false; try{ const e = rxSym(s); metal = !!(e && RX_METAL.has(e.c)); }catch(err){}
-    return metal ? (RX_CPK[s] || rxColor(s)) : s === 'H' ? RX_MUTE_H : RX_MUTE;
+    return (s === 'O' || metal) ? realOf(s) : (RX_CPK[s] || rxColor(s));
   }
   if(mc === 'custom'){ const c = rxMolCustom()[s]; return c || RX_CPK[s] || rxColor(s); }
   if(mc !== 'real') return RX_CPK[s] || rxColor(s);
