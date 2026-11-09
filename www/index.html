@@ -46020,12 +46020,16 @@ void main(){
     }
   }
   // 결과 창을 지켜보다가 헴 Hg 면 큐리 모드, 닫히거나 다른 물질이면 원래대로
-  setInterval(() => {
+  const chk = () => {
     const m = document.getElementById('modal'), on = m && m.classList.contains('on');
     let is = false; try{ is = on && typeof RX !== 'undefined' && RX && RX.raw === NM; }catch(e){}
     if(is && !active){ try{ apply(); }catch(e){} }
     else if(!is && active) clear();
-  }, 300);
+  };
+  // 그려지기 전에 바로 테마 적용 (깜빡임 방지)
+  const mo = document.getElementById('modal');
+  if(mo) new MutationObserver(chk).observe(mo, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+  setInterval(chk, 300);
 
   // 자세히 알아보기 → 큐리 프로필 카드
   function profile(){
