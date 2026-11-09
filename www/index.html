@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['메인 주기율표 칸을 새로 꾸몄어요. 유리 같은 칸에 분류 색이 은은하게 비치고, 아래 색 줄이 빛나요. 마우스를 올리면 살짝 떠올라요',
+      ko: ['배경을 새로 그렸어요. 별이 뜬 밤하늘 아래로 Y2K 느낌의 원근 격자 바닥과 빛나는 지평선이 깔려요',
+           '메인 주기율표 칸을 새로 꾸몄어요. 유리 같은 칸에 분류 색이 은은하게 비치고, 아래 색 줄이 빛나요. 마우스를 올리면 살짝 떠올라요',
            '불꽃 반응·방전관 창도 새로 꾸몄어요. 이모지 대신 선 아이콘을 쓰고, 고른 원소 색으로 창이 물들어요',
            '오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
            '원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
@@ -6254,7 +6255,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['New look for the main table tiles: glassy cells tinted by category, glowing colour bars and a lift on hover',
+      en: ['New background: a starry night sky over a glowing Y2K perspective grid',
+           'New look for the main table tiles: glassy cells tinted by category, glowing colour bars and a lift on hover',
            'Restyled the flame test and discharge tube window with line icons and colours that follow the chosen element',
            'Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
            'New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
@@ -45558,6 +45560,61 @@ void main(){
   body.cellr-sq #grid .cell{border-radius:2px}
   html.lowpow #grid .cell .sym{text-shadow:none}
 </style>
+
+<style>
+  /* ═══ Y2KBG 4.2.5: Y2K 밤하늘 + 원근 격자 바닥 ═══ */
+  body{background:radial-gradient(120% 70% at 50% 0%,#1a1b4a 0%,transparent 60%),linear-gradient(180deg,#0b0c22 0%,#0d0e2a 55%,#16123f 100%) fixed,var(--bg)}
+  #y2kbg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #y2kbg .y2k-hz{position:absolute;left:0;right:0;bottom:34vh;height:1px;background:linear-gradient(90deg,transparent,rgba(143,155,255,.55) 25%,rgba(255,154,213,.6) 50%,rgba(143,155,255,.55) 75%,transparent);
+    box-shadow:0 0 18px rgba(177,140,255,.45),0 0 60px rgba(143,155,255,.25)}
+  #y2kbg .y2k-hz::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22vh;background:radial-gradient(50% 100% at 50% 100%,color-mix(in srgb,var(--cc,#8f9bff) 22%,rgba(143,155,255,.12)),transparent 70%);transition:background 1s ease}
+  #y2kbg .y2k-fl{position:absolute;left:0;right:0;bottom:0;height:34vh;width:100%;
+    -webkit-mask-image:linear-gradient(180deg,transparent,#000 40%);mask-image:linear-gradient(180deg,transparent,#000 40%)}
+  #y2kbg .y2k-fl line{stroke:rgba(143,155,255,.3);stroke-width:1;vector-effect:non-scaling-stroke}
+  #y2kbg .y2k-fl .hl line{stroke:rgba(143,155,255,.26)}
+  #y2kbg .y2k-fl .mv{animation:y2kFloor 5s linear infinite}
+  @keyframes y2kFloor{from{transform:translateY(0)}to{transform:translateY(var(--st,10px))}}
+  #y2kbg .y2k-st{position:absolute;inset:0;width:100%;height:100%}
+  #y2kbg .y2k-st path{fill:#e9ebff;transform-box:fill-box;transform-origin:center;animation:y2kTw 3.2s ease-in-out infinite}
+  #y2kbg .y2k-st path:nth-child(3n){animation-delay:-1.1s;fill:#ffd6f0}
+  #y2kbg .y2k-st path:nth-child(3n+1){animation-delay:-2.2s;fill:#cfd5ff}
+  #y2kbg .y2k-st circle{fill:#c9cdf2;opacity:.5}
+  @keyframes y2kTw{0%,100%{opacity:.15;transform:scale(.55)}50%{opacity:.85;transform:scale(1)}}
+  body:not(.bg-on) #y2kbg .y2k-fl .mv,body:not(.bg-on) #y2kbg .y2k-st path{animation:none}
+  html.lowpow #y2kbg .y2k-fl .mv{animation:none}
+  html.lowpow #y2kbg .y2k-st path{animation:none;opacity:.5}
+  body.ovl #y2kbg .y2k-fl .mv{animation-play-state:paused}
+  /* 예전 물결은 격자 바닥과 겹치니 살짝만 */
+  body #waves{opacity:.35!important}
+  @media (max-width:700px){
+    #y2kbg .y2k-hz{bottom:26vh}
+    #y2kbg .y2k-fl{height:26vh}
+  }
+</style>
+<script>
+(function(){
+  if(document.getElementById('y2kbg')) return;
+  const d = document.createElement('div'); d.id = 'y2kbg'; d.setAttribute('aria-hidden', 'true');
+  // 반짝이 별 (자리는 고정: 매번 같은 하늘)
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const star = (x, y, s) => `<path d="M${x} ${y - s}L${x + s * .28} ${y - s * .28}L${x + s} ${y}L${x + s * .28} ${y + s * .28}L${x} ${y + s}L${x - s * .28} ${y + s * .28}L${x - s} ${y}L${x - s * .28} ${y - s * .28}Z"/>`;
+  // 원근 격자 바닥: 소실점으로 모이는 세로선 + 멀수록 촘촘한 가로선 (가로선은 한 칸씩 흘러간다)
+  function floor(){
+    const W = 1000, H = 300, cx = W / 2; let v = '', h = '';
+    for(let i = -14; i <= 14; i++){ const xb = cx + i * 90; v += `<line x1="${cx + i * 6}" y1="0" x2="${xb}" y2="${H}"/>`; }
+    for(let k = 1; k <= 14; k++){ const y = H * Math.pow(k / 14, 2.2); h += `<line x1="0" y1="${y.toFixed(1)}" x2="${W}" y2="${y.toFixed(1)}"/>`; }
+    return `<svg class="y2k-fl" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><g>${v}</g><g class="hl">${h}</g></svg>`;
+  }
+  let st = '';
+  for(let i = 0; i < 16; i++) st += star((rnd() * 1000).toFixed(0), (rnd() * 560).toFixed(0), (3 + rnd() * 6).toFixed(1));
+  for(let i = 0; i < 40; i++) st += `<circle cx="${(rnd() * 1000).toFixed(0)}" cy="${(rnd() * 620).toFixed(0)}" r="${(0.6 + rnd() * 1.1).toFixed(1)}"/>`;
+  d.innerHTML = `<div class="y2k-hz"></div>${floor()}`;
+  // 별은 배경 그림 한 장으로 (전체 화면 SVG 층을 따로 두면 유리 패널 흐림 효과와 겹쳐 화면이 번지는 문제가 있었음)
+  let sg = []; for(let i = 0; i < 46; i++){ const x = (rnd() * 100).toFixed(1), y = (rnd() * 64).toFixed(1), s = (0.6 + rnd() * 1.2).toFixed(1), a = (0.25 + rnd() * 0.5).toFixed(2); sg.push(`radial-gradient(${s}px ${s}px at ${x}% ${y}%, rgba(220,224,255,${a}), transparent)`); }
+  d.style.backgroundImage = sg.join(',');
+  const g = document.getElementById('glow'); if(g && g.parentNode) g.parentNode.insertBefore(d, g); else document.body.appendChild(d);
+})();
+</script>
 
 </body>
 </html>
