@@ -37141,9 +37141,22 @@ void main(){
       if(d < m){ const f = (m - d) / d * .5; Q[i].x += dx * f; Q[i].y += dy * f; } } }
     return Q;
   }
+  // 미리 계산한 2D 배치 (무거운 원자만): 헴 Hg 는 포르피린을 가운데, 네모 고리를 둘레, 꼬리를 아래로
+  const PRE2D = { '헴 Hg': [[110.5,-5.4],[109.2,-33.3],[82.0,-40.8],[68.3,-17.0],[40.2,-16.9],[29.2,-41.7],[2.5,-40.7],[-10.7,-66.1],[-37.8,-59.7],[-62.2,-70.0],[-88.5,-64.3],[-103.3,-41.9],[-130.9,-40.6],[-90.7,-17.5],[-36.1,-31.5],[-13.3,-16.1],[-1.2,12.2],[13.7,-12.4],[-30.4,9.2],[-56.2,-1.3],[-62.9,-27.5],[-80.3,12.6],[-105.4,4.9],[-131.3,11.0],[-150.0,-9.3],[-67.0,36.5],[-83.6,56.4],[-106.5,37.8],[-118.0,61.5],[-143.6,62.4],[-151.2,36.1],[-178.8,30.1],[-185.8,58.0],[-172.6,84.6],[-144.3,91.2],[-118.6,106.1],[-90.0,115.8],[-60.7,129.1],[-33.8,144.7],[-2.9,154.3],[27.5,158.7],[56.1,153.4],[71.5,129.3],[100.7,119.9],[123.1,140.5],[102.2,158.3],[78.0,173.4],[86.8,133.5],[82.9,106.2],[57.7,96.2],[33.7,85.2],[4.9,94.4],[-10.9,118.8],[-17.7,149.4],[-22.4,177.8],[-3.3,199.0],[-47.7,192.3],[-75.1,197.4],[-95.5,177.2],[-123.1,179.8],[-86.0,149.7],[-57.7,153.7],[-36.6,171.9],[-69.9,179.6],[-39.6,131.1],[-11.0,135.4],[14.8,148.8],[19.5,176.6],[40.8,193.7],[38.5,127.3],[27.2,100.5],[6.0,116.4],[28.7,138.4],[9.9,78.9],[11.8,53.1],[-14.3,37.2],[-34.5,59.4],[-60.3,59.9],[-75.9,81.8],[-103.4,82.6],[-62.4,105.2],[-79.0,128.4],[-35.1,104.7],[-19.3,84.0],[-3.1,65.1],[14.1,38.2],[35.2,56.6],[61.2,48.8],[53.2,22.1],[78.3,8.2],[99.7,25.5],[126.2,21.9],[137.6,-4.1],[147.4,39.7],[172.2,25.1],[192.0,45.3],[219.2,40.9],[224.1,13.1],[204.0,-6.6],[175.4,-2.9],[158.0,-25.7],[137.3,-44.4],[114.0,-61.3],[87.9,-72.4],[61.0,-81.7],[33.7,-89.5],[7.6,-99.3],[-23.3,-92.2],[-44.4,-120.8],[-67.2,-103.5],[-38.8,-102.1],[-12.0,-118.4],[-41.2,-137.2],[-12.4,-141.6],[-2.9,-167.4],[5.6,-119.2],[-3.8,-91.1],[-93.4,-98.4],[-118.5,-85.1],[-141.3,-69.9],[-160.3,-49.3],[-173.7,-24.8],[-182.8,1.8],[237.4,61.5],[238.3,88.6],[221.2,110.2],[193.6,110.4],[175.3,131.5],[147.9,131.0],[29.1,9.6],[-23.7,54.1],[-40.7,34.8]] };
+  // 뼈대식: 탄소 3개 이상이면 수소와 탄소 글자를 숨기고 선끼리 만나는 꼭짓점으로 (헤테로 원자는 OH·NH₂처럼)
+  const skel = m => m.atoms.filter(a => a.s === 'C').length >= 3;
   function flat2(m){
     if(m.flat2) return m.flat2;
-    let Q; try{ Q = layout2d(m.atoms, m.sbonds.map(b => [b[0], b[1]])); }catch(e){ Q = flatten(m.atoms, m.sbonds.map(b => [b[0], b[1]])); }
+    const B = m.sbonds.map(b => [b[0], b[1]]), HV = m.atoms.map((a, i) => i).filter(i => m.atoms[i].s !== 'H');
+    let Q;
+    const pre = (() => { try{ const p = PRE2D[RX.raw]; return p && p.length === HV.length && m.atoms.slice(0, HV.length).every(a => a.s !== 'H') ? p : null; }catch(e){ return null; } })();
+    const par = m.atoms.map(() => -1); B.forEach(([i, j]) => { if(m.atoms[i].s === 'H' && par[i] < 0) par[i] = j; if(m.atoms[j].s === 'H' && par[j] < 0) par[j] = i; });
+    if(pre || (skel(m) && HV.length >= 3)){
+      // 무거운 원자만 배치하고 수소는 붙은 원자 쪽으로
+      const idx = new Map(HV.map((g, k) => [g, k])), HB = B.filter(([i, j]) => idx.has(i) && idx.has(j)).map(([i, j]) => [idx.get(i), idx.get(j)]);
+      let QH; if(pre) QH = pre.map(p => ({ x: p[0], y: p[1] })); else { try{ QH = layout2d(HV.map(i => m.atoms[i]), HB); }catch(e){ QH = flatten(HV.map(i => m.atoms[i]), HB); } }
+      Q = m.atoms.map((a, i) => idx.has(i) ? QH[idx.get(i)] : (par[i] >= 0 && idx.has(par[i]) ? { x: QH[idx.get(par[i])].x, y: QH[idx.get(par[i])].y } : { x: 0, y: 0 }));
+    } else { try{ Q = layout2d(m.atoms, B); }catch(e){ Q = flatten(m.atoms, B); } }
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; Q.forEach(q => { x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y); });
     // 가로가 더 길게 눕힌다
     let P = Q.map(q => ({ x: q.x - (x0 + x1) / 2, y: q.y - (y0 + y1) / 2 }));
@@ -37151,7 +37164,7 @@ void main(){
     let hw = 1, hh = 1; P.forEach(q => { hw = Math.max(hw, Math.abs(q.x)); hh = Math.max(hh, Math.abs(q.y)); });
     const sc = Math.min(128 / hw, 82 / hh, 2.1);   // 위 탭·아래 버튼에 안 닿게
     const bl = m.sbonds.map(([i, j]) => Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y)).sort((p, q) => p - q)[m.sbonds.length >> 1] || 30;
-    return (m.flat2 = { P, sc, fs: Math.max(9, Math.min(22, bl * sc * .42)) });
+    return (m.flat2 = { P, sc, scF: Math.min(188 / hw, 140 / hh, 3), fs: Math.max(9, Math.min(22, bl * sc * .42)), sk: skel(m) });
   }
   function toggleUI(model){
     const st = document.getElementById('mStage'); if(!st) return;
@@ -37186,7 +37199,9 @@ void main(){
         lanes.forEach(L => { const l = document.createElementNS(NS, 'line'); if(o === 1.5 && L > 0) l.setAttribute('class', 'dash'); G.appendChild(l); segs.push({ i, j, L, l, o }); });
       });
       const labels = model.atoms.map(a => { const t = document.createElementNS(NS, 'text'); t.textContent = a.s; t.setAttribute('fill', COL(a.s)); G.appendChild(t); return t; });
-      svg.appendChild(G); model.sg = { G, segs, labels };
+      const deg = model.atoms.map(() => 0), nh = model.atoms.map(() => 0);
+      model.sbonds.forEach(([i, j]) => { const hi = model.atoms[i].s === 'H', hj = model.atoms[j].s === 'H'; if(!hi && !hj){ deg[i]++; deg[j]++; } if(hj) nh[i]++; if(hi) nh[j]++; });
+      svg.appendChild(G); model.sg = { G, segs, labels, deg, nh };
       rxDraw(RX_YAW, RX_PITCH, svgEl ? model : undefined);
     }
     return r;
@@ -37197,25 +37212,32 @@ void main(){
     if(m && m.struct && m.sg){
       const cY = Math.cos(yaw), sY = Math.sin(yaw), cX = Math.cos(pitch), sX = Math.sin(pitch), D = 420;
       const F = S2D && !mm ? flat2(m) : null;
-      const P = F ? F.P.map(q => ({ X: m.cx + q.x * F.sc, Y: m.cy + q.y * F.sc, z: 0, f: 1 })) : m.atoms.map(a => {
+      const FS = F && document.body.classList.contains('st-full-on') ? F.scF : F ? F.sc : 1, FK = F ? FS / F.sc : 1;
+      const P = F ? F.P.map(q => ({ X: m.cx + q.x * FS, Y: m.cy + q.y * FS, z: 0, f: 1 })) : m.atoms.map(a => {
         const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1 = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
         return { X: m.cx + x1 * m.sc * f, Y: m.cy + y1 * m.sc * f, z: z2, f };
       });
       let zmin = 1e9, zmax = -1e9; P.forEach(p => { zmin = Math.min(zmin, p.z); zmax = Math.max(zmax, p.z); });
       const depth = p => zmax > zmin ? (p.z - zmin) / (zmax - zmin) : 1;   // 0 = 뒤, 1 = 앞
-      const fs0 = F ? F.fs : Math.max(9, Math.min(20, m.sc * 14)), gap = Math.max(2.2, fs0 * .2), w0 = Math.max(1.3, fs0 * .1);
+      const fs0 = F ? Math.min(F.fs * FK, 15) : Math.max(9, Math.min(20, m.sc * 14)), gap = Math.max(2.2, fs0 * .2), w0 = Math.max(1.3, fs0 * .1);
       const items = [];
+      const SK = F && F.sk, A = m.atoms;
+      const hidL = i => SK && (A[i].s === 'H' || (A[i].s === 'C' && (m.sg.deg[i] || 0) > 0)), hidB = s => SK && (A[s.i].s === 'H' || A[s.j].s === 'H');
       m.sg.labels.forEach((t, i) => {
+        const hd = hidL(i); t.style.display = hd ? 'none' : '';
+        if(SK && !hd && A[i].s !== 'C' && A[i].s !== 'H'){ const h = m.sg.nh[i] || 0; t.textContent = A[i].s + (h ? 'H' + (h > 1 ? String(h).replace(/\d/g, c => '₀₁₂₃₄₅₆₇₈₉'[c]) : '') : ''); }
+        else if(t.textContent !== A[i].s) t.textContent = A[i].s;
         const p = P[i], d = depth(p), fs = fs0 * p.f;
         t.setAttribute('x', p.X.toFixed(1)); t.setAttribute('y', p.Y.toFixed(1)); t.setAttribute('font-size', fs.toFixed(1));
         t.setAttribute('opacity', (.45 + .55 * d).toFixed(2));
         items.push([p.z + .5, t]);
       });
       m.sg.segs.forEach(s => {
+        s.l.style.display = hidB(s) ? 'none' : '';
         const a = P[s.i], b = P[s.j];
         const dx = b.X - a.X, dy = b.Y - a.Y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
         const lo = s.i < s.j ? 1 : -1, px = -uy * lo, py = ux * lo, f = (a.f + b.f) / 2, o = s.L * gap * f * (s.o >= 3 ? 1.1 : 1.6);
-        const ka = Math.min(fs0 * a.f * .62, d * .38), kb = Math.min(fs0 * b.f * .62, d * .38);
+        const ka = hidL(s.i) ? 0 : Math.min(fs0 * a.f * .62, d * .38), kb = hidL(s.j) ? 0 : Math.min(fs0 * b.f * .62, d * .38);
         s.l.setAttribute('x1', (a.X + ux * ka + px * o).toFixed(1)); s.l.setAttribute('y1', (a.Y + uy * ka + py * o).toFixed(1));
         s.l.setAttribute('x2', (b.X - ux * kb + px * o).toFixed(1)); s.l.setAttribute('y2', (b.Y - uy * kb + py * o).toFixed(1));
         s.l.setAttribute('stroke-width', (w0 * f).toFixed(2));
@@ -46219,9 +46241,9 @@ void main(){
   #card #mStage.st-full.rx-stage{position:fixed!important;inset:12px!important;z-index:200!important;width:auto!important;height:auto!important;max-height:none!important;margin:0!important;border-radius:20px!important;
     background:radial-gradient(circle at 50% 45%,#1d2150,#0a0b1c 75%)!important;background-color:#0a0b1c!important;border:1px solid rgba(150,160,255,.35)!important;box-shadow:0 0 0 100vmax rgba(5,6,16,.82),0 30px 80px rgba(0,0,0,.6)!important}
   #card #mStage.st-full.rx-stage svg#mMol{position:absolute!important;inset:56px 8px 8px!important;width:calc(100% - 16px)!important;height:calc(100% - 64px)!important}
-  #mStage .st-fx,#mStage .st-ft{display:none}
+  #mStage .st-close,#mStage .st-ft{display:none}
   #card.is-fail .st-big,#card.is-fail .eg-sty{display:none!important}
-  #card #mStage.st-full.rx-stage .st-fx{display:grid;place-items:center;position:absolute;right:12px;top:12px;z-index:30;opacity:1!important;pointer-events:auto!important;width:36px;height:36px;border-radius:11px;font:inherit;font-size:18px;cursor:pointer;color:#e6e8ff;background:rgba(14,16,40,.85);border:1px solid rgba(150,160,255,.3)}
+  #card #mStage.st-full.rx-stage .st-close{display:grid;place-items:center;position:absolute;right:12px;top:12px;z-index:30;opacity:1!important;pointer-events:auto!important;width:36px;height:36px;border-radius:11px;font:inherit;font-size:18px;cursor:pointer;color:#e6e8ff;background:rgba(14,16,40,.85);border:1px solid rgba(150,160,255,.3)}
   #card #mStage.st-full.rx-stage .st-ft{display:block;position:absolute;left:16px;top:12px;z-index:4;pointer-events:none}
   #card #mStage.st-full.rx-stage .st-ft .k{display:block;font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
   #card #mStage.st-full.rx-stage .st-ft b{font-size:18px;color:#fff}
@@ -46234,6 +46256,33 @@ void main(){
   #stBig.cu .sc::before{background:linear-gradient(90deg,#80849c,#ffffff,#9a9db4,#ffffff,#80849c);background-size:200% 100%}
   #stBig.cu .lbl{stroke:#23242e}
   @media (max-width:700px){ #stBig{padding:0} #stBig .sc{width:100%;height:100%;border-radius:0;border:0} #stBig .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 10px} #stBig .hd .f{display:none} .rtool.st-big em{display:none} #stBig .hint{display:none} }
+
+  /* ── 크게 보기 v2: 위 유리 머리줄(이름·화학식·2D/3D·닫기) + 아래 도구 줄 ── */
+  #card #mStage.st-full.rx-stage .st-ft{left:12px!important;right:12px;top:12px!important;height:60px;display:flex!important;align-items:center;gap:14px;padding:0 64px 0 18px;border-radius:16px;
+    background:linear-gradient(135deg,rgba(28,31,70,.78),rgba(14,16,40,.78));border:1px solid rgba(150,160,255,.25);box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(10px);z-index:5!important}
+  #card #mStage.st-full.rx-stage .st-ft .tt{display:grid;gap:2px;min-width:0}
+  #card #mStage.st-full.rx-stage .st-ft .tt b{font-size:19px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #card #mStage.st-full.rx-stage .st-ft .fm{font:600 13px/1 Kanit,system-ui,sans-serif;color:#c5cbff;padding:6px 11px;border-radius:999px;background:rgba(140,158,255,.14);border:1px solid rgba(140,158,255,.3);white-space:nowrap}
+  #card #mStage.st-full.rx-stage .st-ft .nat{font-size:11px;font-weight:800;color:#8f97c8;white-space:nowrap}
+  #card #mStage.st-full.rx-stage .st-close{display:grid!important;place-items:center;position:absolute!important;right:24px!important;top:24px!important;transform:none!important;animation:none!important;z-index:31!important;
+    width:36px;height:36px;border-radius:11px;font:inherit;font-size:20px;line-height:1;cursor:pointer;color:#e6e8ff;background:rgba(255,255,255,.07);border:1px solid rgba(150,160,255,.35);opacity:1!important;pointer-events:auto!important}
+  #card #mStage.st-full.rx-stage .st-close:hover{background:rgba(255,120,140,.25);border-color:rgba(255,140,160,.6);color:#fff}
+  #card #mStage.st-full.rx-stage #mStruct2d{top:24px!important;right:72px!important;z-index:30!important}
+  #card #mStage.st-full .por-tg{top:86px!important;right:24px!important}
+  #card #mStage.st-full.rx-stage svg#mMol{inset:80px 8px 64px!important;height:calc(100% - 144px)!important}
+  #card #mStage.st-full.rx-stage .rx-tabs,#card #mStage.st-full.rx-stage #mTools{background:linear-gradient(135deg,rgba(28,31,70,.78),rgba(14,16,40,.78))!important;border:1px solid rgba(150,160,255,.25)!important;border-radius:14px!important;backdrop-filter:blur(10px);padding:4px!important;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  #card #mStage.st-full.rx-stage #mTools{bottom:12px!important;right:12px!important}
+  #card #mStage.st-full.rx-stage .rx-cap,#card #mStage.st-full.rx-stage .rx-note,#card #mStage.st-full.rx-stage #mMolNote{display:none!important}
+  @media (max-width:700px){
+    #card #mStage.st-full.rx-stage .st-ft{left:0!important;right:0;top:0!important;border-radius:0;height:calc(58px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);border-width:0 0 1px}
+    #card #mStage.st-full.rx-stage .st-ft .fm,#card #mStage.st-full.rx-stage .st-ft .nat{display:none}
+    #card #mStage.st-full.rx-stage .st-close{top:calc(11px + env(safe-area-inset-top))!important;right:12px!important}
+    #card #mStage.st-full.rx-stage #mStruct2d{top:calc(14px + env(safe-area-inset-top))!important;right:58px!important}
+    #card #mStage.st-full .por-tg{top:calc(70px + env(safe-area-inset-top))!important;right:12px!important}
+    #card #mStage.st-full.rx-stage svg#mMol{inset:calc(64px + env(safe-area-inset-top)) 0 110px!important;height:calc(100% - 174px - env(safe-area-inset-top))!important}
+    #card #mStage.st-full.rx-stage #mTools{left:8px!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;justify-content:center;flex-wrap:wrap}
+    #card #mStage.st-full.rx-stage .rx-tabs{bottom:calc(62px + env(safe-area-inset-bottom))!important;left:50%!important;transform:translateX(-50%)}
+  }
 </style>
 <script>
 (function(){
@@ -46369,12 +46418,12 @@ void main(){
     if(on){
       try{ if(RX && RX.views && RX.views.struct && RX_VIEW !== 'struct') rxSetView('struct'); }catch(e){}
       st.classList.add('st-full'); document.body.classList.add('st-full-on');
-      let x = st.querySelector('.st-fx');
-      if(!x){ x = document.createElement('button'); x.type = 'button'; x.className = 'st-fx'; x.setAttribute('aria-label', 'close'); x.textContent = '×';
+      let x = st.querySelector('.st-close');
+      if(!x){ x = document.createElement('button'); x.type = 'button'; x.className = 'st-close'; x.setAttribute('aria-label', 'close'); x.textContent = '×';
         x.addEventListener('click', e => { e.stopPropagation(); full(false); }); x.addEventListener('pointerdown', e => e.stopPropagation()); st.appendChild(x); }
       let t = st.querySelector('.st-ft'); if(!t){ t = document.createElement('div'); t.className = 'st-ft'; st.appendChild(t); }
       const nm = (document.getElementById('mName') || {}).textContent || '', fm = (document.getElementById('mFormula') || {}).textContent || '';
-      t.innerHTML = `<span class="k">STRUCTURAL FORMULA // ${EN() ? 'STRUCTURE' : '구조식'}</span><b>${nm}</b>`;
+      t.innerHTML = `<span class="tt"><span class="k">MOLECULE // ${EN() ? 'BIG VIEW' : '크게 보기'}</span><b>${nm}</b></span>${fm ? `<span class="fm">${fm}</span>` : ''}<span class="nat">${(() => { try{ return RX_M && RX_M.atoms ? RX_M.atoms.length + (EN() ? ' atoms' : '개 원자') : ''; }catch(e){ return ''; } })()}</span>`;
     } else {
       st.classList.remove('st-full'); document.body.classList.remove('st-full-on');
     }
