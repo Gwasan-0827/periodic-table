@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
+      ko: ['오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
+           '원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
            '학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
            '오늘의 원소를 새로 만들었어요. 전자 껍질 그림, 오늘의 운세 카드, 며칠 연속으로 들어왔는지 기록이 생겼고, 이제 매일 아침 9시에 바뀌어요',
            '외우기도 새로 만들었어요. 작은 주기율표를 끌어서 범위를 고르고, 원소마다 얼마나 외웠는지 고리로 보여 줘요. 자꾸 틀리는 원소만 따로 복습할 수 있고, 플래시카드는 뒤집고 밀어서 넘겨요',
@@ -6251,7 +6252,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
+      en: ['Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
+           'New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
            'The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
            'Element of the day is new: an electron shell drawing, a fortune card and a visit streak. It now changes every morning at 9',
            'Memorise is new too. Drag across a mini periodic table to pick a range, see how well you know each element as a ring, review only the ones you keep missing, and flip and swipe the flashcards',
@@ -45243,6 +45245,125 @@ void main(){
   }catch(e){}
   place(); setTimeout(place, 700);
   if(typeof applyStaticText === 'function'){ const _ap = applyStaticText; applyStaticText = function(){ const r = _ap.apply(this, arguments); try{ place(); if(S.on) fill(S.el); }catch(e){} return r; }; }
+})();
+</script>
+
+<style>
+  /* ═══ 오비탈 크게 보기 리워크 (원소 파일과 같은 Y2K 페리윙클) ═══ */
+  #orbBig{background:rgba(6,7,20,.84)}
+  #orbBig .orb-card{width:min(1080px,100%);background:
+      radial-gradient(110% 70% at 0% 0%,color-mix(in srgb,var(--cc) 18%,transparent),transparent 55%),
+      radial-gradient(90% 60% at 100% 100%,rgba(177,140,255,.14),transparent 60%),
+      linear-gradient(160deg,rgba(28,30,70,.98),rgba(11,12,30,.99))}
+  #orbBig .orb-card::after{left:0;right:0;height:3px;opacity:.9;background:linear-gradient(90deg,#8f9bff,#ff9ad5,#ffe08a,#8cf5d2,#8f9bff);background-size:200% 100%;animation:ebHolo 8s linear infinite}
+  @keyframes ebHolo{to{background-position:200% 0}}
+  html.lowpow #orbBig .orb-card::after{animation:none}
+  /* 머리 */
+  #orbBig .orb-head{padding:16px 18px 14px;gap:14px;align-items:center;border-bottom:1px solid rgba(150,160,255,.14)}
+  #orbBig .ob-tile{width:58px;height:64px;border-radius:15px;overflow:hidden;box-shadow:0 0 22px color-mix(in srgb,var(--cc) 40%,transparent)}
+  #orbBig .ob-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),transparent 42%)}
+  #orbBig .ob-tile b{font-size:26px;color:var(--cc);text-shadow:0 0 14px color-mix(in srgb,var(--cc) 70%,transparent)}
+  #orbBig .ob-ttl .k{display:flex;align-items:center;gap:6px}
+  #orbBig .ob-ttl .k::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cc);box-shadow:0 0 8px var(--cc)}
+  #orbBig .orb-head b#orbTitle{font-size:24px;letter-spacing:-.01em;background:linear-gradient(90deg,#fff,#d9dcff 60%,color-mix(in srgb,var(--cc) 70%,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #orbBig .ox-cfgs{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+  #orbBig .ox-cfgs span{font-size:11px;font-weight:800;padding:2px 7px;border-radius:7px;color:#eef0ff;background:color-mix(in srgb,var(--oc) 22%,transparent);border:1px solid color-mix(in srgb,var(--oc) 55%,transparent)}
+  #orbBig .ox-cfgs span.core{--oc:#8f97c8;opacity:.8}
+  #orbBig .ox-cfgs sup{font-size:.75em}
+  #orbBig #orbSub{font-size:12.5px;font-weight:800;color:#c3c8f2;letter-spacing:.02em}
+  #orbBig .ob-ttl .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* 무대 */
+  #orbBig .orb-stage{margin:12px 0 12px 12px;border-radius:18px;overflow:hidden;border:1px solid rgba(150,160,255,.2);
+    background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--cc) 12%,#151838),#08091a 72%);box-shadow:inset 0 0 50px rgba(0,0,0,.45)}
+  #orbBig .orb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(rgba(170,180,255,.13) 1px,transparent 1.2px);background-size:18px 18px;
+    -webkit-mask-image:radial-gradient(circle,transparent 25%,#000 85%);mask-image:radial-gradient(circle,transparent 25%,#000 85%)}
+  #orbBig .ox-hud{position:absolute;width:18px;height:18px;border:2px solid color-mix(in srgb,var(--cc) 70%,#fff);opacity:.6;pointer-events:none;z-index:2}
+  #orbBig .ox-hud.a{right:10px;top:10px;border-left:0;border-bottom:0;border-radius:0 7px 0 0}
+  #orbBig .ox-hud.b{left:10px;bottom:46px;border-right:0;border-top:0;border-radius:0 0 0 7px}
+  #orbBig .ox-deco{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  #orbBig .ox-deco .dash{fill:none;stroke:rgba(201,210,255,.18);stroke-dasharray:2 8;stroke-width:1;transform-box:view-box;transform-origin:200px 200px;animation:ebSpin 60s linear infinite}
+  #orbBig .ox-deco .star{fill:#fff;transform-box:fill-box;transform-origin:center;animation:ebTw 2.8s ease-in-out infinite}
+  #orbBig .ox-deco .star:nth-of-type(3){animation-delay:-1s}#orbBig .ox-deco .star:nth-of-type(4){animation-delay:-1.9s}
+  @keyframes ebSpin{to{transform:rotate(360deg)}}
+  @keyframes ebTw{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:.9;transform:scale(1)}}
+  html.lowpow #orbBig .ox-deco .dash,html.lowpow #orbBig .ox-deco .star{animation:none;opacity:.5}
+  #orbBig .orb-stage canvas{z-index:0}
+  #orbBig .orb-cfg{z-index:3;display:flex;flex-wrap:wrap;gap:4px;right:auto}
+  #orbBig .orb-cfg span{font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:8px;background:rgba(14,16,40,.7);border:1px solid rgba(150,160,255,.22)}
+  #orbBig .orb-hint{z-index:3;bottom:14px;left:14px;font-size:10.5px;color:#8f97c8}
+  #orbBig .orb-style{z-index:3;right:12px;bottom:10px;border-radius:999px;padding:3px;gap:3px;background:rgba(14,16,40,.8);border-color:rgba(150,160,255,.22)}
+  #orbBig .orb-style button{border-radius:999px;padding:5px 12px;font-weight:800}
+  #orbBig .orb-style button.on{color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  #orbBig .ox-tag{position:absolute;right:16px;top:14px;z-index:3;font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#a6addf;pointer-events:none}
+
+  /* 옆 칸 */
+  #orbBig .orb-side{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
+  #orbBig .orb-sec{display:flex;align-items:center;gap:8px;margin:4px 0 0;font-size:10px;font-weight:900;letter-spacing:.16em;color:#a6addf;text-transform:uppercase}
+  #orbBig .orb-sec::before{content:"//";color:var(--cc);letter-spacing:0}
+  #orbBig .orb-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(150,160,255,.3),transparent)}
+  #orbBig .orb-sec[hidden]{display:none}
+  #orbBig .orb-chips{display:flex;flex-wrap:wrap;gap:6px}
+  #orbBig .orb-chip{font:inherit;font-size:13px;font-weight:800;padding:7px 13px;border-radius:999px;cursor:pointer;color:#e6e8ff;
+    background:color-mix(in srgb,var(--oc,#8f9bff) 12%,rgba(255,255,255,.03));border:1px solid color-mix(in srgb,var(--oc,#8f9bff) 40%,transparent);transition:transform .15s,background .2s,box-shadow .2s}
+  #orbBig .orb-chip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--oc);box-shadow:0 0 8px var(--oc);vertical-align:1px}
+  #orbBig .orb-chip:active{transform:scale(.95)}
+  #orbBig .orb-chip.on{color:#10122a;background:var(--oc,linear-gradient(135deg,#8f9bff,#b18cff));border-color:transparent;box-shadow:0 0 16px color-mix(in srgb,var(--oc,#8f9bff) 55%,transparent)}
+  #orbBig .orb-chip.on:not([style]){color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  #orbBig .orb-chip.on i{background:#10122a;box-shadow:none}
+  #orbBig .orb-desc{position:relative;padding:12px 14px 12px 16px;border-radius:14px;border:1px solid rgba(150,160,255,.16);border-left:3px solid var(--cc);
+    background:linear-gradient(90deg,color-mix(in srgb,var(--cc) 10%,transparent),rgba(255,255,255,.02));font-size:13px;line-height:1.6;color:#e6e8ff}
+  #orbBig .orb-desc em{display:block;margin-top:4px;font-style:normal;font-size:11.5px;color:#9ea5d4}
+  #orbBig .ob-stats div{position:relative;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border-color:rgba(150,160,255,.18)}
+  #orbBig .ob-stats div::after{content:"";position:absolute;right:10px;top:12px;width:8px;height:8px;border-radius:50%;background:#4dabf7;box-shadow:0 0 10px #4dabf7}
+  #orbBig .ob-stats div:nth-child(2)::after{background:#b197fc;box-shadow:0 0 10px #b197fc}
+  #orbBig .ob-stats div:nth-child(3)::after{background:var(--cc);box-shadow:0 0 10px var(--cc)}
+  #orbBig .ob-stats b{font-size:24px}
+  #orbBig .orb-boxes{display:flex;flex-wrap:wrap;gap:6px}
+  #orbBig .orb-row{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(150,160,255,.1)}
+  #orbBig .orb-row b{min-width:24px;margin-right:2px;font-size:12px;font-weight:900;color:var(--oc)}
+  #orbBig .orb-box{display:grid;place-items:center;width:34px;height:30px;border-radius:9px;font-size:15px;font-weight:900;letter-spacing:-2px;color:#fff;
+    background:color-mix(in srgb,var(--oc) 18%,rgba(10,12,30,.6));border:1px solid color-mix(in srgb,var(--oc) 55%,transparent);box-shadow:inset 0 0 10px color-mix(in srgb,var(--oc) 20%,transparent);text-shadow:0 0 8px var(--oc)}
+  #orbBig .orb-acts{display:flex;flex-wrap:wrap;gap:7px}
+  #orbBig .orb-btn{border-radius:999px;padding:10px 16px;font-weight:800}
+  #orbBig .orb-btn:not(.ghost){background:linear-gradient(135deg,#8f9bff,#b18cff);box-shadow:0 4px 16px rgba(143,155,255,.35)}
+  #orbBig .orb-btn.ghost{background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.24)}
+  #orbBig .orb-btn.ghost[aria-pressed="true"],#orbBig .orb-btn.ghost[aria-expanded="true"]{color:#fff;background:rgba(143,155,255,.2);border-color:rgba(169,155,255,.6)}
+  #orbBig .orb-foot{font-size:11px;color:#8087b8;padding-top:6px;border-top:1px dashed rgba(150,160,255,.14)}
+  @media (max-width:700px){
+    #orbBig .orb-card{overflow-y:auto}
+    #orbBig .orb-stage{margin:10px 10px 0}
+    #orbBig .ox-hud.b{bottom:52px}
+    #orbBig .orb-side{padding:14px 14px calc(20px + env(safe-area-inset-bottom))}
+  }
+
+  /* 작은 칸: 전자 구름 탭 껍질 칩 */
+  #atomBox .atom-subs{gap:5px}
+  #atomBox .atom-subs button{font-weight:800;padding:3px 9px;border-radius:999px;color:#eef0ff;background:color-mix(in srgb,var(--oc) 18%,rgba(14,16,40,.75));border:1px solid color-mix(in srgb,var(--oc) 50%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #atomBox .atom-subs.picked button.on{color:#10122a;background:var(--oc);box-shadow:0 0 12px color-mix(in srgb,var(--oc) 60%,transparent)}
+</style>
+<script>
+(function(){
+  if(typeof rxOrbUI !== 'function') return;
+  const SUPS = s => String(s).replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  function deco(){
+    const d = document.getElementById('orbBig'); if(!d) return;
+    const st = d.querySelector('.orb-stage');
+    if(st && !st.querySelector('.ox-deco')){
+      st.insertAdjacentHTML('beforeend', `<svg class="ox-deco" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"><circle class="dash" cx="200" cy="200" r="168"/><circle class="dash" cx="200" cy="200" r="120" style="animation-direction:reverse;animation-duration:80s"/><path class="star" d="M60 70l2.5 7.5 7.5 2.5-7.5 2.5-2.5 7.5-2.5-7.5-7.5-2.5 7.5-2.5z"/><path class="star" d="M340 300l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path class="star" d="M330 90l1.6 4.8 4.8 1.6-4.8 1.6-1.6 4.8-1.6-4.8-4.8-1.6 4.8-1.6z"/></svg><i class="ox-hud a"></i><i class="ox-hud b"></i><span class="ox-tag">ψ² // e⁻ CLOUD</span>`);
+    }
+  }
+  const _ui = rxOrbUI;
+  rxOrbUI = function(){ const r = _ui.apply(this, arguments); try{ deco(); }catch(err){} return r; };
+
+  // 작은 칸 원자 모형: 칸 크기가 바뀌어도 캔버스 해상도를 다시 맞춘다 (전자 구름이 세로로 늘어나 보이던 문제)
+  try{
+    const cvs = document.getElementById('atom');
+    if(cvs && typeof fitCanvas === 'function' && window.ResizeObserver){
+      let last = '';
+      new ResizeObserver(() => { const r = cvs.parentElement.getBoundingClientRect(), k = Math.round(r.width) + 'x' + Math.round(r.height); if(k !== last && r.width > 0){ last = k; fitCanvas(); } }).observe(cvs.parentElement);
+    }
+  }catch(e){}
 })();
 </script>
 
