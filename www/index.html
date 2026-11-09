@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['막대-공 모형을 새로 그렸어요. 원자가 가운데부터 빛나는 에너지 구체가 되고, 멀리 있는 원자는 흐리게 보여서 깊이감이 생겼어요. 처음 나올 때 원자가 빛을 터뜨리며 하나씩 나타나고 결합이 차례로 그어져요',
+      ko: ['결과 창 도구 줄에 "✦ 에너지 / ○ 클래식" 버튼이 생겼어요. 빛나는 새 모형과 원래 모형을 골라 볼 수 있어요',
+           '막대-공 모형을 새로 그렸어요. 원자가 가운데부터 빛나는 에너지 구체가 되고, 멀리 있는 원자는 흐리게 보여서 깊이감이 생겼어요. 처음 나올 때 원자가 빛을 터뜨리며 하나씩 나타나고 결합이 차례로 그어져요',
            '조합 트레이에 원소를 250개까지 담을 수 있어요 (원래 200개)',
            '결과 창에 "구조식 크게" 버튼이 생겼어요. 구조식을 화면 가득 펼쳐서 끌고, 확대하고, 수소와 탄소 글자를 켜고 끌 수 있어요',
            '학습에 "작용기" 탭이 생겼어요. -OH, -COOH, -NH₂ 같은 작용기 10가지를 그림으로 보고, 어떤 성질이 생기는지와 예시 분자를 볼 수 있어요. 조합으로 만들어 본 분자는 도감 표시가 붙어요',
@@ -6260,7 +6261,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['New ball-and-stick look: atoms are glowing energy spheres, far atoms fade for depth, and atoms burst in one by one as bonds draw themselves',
+      en: ['New Energy / Classic button on the result card to switch between the glowing models and the original look',
+           'New ball-and-stick look: atoms are glowing energy spheres, far atoms fade for depth, and atoms burst in one by one as bonds draw themselves',
            'The mix now holds 250 elements instead of 200',
            'New Structure button on the result card: open the structural formula full screen, drag, zoom and toggle H and C labels',
            'New Learn tab: functional groups. Ten groups like -OH, -COOH and -NH2 with diagrams, what they do and example molecules',
@@ -46664,6 +46666,35 @@ void main(){
     };
   }
   setInterval(() => { const m = document.getElementById('modal'); if(m && m.classList.contains('on')) try{ tag(); }catch(e){} }, 600);
+})();
+</script>
+
+<script>
+/* 분자 모형 스타일 전환: 에너지(빛나는 구체·유리관) ↔ 클래식(원래 모형) */
+(function(){
+  const get = () => { try{ return localStorage.getItem('pt_ballfx') === 'plain' ? 'plain' : 'energy'; }catch(e){ return 'energy'; } };
+  function sync(){
+    const tools = document.getElementById('mTools'); if(!tools) return;
+    let b = tools.querySelector('.eg-sty');
+    const v = typeof RX_VIEW !== 'undefined' ? RX_VIEW : '';
+    const show = typeof RX !== 'undefined' && RX && RX.views && (v === 'ball' || v === 'stick' || v === 'min' || v === 'atom');
+    if(!b){
+      b = document.createElement('button'); b.type = 'button'; b.className = 'rtool eg-sty';
+      b.addEventListener('click', e => {
+        e.stopPropagation();
+        try{ localStorage.setItem('pt_ballfx', get() === 'plain' ? 'energy' : 'plain'); }catch(_){}
+        try{ const cur = RX_VIEW; RX_VIEW = '__'; rxSetView(cur); }catch(_){}
+        sync();
+      });
+      tools.appendChild(b);
+    }
+    const en = LANG === 'en', pl = get() === 'plain';
+    b.innerHTML = `<span>${pl ? '○' : '✦'}</span><em>${pl ? (en ? 'Classic' : '클래식') : (en ? 'Energy' : '에너지')}</em>`;
+    b.title = en ? 'Switch model style' : '모형 스타일 바꾸기';
+    b.hidden = !show;
+  }
+  if(typeof rxSetView === 'function'){ const _s = rxSetView; rxSetView = function(){ const r = _s.apply(this, arguments); try{ sync(); }catch(e){} return r; }; }
+  setInterval(() => { const m = document.getElementById('modal'); if(m && m.classList.contains('on')) try{ sync(); }catch(e){} }, 700);
 })();
 </script>
 
