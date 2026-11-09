@@ -46343,6 +46343,32 @@ void main(){
     #hgHide .out{top:calc(12px + env(safe-area-inset-top))}
     #hgHide .say{bottom:calc(14px + env(safe-area-inset-bottom))}
   }
+
+  /* ── 아지트 v2: 그림으로 그린 방 ── */
+  #hgHide .room{background:#1b1c23!important}
+  #hgHide .room::before,#hgHide .room::after{display:none}
+  #hgHide .hg-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+  #hgHide .hg-cone{animation:hgLamp 6s ease-in-out infinite}
+  @keyframes hgLamp{0%,100%{opacity:1}47%{opacity:1}50%{opacity:.75}53%{opacity:1}}
+  #hgHide .ttl{text-shadow:0 2px 10px rgba(0,0,0,.6)}
+  #hgHide svg.hgx{display:block;margin:0 auto;overflow:visible;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+  #hgHide .it:hover svg.hgx{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 10px rgba(230,233,255,.55))}
+  #hgHide .hg-glyph{filter:drop-shadow(0 0 6px rgba(200,210,255,.9))}
+  #hgHide .hg-por{filter:drop-shadow(0 0 4px rgba(120,220,255,.9))}
+  #hgHide .hg-cur{animation:hgBlink 1s steps(2) infinite}
+  @keyframes hgBlink{50%{opacity:0}}
+  #hgHide .hg-rip{transform-box:fill-box;transform-origin:center;animation:hgRip2 3.2s ease-out infinite;opacity:0}
+  #hgHide .hg-rip.r2{animation-delay:1.6s}
+  @keyframes hgRip2{0%{transform:scale(.3);opacity:.8}100%{transform:scale(4.2);opacity:0}}
+  #hgHide .hgc{cursor:pointer;transition:transform .15s}
+  #hgHide .hgc:hover{transform-box:fill-box}
+  #hgHide .it .cap{display:inline-block;margin-top:6px;padding:2px 8px;border-radius:999px;background:rgba(10,11,20,.55);border:1px solid rgba(220,224,245,.18)}
+  #hgHide .it{text-align:center}
+  html.lowpow #hgHide .hg-cone,html.lowpow #hgHide .hg-rip,html.lowpow #hgHide .hg-cur{animation:none}
+  @media (max-width:700px) and (orientation:portrait){
+    #hgHide svg.hgx{transform:scale(.82)}
+    #hgHide .hg-poolsv{transform:scale(.72)!important}
+  }
 </style>
 <script>
 (function(){
@@ -46443,26 +46469,56 @@ void main(){
     let d = document.getElementById('hgHide');
     const t = T(), c = t.cap;
     if(!d){ d = document.createElement('div'); d.id = 'hgHide'; document.body.appendChild(d); }
-    const cube = (s, col, bit) => `<span class="hgx-cube${bit ? ' bit' : ''}" data-k="${s}" style="background:${col}">${s}</span>`;
-    let drops = ''; for(let i = 0; i < 8; i++){ const s = 6 + (i * 37 % 14); drops += `<i class="drop" style="left:${(i * 131 % 97)}%;top:${(i * 53 % 50) + 4}%;width:${s}px;height:${(s * .8).toFixed(0)}px;animation-delay:${-i * .8}s"></i>`; }
-    d.innerHTML = `<div class="room">${drops}
+    const iso = (s, col, x, bit) => { const sh = (k) => { const h = col.replace('#', ''); const p = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); return 'rgb(' + p.map(v => Math.round(v * k > 255 ? 255 : v * k)).join(',') + ')'; };
+      return `<g class="hgc" data-k="${s}" transform="translate(${x} 0)"><path d="M0 14 L16 6 L32 14 L16 22Z" fill="${sh(1.18)}"/><path d="M0 14 L16 22 L16 44 L0 36Z" fill="${sh(.92)}"/><path d="M32 14 L16 22 L16 44 L32 36Z" fill="${sh(.7)}"/>` +
+        (bit ? `<path d="M24 10 q4 3 2 7 q4 -1 6 3 L32 14 L24 10Z" fill="#2a2c38"/><circle cx="26" cy="13" r="2.4" fill="#2a2c38"/><circle cx="29.5" cy="15.5" r="2.1" fill="#2a2c38"/>` : '') +
+        `<path d="M3 15 L16 9" stroke="#fff" stroke-opacity=".5" stroke-width="1.2"/><text x="16" y="34" text-anchor="middle" font-size="9" font-weight="900" fill="#1b1c24" fill-opacity=".8">${s}</text></g>`; };
+    let drops = ''; for(let i = 0; i < 10; i++){ const s = 5 + (i * 37 % 13); drops += `<i class="drop" style="left:${(i * 131 % 97)}%;top:${(i * 53 % 46) + 4}%;width:${s}px;height:${(s * .82).toFixed(0)}px;animation-delay:${-i * .8}s"></i>`; }
+    const lv = Math.round(40 + Math.random() * 30);
+    d.innerHTML = `<div class="room">
+      <svg class="hg-bg" viewBox="0 0 1000 625" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="hgWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b5f73"/><stop offset=".55" stop-color="#3c3f4f"/><stop offset="1" stop-color="#2a2c38"/></linearGradient>
+          <linearGradient id="hgFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2d39"/><stop offset="1" stop-color="#13141b"/></linearGradient>
+          <linearGradient id="hgPanel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".05"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+          <linearGradient id="hgCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef1ff" stop-opacity=".32"/><stop offset="1" stop-color="#eef1ff" stop-opacity="0"/></linearGradient>
+          <radialGradient id="hgVig" cx=".5" cy=".45" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
+        </defs>
+        <rect width="1000" height="380" fill="url(#hgWall)"/>
+        ${Array.from({ length: 10 }, (_, i) => `<rect x="${i * 100 + 4}" y="20" width="92" height="330" rx="6" fill="url(#hgPanel)" stroke="#000" stroke-opacity=".18"/><circle cx="${i * 100 + 14}" cy="32" r="2.2" fill="#7c8096"/><circle cx="${i * 100 + 86}" cy="32" r="2.2" fill="#7c8096"/><circle cx="${i * 100 + 14}" cy="338" r="2.2" fill="#7c8096"/><circle cx="${i * 100 + 86}" cy="338" r="2.2" fill="#7c8096"/>`).join('')}
+        <rect y="350" width="1000" height="30" fill="#24252f"/><rect y="350" width="1000" height="3" fill="#8a8ea6" opacity=".5"/>
+        <rect y="380" width="1000" height="245" fill="url(#hgFloor)"/>
+        ${Array.from({ length: 13 }, (_, i) => `<line x1="${500 + (i - 6) * 40}" y1="380" x2="${500 + (i - 6) * 190}" y2="625" stroke="#fff" stroke-opacity=".05"/>`).join('')}
+        ${[400, 425, 458, 500, 555, 625].map(y => `<line x1="0" y1="${y}" x2="1000" y2="${y}" stroke="#fff" stroke-opacity=".045"/>`).join('')}
+        <path d="M478 0 h44 l-6 46 h-32z" fill="#3a3c4a"/><path d="M470 46 h60 l12 18 h-84z" fill="#8a8ea6"/><ellipse cx="500" cy="66" rx="40" ry="6" fill="#f6f8ff" class="hg-lamp"/>
+        <path class="hg-cone" d="M462 66 L538 66 L700 520 L300 520Z" fill="url(#hgCone)"/>
+        <rect width="1000" height="625" fill="url(#hgVig)"/>
+      </svg>
+      ${drops}
       <div class="ttl">Hg's Hideout<b>${EN() ? t.name + ' HIDEOUT' : t.name + '의 ' + t.title}</b></div>
       <button type="button" class="out">${t.out}</button>
-      <button type="button" class="it" data-k="sym" style="--x:16%;--y:24%;--px:22%;--py:18%"><span class="hgx-frame"><b>☿</b></span><span class="cap">${c.sym}</span></button>
-      <button type="button" class="it" data-k="heme" style="--x:33%;--y:22%;--px:72%;--py:18%"><span class="hgx-frame"><svg viewBox="0 0 40 30"><g fill="none" stroke="#c9cde2" stroke-width="1.5"><path d="M20 4l8 5v10l-8 5-8-5V9z"/><path d="M28 9l7-3M12 19l-7 3M20 24v4M20 4V1"/></g><circle cx="20" cy="14" r="3" fill="#e8ebff"/></svg></span><span class="cap">${c.heme}</span></button>
-      <div class="it" data-k="shelf" style="--x:62%;--y:30%;--px:62%;--py:38%;cursor:default"><span class="hgx-shelf">${cube('Au', '#ffd43b')}${cube('Ag', '#e9ecf5')}${cube('Cu', '#e8915a')}${cube('Sn', '#b9bfcc')}${cube('Fe', '#8d7f74', true)}</span><span class="cap">${c.shelf}</span></div>
-      <button type="button" class="it" data-k="sign" style="--x:86%;--y:26%;--px:24%;--py:38%"><span class="hgx-sign">⚠ ${EN() ? 'NO KNOCKING' : '노크 금지'}</span><span class="cap">${c.sign}</span></button>
-      <button type="button" class="it" data-k="therm" style="--x:91%;--y:52%;--px:90%;--py:80%"><span class="hgx-therm" style="--lv:${Math.round(40 + Math.random() * 30)}%"></span><span class="cap">${c.therm}</span></button>
-      <button type="button" class="it" data-k="pc" style="--x:18%;--y:62%;--px:24%;--py:56%"><span class="hgx-pc">&gt; whoami<br>curie (Hg)<br>&gt; pass<br>SGcncyBIaW…</span><span class="cap">${c.pc}</span></button>
-      <button type="button" class="it" data-k="pool" style="--x:52%;--y:70%;--px:50%;--py:68%"><span class="hgx-pool"></span><span class="cap">${c.pool}</span></button>
-      <button type="button" class="it" data-k="flask" style="--x:79%;--y:66%;--px:80%;--py:60%"><span class="hgx-flask"></span><span class="cap">${c.flask}</span></button>
-      <button type="button" class="it" data-k="bed" style="--x:33%;--y:72%;--px:28%;--py:76%"><span class="hgx-bed"></span><span class="cap">${c.bed}</span></button>
+      <button type="button" class="it" data-k="sym" style="--x:14%;--y:26%;--px:22%;--py:19%"><svg class="hgx" viewBox="0 0 110 90" width="104"><rect x="2" y="2" width="106" height="86" rx="6" fill="url(#hgSil)" stroke="#2a2c38" stroke-width="2"/><rect x="11" y="11" width="88" height="68" rx="3" fill="#101119" stroke="#000" stroke-opacity=".6"/><text x="55" y="61" text-anchor="middle" font-size="46" fill="#e8ecff" class="hg-glyph">☿</text><path d="M14 14 L46 14 L14 40Z" fill="#fff" opacity=".06"/></svg><span class="cap">${c.sym}</span></button>
+      <button type="button" class="it" data-k="heme" style="--x:31%;--y:24%;--px:72%;--py:19%"><svg class="hgx" viewBox="0 0 110 90" width="104"><rect x="2" y="2" width="106" height="86" rx="6" fill="url(#hgSil)" stroke="#2a2c38" stroke-width="2"/><rect x="11" y="11" width="88" height="68" rx="3" fill="#0b1220"/><g transform="translate(55 45)" fill="none" stroke="#9fe6ff" stroke-width="1.6" class="hg-por">${[0, 90, 180, 270].map(a => `<g transform="rotate(${a})"><path d="M-7 -12 L7 -12 L10 -20 L0 -26 L-10 -20Z"/><line x1="0" y1="-12" x2="0" y2="-5"/></g>`).join('')}<rect x="-26" y="-26" width="52" height="52" rx="10" stroke-dasharray="3 4" stroke-opacity=".6"/><circle r="5" fill="#e8ecff" stroke="none"/></g><text x="55" y="84" text-anchor="middle" font-size="5.6" fill="#9fe6ff" opacity=".7">C97H109HgN11O21PS</text></svg><span class="cap">${c.heme}</span></button>
+      <div class="it" data-k="shelf" style="--x:60%;--y:31%;--px:62%;--py:39%;cursor:default"><svg class="hgx" viewBox="0 0 200 64" width="210"><g transform="translate(14 4)">${iso('Au', '#ffd43b', 0)}${iso('Ag', '#e9ecf5', 36)}${iso('Cu', '#e8915a', 72)}${iso('Sn', '#b9bfcc', 108)}${iso('Fe', '#8d7f74', 144, true)}</g><rect x="4" y="48" width="192" height="8" rx="2" fill="#8a8ea6"/><rect x="4" y="48" width="192" height="2" fill="#fff" opacity=".35"/><path d="M24 56 v6 l-10 0z M176 56 v6 l10 0z" fill="#5a5d6e"/></svg><span class="cap">${c.shelf}</span></div>
+      <button type="button" class="it" data-k="sign" style="--x:85%;--y:22%;--px:24%;--py:39%"><svg class="hgx" viewBox="0 0 130 74" width="128"><path d="M30 2 L65 22 L100 2" stroke="#8a8ea6" stroke-width="2" fill="none"/><g transform="rotate(-4 65 46)"><rect x="8" y="22" width="114" height="46" rx="6" fill="#ffd43b" stroke="#b8901a" stroke-width="3"/><rect x="14" y="28" width="102" height="34" rx="3" fill="none" stroke="#1b1500" stroke-width="2" stroke-dasharray="6 4"/><text x="65" y="52" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1500">⚠ ${EN() ? 'NO KNOCK' : '노크 금지'}</text><circle cx="16" cy="30" r="2" fill="#6b5410"/><circle cx="114" cy="30" r="2" fill="#6b5410"/></g></svg><span class="cap">${c.sign}</span></button>
+      <button type="button" class="it" data-k="therm" style="--x:93%;--y:52%;--px:88%;--py:70%"><svg class="hgx" viewBox="0 0 44 150" width="40"><rect x="4" y="2" width="36" height="130" rx="8" fill="#2b2d39" stroke="#8a8ea6" stroke-width="2"/>${Array.from({ length: 10 }, (_, i) => `<line x1="28" y1="${18 + i * 10}" x2="${i % 2 ? 33 : 36}" y2="${18 + i * 10}" stroke="#a9adc4" stroke-width="1"/>`).join('')}<rect x="15" y="10" width="10" height="112" rx="5" fill="rgba(255,255,255,.12)" stroke="#d6d9ea" stroke-width="1.2"/><rect x="17.5" y="${Math.round(118 - lv)}" width="5" height="${lv + 4}" rx="2.5" fill="url(#hgMercV)"/><circle cx="20" cy="132" r="11" fill="url(#hgMerc)" stroke="#d6d9ea" stroke-width="1.5"/><circle cx="16" cy="128" r="3" fill="#fff" opacity=".8"/></svg><span class="cap">${c.therm}</span></button>
+      <button type="button" class="it" data-k="pc" style="--x:16%;--y:61%;--px:26%;--py:53%"><svg class="hgx" viewBox="0 0 150 132" width="146"><rect x="64" y="104" width="22" height="16" fill="#5a5d6e"/><path d="M40 128 h70 l-6 -9 h-58z" fill="#8a8ea6"/><rect x="4" y="4" width="142" height="102" rx="14" fill="url(#hgSil)" stroke="#2a2c38" stroke-width="2"/><rect x="14" y="13" width="122" height="82" rx="8" fill="#06120e"/><g font-family="ui-monospace,Menlo,monospace" font-size="9.5" fill="#8cf5d2" class="hg-crt"><text x="22" y="30">&gt; whoami</text><text x="22" y="44">curie (Hg)</text><text x="22" y="58">&gt; cat pass</text><text x="22" y="72">SGcncyBIaW…</text><text x="22" y="86" class="hg-cur">█</text></g><rect x="14" y="13" width="122" height="82" rx="8" fill="url(#hgScan)"/><circle cx="132" cy="100" r="2" fill="#8cf5d2"/></svg><span class="cap">${c.pc}</span></button>
+      <button type="button" class="it" data-k="pool" style="--x:52%;--y:76%;--px:54%;--py:67%"><svg class="hgx hg-poolsv" viewBox="0 0 300 90" width="290"><ellipse cx="150" cy="52" rx="146" ry="34" fill="#000" opacity=".35"/><ellipse cx="150" cy="46" rx="140" ry="32" fill="url(#hgMerc)"/><ellipse cx="118" cy="36" rx="62" ry="10" fill="#fff" opacity=".55"/><ellipse cx="190" cy="54" rx="40" ry="6" fill="#fff" opacity=".18"/><ellipse class="hg-rip" cx="150" cy="46" rx="30" ry="7" fill="none" stroke="#fff" stroke-width="2"/><ellipse class="hg-rip r2" cx="150" cy="46" rx="30" ry="7" fill="none" stroke="#fff" stroke-width="2"/><circle cx="58" cy="30" r="5" fill="url(#hgMerc)"/><circle cx="252" cy="62" r="4" fill="url(#hgMerc)"/></svg><span class="cap">${c.pool}</span></button>
+      <button type="button" class="it" data-k="flask" style="--x:79%;--y:65%;--px:82%;--py:53%"><svg class="hgx" viewBox="0 0 70 120" width="64"><ellipse cx="35" cy="114" rx="30" ry="5" fill="#000" opacity=".35"/><rect x="26" y="2" width="18" height="12" rx="3" fill="#5a5d6e"/><path d="M14 14 h42 a6 6 0 0 1 6 6 v86 a6 6 0 0 1 -6 6 h-42 a6 6 0 0 1 -6 -6 v-86 a6 6 0 0 1 6 -6z" fill="url(#hgSteel)"/><rect x="8" y="30" width="54" height="4" fill="#2a2c38" opacity=".6"/><rect x="8" y="92" width="54" height="4" fill="#2a2c38" opacity=".6"/><rect x="16" y="44" width="38" height="38" rx="3" fill="#8a5a3a"/><rect x="16" y="44" width="38" height="38" rx="3" fill="none" stroke="#5a3820" stroke-width="1.5"/><text x="35" y="60" text-anchor="middle" font-size="12" font-weight="900" fill="#f4dcc0">Hg</text><text x="35" y="74" text-anchor="middle" font-size="7" font-weight="800" fill="#f4dcc0">34.5 kg</text><rect x="12" y="18" width="5" height="88" rx="2" fill="#fff" opacity=".12"/></svg><span class="cap">${c.flask}</span></button>
+      <button type="button" class="it" data-k="bed" style="--x:30%;--y:80%;--px:32%;--py:79%"><svg class="hgx" viewBox="0 0 180 96" width="176"><ellipse cx="90" cy="90" rx="84" ry="6" fill="#000" opacity=".35"/><rect x="6" y="14" width="10" height="72" rx="3" fill="#8a8ea6"/><rect x="164" y="40" width="10" height="46" rx="3" fill="#8a8ea6"/><rect x="12" y="50" width="158" height="22" rx="6" fill="#6b6f84"/><rect x="14" y="38" width="154" height="18" rx="8" fill="#d9dceb"/><rect x="20" y="26" width="44" height="18" rx="9" fill="#f4f6ff"/><path d="M62 40 h104 a4 4 0 0 1 4 4 v12 h-108z" fill="#9aa0bf"/><path d="M62 40 q20 -4 40 2 t66 0" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><text x="122" y="54" text-anchor="middle" font-size="11" fill="#eef0ff" opacity=".7">☿</text></svg><span class="cap">${c.bed}</span></button>
+      <svg width="0" height="0" style="position:absolute"><defs>
+        <linearGradient id="hgSil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9ecf7"/><stop offset=".35" stop-color="#9da1b6"/><stop offset=".6" stop-color="#d4d7e6"/><stop offset="1" stop-color="#6b6f84"/></linearGradient>
+        <linearGradient id="hgSteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2e3039"/><stop offset=".3" stop-color="#6a6d7c"/><stop offset=".55" stop-color="#4a4c58"/><stop offset="1" stop-color="#25262e"/></linearGradient>
+        <radialGradient id="hgMerc" cx=".42" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#d7dae9"/><stop offset=".6" stop-color="#8a8ea6"/><stop offset="1" stop-color="#454859"/></radialGradient>
+        <linearGradient id="hgMercV" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a8ea6"/><stop offset=".4" stop-color="#fff"/><stop offset="1" stop-color="#6b6f84"/></linearGradient>
+        <pattern id="hgScan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#000" opacity=".25"/></pattern>
+      </defs></svg>
       <div class="say"><span class="cu-av"><i>80</i><b>Hg</b><em>!</em></span><span><div class="t">${EN() ? 'CURIE // MERCURY' : '큐리 // 수은'}</div><div class="l"></div></span></div>
     </div>`;
     d.querySelector('.out').addEventListener('click', () => d.classList.remove('on'));
     d.querySelectorAll('.it[data-k]').forEach(b => { if(b.tagName === 'BUTTON') b.addEventListener('click', () => { b.classList.add('seen'); const k = b.dataset.k; say(k);
       if(k === 'heme' && cnt.heme > 1 && window.rxStructBig){ try{ const m = rxSmilesModel(RX_SMILES['헴 Hg'], Math.random); window.rxStructBig(m, '헴 Hg', 'C₉₇H₁₀₉HgN₁₁O₂₁PS', true); }catch(e){} } }); });
-    d.querySelectorAll('.hgx-cube').forEach(cb => { cb.style.cursor = 'pointer'; cb.addEventListener('click', e => { e.stopPropagation(); say(cb.dataset.k); }); });
+    d.querySelectorAll('.hgc').forEach(cb => { cb.addEventListener('click', e => { e.stopPropagation(); say(cb.dataset.k); }); });
     d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
     cnt.hi = 0; say('hi'); setTimeout(() => { if(d.classList.contains('on') && cnt.hi === 1) say('hi'); }, 3200);
     try{ localStorage.setItem('pt_hideout', '1'); }catch(e){}
