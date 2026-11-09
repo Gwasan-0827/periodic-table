@@ -46124,8 +46124,16 @@ void main(){
       const fx = document.createElement('div'); fx.className = 'cu-fx';
       const h = c.getBoundingClientRect().height || 500;
       fx.style.setProperty('--h', h + 'px');
-      fx.innerHTML = [[4, 0], [96, 1.2], [30, 2.1], [72, 2.8]].map(([x, d]) => `<i class="cu-drop" style="left:calc(${x}% - 5px);animation-delay:${d}s;--h:${h}px"></i>`).join('') + '<i class="cu-pool"></i>';
+      fx.innerHTML = [0, 1.1, 2.0, 2.9, 3.7].map(d => `<i class="cu-drop" style="left:${(4 + Math.random() * 92).toFixed(1)}%;animation-delay:${d}s;--h:${h}px"></i>`).join('') + '<i class="cu-pool"></i>';
       c.appendChild(fx);
+      // 한 번 떨어질 때마다 다른 자리·다른 속도·다른 크기로 (카드 높이도 다시 잰다)
+      fx.querySelectorAll('.cu-drop').forEach(dr => dr.addEventListener('animationiteration', () => {
+        const hh = c.getBoundingClientRect().height || h, s = .7 + Math.random() * .6;
+        dr.style.left = (3 + Math.random() * 94).toFixed(1) + '%';
+        dr.style.setProperty('--h', hh + 'px');
+        dr.style.width = (10 * s).toFixed(1) + 'px'; dr.style.height = (12 * s).toFixed(1) + 'px';
+        dr.style.animationDuration = (2.8 + Math.random() * 1.8).toFixed(2) + 's';
+      }));
     }
     // 큐리 한마디 + 경고 도장
     let n = 0; try{ n = +(localStorage.getItem('pt_curie_n') || 0); localStorage.setItem('pt_curie_n', n + 1); }catch(e){}
