@@ -6201,7 +6201,8 @@ const CHANGELOG = [
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
     items: {
-      ko: ['불꽃 반응·방전관 창도 새로 꾸몄어요. 이모지 대신 선 아이콘을 쓰고, 고른 원소 색으로 창이 물들어요',
+      ko: ['메인 주기율표 칸을 새로 꾸몄어요. 유리 같은 칸에 분류 색이 은은하게 비치고, 아래 색 줄이 빛나요. 마우스를 올리면 살짝 떠올라요',
+           '불꽃 반응·방전관 창도 새로 꾸몄어요. 이모지 대신 선 아이콘을 쓰고, 고른 원소 색으로 창이 물들어요',
            '오비탈 크게 보기 창을 새로 꾸몄어요. 원자 모형 칸의 전자 구름이 세로로 늘어나 보이던 문제도 고쳤어요',
            '원자 모형 칸에 [자세히] 버튼이 생겼어요. 원소 하나를 크게 띄워서 원자 모형(보어·전자 구름), 정보, 숫자들(녹는점·밀도 순위), 조합을 탭으로 볼 수 있어요. 옆으로 밀면 다음 원소로 넘어가요',
            '학습 탭을 새로 짰어요. 들어가면 홈 화면이 먼저 나오고, 연습·탐구·놀이로 나뉘어 있어요. 이모지 대신 선 아이콘을 써요',
@@ -6253,7 +6254,8 @@ const CHANGELOG = [
            '만든 사람에 팀 이름이 생겼어요. K ɑ ɪ ɴ i x // X (카이닉스//X)',
            '가벼워졌어요. 결과 창에서 오팔·결정·액체를 그리는 일이 크게 줄었고, 폰에서는 면이 아주 많은 모형은 조금 덜 자주 그려요. 20초 동안 안 만지면 회전도 쉬어요',
            '고친 것: 앱에서 막대-공 모형이 깜빡이던 문제, 로탁세인 구조가 나노카로 바뀌어 있던 문제, 버튼을 누르면 파란 네모가 뜨던 문제, 변천사 탭을 드나들면 계속 띵 소리가 나던 문제, 자수정이 한쪽으로 치우쳐 보이던 문제'],
-      en: ['Restyled the flame test and discharge tube window with line icons and colours that follow the chosen element',
+      en: ['New look for the main table tiles: glassy cells tinted by category, glowing colour bars and a lift on hover',
+           'Restyled the flame test and discharge tube window with line icons and colours that follow the chosen element',
            'Restyled the big orbital viewer, and fixed the electron cloud looking stretched in the atom panel',
            'New Details button on the atom panel opens an element file with tabs for the atom model, info, numbers with rankings and recipes. Swipe sideways for the next element',
            'The Learn tab is rebuilt. It opens on a home screen split into Practice, Explore and Play, with line icons instead of emoji',
@@ -45504,6 +45506,58 @@ void main(){
   fix();
 })();
 </script>
+
+<style>
+  /* ═══ 메인 주기율표 칸 리워크 (Y2K 페리윙클 유리 칸) ═══ */
+  #grid .cell{border-radius:10px;border:1px solid color-mix(in srgb,var(--cc) 20%,rgba(150,160,255,.13));overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 6px rgba(0,0,0,.25)}
+  body:not(.mode-heat):not(.mode-temp) #grid .cell{background:
+    radial-gradient(120% 90% at 50% 120%,color-mix(in srgb,var(--cc) 16%,transparent),transparent 60%),
+    linear-gradient(165deg,rgba(40,44,92,.55),rgba(16,17,40,.85))}
+  /* 위쪽 유리 반사 */
+  #grid .cell::before{content:"";position:absolute;inset:0 0 55% 0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);z-index:0}
+  #grid .cell > *{position:relative;z-index:1}
+  #grid .cell .num{position:absolute}
+  /* 아래 색 줄: 가장자리에서 띄우고 빛나게 */
+  #grid .cell::after{left:18%;right:18%;bottom:4px;height:2px;border-radius:2px;box-shadow:0 0 6px var(--cc),0 0 2px var(--cc)}
+  #grid .cell .sym{color:#f2f3ff;text-shadow:0 0 12px color-mix(in srgb,var(--cc) 35%,transparent)}
+  #grid .cell .num{color:color-mix(in srgb,var(--cc) 45%,#9097c8)}
+  #grid .cell .ko{color:#a6addf}
+  #grid .cell .am{color:#7d84b6}
+  /* 마우스 올림 */
+  @media (hover:hover){
+    body:not(.mode-heat):not(.mode-temp) #grid .cell:hover{background:
+      radial-gradient(120% 90% at 50% 120%,color-mix(in srgb,var(--cc) 30%,transparent),transparent 65%),
+      linear-gradient(165deg,rgba(56,60,120,.7),rgba(22,23,52,.9))}
+    #grid .cell:hover{border-color:color-mix(in srgb,var(--cc) 70%,transparent);transform:translateY(-2px);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 6px 16px rgba(0,0,0,.35),0 0 14px color-mix(in srgb,var(--cc) 35%,transparent);z-index:3}
+    #grid .cell:hover .sym{color:#fff;text-shadow:0 0 14px color-mix(in srgb,var(--cc) 70%,transparent)}
+  }
+  /* 고른 칸 */
+  #grid .cell.sel{border-color:var(--cc);z-index:4;
+    box-shadow:0 0 0 1px var(--cc),0 0 18px color-mix(in srgb,var(--cc) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--cc) 22%,transparent)}
+  body:not(.mode-heat):not(.mode-temp) #grid .cell.sel{background:
+    radial-gradient(130% 100% at 50% 110%,color-mix(in srgb,var(--cc) 40%,transparent),transparent 70%),
+    linear-gradient(165deg,rgba(64,68,130,.8),rgba(24,25,58,.95))}
+  #grid .cell.sel .sym{color:#fff;text-shadow:0 0 16px var(--cc)}
+  #grid .cell.sel::after{left:10%;right:10%;height:3px}
+  /* 같은 족·주기 강조 */
+  body:not(.mode-heat):not(.mode-temp) #grid .cell.hl{background:linear-gradient(165deg,rgba(70,76,150,.55),rgba(22,24,56,.9))}
+  /* 족·주기 번호 */
+  #grid .ghead,#grid .phead{color:#7f87c0;font-weight:800}
+  /* 비어 있는 자리 (57–71, 89–103, ?) */
+  #grid > div:not(.cell):not(.ghead):not(.phead):not(.spacer){border-radius:10px}
+  /* 폰: 칸이 작으니 반사·그림자 가볍게 */
+  @media (max-width:700px){
+    #grid .cell{border-radius:6px;box-shadow:none}
+    #grid > div:not(.cell):not(.ghead):not(.phead):not(.spacer){border-radius:6px}
+    #grid .cell::after{bottom:2px;left:14%;right:14%;height:1.5px;box-shadow:0 0 4px var(--cc)}
+    #grid .cell .sym{text-shadow:none}
+  }
+  body.cellr-sq #grid .cell{border-radius:2px}
+  html.lowpow #grid .cell .sym{text-shadow:none}
+</style>
 
 </body>
 </html>
