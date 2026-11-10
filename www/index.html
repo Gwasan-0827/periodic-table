@@ -47619,6 +47619,7 @@ void main(){
   const EN = () => LANG === 'en';
   // 핵종 데이터: Z(1~118)마다 [첫 중성자 수, 칸 문자열]. '!' 안정 · '~' 반감기 모름 · ' ' 없음 · 그 외 문자 = log10(반감기 초) + 24 (chr 48부터)
   const NUC = [[0,"!!Q2223"],[1,"!!3H3G32"],[0,"~23!!HG3F!4"],[1,"~4O8!VIF3F33"],[1,"~3H6!!FFFF~F!E~~"],[2,"4GIK!!SHHGGGF!F!"],[3,"23FK!!IIHHGGFF!!"],[3,"24FJJ!!!IIIHGG4=!!"],[4,"!334JL!IIIHHGFF5E!~"],[5,"3~GHI!!!JJHGFFFFFF!~"],[6,"!3~HIP!MJHGGGGFFFFE!~!~"],[7,"=GGII!!!KMHHGGGGFFF~!~!"],[8,"!GHHIU!JKIHGGGGGFFF~~~~"],[8,"FGGGHI!!!LRIHHHGGGFFF~~~"],[9,"!!GGGIJ!NNIJIHHGGGGGF~~~"],[10,"!FGGHH!!!O!JLIIHHGGGG~~~"],[11,"!4!GGHH!U!KLJJIHHHGG~~~~~"],[11,"!~FGGHH!N!R!LQKKIIHHGG~~~~"],[12,"~!!!GHHK!Y!MMKKJIIHHHGFF~~~~~"],[13,"!!FGGHH!T!!!O!NcKIIIHGFF~~~~~"],[14,"!!!!!GHHLL!OMMLJIIHHGFFF~~~~~"],[15,"!!FGGGHQL!!!!!KJJHHGGGFFF~~~~"],[16,"!!!!GGHHKNOa!JJJIGHGGGGGFF~~~"],[17,"!FFGGGHMK!N!!!JKIIHHGGGGFF~~~~"],[18,"!!!GGGHGKNVO!LJHIGHGGGGGGGFF~~~"],[19,"EFFGGGGLK!P!!!OVKJIHHHHGGGGFFF~~"],[20,"!!!GGGGGMOOO!PLJIGHGHGGHGGGFFFF~"],[20,"EFFFGGGGNM!T!!!R!LMIIIIHHHHHGGGGF~~"],[23,"!!!GGGIJKLK!M!JMIJJIIIHHHHHGGGG~!"],[24,"EFGGGGJJMK!O!!!L!JMIJIIHHHHGGGG~!"],[25,"!!!!GGGJJKMML!K!MLKJIIIHHHHGGGGF!"],[26,"!FFGGGJILKOM!N!!!LeMLIIIIHHHGGG~~"],[27,"!!!!GGGJJKKMMON!MMLKIJIIHHHHG~~~~"],[29,"FFGGGJIKJNL!O!!!U!KcKJJIIHHGG~~~~"],[30,"!!!!~GIJJKLMMK!K!MLKJJJIIHHGGG~~~~"],[31,"FFFGGIIKJML!M!U!!!Q!LLJJIHHGGGGGGF~"],[34,"!A~GIJJKKJLJON!NZKKJJIIHHGGGGGGGF~"],[35,"FFGIIJJLKNM!O!!!OQMLKJIHHHGGGGGGGF~"],[36,"~FGGIIJIKKLMMO!MOLMKKIIHHHHHGGGGGFF"],[37,"~~GIIJJKKMLOM!!!V!OcMIHIHHHHHGGGGGFG~"],[38,"!!!GIIIJJKLMRW!TNMLHIHIIHHHHGGGGGGGFF~"],[39,"~~FHIIIKJLK!S!!!!!MbKKJJJIIHHGGGGGGGFF~"],[40,"!!!GHIIJJJLLMNVVUIKIJKKJIIHHHHGGGGGFFFF~"],[41,"~~~HHIIJJKL!M!!!!!O!LPJJJIHHHHHGGGGGFFFF~"],[43,"~!FHIIJJKKKNMPO!JMIKIJIIIHHHHHGGGGGGFFFF~"],[44,"~GHHIIJJKKML!N!!!V!M!KMJJIIIHHHGGGGGGGGF~~"],[45,"~AFHIIJJJKKLLOK!J!INLLIKJJIIHHHGGGGGGGGGF!"],[46,"~GHHIIJJKKLL!L!P!!!_!McLKJJIIHHHHHGGGGGGG!"],[47,"~GFHIIIJJJKKLLLMK!J^IKIJHIHIHHHHHHGGGGGGGG"],[49,"FHHIIIJJJKKLK!O!!!!!!!M!O!NULLJJJJHHHHGGG~"],[51,"!!HHHIIIIJJKJKKLJMK!M!OPNNMLKKJJHHHHHGGGG"],[52,"~BDFHIIIJJKKLLNM!N!!!!!MhLdKMKKIIHHHHGGGG~"],[53,"!~FDHHIIHJHJKKLLJMNON!KWMNLMKLJIIHHHGGGGG~"],[54,"DFGHHHIIJJJKKKML!M!N!!!!!N!MeJKJIHHHHGGGG~~"],[56,"~ECHHHIIJJJIKIKJLJMKNN!PVNQKKJIHHHHHGGGGG~"],[57,"~HHHHIIIIJJKJLKML!N!Q!!!!!LNKKIIIHHHHGGGGG"],[59,"~F~~HIIIIJJJJKKLLLKMKT[!MLLKJIIIHHHHGGGGG~"],[61,"~~H~IIIJJJJKKLLMM!M!O!N!MOJKJJIIHHHHGGGG!"],[62,"F~~HIHIHIJJJKKKKLJLJ!MNKLKKJJIIIIHHHGGGG~"],[64,"~H~H~IIIJJKKKKLKML!!_!!N!LbKKIIIIHHHHGG~"],[65,"~~HHHIIIIJJ~JJIKJOOQPPNMLMJJJJIIIHHHHG~~"],[66,"~H~HIHIIJJJJKKLK!OW[_!!Q!M!KMKKIIIHHHHH~~"],[67,"EF~~HHII~IHJHJINNNOOQbQ!PPNMKKJI~IIHHHG~!"],[69,"~~H~HIIIIJJJKOMQNVO^O!!!!!M!JKJJIIIHHH~~"],[70,"E~~~HHIHI~IILLLLMMMMNNQR!ONKKJJIIIIHHH~~"],[72,"~H~HHIIIJJJJKKLLVM!L!O!!!!!LMKKJJIIH~~~"],[73,"FFH~HHIIHIJJJJKKLKKKKLKSK!MLJJJJIIIH~~~"],[74,"~~~HHIIIIIIJJKKKLKML!L!M!!!N!LMJJJ~~~~~"],[75,"BCGHHH~IIHIIJJJKKKKLJMLNO!OPMLKKJJ~~~~!"],[78,"~H~HHIHHIJJJJJKKLKMK!N!!!!!N!LLKJ~~~~~"],[79,"GGHH~GHIIIJJJJJKJKKMMNNPP!ZNKLKJJJI~~~~"],[81,"~HHFGHIIIJJJJKJKJMMPM_O!!!!!OVLLJJ~~~~"],[82,"FGFGHH~IIIIJJJJKKKLLMLMLPL!ONLKKJI~I~H~~"],[83,"GEFGHHHIIIIJJJJKKKKLLNKbO!!!O!MOKK~~~~~~~"],[84,"~EEGHHHHIII~IJJJKKKKKJMMON!NZMMJKI~IIH~~~"],[85,"EEFFGGHHIIIIIJJJJJKKLMM]O_!!!!N!MPKKJJII~~~"],[86,"!~~FFGHHHIIIIIIIJJJKLLMMMMNN!O!MLJKIIJII~~~"],[87,"EDEEFFGGHHHIIIIJJJKKLLLNM[M!Q!!!M!KMJMII~~~~"],[89,"!~DCFFGGHHIIIIIJIJKKKKKLLMMON!MMKKIJJJJ~~~~"],[90,"DDDEEFFGGHHIIIIJJJJKKKLLRM!M!!!!!O!JKJJIJI~~~~~"],[95,"FFGHHHHIIII~JJJ~KKKLLLLLMMN!P!JJJJJJIIIII~~"],[96,"DEFGGHHIIIIJJJJ~KKKKLLMMTM!W!!!LQKMKKJJII~~"],[101,"F~FGGHIIJJJJJKKKKLLMMNNQUcNJLKKKJJJII~~~~"],[102,"DEDFEFGHHIIJJKKKKKLLNLPROHACDEGHJK~JK~~~~~"],[106,"EFFGGHHIIJJJKKKKLLLLLGABDDGHJJJJJJ~~~~~"],[107,"EEFFGGHHIIJJJKKKKLMKFABCEGIJKNKLJKIJI~~"],[110,"EFFGGHHHI~IJJJJKJFABCEFIJKKJJJJJJIIIH"],[113,"FFGGGGHHIIIIJHEABCFFIJNMNSKPJLJJII~"],[116,"GFFGGHGHHIGEABCFGIJLNMQLLJKJJJJJ~"],[118,"E~FGGGGHFDABCEEHHKKNPSTMZKNKKJK~"],[120,"FFFFFGFDABCFFHHJKMMNTMNLKKKJL~~"],[123,"EFEED~BCDEGGJKLNNQUUXWNYKM~K~"],[126,"E@~BBDFGHJJJKKKNPUVMMLKJJJ~"],[127,"~~~~~~~HJJKKKMKPOQTSQULWMNM"],[128,"F~~~~~HJ~JJJKJLLMMRMSMLKK~~"],[135,"~~IJKK~LLNNOQQSSWUL~K~"],[136,"JI~I~J~JJKLLNMS~OLLJ~~"],[139,"HFIJJJKKKMLORQRPNOLK"],[140,"~IIIIJJKJKLLMPNOOLN~"],[141,"EEGEIHIJJKLMMLMLOEH~"],[143,"HHHHIIJJJKKKLLOLN~~"],[146,"!DCHHJJJHIELG~~~~"],[148,"~HHIIIIIIJK~~~~M"],[149,"FCHFIFHFHGK~J~L~"],[150,"GHHHHHIJI~~LLM~L"],[152,"EHFGFHGIHJ~J~J~~"],[153,"GFG~HHII~~JHI~J~~~~"],[155,"EHEEGHII~~H~G~F~~~"],[156,"~E~F~H~~~HFHII~~~~"],[157,"C~DDG~D~~~F~GFIJ~~"],[161,"F~F~~~FGIIJ~~~~"],[164,"~E~~~GEIGII~~"],[165,"E~~~GGHII~~~I"],[170,"EGGHHHJ~"],[172,"GGHH~~"],[173,"~FFFG"],[174,"~~FG"],[175,"~EH"]];
+  window.RX_NUCMAP = NUC;
   const MAGIC = [2, 8, 20, 28, 50, 82, 126];
   const ISL = { n: 184, z: 114, rn: 6.5, rz: 5 };
   const SUP = s => String(s).replace(/[-0-9]/g, c => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
@@ -47936,5 +47937,291 @@ void main(){
   };
 })();
 </script>
+<style>
+  /* ═══ 붕괴 사슬 리워크 (DECAYWIN 4.2.5): 전용 창 · 원자핵 애니메이션 + 핵종 지도 위의 길 ═══ */
+  #dcWin{position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(4,5,16,.72);backdrop-filter:blur(6px)}
+  #dcWin.on{display:grid;animation:dcIn .35s ease-out}
+  @keyframes dcIn{from{opacity:0}}
+  #dcWin .win{position:relative;width:min(1100px,calc(100vw - 24px));height:min(720px,calc(100vh - 24px));display:grid;grid-template-rows:auto 1fr auto auto;gap:10px;padding:14px;border-radius:22px;
+    background:linear-gradient(160deg,rgba(32,36,84,.92),rgba(10,11,30,.96));border:1px solid rgba(150,160,255,.3);box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+  #dcWin .hd{display:flex;align-items:center;gap:12px;min-width:0;padding-right:44px}
+  #dcWin .hd .k{font:900 10px ui-monospace,Menlo,monospace;letter-spacing:.18em;color:#8f97c8}
+  #dcWin .hd h3{margin:2px 0 0;font-size:20px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #dcWin .hd h3 small{font-size:13px;color:#a6addf;margin-left:8px;font-weight:700}
+  #dcWin .x{position:absolute;right:14px;top:14px;width:36px;height:36px;border-radius:11px;font:inherit;font-size:20px;cursor:pointer;color:#e6e8ff;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.35)}
+  #dcWin .x:hover{background:rgba(255,120,140,.25)}
+  #dcWin .body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;min-height:0}
+  #dcWin .pane{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 90% at 50% 40%,#16194a,#070818);border:1px solid rgba(150,160,255,.2)}
+  #dcWin .pane canvas{position:absolute;inset:0;width:100%;height:100%}
+  #dcWin .pane .lb{position:absolute;left:12px;top:10px;z-index:2;font:900 10px ui-monospace,Menlo,monospace;letter-spacing:.14em;color:#8f97c8;pointer-events:none}
+  #dcWin .nucnm{position:absolute;left:0;right:0;bottom:12px;z-index:2;text-align:center;pointer-events:none}
+  #dcWin .nucnm b{display:block;font:900 30px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 18px rgba(143,155,255,.6)}
+  #dcWin .nucnm span{font-size:12.5px;font-weight:800;color:#c3c8ee}
+  #dcWin .nucnm i{display:inline-block;margin-left:6px;font-style:normal;font-size:11px;color:#9aa2d8}
+  #dcWin .ev{position:absolute;left:50%;top:16%;z-index:3;transform:translate(-50%,0);font-size:15px;font-weight:900;padding:6px 14px;border-radius:999px;color:#10122a;opacity:0;pointer-events:none;white-space:nowrap}
+  #dcWin .ev.on{animation:dcEv 1.6s ease-out forwards}
+  @keyframes dcEv{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1.05)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+  #dcWin .leg{position:absolute;right:10px;bottom:10px;z-index:2;display:grid;gap:3px;font-size:10.5px;font-weight:800;color:#c3c8ee;padding:6px 9px;border-radius:10px;background:rgba(8,10,28,.75)}
+  #dcWin .leg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  #dcWin .clock{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(8,10,28,.6);border:1px solid rgba(150,160,255,.2)}
+  #dcWin .clock .hl{font-size:12.5px;color:#c3c8ee;white-space:nowrap}
+  #dcWin .clock .hl b{color:#fff;font-size:14px}
+  #dcWin .bar{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden}
+  #dcWin .bar i{position:absolute;inset:0 auto 0 0;width:0;border-radius:inherit;background:linear-gradient(90deg,#8f9bff,#b18cff,#ff9ad5)}
+  #dcWin .bar em{position:absolute;inset:0;font-style:normal;font-size:9.5px;font-weight:900;line-height:10px;text-align:center;color:#fff;mix-blend-mode:difference}
+  #dcWin .btns{display:flex;gap:6px}
+  #dcWin .btns button{font:inherit;font-size:12px;font-weight:800;padding:7px 12px;border-radius:999px;cursor:pointer;color:#eef0ff;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.35);white-space:nowrap}
+  #dcWin .btns button:hover{background:rgba(143,155,255,.25)}
+  #dcWin .btns button.on{background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent}
+  #dcWin .path{display:flex;gap:4px;align-items:center;overflow-x:auto;scrollbar-width:thin;padding:2px 2px 4px}
+  #dcWin .path .n{flex:none;font:900 13px Kanit,system-ui,sans-serif;padding:5px 9px;border-radius:9px;color:#6c73a8;background:rgba(255,255,255,.03);border:1px dashed rgba(150,160,255,.18)}
+  #dcWin .path .n.done{color:#fff;border-style:solid;background:rgba(143,155,255,.15);border-color:rgba(150,160,255,.4)}
+  #dcWin .path .n.cur{color:#10122a;background:linear-gradient(135deg,#c5cbff,#ffd6f2);border-color:transparent;box-shadow:0 0 14px rgba(197,203,255,.6)}
+  #dcWin .path .n.end{border-color:#8cf5d2}
+  #dcWin .path .a{flex:none;font-size:10px;font-weight:900;color:#6c73a8}
+  #dcWin .path .a.done{color:var(--c)}
+  #dcWin .end{position:absolute;left:50%;top:50%;z-index:6;transform:translate(-50%,-50%);width:min(420px,88%);padding:18px 20px;border-radius:18px;text-align:center;
+    background:linear-gradient(160deg,rgba(40,44,100,.97),rgba(14,15,40,.97));border:1px solid rgba(140,245,210,.5);box-shadow:0 20px 60px rgba(0,0,0,.6);display:none}
+  #dcWin .end.on{display:block;animation:dcIn .4s}
+  #dcWin .end h4{margin:0 0 6px;font-size:19px;color:#fff}
+  #dcWin .end p{margin:0 0 10px;font-size:13px;line-height:1.6;color:#d6daf8;word-break:keep-all}
+  #dcWin .end .st{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  #dcWin .end .st span{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(150,160,255,.3);color:#fff}
+  #dcWin .end button{font:inherit;font-size:13px;font-weight:900;padding:8px 16px;border-radius:999px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border:0;margin:0 3px}
+  @media (max-width:760px){
+    #dcWin .win{width:100vw;height:100dvh;border-radius:0;padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom))}
+    #dcWin .x{top:calc(10px + env(safe-area-inset-top))}
+    #dcWin .body{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    #dcWin .clock{grid-template-columns:1fr;gap:8px}
+    #dcWin .hd h3 small{display:none}
+    #dcWin .btns{justify-content:center;flex-wrap:wrap}
+  }
+</style>
+<script>
+(function(){
+  if(typeof RX_NDB === 'undefined' || typeof RX_DECAY === 'undefined') return;
+  const EN = () => LANG === 'en';
+  const T = k => ({
+    ko: { k: 'DECAY CHAIN // 붕괴 사슬', a: 'α 알파 붕괴', b: 'β⁻ 베타 붕괴', e: '전자 포획', it: 'γ 들뜬 핵이 가라앉음', sf: '자발 핵분열!', unk: '붕괴 방식 불확실', hl: '반감기', fast: '빠르게', real: '실제 시간',
+          pause: '⏸ 멈춤', play: '▶ 계속', skip: '⏩ 다음 붕괴', again: '↻ 처음부터', close: '닫기', nuc: 'NUCLEUS // 원자핵', map: 'CHART // 핵종 지도 위의 길',
+          waitR: '실제 반감기만큼 기다리는 중', waitF: '빨리 감는 중', left: '남은 시간',
+          endS: '안정한 핵에 도착!', endF: '핵이 둘로 쪼개졌어요', endU: '여기서부터는 아직 몰라요',
+          endSp: '{a}에서 시작해서 {b}에 도착했어요.', endFp: '{a}에서 시작해 {b}에서 두 조각으로 쪼개지며 사슬이 끝났어요.', endUp: '{b}가 어떻게 붕괴하는지는 아직 확실히 밝혀지지 않았어요.',
+          nA: '알파 {n}번', nB: '베타 {n}번', nE: '전자 포획 {n}번', tot: '반감기 합 {t}', legA: '알파 (Z−2, N−2)', legB: '베타 (Z+1, N−1)', legE: '전자 포획 (Z−1, N+1)',
+          p: '양성자', n: '중성자', note: '실제 붕괴 사슬 · 갈림길에서는 가장 흔한 길' },
+    en: { k: 'DECAY CHAIN', a: 'α Alpha decay', b: 'β⁻ Beta decay', e: 'Electron capture', it: 'γ Excited nucleus settles', sf: 'Spontaneous fission!', unk: 'Decay mode uncertain', hl: 'Half-life', fast: 'Fast', real: 'Real time',
+          pause: '⏸ Pause', play: '▶ Resume', skip: '⏩ Next decay', again: '↻ Start over', close: 'Close', nuc: 'NUCLEUS', map: 'CHART // the path on the nuclide map',
+          waitR: 'Waiting one real half-life', waitF: 'Fast-forwarding', left: 'left',
+          endS: 'Reached a stable nucleus!', endF: 'The nucleus split in two', endU: 'Unknown territory',
+          endSp: 'Started as {a}, ended as {b}.', endFp: 'Started as {a}; the chain ended when {b} split in two.', endUp: 'How {b} decays has not been established yet.',
+          nA: '{n} alpha', nB: '{n} beta', nE: '{n} capture', tot: 'half-lives add to {t}', legA: 'alpha (Z−2, N−2)', legB: 'beta (Z+1, N−1)', legE: 'capture (Z−1, N+1)',
+          p: 'protons', n: 'neutrons', note: 'Real decay chain · most likely branch at each fork' }
+  })[EN() ? 'en' : 'ko'][k];
+  const MC = { a: '#ffb86b', b: '#7fdcff', e: '#c79bff', it: '#fff59a', sf: '#ff7a8a', unk: '#9aa2d8' };
+  const zOf = s => { const e = EL.find(x => x.s === s); return e ? e.n : 0; };
+  // 사슬 전체를 미리 구한다
+  function chain(start){
+    const out = [{ k: start }]; let k = start;
+    for(let g = 0; g < 80; g++){ const d = RX_NDB[k]; if(!d){ out[out.length - 1].end = 'stable'; break; }
+      out[out.length - 1].hl = d[0]; out[out.length - 1].mode = d[1];
+      if(d[1] === 'sf' || d[1] === 'unk' || !d[2]){ out[out.length - 1].end = d[1]; break; }
+      k = d[2]; out.push({ k }); }
+    out.forEach(o => { const n = rxNuc(o.k); o.z = zOf(n.s); o.a = n.a; o.n = n.a - o.z; o.s = n.s; });
+    return out;
+  }
+
+  /* ── 원자핵: 양성자·중성자 공을 구 안에 채운다 ── */
+  const NS = { balls: [], fx: [], yaw: 0, shake: 0, R: 0, sc: 1 };
+  function buildNuc(Z, A, keepFrom){
+    // 공 A개를 구 안에 무작위로 뿌리고, 겹치지 않게 서로 밀어내며 자리를 잡는다 (공 지름 1)
+    let sd = 7 + A; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    const R = Math.cbrt(A) * .62, balls = [];
+    while(balls.length < A){ const x = rnd() * 2 - 1, y = rnd() * 2 - 1, z = rnd() * 2 - 1; if(x * x + y * y + z * z <= 1) balls.push({ x: x * R, y: y * R, z: z * R }); }
+    for(let it = 0; it < 36; it++){
+      for(let i = 0; i < A; i++){ const a = balls[i];
+        for(let j = i + 1; j < A; j++){ const b = balls[j], dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z, d2 = dx * dx + dy * dy + dz * dz;
+          if(d2 < .9 && d2 > 1e-6){ const d = Math.sqrt(d2), f = (.95 - d) / d * .5; a.x += dx * f; a.y += dy * f; a.z += dz * f; b.x -= dx * f; b.y -= dy * f; b.z -= dz * f; } }
+        const r = Math.hypot(a.x, a.y, a.z), lim = R * 1.02; if(r > lim){ a.x *= lim / r; a.y *= lim / r; a.z *= lim / r; } }
+    }
+    const idx = balls.map((_, i) => i).sort(() => rnd() - .5);
+    idx.forEach((i, k) => balls[i].p = k < Z);
+    // 1 단위로 정규화 (반지름 1 구)
+    const M = Math.max(...balls.map(b => Math.hypot(b.x, b.y, b.z))) + .5;
+    balls.forEach(b => { b.x /= M; b.y /= M; b.z /= M; });
+    NS.balls = balls; NS.R = M; NS.br = .5 / M;
+  }
+  function drawNuc(cv, t){
+    const x = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if(cv.width !== Math.round(W * dpr)){ cv.width = W * dpr; cv.height = H * dpr; }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H * .45, R = Math.min(W, H) * .3 * NS.sc * Math.min(1, .55 + NS.R / 12), br = R * NS.br * 1.08;
+    NS.yaw += .006; const cY = Math.cos(NS.yaw), sY = Math.sin(NS.yaw), tl = .35, cT = Math.cos(tl), sT = Math.sin(tl);
+    // 뒤 빛
+    const gl = x.createRadialGradient(cx, cy, 0, cx, cy, R * 1.7); gl.addColorStop(0, `rgba(143,155,255,${.22 + NS.shake * .3})`); gl.addColorStop(1, 'rgba(143,155,255,0)');
+    x.fillStyle = gl; x.beginPath(); x.arc(cx, cy, R * 1.7, 0, 6.283); x.fill();
+    const P = NS.balls.map(b => { const X = b.x * cY + b.z * sY, Z0 = -b.x * sY + b.z * cY, Y = b.y * cT - Z0 * sT, Z = b.y * sT + Z0 * cT;
+      const j = NS.shake ? (Math.random() - .5) * NS.shake * .12 : 0;
+      return { b, X: cx + (X + j) * R, Y: cy + (Y + j) * R, Z }; }).sort((a, b) => a.Z - b.Z);
+    P.forEach(p => { const b = p.b, d = .55 + .45 * (p.Z + 1) / 2, fl = b.flash ? Math.max(0, b.flash - t) / 600 : 0;
+      const c = b.p ? [255, 110, 140] : [170, 178, 205];
+      const g = x.createRadialGradient(p.X - br * .35, p.Y - br * .35, br * .1, p.X, p.Y, br);
+      g.addColorStop(0, `rgba(255,255,255,${.9 * d})`); g.addColorStop(.35, `rgba(${c.map(v => Math.round(v * d)).join(',')},1)`); g.addColorStop(1, `rgba(${c.map(v => Math.round(v * d * .45)).join(',')},1)`);
+      x.fillStyle = g; x.beginPath(); x.arc(p.X, p.Y, br, 0, 6.283); x.fill();
+      if(fl > 0){ x.strokeStyle = `rgba(255,255,160,${fl})`; x.lineWidth = 3; x.beginPath(); x.arc(p.X, p.Y, br * (1.2 + (1 - fl)), 0, 6.283); x.stroke(); } });
+    // 튀어나가는 것들
+    NS.fx = NS.fx.filter(f => t - f.t0 < f.dur);
+    NS.fx.forEach(f => { const k = (t - f.t0) / f.dur, e = 1 - Math.pow(1 - k, 2);
+      if(f.type === 'a'){ // 헬륨 핵 (양성자 2 + 중성자 2)
+        const px = cx + Math.cos(f.ang) * R * (1 + e * 2.2), py = cy + Math.sin(f.ang) * R * (1 + e * 2.2), rr = br * 1.05;
+        x.strokeStyle = `rgba(255,184,107,${.5 * (1 - k)})`; x.lineWidth = rr * 1.4; x.lineCap = 'round'; x.beginPath(); x.moveTo(cx + Math.cos(f.ang) * R, cy + Math.sin(f.ang) * R); x.lineTo(px, py); x.stroke();
+        [[-.5, -.5, 1], [.5, .5, 1], [.5, -.5, 0], [-.5, .5, 0]].forEach(([u, v, pp]) => { x.fillStyle = pp ? '#ff6e8c' : '#aab2cd'; x.beginPath(); x.arc(px + u * rr * 1.1, py + v * rr * 1.1, rr * .75, 0, 6.283); x.fill(); });
+        x.fillStyle = '#ffd6a8'; x.font = '900 13px system-ui,sans-serif'; x.textAlign = 'center'; x.fillText(EN() ? 'α (helium nucleus)' : 'α (헬륨 핵)', px, py - rr * 2.2); }
+      if(f.type === 'b' || f.type === 'e'){ const out = f.type === 'b', d0 = out ? 1 + e * 2.6 : 3.4 - e * 2.4, px = cx + Math.cos(f.ang) * R * d0, py = cy + Math.sin(f.ang) * R * d0;
+        x.strokeStyle = `rgba(${out ? '127,220,255' : '199,155,255'},${.6 * (1 - (out ? k : 0))})`; x.lineWidth = 2; x.beginPath(); x.moveTo(px, py); x.lineTo(cx + Math.cos(f.ang) * R * (out ? d0 - .5 : d0 + .5), cy + Math.sin(f.ang) * R * (out ? d0 - .5 : d0 + .5)); x.stroke();
+        x.fillStyle = out ? '#7fdcff' : '#c79bff'; x.shadowColor = x.fillStyle; x.shadowBlur = 12; x.beginPath(); x.arc(px, py, br * .45, 0, 6.283); x.fill(); x.shadowBlur = 0;
+        x.fillStyle = out ? '#bfefff' : '#e3d0ff'; x.font = '900 12px system-ui,sans-serif'; x.textAlign = 'center'; x.fillText(out ? (EN() ? 'e⁻ (electron)' : 'e⁻ (전자)') : (EN() ? 'e⁻ captured' : 'e⁻ 붙잡힘'), px, py - 12); }
+      if(f.type === 'it'){ x.strokeStyle = `rgba(255,245,154,${1 - k})`; x.lineWidth = 2.5; x.beginPath();
+        for(let q = 0; q <= 40; q++){ const dd = R * (1 + e * 2.4) * q / 40, w = Math.sin(q * 1.4) * 6; x.lineTo(cx + Math.cos(f.ang) * dd - Math.sin(f.ang) * w, cy + Math.sin(f.ang) * dd + Math.cos(f.ang) * w); } x.stroke(); }
+      if(f.type === 'sf'){ [-1, 1].forEach(sg => { const px = cx + sg * R * e * 2.2, py = cy + sg * R * e * .4; x.fillStyle = `rgba(255,122,138,${1 - k * .6})`; x.beginPath(); x.arc(px, py, R * .62 * (1 - k * .3), 0, 6.283); x.fill(); }); }
+    });
+  }
+
+  /* ── 핵종 지도 위의 길 ── */
+  function drawMap(cv, C, upto, t){
+    const x = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if(cv.width !== Math.round(W * dpr)){ cv.width = W * dpr; cv.height = H * dpr; }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    let n0 = 1e9, n1 = -1, z0 = 1e9, z1 = -1; C.forEach(c => { n0 = Math.min(n0, c.n); n1 = Math.max(n1, c.n); z0 = Math.min(z0, c.z); z1 = Math.max(z1, c.z); });
+    n0 -= 3; n1 += 3; z0 -= 3; z1 += 3;
+    const s = Math.min((W - 40) / (n1 - n0 + 1), (H - 50) / (z1 - z0 + 1)), ox = (W - (n1 - n0 + 1) * s) / 2, oy = (H - (z1 - z0 + 1) * s) / 2 + 8;
+    const at = (n, z) => [ox + (n - n0 + .5) * s, oy + (z1 - z + .5) * s];
+    const NM = window.RX_NUCMAP;
+    const col = c => { if(c === '!') return '#eef0ff'; if(c === '~') return '#3a3f66'; const b = c.charCodeAt(0) - 48; const f = Math.max(0, Math.min(1, (b - 12) / 40)); return `hsl(${230 - f * 170},${55 + f * 20}%,${28 + f * 30}%)`; };
+    for(let z = Math.max(1, z0); z <= Math.min(118, z1); z++){ const r = NM && NM[z - 1]; if(!r || !r[1]) continue;
+      for(let n = n0; n <= n1; n++){ const k = n - r[0]; if(k < 0 || k >= r[1].length) continue; const c = r[1][k]; if(c === ' ') continue; const [px, py] = at(n, z);
+        x.globalAlpha = .55; x.fillStyle = col(c); x.fillRect(px - s / 2 + .6, py - s / 2 + .6, s - 1.2, s - 1.2); x.globalAlpha = 1; } }
+    // 원소 기호 (왼쪽)
+    x.font = `800 ${Math.max(8, Math.min(12, s * .55))}px system-ui,sans-serif`; x.textAlign = 'right'; x.fillStyle = 'rgba(200,206,255,.7)';
+    for(let z = Math.max(1, z0 + 1); z <= Math.min(118, z1 - 1); z++){ const [, py] = at(n0, z); x.fillText(byNum[z] ? byNum[z].s : '', ox - 3, py + 4); }
+    // 화살표 길: 미래는 점선, 지나온 길은 진하게
+    for(let i = 0; i < C.length - 1; i++){ const a = C[i], b = C[i + 1], [x1, y1] = at(a.n, a.z), [x2, y2] = at(b.n, b.z), done = i < upto, c = MC[a.mode] || '#fff';
+      x.strokeStyle = done ? c : 'rgba(200,206,255,.28)'; x.lineWidth = done ? 3 : 1.5; x.setLineDash(done ? [] : [4, 4]);
+      x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke(); x.setLineDash([]);
+      if(done){ const an = Math.atan2(y2 - y1, x2 - x1), hx = x2 - Math.cos(an) * s * .45, hy = y2 - Math.sin(an) * s * .45; x.fillStyle = c; x.beginPath(); x.moveTo(hx, hy); x.lineTo(hx - Math.cos(an - .5) * 8, hy - Math.sin(an - .5) * 8); x.lineTo(hx - Math.cos(an + .5) * 8, hy - Math.sin(an + .5) * 8); x.closePath(); x.fill(); } }
+    // 사슬 칸
+    C.forEach((c, i) => { const [px, py] = at(c.n, c.z), cur = i === upto, done = i < upto, end = i === C.length - 1 && c.end === 'stable';
+      const sz = s * (cur ? 1.25 + Math.sin(t / 200) * .06 : 1);
+      x.fillStyle = cur ? '#ffd6f2' : end ? (i <= upto ? '#8cf5d2' : 'rgba(140,245,210,.25)') : done ? '#c5cbff' : 'rgba(30,34,80,.9)';
+      x.strokeStyle = cur ? '#fff' : 'rgba(200,206,255,.6)'; x.lineWidth = cur ? 2 : 1;
+      x.beginPath(); x.roundRect ? x.roundRect(px - sz / 2, py - sz / 2, sz, sz, sz * .18) : x.rect(px - sz / 2, py - sz / 2, sz, sz); x.fill(); x.stroke();
+      if(cur){ x.shadowColor = '#ffd6f2'; x.shadowBlur = 18; x.stroke(); x.shadowBlur = 0; }
+      if(s > 13){ x.fillStyle = cur || done || (end && i <= upto) ? '#10122a' : '#c3c8ee'; x.textAlign = 'center'; x.font = `900 ${sz * .32}px system-ui,sans-serif`; x.fillText(c.s, px, py + sz * .02); x.font = `800 ${sz * .22}px system-ui,sans-serif`; x.fillText(c.a, px, py + sz * .3); } });
+    x.fillStyle = 'rgba(200,206,255,.6)'; x.font = '800 10.5px system-ui,sans-serif'; x.textAlign = 'right'; x.fillText(EN() ? 'neutrons →' : '중성자 수 →', W - 12, 22);
+  }
+
+  /* ── 창과 진행 ── */
+  const S = { C: null, i: 0, on: false, pause: false, real: false, raf: 0, t0: 0, wait: 0, left: 0, start: 0 };
+  const SUP = n => String(n).replace(/\d/g, c => '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]);
+  const lab = c => SUP(c.a) + c.s;
+  const name = c => { const e = byNum[c.z]; return e ? `${EN() ? e.en : e.ko}-${c.a}` : c.k; };
+  const waitOf = hl => S.real && rxDecayReal(hl) ? Math.max(.35, hl) * 1000 : (1.1 + Math.max(0, Math.min(1, (Math.log10(hl) + 6) / 24)) * 1.6) * 1000;
+  function el(){ let d = document.getElementById('dcWin'); if(d) return d;
+    d = document.createElement('div'); d.id = 'dcWin';
+    d.innerHTML = `<div class="win" role="dialog" aria-modal="true"><div class="hd"><div><div class="k"></div><h3></h3></div></div><button type="button" class="x" aria-label="close">×</button>
+      <div class="body"><div class="pane pn"><canvas></canvas><div class="lb lbn"></div><div class="ev"></div><div class="nucnm"><b></b><span></span></div></div>
+        <div class="pane pm"><canvas></canvas><div class="lb lbm"></div><div class="leg"></div></div>
+        <div class="end"><h4></h4><p></p><div class="st"></div><button type="button" class="ag"></button><button type="button" class="cl"></button></div></div>
+      <div class="clock"><div class="hl"></div><div class="bar"><i></i><em></em></div><div class="btns"><button type="button" class="pz"></button><button type="button" class="sk"></button><button type="button" class="rt"></button></div></div>
+      <div class="path"></div></div>`;
+    document.body.appendChild(d);
+    d.querySelector('.x').addEventListener('click', close);
+    d.querySelector('.end .cl').addEventListener('click', close);
+    d.addEventListener('click', e => { if(e.target === d) close(); });
+    d.querySelector('.pz').addEventListener('click', () => { S.pause = !S.pause; if(S.pause) S.left = Math.max(0, S.t0 + S.wait - performance.now()); else { S.t0 = performance.now() - (S.wait - S.left); } sync(); });
+    d.querySelector('.sk').addEventListener('click', () => { if(S.on) S.t0 = performance.now() - S.wait; });
+    d.querySelector('.rt').addEventListener('click', () => { S.real = !S.real; if(S.on){ const k = (performance.now() - S.t0) / S.wait; S.wait = waitOf(S.C[S.i].hl); S.t0 = performance.now() - k * S.wait; } sync(); });
+    d.querySelector('.end .ag').addEventListener('click', () => open(S.C[0].k));
+    addEventListener('keydown', e => { if(e.key === 'Escape' && d.classList.contains('on')){ close(); e.stopImmediatePropagation(); } }, true);
+    return d;
+  }
+  function sync(){
+    const d = el(), c = S.C[S.i];
+    d.querySelector('.hd .k').textContent = T('k');
+    d.querySelector('.hd h3').innerHTML = `${name(S.C[0])} → … <small>${T('note')}</small>`;
+    d.querySelector('.lbn').textContent = T('nuc'); d.querySelector('.lbm').textContent = T('map');
+    d.querySelector('.nucnm b').textContent = lab(c);
+    d.querySelector('.nucnm span').innerHTML = `${name(c)}<i>${c.z} ${T('p')} · ${c.n} ${T('n')}</i>`;
+    d.querySelector('.leg').innerHTML = `<div><i style="background:${MC.a}"></i>${T('legA')}</div><div><i style="background:${MC.b}"></i>${T('legB')}</div><div><i style="background:${MC.e}"></i>${T('legE')}</div>`;
+    d.querySelector('.clock .hl').innerHTML = c.hl ? `${T('hl')} <b>${rxDecayFmt(c.hl, EN())}</b> · <span style="color:${MC[c.mode]}">${T(c.mode)}</span>` : `<b style="color:#8cf5d2">${T('endS')}</b>`;
+    d.querySelector('.pz').textContent = S.pause ? T('play') : T('pause');
+    d.querySelector('.sk').textContent = T('skip');
+    d.querySelector('.rt').textContent = S.real ? '⏱ ' + T('real') : '⚡ ' + T('fast'); d.querySelector('.rt').classList.toggle('on', S.real);
+    [d.querySelector('.pz'), d.querySelector('.sk'), d.querySelector('.rt')].forEach(b => b.disabled = !S.on);
+    const P = d.querySelector('.path');
+    P.innerHTML = S.C.map((x, i) => (i ? `<span class="a${i <= S.i ? ' done' : ''}" style="--c:${MC[S.C[i - 1].mode]}">${({ a: 'α', b: 'β⁻', e: 'EC', it: 'γ' })[S.C[i - 1].mode] || '→'}→</span>` : '') +
+      `<span class="n${i < S.i ? ' done' : ''}${i === S.i ? ' cur' : ''}${i === S.C.length - 1 && x.end === 'stable' ? ' end' : ''}">${lab(x)}</span>`).join('');
+    const cur = P.querySelector('.cur'); if(cur) try{ cur.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); }catch(_){}
+  }
+  function fire(){
+    const c = S.C[S.i], d = el(), now = performance.now(), ang = Math.random() * 6.283;
+    const ev = d.querySelector('.ev'); ev.textContent = T(c.mode); ev.style.background = MC[c.mode] || '#fff'; ev.classList.remove('on'); void ev.offsetWidth; ev.classList.add('on');
+    NS.fx.push({ type: c.mode, t0: now, dur: c.mode === 'a' ? 1300 : 1100, ang });
+    if(c.mode === 'b'){ const nb = NS.balls.find(b => !b.p); if(nb){ nb.p = true; nb.flash = now + 600; } }
+    if(c.mode === 'e'){ const pb = NS.balls.find(b => b.p); if(pb){ pb.p = false; pb.flash = now + 1100; } }
+    try{ c.mode === 'sf' ? SFX.boom() : SFX.pick(); }catch(_){}
+    if(c.mode === 'sf' || c.mode === 'unk' || !S.C[S.i + 1]){ finish(c.mode); return; }
+    // 알파: 공 4개가 빠지고 핵이 조금 작아진다
+    const nx = S.C[S.i + 1];
+    setTimeout(() => { if(c.mode === 'a') buildNuc(nx.z, nx.a); S.i++; sync(); if(S.C[S.i].end === 'stable'){ finish('stable'); return; } S.wait = waitOf(S.C[S.i].hl); S.t0 = performance.now(); }, c.mode === 'a' ? 380 : 250);
+    S.t0 = 1e15;   // 넘어가는 동안 시계 멈춤
+  }
+  function finish(kind){
+    S.on = false; sync();
+    const d = el(), E = d.querySelector('.end'), a = S.C[0], b = S.C[S.i];
+    const cnt = m => S.C.slice(0, S.i + (kind === 'stable' ? 0 : 1)).filter(x => x.mode === m).length;
+    const tot = S.C.slice(0, S.i).reduce((s, x) => s + (x.hl || 0), 0);
+    E.querySelector('h4').textContent = kind === 'stable' ? '🎉 ' + T('endS') : kind === 'sf' ? '💥 ' + T('endF') : '❓ ' + T('endU');
+    E.querySelector('p').textContent = T(kind === 'stable' ? 'endSp' : kind === 'sf' ? 'endFp' : 'endUp').replace('{a}', name(a)).replace('{b}', name(b));
+    E.querySelector('.st').innerHTML = [cnt('a') && T('nA').replace('{n}', cnt('a')), cnt('b') && T('nB').replace('{n}', cnt('b')), cnt('e') && T('nE').replace('{n}', cnt('e')), tot && T('tot').replace('{t}', rxDecayFmt(tot, EN()).replace(/^(약 |about )/, ''))].filter(Boolean).map(s => `<span>${s}</span>`).join('');
+    E.querySelector('.ag').textContent = T('again'); E.querySelector('.cl').textContent = T('close');
+    setTimeout(() => E.classList.add('on'), kind === 'sf' ? 900 : 500);
+    try{ rxEvt('decayEnd'); }catch(_){}
+    try{ if(typeof checkAch === 'function') checkAch(); }catch(_){}
+  }
+  function loop(now){
+    const d = document.getElementById('dcWin'); if(!d || !d.classList.contains('on')){ S.raf = 0; return; }
+    S.raf = requestAnimationFrame(loop);
+    const bar = d.querySelector('.bar i'), em = d.querySelector('.bar em');
+    if(S.on && !S.pause && S.t0 < 1e14){
+      const k = Math.min(1, (now - S.t0) / S.wait); bar.style.width = (k * 100) + '%';
+      const c = S.C[S.i], real = S.real && rxDecayReal(c.hl), left = Math.max(0, S.t0 + S.wait - now);
+      em.textContent = real ? `${T('waitR')} · ${T('left')} ${rxDecayClock(left)}` : T('waitF');
+      NS.shake = Math.pow(k, 3);
+      if(k >= 1){ NS.shake = 0; fire(); }
+    } else if(!S.on){ bar.style.width = '100%'; em.textContent = ''; NS.shake = 0; }
+    drawNuc(d.querySelector('.pn canvas'), now);
+    drawMap(d.querySelector('.pm canvas'), S.C, S.i, now);
+  }
+  function open(startKey){
+    const d = el(); S.C = chain(startKey); S.i = 0; S.on = !!S.C[0].hl; S.pause = false;
+    d.querySelector('.end').classList.remove('on');
+    buildNuc(S.C[0].z, S.C[0].a); NS.fx = []; NS.sc = 1;
+    S.wait = S.C[0].hl ? waitOf(S.C[0].hl) : 1; S.t0 = performance.now() + 600;
+    d.classList.add('on'); sync();
+    try{ rxDecayStop(); }catch(_){}
+    if(!S.raf) S.raf = requestAnimationFrame(loop);
+  }
+  function close(){
+    const d = document.getElementById('dcWin'); if(!d) return;
+    d.classList.remove('on'); S.on = false;
+    // 끝난 원소를 주기율표에서 골라 준다
+    try{ const c = S.C && S.C[S.i]; if(c && c.z && typeof select === 'function') select(c.z); }catch(_){}
+  }
+  window.rxDecayWin = open;
+  // 기존 "☢ 붕괴 지켜보기" 버튼 → 새 창
+  rxDecayStart = function(){ const e = byNum[selected], key = e && RX_DECAY[e.s]; if(key) open(key); };
+})();
+</script>
+
 </body>
 </html>
