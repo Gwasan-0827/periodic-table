@@ -12986,6 +12986,7 @@ function rxSpaceFill(m){
   out.fillBook = book;
   out.bonds = [];
   out.fill = true;
+  out.fillSrc = m; out.fillFn = 'mol';   // 크기 설정을 바꾸면 이걸로 다시 만든다
   return out;
 }
 /* 유리컵: 유리의 '실물' 보기. 바깥 벽·안쪽 벽·입구 테두리·두꺼운 바닥 (소금통과 같은 유리 재질) */
@@ -13025,9 +13026,15 @@ function rxFillSizeSet(v){
   rxLS.set('pt_fillsz', v);
   // 결과 창이 열려 있으면 바로 다시 그린다
   try{
-    if(RX && RX.views && RX.views.fill && RX.views.ball){
-      RX.views.fill = rxSpaceFill(RX.views.ball);
-      if(RX_VIEW === 'fill'){ rxMount(RX.views.fill); rxStart(); }
+    // 열린 결과 창의 공간 채움 모형을 전부 (분자식 · 결정식 각자 원래 방식으로) 다시 만든다
+    if(RX && RX.views){
+      Object.keys(RX.views).forEach(k => {
+        const v = RX.views[k]; if(!v || !v.fill || !v.fillSrc) return;
+        const nv = v.fillFn === 'crys' ? rxCrystalFill(v.fillSrc) : rxSpaceFill(v.fillSrc);
+        if(nv) RX.views[k] = nv;
+      });
+      const cur = RX.views[RX_VIEW];
+      if(cur && cur.fill){ const y = RX_YAW, pt = RX_PITCH; rxMount(cur); RX_YAW = y; RX_PITCH = pt; rxStart(); }
     }
   }catch(e){}
 }
@@ -28452,6 +28459,7 @@ function rxCrystalFill(m){
   const out = Object.assign({}, m);
   out.atoms = A.map(a => Object.assign({}, a, { r: R(a.s) * upa * (cov ? 1.15 : 1) * (book ? 0.9 : 1) }));
   out.fillBook = book; out.bonds = []; out.fill = true;
+  out.fillSrc = m; out.fillFn = 'crys';
   return out;
 }
 /* ═══ 결정 구조도 막대-공 / 공간 채움 / 막대 세 가지로 ═══
