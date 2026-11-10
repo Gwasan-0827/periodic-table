@@ -10165,6 +10165,8 @@ function rxMount(model, svgEl){
   });
   model.gGl = model.glyphs ? [...svg.querySelectorAll('.mol-glyphs .gl')] : null;
   model.gTl = model.tiles ? [...svg.querySelectorAll('.mol-tiles .tl')] : null;
+  /* 다시 그릴 때(크게 보기 등) 새 타일은 숨김 상태가 안 걸려 있으니 캐시를 비운다 */
+  if(model.gTl) model.atoms.forEach(a => { a._st = undefined; });
   model.order = '';
   if(!main){ model.sortAt = 0; return; }
   model.sortAt = performance.now() + 1300;   // 등장 연출이 끝나기 전엔 순서를 바꾸지 않는다
