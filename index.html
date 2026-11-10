@@ -3098,7 +3098,7 @@
     <input id="qtyN" type="number" min="1" max="200" step="1" value="1" inputmode="numeric">
     <button type="button" id="qtyUp" aria-label="늘리기">＋</button>
   </span>
-  <span id="qtyNote">250개가 최대입니다</span>
+  <span id="qtyNote">300개가 최대입니다</span>
   <button class="btn" id="randBtn" style="background:#2a3342;color:var(--text)">랜덤</button>
   <button class="btn" id="clearBtn">비우기</button>
   <button class="btn" id="mixBtn" disabled>조합하기</button>
@@ -4247,7 +4247,7 @@ const mixBtn   = document.getElementById('mixBtn');
 const clearBtn = document.getElementById('clearBtn');
 const modal    = document.getElementById('modal');
 
-const MIX_MAX = 250;
+const MIX_MAX = 300;
 
 function renderChips(){
   if(!mix.length){
@@ -4955,7 +4955,7 @@ const UI = {
   ko:{
     title:"페리오딕//테이블", docTitle:"페리오딕//테이블 — 주기율표", sub:"과학적으로 정확한 헛소리를 지향합니다.", sub2:"교과서보다 더 깊게.", subHint:"원소를 누르면 원자 모형이 나옴 · 족/주기 번호를 누르면 강조",
     search:"원소 검색…", tox:"☠ 독성", dex:"도감", quiz:"퀴즈", safe:"순화",
-    tray:"조합", trayPh:"원소를 담아보세요 (최대 250개)", total:"총",
+    tray:"조합", trayPh:"원소를 담아보세요 (최대 300개)", total:"총",
     rand:"랜덤", clear:"비우기", mixBtn:"조합하기", close:"닫기",
     pickEl:"원소를 선택하세요", addMix:"조합에 담기  +",
     atomN:"원자번호", atomM:"원자량", group:"족", period:"주기", conf:"전자 배치",
@@ -5009,7 +5009,7 @@ const UI = {
     setRecords:"기록", setDex:"조합 도감", setLearnRec:"학습 기록", setAll:"전체 기록",
     setReset:"초기화", setSure:"정말요?", setOftenMissed:"자주 틀림:", setNoRec:"아직 기록 없음",
     addOff:"＋ 담기", addOn:"담는 중",
-    addMixN:"조합에 담기", qtyNote:"250개가 최대입니다",
+    addMixN:"조합에 담기", qtyNote:"300개가 최대입니다",
     trayPhAdd:"표에서 원소를 눌러 담으세요",
     mixNew:"NEW", mixKnown:"이미 있음", mixWipe:"비우고 계속", rxAdded:"도감 등록!", rxBoom:"펑!", rxTabMin:"광물", rxTabAtom:"원자 구조", rxThrow:"잡아서 던져보기", rxMelt:"꾹 잡고 있으면 손의 열로 녹아요", rxHgTouch:"만지지 말랬는데…", rxMelting:"녹는 중…", rxThrowTilt:"잡아서 던지거나 기울여 보기", rxDrag:"드래그해서 돌려보기", rxDexH:"도감", keepClose:"담은 채로 닫기",
     rxMore:"자세히 알아보기", rxBack:"요약으로", rxMolar:"몰질량", rxMass:"질량 구성",
@@ -5027,7 +5027,7 @@ const UI = {
   en:{
     title:"Periodic // Table", docTitle:"Periodic // Table — Periodic table", sub:"Quality over quantity.", sub2:"Deeper than the textbook.", subHint:"Tap an element for its atom model · Tap group/period numbers to highlight",
     search:"Search elements…", tox:"☠ Toxic", dex:"Codex", quiz:"Quiz", safe:"Clean",
-    tray:"Mix", trayPh:"Add some elements (max 250)", total:"Total",
+    tray:"Mix", trayPh:"Add some elements (max 300)", total:"Total",
     rand:"Random", clear:"Clear", mixBtn:"Combine", close:"Close",
     pickEl:"Select an element", addMix:"Add to mix  +",
     atomN:"Atomic number", atomM:"Atomic mass", group:"Group", period:"Period", conf:"Configuration",
@@ -5080,7 +5080,7 @@ const UI = {
     setRecords:"Records", setDex:"Compound codex", setLearnRec:"Learning records", setAll:"Everything",
     setReset:"Reset", setSure:"Are you sure?", setOftenMissed:"Often missed:", setNoRec:"No records yet",
     addOff:"＋ Add", addOn:"Adding",
-    addMixN:"Add to mix", qtyNote:"250 is the maximum",
+    addMixN:"Add to mix", qtyNote:"300 is the maximum",
     trayPhAdd:"Tap elements on the table to add them",
     mixNew:"NEW", mixKnown:"Already found", mixWipe:"Clear and continue", rxAdded:"New entry!", rxBoom:"Boom!", rxTabMin:"Mineral", rxTabAtom:"Atoms", rxThrow:"Grab and throw", rxMelt:"Hold it — your hand will melt it", rxHgTouch:"I said don't touch…", rxMelting:"Melting…", rxThrowTilt:"Grab, throw or tilt your phone", rxDrag:"Drag to rotate", rxDexH:"Codex", keepClose:"Close, keep tray",
     rxMore:"Learn more", rxBack:"Back", rxMolar:"Molar mass", rxMass:"Mass composition",
@@ -14207,8 +14207,8 @@ const ACH = [
     ko:['세상에서 가장 허무한 도전','음... 둘다 반감기가 겁나 짧은데 왜 하신거죠? (Bruh)'],
     en:['The boldest attempt','You tried to introduce oganesson to tennessine'] },
   { id:'ffull', bad:true, need:() => !!F().full,
-    ko:['물량으로 안 되는 게 있다','250개를 꽉 채우고도 실패했다'],
-    en:['Quantity is not everything','All 250 slots, and still nothing'] },
+    ko:['물량으로 안 되는 게 있다','300개를 꽉 채우고도 실패했다'],
+    en:['Quantity is not everything','All 300 slots, and still nothing'] },
   { id:'fsame', bad:true, need:() => (F().maxStreak || 0) >= 3,
     ko:['혹시 몰라서 다시 해봄','같은 조합을 세 번 연속 실패했다'],
     en:['Just in case, one more time','Same mix failed three times in a row'] },
