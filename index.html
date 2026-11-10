@@ -42676,7 +42676,7 @@ void main(){
   let TOT = 0, last = -1;
   function count(){
     try{
-      if(!TOT) TOT = allEntries().length;
+      TOT = allEntries().length || TOT;   // 나중에 붙는 항목(특수 발견 등)까지 세려고 매번 다시 센다
       const n = codexGot(), b = document.getElementById('dexBtn'); if(!b) return;
       b.dataset.n = `${n}/${TOT}`; b.dataset.s = n > 999 ? '999+' : String(n);
       b.style.setProperty('--dp', (n / TOT * 100).toFixed(1) + '%');
@@ -48436,6 +48436,242 @@ void main(){
   const _p = paint; paint = function(){ const r = _p.apply(this, arguments); try{ if(ON){ applyFake(); fake119(); } }catch(e){} return r; };
   addEventListener('hashchange', () => { try{ if(fromUrl() && pref() === 'auto') sync(); }catch(e){} });
   setTimeout(sync, 300);
+})();
+</script>
+
+<style>
+  /* ═══ 도감 리워크: 분류별 진행 + 목록 보기 ═══ */
+  #dxCat{margin:0 0 12px;border:1px solid rgba(154,168,255,.16);border-radius:16px;background:linear-gradient(170deg,rgba(154,168,255,.06),rgba(8,10,16,.4) 60%);overflow:hidden}
+  #dexPane[data-cur="cmp"] > #dxCat{display:block!important}
+  #dxCat .dc-h{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:0;color:#c9d0ff;font:inherit;cursor:pointer;text-align:left}
+  #dxCat .dc-h b{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.75)}
+  #dxCat .dc-h span{font-size:12.5px;font-weight:700;color:#e6e9ff}
+  #dxCat .dc-h em{margin-left:auto;font-style:normal;font-size:11px;color:rgba(201,208,255,.55)}
+  #dxCat .dc-h i{width:8px;height:8px;border-right:2px solid rgba(201,208,255,.7);border-bottom:2px solid rgba(201,208,255,.7);transform:rotate(45deg);transition:transform .25s;margin:-3px 2px 0 0}
+  #dxCat.shut .dc-h i{transform:rotate(-45deg);margin-top:0}
+  #dxCat .dc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:0 12px 12px}
+  #dxCat.shut .dc-g{display:none}
+  #dxCat .dc{position:relative;display:grid;grid-template-columns:38px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:9px 10px;border-radius:12px;
+    border:1px solid rgba(154,168,255,.14);background:rgba(10,13,24,.55);color:#dfe3ff;font:inherit;text-align:left;cursor:pointer;transition:border-color .2s,transform .15s,background .2s}
+  #dxCat .dc:hover{border-color:rgba(201,208,255,.45);transform:translateY(-1px)}
+  #dxCat .dc.on{border-color:#c9d0ff;background:rgba(154,168,255,.16);box-shadow:0 0 0 1px rgba(201,208,255,.15) inset}
+  #dxCat .dc svg{grid-row:1 / span 2;width:38px;height:38px;transform:rotate(-90deg)}
+  #dxCat .dc circle{fill:none;stroke-width:4.5}
+  #dxCat .dc .bg{stroke:rgba(154,168,255,.14)}
+  #dxCat .dc .fg{stroke:url(#dcGrad);stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.9,.25,1)}
+  #dxCat .dc.full .fg{stroke:#ffd43b}
+  #dxCat .dc .pc{position:absolute;left:10px;top:50%;width:38px;margin-top:-6px;text-align:center;font:800 10px/12px Kanit,system-ui,sans-serif;color:#e6e9ff}
+  #dxCat .dc .nm{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #dxCat .dc .ct{font:600 11px/1.3 ui-monospace,monospace;color:rgba(201,208,255,.6)}
+  #dxCat .dc.full{border-color:rgba(255,212,59,.4)}
+  #dxCat .dc.full .ct{color:#ffd43b}
+  #dxCat .dc.full::after{content:"COMPLETE";position:absolute;right:8px;top:7px;font:800 8px/1 ui-monospace,monospace;letter-spacing:.1em;color:#ffd43b}
+
+  /* 보기 전환 단추 */
+  #dexProg .dv{display:inline-flex;border:1px solid rgba(154,168,255,.25);border-radius:9px;overflow:hidden;flex:none}
+  #dexProg .dv button{display:grid;place-items:center;width:32px;height:28px;padding:0;border:0;background:rgba(154,168,255,.06);color:rgba(201,208,255,.6);cursor:pointer}
+  #dexProg .dv button.on{background:rgba(154,168,255,.28);color:#fff}
+  #dexProg .dv svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+  /* 목록 보기: 한 줄짜리 */
+  body:not(.w95) #dexPane #dexList.lv{display:flex!important;flex-direction:column;gap:4px}
+  body:not(.w95) #dexPane #dexList.lv .dx{display:flex!important;flex-direction:row!important;flex-wrap:wrap;align-items:center;justify-content:flex-start!important;gap:4px 12px;min-height:0!important;
+    padding:6px 92px 6px 10px!important;border-radius:10px;border-style:solid}
+  body:not(.w95) #dexPane #dexList.lv .dx:hover{transform:none}
+  body:not(.w95) #dexPane #dexList.lv .dx[hidden]{display:none!important}
+  body:not(.w95) #dexPane #dexList.lv .dx::after{top:50%!important;transform:translateY(-50%);right:12px}
+  body:not(.w95) #dexPane #dexList.lv .dx.dx-new::after{transform:translateY(-50%)}
+  body:not(.w95) #dexPane #dexList.lv .dx.open .dxth{order:0;flex:none;width:52px!important;height:38px!important;margin:0!important;border-radius:8px}
+  body:not(.w95) #dexPane #dexList.lv .dx.open .f{flex:0 0 150px;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body:not(.w95) #dexPane #dexList.lv .dx.open .n{flex:0 0 140px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body:not(.w95) #dexPane #dexList.lv .dx.open .s{flex:1 1 160px;min-width:0;display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;color:rgba(201,208,255,.6);font-size:12px}
+  body:not(.w95) #dexPane #dexList.lv .dx.open .dxk{margin:0!important;order:5}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked{background:repeating-linear-gradient(135deg,rgba(154,168,255,.03) 0 6px,transparent 6px 12px),rgba(8,10,16,.38)}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked::before{display:none}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked .tg{order:0;margin:0!important;flex:none;max-width:150px}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked .n{margin:0!important;flex:0 0 auto;font-size:12px}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked .hint{margin:0!important;flex:1 1 auto;min-width:0}
+  body:not(.w95) #dexPane #dexList.lv .dx.locked .hint.hx{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}
+  @media (max-width:700px){
+    body:not(.w95) #dexPane > #dexSearch{background:rgba(16,18,32,.97)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+    #dxCat .dc-g{grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 10px}
+    #dxCat .dc{grid-template-columns:32px 1fr;padding:8px;column-gap:8px}
+    #dxCat .dc svg{width:32px;height:32px}
+    #dxCat .dc .pc{width:32px;left:8px;font-size:9px}
+    #dxCat .dc .nm{font-size:11.5px}
+    #dxCat .dc.full::after{display:none}
+    body:not(.w95) #dexPane #dexList.lv .dx{padding:6px 64px 6px 8px!important;gap:2px 8px}
+    body:not(.w95) #dexPane #dexList.lv .dx.open .dxth{width:44px!important;height:33px!important}
+    body:not(.w95) #dexPane #dexList.lv .dx.open .f{flex:1 1 auto;min-width:0;font-size:12.5px}
+    body:not(.w95) #dexPane #dexList.lv .dx.open .n{flex:1 1 auto;min-width:0;font-size:12px}
+    body:not(.w95) #dexPane #dexList.lv .dx.open .s,body:not(.w95) #dexPane #dexList.lv .dx.open .dxk{display:none!important}
+    body:not(.w95) #dexPane #dexList.lv .dx::after{font-size:8.5px;right:8px}
+  }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  const LSV = 'pt_dexview', LSC = 'pt_dexcat';
+  const get = (k, d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } };
+  const put = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+  const ICG = '<svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>';
+  const ICL = '<svg viewBox="0 0 16 16"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11"/></svg>';
+
+  function view(){
+    const list = document.getElementById('dexList'), prog = document.getElementById('dexProg');
+    if(!list || !prog) return;
+    let dv = prog.querySelector('.dv');
+    if(!dv){
+      dv = document.createElement('span'); dv.className = 'dv';
+      dv.innerHTML = `<button type="button" data-v="grid">${ICG}</button><button type="button" data-v="list">${ICL}</button>`;
+      dv.addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; put(LSV, b.dataset.v); view(); try{ SFX.pick(); }catch(_){} });
+      prog.appendChild(dv);
+    }
+    const v = get(LSV, 'grid');
+    dv.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.title = b.dataset.v === 'grid' ? (EN() ? 'Cards' : '카드로 보기') : (EN() ? 'List' : '목록으로 보기'); });
+    list.classList.toggle('lv', v === 'list');
+  }
+
+  function cats(){
+    const pane = document.getElementById('dexPane'), tags = document.getElementById('dexTags'), search = document.getElementById('dexSearch');
+    if(!pane || !tags || !search) return;
+    const T = [...tags.querySelectorAll('button[data-t]')].filter(b => b.dataset.t !== 'all').map(b => {
+      const m = (b.querySelector('b') || {}).textContent || '0/0', [a, n] = m.split('/').map(x => +x || 0);
+      const nm = [...b.childNodes].filter(x => x.nodeType === 3 || (x.tagName && x.tagName !== 'B')).map(x => x.textContent).join('').trim();
+      return { t: b.dataset.t, nm, a, n, on: b.classList.contains('on') };
+    });
+    if(!T.length) return;
+    let box = document.getElementById('dxCat');
+    if(!box){
+      box = document.createElement('div'); box.id = 'dxCat';
+      box.addEventListener('click', e => {
+        if(e.target.closest('.dc-h')){ box.classList.toggle('shut'); put(LSC, box.classList.contains('shut') ? 'shut' : 'open'); return; }
+        const c = e.target.closest('.dc'); if(!c) return;
+        const tb = document.querySelector(`#dexTags button[data-t="${c.classList.contains('on') ? 'all' : c.dataset.t}"]`);
+        if(tb) tb.click();
+        setTimeout(sync, 0);
+      });
+    }
+    if(box.nextElementSibling !== search) search.before(box);
+    if(get(LSC, innerWidth < 700 ? 'shut' : 'open') === 'shut') box.classList.add('shut');   // 폰은 처음엔 접어 둔다
+    const R = 15.5, CIR = 2 * Math.PI * R;
+    const full = T.filter(x => x.n && x.a >= x.n).length;
+    box.innerHTML = `<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="dcGrad" x1="0" x2="1"><stop offset="0" stop-color="#9ee7ff"/><stop offset="1" stop-color="#b197fc"/></linearGradient></defs></svg>
+      <button type="button" class="dc-h"><b>BY CATEGORY</b><span>${EN() ? 'Progress by category' : '분류별 진행'}</span><em>${EN() ? `${full} / ${T.length} complete` : `${T.length}개 중 ${full}개 완성`}</em><i></i></button>
+      <div class="dc-g">${T.map(x => { const p = x.n ? x.a / x.n : 0;
+        return `<button type="button" class="dc${x.on ? ' on' : ''}${x.n && x.a >= x.n ? ' full' : ''}" data-t="${x.t}">
+          <svg viewBox="0 0 38 38"><circle class="bg" cx="19" cy="19" r="${R}"/><circle class="fg" cx="19" cy="19" r="${R}" stroke-dasharray="${CIR.toFixed(1)}" stroke-dashoffset="${CIR.toFixed(1)}" data-o="${(CIR * (1 - p)).toFixed(1)}"/></svg>
+          <span class="pc">${Math.floor(p * 100)}%</span><span class="nm">${x.nm}</span><span class="ct">${x.a} / ${x.n}</span></button>`; }).join('')}</div>`;
+    requestAnimationFrame(() => requestAnimationFrame(() => box.querySelectorAll('.fg').forEach(c => c.setAttribute('stroke-dashoffset', c.dataset.o))));
+  }
+  function sync(){
+    const box = document.getElementById('dxCat'); if(!box) return;
+    const on = document.querySelector('#dexTags button.on');
+    box.querySelectorAll('.dc').forEach(c => c.classList.toggle('on', !!on && on.dataset.t === c.dataset.t));
+  }
+  document.addEventListener('click', e => { if(e.target.closest('#dexTags')) setTimeout(sync, 0); }, true);
+
+  const _od = openDex;
+  openDex = function(){
+    const r = _od.apply(this, arguments);
+    try{ view(); }catch(e){}
+    try{ cats(); }catch(e){}
+    return r;
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 히트맵 범례 리워크: 이름·단위 · 눈금 · 칸 위치 핀 · 값 없음 표시 ═══ */
+  .mlegend.hl2{display:grid!important;grid-template-columns:1fr;gap:4px;width:min(520px,100%);margin-top:6px}
+  .hl2 .hl-t{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:11px;color:rgba(201,208,255,.7)}
+  .hl2 .hl-t b{font-size:12px;font-weight:800;color:#e6e9ff}
+  .hl2 .hl-t .u{font:700 10.5px/1 ui-monospace,monospace;padding:2px 6px;border-radius:999px;border:1px solid rgba(150,160,255,.25);background:rgba(255,255,255,.05);color:#c9d0ff}
+  .hl2 .hl-t .lg{font-size:10px;padding:2px 6px;border-radius:999px;background:rgba(255,212,59,.12);color:#ffd43b;border:1px solid rgba(255,212,59,.3)}
+  .hl2 .hl-t .na{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:10.5px}
+  .hl2 .hl-t .na i{width:11px;height:11px;border-radius:3px;border:1px dashed rgba(201,208,255,.5);background:rgba(20,24,36,.8)}
+  .hl2 .hl-t .lo-hi{font-size:10px;color:rgba(201,208,255,.5)}
+  .hl2 .hl-b{position:relative;height:10px;border-radius:999px;margin:16px 0 0;box-shadow:0 0 12px rgba(143,155,255,.25),inset 0 0 0 1px rgba(255,255,255,.08)}
+  .hl2 .hl-k{position:relative;height:16px;font:700 10px/1 ui-monospace,monospace;color:rgba(201,208,255,.75);font-variant-numeric:tabular-nums}
+  .hl2 .hl-k span{position:absolute;top:4px;transform:translateX(-50%);white-space:nowrap}
+  .hl2 .hl-k span:first-child{transform:none}
+  .hl2 .hl-k span:last-child{transform:translateX(-100%)}
+  .hl2 .hl-k span::before{content:"";position:absolute;left:50%;top:-6px;width:1px;height:4px;background:rgba(201,208,255,.45)}
+  .hl2 .hl-k span:first-child::before{left:0}
+  .hl2 .hl-k span:last-child::before{left:auto;right:0}
+  .hl2 .pin{position:absolute;bottom:-3px;width:0;height:16px;transition:left .25s cubic-bezier(.2,.9,.25,1),opacity .2s;opacity:0;pointer-events:none}
+  .hl2 .pin.on{opacity:1}
+  .hl2 .pin::before{content:"";position:absolute;left:-2px;bottom:0;width:4px;height:16px;border-radius:2px;background:#fff;box-shadow:0 0 0 1.5px #10141b,0 0 10px rgba(255,255,255,.7)}
+  .hl2 .pin em{position:absolute;bottom:19px;left:0;transform:translateX(-50%);font:800 10.5px/1 Kanit,system-ui,sans-serif;font-style:normal;white-space:nowrap;
+    padding:3px 7px;border-radius:999px;background:#f1f3ff;color:#10141b;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+  .hl2 .pin.l em{transform:translateX(-12%)}
+  .hl2 .pin.r em{transform:translateX(-88%)}
+  .hl2 .pin.sel::before{background:#ffd43b}
+  .hl2 .pin.sel em{background:#ffd43b}
+  @media (max-width:700px){ .mlegend.hl2{width:100%} .hl2 .hl-t .na{margin-left:0} }
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  let curK = null;
+  function tickFmt(d, x, f){
+    if(d.k === 'yr' && f === 0) return EN() ? 'anc.' : '고대';
+    let v = d.scale === 'log' ? Math.pow(10, x) : x;
+    if(d.k === 'mp' || d.k === 'bp') v = rxTfromK(v + 273.15);
+    if(d.k === 'yr') return String(Math.round(v));
+    if(d.scale === 'log') return v < 0.01 ? v.toPrecision(1) : v < 1 ? v.toFixed(2) : v < 10 ? v.toFixed(1) : String(Math.round(v));
+    const a = Math.abs(v), end = f === 0 || f === 1;
+    return a < 10 ? v.toFixed(a < 1 || end ? 2 : 1) : String(Math.round(v));
+  }
+  function build(){
+    if(typeof VIEW === 'undefined' || VIEW !== 'heat') return;
+    const d = propDef(HEATP); if(!d || d.scale === 'special' || !heatRange[HEATP]) return;
+    const lg = [...document.querySelectorAll('.mlegend')].find(x => x.querySelector('.bar') && x.offsetParent !== null) || document.querySelector('.mlegend');
+    if(!lg || lg.classList.contains('hl2')) return;
+    const [lo, hi] = heatRange[HEATP];
+    const unit = (d.k === 'mp' || d.k === 'bp') ? rxTsym() : d.unit;
+    const stops = [0, .25, .5, .75, 1].map(f => rgbCss(rampColor(f))).join(',');
+    const none = EL.filter(e => rawVal(e, HEATP) === null).length;
+    const lowNm = EN() ? 'low' : '낮음', hiNm = EN() ? 'high' : '높음';
+    lg.className = 'mlegend hl2';
+    lg.innerHTML = `<div class="hl-t"><b>${propLabel(d)}</b>${unit ? `<span class="u">${unit}</span>` : ''}${d.scale === 'log' ? `<span class="lg">${EN() ? 'log scale' : '로그 눈금'}</span>` : ''}
+        <span class="lo-hi">${EN() ? 'dark = low · bright = high' : '어두울수록 낮고, 밝을수록 높아요'}</span>
+        ${none ? `<span class="na"><i></i>${EN() ? `no data ${none}` : `값 없음 ${none}개`}</span>` : ''}</div>
+      <div class="hl-b" style="background:linear-gradient(90deg,${stops})"><span class="pin"><em></em></span></div>
+      <div class="hl-k">${[0, .25, .5, .75, 1].map(f => `<span style="left:${f * 100}%">${tickFmt(d, lo + (hi - lo) * f, f)}</span>`).join('')}</div>`;
+    lg.title = `${lowNm} → ${hiNm}`;
+    curK = HEATP;
+    showSel();
+  }
+  function pinTo(e, sel){
+    const lg = document.querySelector('.mlegend.hl2'); if(!lg) return;
+    const pin = lg.querySelector('.pin');
+    const f = e ? heatFrac(e) : null;
+    if(f === null || f === undefined || isNaN(f)){ pin.classList.remove('on'); return; }
+    const x = Math.max(0, Math.min(1, f));
+    pin.style.left = (x * 100) + '%';
+    pin.classList.toggle('l', x < .1); pin.classList.toggle('r', x > .9);
+    pin.classList.toggle('sel', !!sel);
+    const u = (HEATP === 'mp' || HEATP === 'bp') ? rxTsym() : (propDef(HEATP).unit || '');
+    pin.querySelector('em').textContent = `${e.s} ${shortVal(e, HEATP)}${u && !/^[°]/.test(u) ? ' ' + u : u}`;
+    pin.classList.add('on');
+  }
+  function elOf(cell){ const n = cell && +cell.dataset.n; return n ? EL.find(x => x.n === n) : null; }
+  function showSel(){ const c = document.querySelector('#grid .cell.sel'); pinTo(elOf(c), true); }
+  document.addEventListener('pointerover', e => {
+    if(typeof VIEW === 'undefined' || VIEW !== 'heat') return;
+    const c = e.target.closest && e.target.closest('#grid .cell[data-n]');
+    if(c) pinTo(elOf(c), c.classList.contains('sel'));
+  }, true);
+  document.addEventListener('pointerout', e => {
+    if(typeof VIEW === 'undefined' || VIEW !== 'heat') return;
+    const g = document.getElementById('grid');
+    if(g && !g.contains(e.relatedTarget)) showSel();
+  }, true);
+  document.addEventListener('click', e => { if(e.target.closest && e.target.closest('#grid .cell[data-n]')) setTimeout(showSel, 30); }, true);
+  const _r = renderModeBar;
+  renderModeBar = function(){ const r = _r.apply(this, arguments); try{ build(); }catch(err){} return r; };
+  try{ build(); }catch(err){}
 })();
 </script>
 
