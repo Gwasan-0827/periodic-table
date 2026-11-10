@@ -8846,6 +8846,20 @@ function buildNucleus(e){
     });
   }
 
+  // 서로 맞닿게 뭉치기: 구슬 반지름 rb (구 안에 64%쯤 채움), 겹치면 밀어내고 가운데로 당긴다
+  const rb = Math.min(.7, Math.cbrt(.6 / show));
+  if(show > 1){
+    pts.forEach(p => { p.x *= .6; p.y *= .6; p.z *= .6; });
+    for(let it = 0; it < 80; it++){
+      for(let i = 0; i < show; i++) for(let j = i + 1; j < show; j++){
+        const a = pts[i], b = pts[j], dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z, d = Math.hypot(dx, dy, dz) || 1e-3;
+        if(d < 2 * rb){ const f = (2 * rb - d) / d * .5; a.x += dx * f; a.y += dy * f; a.z += dz * f; b.x -= dx * f; b.y -= dy * f; b.z -= dz * f; } }
+      pts.forEach(p => { p.x *= .985; p.y *= .985; p.z *= .985; });
+    }
+    let mr = 0; pts.forEach(p => mr = Math.max(mr, Math.hypot(p.x, p.y, p.z) + rb));
+    const k = 1 / mr; pts.forEach(p => { p.x *= k; p.y *= k; p.z *= k; }); pts._rb = rb * k;
+  } else { pts[0].x = pts[0].y = pts[0].z = 0; pts._rb = .7; }
+
   // 번갈아 배정하면 줄무늬가 생기므로 무작위로 섞는다
   const idx = pts.map((_, i) => i);
   for(let i = idx.length - 1; i > 0; i--){
@@ -8990,7 +9004,8 @@ function draw(now){
   if(!nucleons.length) buildNucleus(atomEl);
   const jit = 0.6 + instab * 2.6 + shakeHit * 3;
   const yaw = t * 0.35, cy2 = Math.cos(yaw), sy2 = Math.sin(yaw);
-  const nq = nucleons.length, nrad = Math.max(2.4, coreR * (nq > 40 ? 0.19 : nq > 15 ? 0.24 : 0.32));
+  // 구슬 크기: 가장 가까운 두 핵자 사이 거리에 맞춰서 서로 맞닿게 (작은 핵이 흩어져 보이지 않도록)
+  const nq = nucleons.length, nrad = Math.max(2.4, coreR * (nucleons._rb ? nucleons._rb * 1.08 : (nq > 40 ? 0.19 : nq > 15 ? 0.24 : 0.32)));
   const P = nucleons.map(q => ({ q, x: q.x * cy2 + q.z * sy2, z: -q.x * sy2 + q.z * cy2 })).sort((a, b) => a.z - b.z);
   for(const o of P){
     const q = o.q;
