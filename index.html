@@ -27723,7 +27723,7 @@ function rxTyHud(){
   $('tyScore').textContent = RX_TY.score;
   $('tyBest').textContent = Math.max(rxTyBest(), RX_TY.score);
   $('tyLv').textContent = RX_TY.lv + (RX_TY.combo >= 3 ? ` ×${RX_TY.combo}` : '');
-  $('tyHp').textContent = '♥'.repeat(Math.max(0, RX_TY.hp)) + '♡'.repeat(Math.max(0, 3 - RX_TY.hp));
+  $('tyHp').textContent = '♥'.repeat(Math.max(0, RX_TY.hp)) + '♡'.repeat(Math.min(3, Math.max(0, 3 - RX_TY.hp)));
 }
 function rxTySpawn(){
   const G = rxTyGeom(); if(!G.W) return;
@@ -48631,6 +48631,282 @@ void main(){
   const _r = renderModeBar;
   renderModeBar = function(){ const r = _r.apply(this, arguments); try{ build(); }catch(err){} return r; };
   try{ build(); }catch(err){}
+})();
+</script>
+
+<style>
+  /* ═══ 원소 타자 리워크: 판 꾸미기 · 콤보 배수 · 금색 원소 · 결과판 ═══ */
+  #tyBoard{background:radial-gradient(120% 70% at 50% -10%,#1b2a4a,#0b0f17 70%)!important;border-color:rgba(154,168,255,.25)!important;box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  #tyBoard::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:linear-gradient(rgba(154,168,255,.05) 1px,transparent 1px) 0 0/100% 24px,linear-gradient(90deg,rgba(154,168,255,.035) 1px,transparent 1px) 0 0/24px 100%;
+    -webkit-mask:linear-gradient(transparent,#000 30%,#000 80%,transparent);mask:linear-gradient(transparent,#000 30%,#000 80%,transparent)}
+  /* 뒤에 깔린 주기율표 그림자: 맞힌 원소 칸이 잠깐 켜진다 */
+  .ty-pt{position:absolute;left:50%;top:46%;width:86%;aspect-ratio:18/9.6;translate:-50% -50%;pointer-events:none;z-index:0;opacity:.55}
+  .ty-pt i{position:absolute;width:calc(100% / 18 - 3px);aspect-ratio:1;border-radius:3px;border:1px solid rgba(154,168,255,.09);background:rgba(154,168,255,.025);transition:background .9s,border-color .9s,box-shadow .9s}
+  .ty-pt i.lit{background:color-mix(in srgb,var(--c) 55%,transparent);border-color:var(--c);box-shadow:0 0 14px var(--c);transition:none}
+  /* 레이저 방어선 */
+  .ty-line{height:3px!important;background:linear-gradient(90deg,transparent,#4dabf7 6%,#9ee7ff 50%,#4dabf7 94%,transparent)!important;z-index:2}
+  .ty-line::before{content:"";position:absolute;top:-1px;height:5px;width:90px;left:-90px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);animation:tyScan 2.6s linear infinite;filter:blur(.5px)}
+  @keyframes tyScan{to{left:100%}}
+  .ty-line .em{position:absolute;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:radial-gradient(circle,#fff,#4dabf7 50%,transparent 70%);box-shadow:0 0 14px #4dabf7}
+  .ty-line .em.l{left:-2px}.ty-line .em.r{right:-2px}
+  .ty-line.hit .em{background:radial-gradient(circle,#fff,#ff6b6b 50%,transparent 70%);box-shadow:0 0 16px #ff6b6b}
+  .ty-line.hit::before{background:linear-gradient(90deg,transparent,#ffc9c9,transparent)}
+  /* 목숨 잃으면 붉게 번쩍, 하나 남으면 가장자리가 숨 쉬듯 붉음 */
+  #tyBoard .ty-dmg{position:absolute;inset:0;pointer-events:none;z-index:6;box-shadow:inset 0 0 0 2px rgba(255,107,107,.9),inset 0 0 70px rgba(255,60,60,.55);opacity:0}
+  #tyBoard.dmg .ty-dmg{animation:tyDmg .5s ease-out}
+  @keyframes tyDmg{0%{opacity:1}100%{opacity:0}}
+  #tyBoard.dmg{animation:tyQuake .32s linear}
+  @keyframes tyQuake{20%{translate:-5px 2px}40%{translate:4px -2px}60%{translate:-3px 1px}80%{translate:2px 0}}
+  #tyBoard.low::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:6;box-shadow:inset 0 0 50px rgba(255,60,60,.4);animation:tyLow 1.1s ease-in-out infinite alternate}
+  @keyframes tyLow{from{opacity:.35}to{opacity:1}}
+  .ty-w{z-index:3}
+  .ty-fx{z-index:4}
+  /* 맞히면 분류 색 조각이 튄다 */
+  .ty-bit{position:absolute;width:6px;height:6px;border-radius:2px;background:var(--c);box-shadow:0 0 8px var(--c);pointer-events:none;z-index:4}
+  /* 콤보 */
+  .ty-cb{position:absolute;right:12px;top:10px;z-index:5;text-align:right;pointer-events:none;opacity:0;transition:opacity .2s}
+  .ty-cb.on{opacity:1}
+  .ty-cb b{display:block;font:800 30px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 18px rgba(158,231,255,.7)}
+  .ty-cb small{display:block;font:800 10px/1.4 ui-monospace,monospace;letter-spacing:.16em;color:#9ee7ff}
+  .ty-cb em{display:inline-block;margin-top:3px;font:800 11px/1 Kanit,system-ui,sans-serif;font-style:normal;padding:3px 7px;border-radius:999px;background:linear-gradient(90deg,#9ee7ff,#b197fc);color:#0b0d11}
+  .ty-cb .bar{display:block;width:84px;height:3px;margin:5px 0 0 auto;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
+  .ty-cb .bar i{display:block;height:100%;background:linear-gradient(90deg,#9ee7ff,#b197fc);transition:width .2s}
+  .ty-cb.t2 b{color:#e5dbff;text-shadow:0 0 20px rgba(177,151,252,.8)}
+  .ty-cb.t3 b{color:#ffe066;text-shadow:0 0 22px rgba(255,212,59,.85)}
+  .ty-cb.t3 em{background:linear-gradient(90deg,#ffe066,#ff9ad5)}
+  .ty-cb.pop b{animation:tyCbPop .22s ease-out}
+  @keyframes tyCbPop{from{scale:1.35}}
+  .ty-brk{position:absolute;right:12px;top:12px;z-index:5;font:800 13px/1 Kanit,system-ui,sans-serif;color:#ff8787;pointer-events:none;animation:tyBrk 1s ease-out forwards}
+  @keyframes tyBrk{0%{opacity:1;translate:0 0}100%{opacity:0;translate:0 18px}}
+  /* 금색 원소 */
+  .ty-w.gold{--c:#ffd43b!important;background:linear-gradient(135deg,rgba(80,58,6,.95),rgba(30,22,4,.95))!important;color:#ffe066!important;border-color:#ffd43b!important;animation:tyGold 1s ease-in-out infinite alternate}
+  .ty-w.gold::after{content:"★";position:absolute;top:-9px;right:-7px;font-size:13px;color:#ffd43b;text-shadow:0 0 8px #ffd43b}
+  @keyframes tyGold{to{box-shadow:0 0 22px #ffd43b,0 0 44px rgba(255,212,59,.35)}}
+  .ty-flash{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at 50% 60%,rgba(255,236,153,.55),transparent 65%);animation:tyDmg .6s ease-out forwards}
+  .ty-retry{position:absolute;left:10px;top:10px;z-index:5;font:800 10px/1 ui-monospace,monospace;letter-spacing:.12em;padding:5px 8px;border-radius:999px;background:rgba(255,135,135,.15);border:1px solid rgba(255,135,135,.45);color:#ffc9c9;pointer-events:none}
+  /* 결과판 */
+  #tyOver.res{justify-content:flex-start;gap:10px;overflow-y:auto;padding:18px 16px;background:rgba(6,9,16,.94)}
+  #tyOver .r-k{font:700 10px/1 ui-monospace,monospace;letter-spacing:.2em;color:rgba(201,208,255,.6)}
+  #tyOver .r-sc{font:800 44px/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 24px rgba(154,168,255,.5)}
+  #tyOver .r-nb{font:800 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:#0b0d11;background:linear-gradient(90deg,#ffe29a,#ff9ad5);padding:4px 9px;border-radius:999px}
+  #tyOver .r-ln{font-size:13px;color:#c9d0ff;margin:0}
+  #tyOver .r-st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:min(440px,100%)}
+  #tyOver .r-st div{padding:8px 4px;border-radius:10px;border:1px solid rgba(154,168,255,.18);background:rgba(154,168,255,.06)}
+  #tyOver .r-st u{display:block;text-decoration:none;font-size:10px;color:rgba(201,208,255,.6)}
+  #tyOver .r-st b{display:block;font:800 18px/1.2 Kanit,system-ui,sans-serif;color:#e6e9ff}
+  #tyOver .r-ms{width:min(440px,100%)}
+  #tyOver .r-ms > u{display:block;text-decoration:none;font-size:11px;color:#ffc9c9;margin:2px 0 6px;text-align:left}
+  #tyOver .r-ch{display:flex;flex-wrap:wrap;gap:5px}
+  #tyOver .r-ch span{display:inline-flex;align-items:baseline;gap:5px;padding:4px 8px;border-radius:8px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);font-size:12px;color:#e6e9ff}
+  #tyOver .r-ch span b{font-family:var(--sym);color:var(--c)}
+  #tyOver .r-ch span small{font-size:10px;color:#ff8787}
+  #tyOver .r-bt{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  #tyOver .r-bt .alt{border-color:#ff8787;background:rgba(255,135,135,.12);color:#ffe3e3}
+  @media (max-width:700px){ #tyOver .r-st{grid-template-columns:repeat(2,1fr)} #tyOver .r-sc{font-size:36px} .ty-cb b{font-size:24px} }
+</style>
+<script>
+(function(){
+  if(typeof RX_TY === 'undefined') return;
+  const EN = () => LANG === 'en';
+  const TX = () => EN() ? {
+    combo: 'COMBO', brk: 'Combo broken', gold1: 'Golden element! Screen cleared', gold2: 'Golden element! +1 life', retry: 'RETRY MISSED',
+    res: 'RESULT', acc: 'Accuracy', maxc: 'Best combo', hits: 'Cleared', lv: 'Level', miss: 'Missed / mistyped', again: 'Play again', redo: 'Retry missed only', clean: 'No misses. Clean run!'
+  } : {
+    combo: 'COMBO', brk: '콤보 끊김', gold1: '금색 원소! 화면 싹 정리', gold2: '금색 원소! 목숨 +1', retry: '틀린 것 다시',
+    res: 'RESULT', acc: '정확도', maxc: '최고 콤보', hits: '맞힌 수', lv: '레벨', miss: '놓치거나 틀린 원소', again: '다시 하기', redo: '틀린 것만 다시', clean: '하나도 안 놓쳤어요. 깔끔!'
+  };
+  const mult = c => c >= 20 ? 3 : c >= 10 ? 2 : c >= 5 ? 1.5 : 1;
+  const nextAt = c => c < 5 ? 5 : c < 10 ? 10 : c < 20 ? 20 : null;
+  const prevAt = c => c < 5 ? 0 : c < 10 ? 5 : c < 20 ? 10 : 20;
+  RX_TY.wrong = 0; RX_TY.maxCombo = 0; RX_TY.retry = null;
+
+  /* ── 판 꾸미기 ── */
+  function deco(){
+    const b = document.getElementById('tyBoard'); if(!b || b.querySelector('.ty-pt')) return;
+    const pt = document.createElement('div'); pt.className = 'ty-pt';
+    pt.innerHTML = EL.map(e => {
+      let col = e.g, row = e.p;
+      if(e.c === 'lanthanide'){ col = 3 + (e.n - 57); row = 8.6; }
+      else if(e.c === 'actinide'){ col = 3 + (e.n - 89); row = 9.6; }
+      if(!col) return '';
+      return `<i data-n="${e.n}" style="left:${((col - 1) / 18 * 100).toFixed(2)}%;top:${((row - 1) / 9.6 * 100).toFixed(2)}%;--c:var(${(CAT[e.c] || CAT.unknown).v})"></i>`;
+    }).join('');
+    b.prepend(pt);
+    const ln = b.querySelector('.ty-line'); if(ln && !ln.querySelector('.em')) ln.insertAdjacentHTML('beforeend', '<i class="em l"></i><i class="em r"></i>');
+    if(!b.querySelector('.ty-dmg')) b.insertAdjacentHTML('beforeend', '<div class="ty-dmg"></div>');
+    if(!b.querySelector('.ty-cb')) b.insertAdjacentHTML('beforeend', '<div class="ty-cb"><b>0</b><small></small><em></em><span class="bar"><i></i></span></div>');
+  }
+  function lit(n){
+    const c = document.querySelector(`#tyBoard .ty-pt i[data-n="${n}"]`); if(!c) return;
+    c.classList.add('lit'); clearTimeout(c._t); c._t = setTimeout(() => c.classList.remove('lit'), 60);
+  }
+  function burst(w){
+    const b = document.getElementById('tyBoard'); if(!b || window.RX_REDUCED) return;
+    const cx = w.x + w.ww / 2, cy = w.y + w.hh / 2;
+    const col = w.gold ? '#ffd43b' : getComputedStyle(w.el).getPropertyValue('--c') || '#9ee7ff';
+    for(let i = 0; i < (w.gold ? 22 : 10); i++){
+      const d = document.createElement('i'); d.className = 'ty-bit'; d.style.setProperty('--c', col);
+      d.style.left = cx + 'px'; d.style.top = cy + 'px'; b.appendChild(d);
+      const a = Math.random() * Math.PI * 2, r = 30 + Math.random() * (w.gold ? 90 : 50);
+      d.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * r}px),calc(-50% + ${Math.sin(a) * r + 20}px)) scale(.3) rotate(${Math.random() * 360}deg)`, opacity: 0 }],
+        { duration: 500 + Math.random() * 300, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }).onfinish = () => d.remove();
+    }
+  }
+  function comboUi(pop){
+    const el = document.querySelector('#tyBoard .ty-cb'); if(!el) return;
+    const c = RX_TY.combo, m = mult(c), T = TX();
+    el.classList.toggle('on', c >= 3);
+    el.classList.toggle('t2', m >= 2 && m < 3); el.classList.toggle('t3', m >= 3);
+    el.querySelector('b').textContent = c;
+    el.querySelector('small').textContent = T.combo;
+    const em = el.querySelector('em'); em.textContent = m > 1 ? `×${m}` : ''; em.style.display = m > 1 ? '' : 'none';
+    const n = nextAt(c), p = prevAt(c);
+    el.querySelector('.bar i').style.width = (n ? (c - p) / (n - p) * 100 : 100) + '%';
+    if(pop){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  }
+  function breakFx(c){
+    if(c < 5) return;
+    const b = document.getElementById('tyBoard'); if(!b) return;
+    const d = document.createElement('div'); d.className = 'ty-brk'; d.textContent = `${TX().brk} (${c})`; b.appendChild(d); setTimeout(() => d.remove(), 1000);
+  }
+  function fxText(w, txt, col){
+    const b = document.getElementById('tyBoard'); if(!b) return;
+    const fx = document.createElement('div'); fx.className = 'ty-fx'; fx.textContent = txt; fx.style.color = col;
+    fx.style.left = (w.x + w.ww / 2 + 14) + 'px'; fx.style.top = (w.y + 16) + 'px'; b.appendChild(fx); setTimeout(() => fx.remove(), 820);
+  }
+  function lowUi(){
+    const b = document.getElementById('tyBoard'); if(b) b.classList.toggle('low', RX_TY.on && RX_TY.hp === 1);
+  }
+  function retryTag(){
+    const b = document.getElementById('tyBoard'); if(!b) return;
+    let t = b.querySelector('.ty-retry');
+    if(RX_TY.retry && RX_TY.on){ if(!t){ t = document.createElement('div'); t.className = 'ty-retry'; b.appendChild(t); } t.textContent = TX().retry; }
+    else if(t) t.remove();
+  }
+
+  /* ── 덮어쓰기 ── */
+  const _render = renderTyping;
+  renderTyping = function(){ RX_TY.retry = null; const r = _render.apply(this, arguments); deco(); comboUi(); return r; };
+
+  const _pool = rxTyPool;
+  rxTyPool = function(){ if(RX_TY.retry && RX_TY.retry.length) return RX_TY.retry; return _pool.apply(this, arguments); };
+
+  const _start = rxTyStart;
+  rxTyStart = function(){
+    const r = _start.apply(this, arguments);
+    Object.assign(RX_TY, { wrong: 0, maxCombo: 0 });
+    const b = document.getElementById('tyBoard');
+    if(b){ deco(); b.querySelectorAll('.ty-bit,.ty-brk,.ty-flash').forEach(x => x.remove()); b.classList.remove('low', 'dmg'); }
+    const o = document.getElementById('tyOver'); if(o) o.classList.remove('res');
+    comboUi(); retryTag();
+    return r;
+  };
+
+  const _spawn = rxTySpawn;
+  rxTySpawn = function(){
+    const n0 = RX_TY.words.length;
+    const r = _spawn.apply(this, arguments);
+    const w = RX_TY.words[RX_TY.words.length - 1];
+    if(w && RX_TY.words.length > n0 && !w.boss && RX_TY.lv >= 2 && !RX_TY.words.some(x => x.gold) && Math.random() < .07){
+      w.gold = true; w.el.classList.add('gold');
+      try{ tone(1568, .1, 'triangle', .04); tone(2093, .14, 'triangle', .035, .08); }catch(e){}
+    }
+    return r;
+  };
+
+  const _hit = rxTyHit;
+  rxTyHit = function(w){
+    const c0 = RX_TY.combo, s0 = RX_TY.score, gone = !(w.e.c === 'noble' && !w.shrug);
+    const r = _hit.apply(this, arguments);
+    const m = mult(RX_TY.combo);
+    if(m > 1){ const extra = Math.round((RX_TY.score - s0) * (m - 1)); RX_TY.score += extra; if(gone && extra) fxText(w, `×${m}`, m >= 3 ? '#ffe066' : '#b197fc'); }
+    RX_TY.maxCombo = Math.max(RX_TY.maxCombo, RX_TY.combo);
+    if(gone){
+      lit(w.e.n); burst(w);
+      if(RX_TY.retry){ /* 다시 연습: 맞힌 원소는 목록에서 빼고, 다 맞히면 끝 */
+        RX_TY.retry = RX_TY.retry.filter(e => e.n !== w.e.n);
+        if(!RX_TY.retry.length){ RX_TY.retry = null; setTimeout(() => { if(RX_TY.on) rxTyEnd(); }, 400); }
+      }
+      if(w.gold) goldFx(w);
+    }
+    comboUi(RX_TY.combo !== c0);
+    rxTyHud();
+    return r;
+  };
+  function goldFx(w){
+    const b = document.getElementById('tyBoard'); if(!b) return;
+    const f = document.createElement('div'); f.className = 'ty-flash'; b.appendChild(f); setTimeout(() => f.remove(), 650);
+    try{ [784, 988, 1175, 1568].forEach((h, i) => tone(h, .16, 'triangle', .05, i * .06)); }catch(e){}
+    if(RX_TY.hp < 3){ RX_TY.hp++; rxTyTip(`★ ${TX().gold2}`); lowUi(); return; }
+    rxTyTip(`★ ${TX().gold1}`);
+    [...RX_TY.words].forEach((x, i) => {
+      if(x.boss) return;
+      RX_TY.words = RX_TY.words.filter(y => y !== x);
+      RX_TY.ok++; RX_TY.score += 10;
+      lit(x.e.n); burst(x);
+      x.el.animate([{ transform: `translate(${x.x}px,${x.y}px) scale(1)`, opacity: 1 }, { transform: `translate(${x.x}px,${x.y - 10}px) scale(1.4)`, opacity: 0, filter: 'brightness(2.5)' }],
+        { duration: 300, delay: i * 40, fill: 'forwards' }).onfinish = () => x.el.remove();
+    });
+    RX_TY.lv = 1 + Math.floor(RX_TY.ok / 8);
+  }
+
+  const _miss = rxTyMiss;
+  rxTyMiss = function(w, G){
+    const c0 = RX_TY.combo, hp0 = RX_TY.hp;
+    const r = _miss.apply(this, arguments);
+    if(RX_TY.hp < hp0){
+      breakFx(c0);
+      const b = document.getElementById('tyBoard');
+      if(b){ b.classList.remove('dmg'); void b.offsetWidth; b.classList.add('dmg'); setTimeout(() => b.classList.remove('dmg'), 520); }
+    }
+    comboUi(); lowUi();
+    return r;
+  };
+
+  const _flash = rxTyFlash;
+  rxTyFlash = function(inp, cls){
+    if(cls === 'bad' && RX_TY.on){ RX_TY.wrong++; }
+    return _flash.apply(this, arguments);
+  };
+  const _input = rxTyInput;
+  rxTyInput = function(inp, enter){
+    const c0 = RX_TY.combo;
+    const r = _input.apply(this, arguments);
+    if(RX_TY.combo === 0 && c0 > 0){ breakFx(c0); comboUi(); }
+    return r;
+  };
+
+  const _end = rxTyEnd;
+  rxTyEnd = function(){
+    const S = { score: RX_TY.score, ok: RX_TY.ok, wrong: RX_TY.wrong, maxC: RX_TY.maxCombo, lv: RX_TY.lv, missed: RX_TY.missed.slice() };
+    const old = rxTyBest();
+    const r = _end.apply(this, arguments);
+    const b = document.getElementById('tyBoard'); if(b) b.classList.remove('low');
+    retryTag(); comboUi();
+    setTimeout(() => {
+      const o = document.getElementById('tyOver'); if(!o || !o.isConnected) return;
+      const T = TX(), L = EN() ? 'en' : 'ko', RT = rxTyT();
+      let line = RT.lines[0][1]; for(const [m, s] of RT.lines) if(S.score >= m) line = s;
+      const tries = S.ok + S.wrong + S.missed.length;
+      const acc = tries ? Math.round(S.ok / tries * 100) : 0;
+      const cnt = {}; S.missed.forEach(e => { cnt[e.n] = (cnt[e.n] || 0) + 1; });
+      const uniq = [...new Map(S.missed.map(e => [e.n, e])).values()].filter(e => e.n <= 118);
+      o.classList.add('res', 'on');
+      o.innerHTML = `<div class="r-k">${T.res}</div>
+        <div class="r-sc">${S.score}</div>
+        ${S.score > old && S.score ? `<div class="r-nb">${RT.newBest}</div>` : ''}
+        <p class="r-ln">${line}</p>
+        <div class="r-st"><div><u>${T.acc}</u><b>${acc}%</b></div><div><u>${T.maxc}</u><b>${S.maxC}</b></div><div><u>${T.hits}</u><b>${S.ok}</b></div><div><u>${T.lv}</u><b>${S.lv}</b></div></div>
+        <div class="r-ms">${uniq.length ? `<u>${T.miss}</u><div class="r-ch">${uniq.slice(0, 14).map(e =>
+          `<span style="--c:var(${(CAT[e.c] || CAT.unknown).v})"><b>${e.s}</b>${e[L]}${cnt[e.n] > 1 ? `<small>×${cnt[e.n]}</small>` : ''}</span>`).join('')}</div>` : `<u style="color:#8ce99a">${T.clean}</u>`}</div>
+        <div class="r-bt"><button id="tyGo">${RT.again}</button>${uniq.length ? `<button id="tyRedo" class="alt">${T.redo} (${uniq.length})</button>` : ''}</div>`;
+      document.getElementById('tyGo').onclick = () => { RX_TY.retry = null; rxTyStart(); };
+      const rd = document.getElementById('tyRedo');
+      if(rd) rd.onclick = () => { RX_TY.retry = uniq.slice(); rxTyStart(); };
+    }, 760);
+    return r;
+  };
 })();
 </script>
 
