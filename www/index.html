@@ -36782,7 +36782,7 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   let MAXP = 120;
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const mkFS = () => `precision highp float;
-uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;uniform float ICET;uniform float FIZZ;
+uniform vec2 R;uniform float T;uniform int N;uniform vec4 P[${MAXP}];uniform vec3 C;uniform float K;uniform float LOW;uniform float ICE;uniform vec2 O;uniform vec2 YB;uniform float MET;uniform float ICET;uniform float FIZZ;uniform vec4 RP[4];
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 vec2 hash2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -36792,6 +36792,16 @@ vec3 voro(vec2 p){vec2 i=floor(p),f=fract(p);float d1=8.,d2=8.;vec2 id=vec2(0.);
   for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){vec2 g=vec2(float(x),float(y));vec2 o=hash2(i+g);vec2 r=g+o-f;float d=dot(r,r);
     if(d<d1){d2=d1;d1=d;id=i+g;}else if(d<d2)d2=d;}
   return vec3(sqrt(d1),sqrt(d2),hash(id));}
+// 누른 자리에서 퍼지는 물결: 표면 기울기(법선)를 흔든다
+vec2 ripN(vec2 q){ vec2 s=vec2(0.); for(int i=0;i<4;i++){ vec4 r=RP[i]; if(r.w<=0.) continue; float age=T-r.z; if(age<0.||age>3.) continue;
+    vec2 d=q-r.xy; float L=length(d)+1e-3; float x=L-age*150.*K; float en=exp(-x*x/(1400.*K*K))*exp(-age*1.25)*r.w*smoothstep(0.,.08,age);
+    s+=d/L*sin(x/(7.*K))*en; } return s; }
+// 실험실 창문 반사 (물 표면에 비친 것)
+float winRef(vec3 rf,vec2 sp2){ float up=rf.z*.64-rf.y-sp2.y*.75, sd=rf.x+sp2.x*1.1;
+  float w1=(1.-smoothstep(0.,.03,abs(sd+.38)-.12))*(1.-smoothstep(0.,.03,abs(up-.52)-.15));
+  float w2=(1.-smoothstep(0.,.03,abs(sd-.44)-.06))*(1.-smoothstep(0.,.03,abs(up-.33)-.08));
+  float ml=(1.-smoothstep(0.,.012,abs(sd+.38)-.006))*step(.37,up)*step(up,.67)+(1.-smoothstep(0.,.012,abs(up-.52)-.005))*step(abs(sd+.38),.12);
+  return (w1+w2*.8)*(1.-clamp(ml,0.,1.)*.85); }
 void main(){
   vec2 q=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);
   float f=0.;vec2 g=vec2(0.);float sw=0.;
@@ -36805,6 +36815,9 @@ void main(){
   float h=smoothstep(0.,34.,dpx);
   float bend=1.-smoothstep(0.,16.,dpx);
   vec3 n=normalize(vec3(-g/gl*bend*1.25, .35+.65*(1.-bend)));
+  vec2 rw=ripN(q);
+  if(MET<.5){ vec2 wq0=q/(30.*K); vec2 amb=LOW<.5?vec2(noise(wq0+vec2(T*.32,-T*.21))-.5,noise(wq0*1.3+vec2(-T*.27,T*.24)+7.)-.5)*.13:vec2(0.);
+    n=normalize(vec3(n.xy+(rw*.75+amb)*(1.-bend*.55)*(1.-clamp(ICE*1.5,0.,1.)),n.z)); }
   // ── 금속 액체(수은·갈륨): 표면 장력이 커서 가장자리가 둥글게 말리고, 주변 풍경을 거울처럼 비춘다 ──
   if(MET>.5){
     float bm=1.-smoothstep(0.,30.,dpx);
@@ -36817,7 +36830,7 @@ void main(){
     vec2 fnm=(hash2(vec2(vom.z*91.,vom.z*17.))-.5)*.7;
     // 표면이 살짝 출렁이는 잔물결 (금속은 무거워서 느리고 굵게). 굳으면 멈춘다
     vec2 wq=q/(40.*K); float rip=LOW<.5?(noise(wq+vec2(T*.18,-T*.11))-.5)*.16*(1.-fzM):0.;
-    vec3 nm=normalize(vec3(-g/gl*bm*1.9+vec2(rip,rip*.7)*(1.-bm*.5)+fnm*fzM*(1.-bm*.5), .2+.8*(1.-bm)+.25*fzM));
+    vec3 nm=normalize(vec3(-g/gl*bm*1.9+vec2(rip,rip*.7)*(1.-bm*.5)+fnm*fzM*(1.-bm*.5)+ripN(q)*.7*(1.-fzM)*(1.-bm*.5), .2+.8*(1.-bm)+.25*fzM));
     vec3 V=vec3(0.,0.,1.), rf=reflect(-V,nm);
     vec2 sp2=q/R-.5;
     float up=rf.z*.64-rf.y-sp2.y*.75, side=rf.x+sp2.x*1.1+sin(T*.21)*.05;
@@ -36902,6 +36915,8 @@ void main(){
   col=col*(.62+.5*dif)+spec+fres*mix(vec3(.85,.9,1.),C,.25)*mix(.55,.8,iceM);
   float rim=(1.-smoothstep(.5,3.5,dist))*(1.-(1.-smoothstep(0.,.5,dist))*.3);
   col+=rim*mix(.22,.45,iceM);
+  if(LOW<.5){ vec3 rfw=reflect(-V,nn); col+=vec3(.9,.95,1.)*winRef(rfw,q/R-.5)*(.1+fres*.8)*(1.-iceM*.7)*smoothstep(0.,6.,dpx);
+    col+=vec3(.85,.92,1.)*clamp(length(rw)*.9-.12,0.,.35)*(1.-iceM); }
   // 반짝이: 얼음 결정이 빛을 받아 반짝
   if(LOW<.5){ vec2 sg=floor(iq/9.); float tw=hash(sg); float sparkle=step(.93,tw)*pow(max(0.,sin(T*3.+tw*40.)),18.)*(1.-smoothstep(.0,.45,length(fract(iq/9.)-.5)));
     col+=sparkle*1.4*iceM; }
@@ -36938,6 +36953,20 @@ void main(){
   const FIZZY = { '콜라': 1, '사이다': .9, '탄산수': .8, '맥주': .5 };
   const fizz = () => { try{ return FIZZY[RX.raw] || 0; }catch(e){ return 0; } };
   const S = { fz: false, t: 0, from: 0, ice: 0, cx: 0, cy: 0, bx: 0, by: 0, ox: 0, oy: 0 };
+  const RIP = { l: [], buf: new Float32Array(16), raw: null, cvW: 1, cssW: 1, last: 0, loop: 0, now: () => (performance.now() - t0) / 1000,
+    add(x, y, a, at){ this.l.push([x, y, at != null ? at : (performance.now() - t0) / 1000, a]); if(this.l.length > 4) this.l.shift(); this.kick(); },
+    // 물결이 퍼지는 동안은 분자가 가만히 있어도 다시 그린다
+    kick(){ if(this.loop) return; const go = () => { const tt = (performance.now() - t0) / 1000; const alive = this.l.some(r => tt - r[2] < 3);
+      if(!alive || !cv || cv.style.display === 'none'){ this.loop = 0; return; }
+      if(performance.now() - this.last > 40 && window.rxGLLast) try{ window.rxGLLast(); }catch(e){}
+      this.loop = requestAnimationFrame(go); }; this.loop = requestAnimationFrame(go); } };
+  document.addEventListener('pointerdown', e => {
+    if(!cv || cv.style.display === 'none' || window.RX_LOWPOW) return;
+    const st = document.getElementById('mStage'); if(!st || !st.classList.contains('liq-gl') || !st.contains(e.target)) return;
+    if(e.target.closest('button, .rtool, .rx-pop, a')) return;
+    const r = cv.getBoundingClientRect(); if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+    const k = cv.width / r.width; RIP.add((e.clientX - r.left) * k, (e.clientY - r.top) * k, 1);
+  }, true);
   function init(stage){
     if(failed) return false;
     if(cv && cv.isConnected && gl) return true;
@@ -36946,7 +36975,7 @@ void main(){
       gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: false });   // 카드 저장 때는 rxGLRedraw로 다시 그림 / 그림을 그대로 가져가려고
       if(!gl) throw 0;
       // 폰마다 셰이더에 넘길 수 있는 점 개수가 달라서 맞춘다
-      MAXP = Math.max(24, Math.min(120, (gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64) - 12));
+      MAXP = Math.max(24, Math.min(120, (gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64) - 16));
       buf = new Float32Array(MAXP * 4);
       const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
       prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, mkFS())); gl.linkProgram(prog);
@@ -36954,7 +36983,7 @@ void main(){
       gl.useProgram(prog);
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET', 'ICET', 'FIZZ'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      ['R', 'T', 'N', 'P', 'C', 'K', 'LOW', 'ICE', 'O', 'YB', 'MET', 'ICET', 'FIZZ', 'RP'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       cv.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; off(); });
       return true;
@@ -37003,6 +37032,12 @@ void main(){
     gl.uniform2f(U.R, W, H); gl.uniform1f(U.T, (performance.now() - t0) / 1000); gl.uniform1i(U.N, n);
     gl.uniform4fv(U.P, buf); gl.uniform3fv(U.C, hex(col)); gl.uniform1f(U.K, s * dpr); gl.uniform1f(U.LOW, lowp ? 1 : 0);
     gl.uniform1f(U.ICE, S.ice); gl.uniform2f(U.O, S.ox || 0, S.oy || 0); gl.uniform2f(U.YB, y0, y1); gl.uniform1f(U.MET, m.metal ? 1 : 0); gl.uniform1f(U.ICET, iceTint(col)); gl.uniform1f(U.FIZZ, lowp ? 0 : fizz());
+    // 물결: 결과가 바뀌면 가운데서 한 번 출렁, 누르면 그 자리에서 퍼진다
+    const tt = (performance.now() - t0) / 1000;
+    if(RX && RX.raw !== RIP.raw && n && sr.width > 40){ RIP.raw = RX.raw; let mx = 0, my = 0; for(let i = 0; i < n; i++){ mx += buf[i * 4]; my += buf[i * 4 + 1]; } RIP.add(mx / n, my / n, .9, tt + .25); }
+    RIP.cvW = W; RIP.cssW = sr.width; RIP.last = performance.now();
+    for(let i = 0; i < 4; i++){ const r = RIP.l[i]; RIP.buf.set(r && tt - r[2] < 3 ? r : [0, 0, 0, 0], i * 4); }
+    gl.uniform4fv(U.RP, RIP.buf);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const _d = rxDraw;
@@ -37016,7 +37051,7 @@ void main(){
     }catch(e){ failed = true; off(); }
     return r;
   };
-  window.rxLiqGL = { off, get failed(){ return failed; } };
+  window.rxLiqGL = { off, rip: RIP, get failed(){ return failed; } };
 })();
 </script>
 <script>
