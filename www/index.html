@@ -10330,6 +10330,7 @@ function rxDraw(yaw, pitch, mm){
       g.setAttribute('visibility', showTile ? 'visible' : 'hidden');
       m.gAt[i].setAttribute('visibility', showGoo ? 'visible' : 'hidden');
       g.classList.toggle('debris', !!a.debris);
+      g.classList.toggle('fzm', !!(m.metal && a.solid && !a.tile));   // 얼린 액체 금속: WebGL이 덩어리로 그리니 타일은 숨긴다
       g.classList.toggle('crack', a.integ != null && a.integ < 0.6);
       if(a.debris){
         const r = a.r;
@@ -36530,6 +36531,7 @@ try{ RX_ACH_IMG.fsame = 'data:image/webp;base64,UklGRngMAABXRUJQVlA4IGwMAAAwOACd
   #mStage.liq-gl #mMol{position:relative;z-index:2}
   #mStage.liq-gl .mol-atoms.liquid .mol-in > *{opacity:0!important}
   /* 얼음: 각설탕 같은 네모 대신 WebGL 얼음 덩어리. 안의 분자 그림만 남긴다 */
+  #mStage.liq-gl .mol-tiles .tl.fzm{opacity:0!important;transition:opacity .6s}
   #mStage.liq-gl .mol-tiles.ice .tl:not(.al) rect,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-hi,#mStage.liq-gl .mol-tiles.ice .tl:not(.al) .tl-ck{opacity:0!important;transition:opacity .6s}
 </style>
 <script>
@@ -36563,9 +36565,16 @@ void main(){
   // ── 금속 액체(수은·갈륨): 표면 장력이 커서 가장자리가 둥글게 말리고, 주변 풍경을 거울처럼 비춘다 ──
   if(MET>.5){
     float bm=1.-smoothstep(0.,30.,dpx);
-    // 표면이 살짝 출렁이는 잔물결 (금속은 무거워서 느리고 굵게)
-    vec2 wq=q/(40.*K); float rip=LOW<.5?(noise(wq+vec2(T*.18,-T*.11))-.5)*.16:0.;
-    vec3 nm=normalize(vec3(-g/gl*bm*1.9+vec2(rip,rip*.7)*(1.-bm*.5), .2+.8*(1.-bm)));
+    // 얼린 금속: 바닥부터 굳어 올라가며 결정 면이 생긴다 (고체 수은은 주석처럼 하얀 은색)
+    float yrm=clamp((YB.y-q.y)/max(YB.y-YB.x,1.),0.,1.);
+    float ldm=yrm*.75+(1.-smoothstep(0.,26.,dpx))*-.18+(fbm(q/(18.*K))-.5)*.3;
+    float fzM=smoothstep(ldm-.02,ldm+.06,ICE*1.25-.1)*clamp(solid*1.6,0.,1.);
+    float fzF=(1.-smoothstep(0.,.07,abs(ICE*1.25-.1-ldm)))*step(.02,ICE)*step(ICE,.98)*clamp(solid*1.6,0.,1.);
+    vec2 iqm=(q-O)/K; vec3 vom=voro(iqm/26.);
+    vec2 fnm=(hash2(vec2(vom.z*91.,vom.z*17.))-.5)*.7;
+    // 표면이 살짝 출렁이는 잔물결 (금속은 무거워서 느리고 굵게). 굳으면 멈춘다
+    vec2 wq=q/(40.*K); float rip=LOW<.5?(noise(wq+vec2(T*.18,-T*.11))-.5)*.16*(1.-fzM):0.;
+    vec3 nm=normalize(vec3(-g/gl*bm*1.9+vec2(rip,rip*.7)*(1.-bm*.5)+fnm*fzM*(1.-bm*.5), .2+.8*(1.-bm)+.25*fzM));
     vec3 V=vec3(0.,0.,1.), rf=reflect(-V,nm);
     vec2 sp2=q/R-.5;
     float up=rf.z*.64-rf.y-sp2.y*.75, side=rf.x+sp2.x*1.1+sin(T*.21)*.05;
@@ -36594,6 +36603,21 @@ void main(){
     float nh=max(dot(nm,Hh),0.);
     col+=pow(nh,400.)*2.6+pow(nh,60.)*.25;                                    // 날카로운 반짝 + 은은한 광택
     if(LOW<.5){ float sp=pow(max(dot(nm,normalize(vec3(.55,-.35,.75)+V)),0.),900.)*1.8; col+=sp*vec3(.8,.85,1.); }   // 두 번째 조명
+    if(fzM>.001){
+      // 굳은 면: 거울 대신 결정 면마다 밝기가 다른 무광 은색 + 결정 경계선 + 가장자리 서리
+      float dfm=clamp(dot(nm,Ld),0.,1.);
+      vec3 sol=vec3(.64,.68,.76)*(.62+.42*dfm)*(.88+.22*vom.z)+env*.18;
+      float gb=1.-smoothstep(0.,.05,vom.y-vom.x);
+      sol=mix(sol,sol*.62,gb*.7);
+      sol=min(sol,vec3(.96));
+      sol+=pow(nh,90.)*.55*step(.55,vom.z);
+      float frm=fbm(iqm/6.)*(1.-smoothstep(0.,20.,dpx))+fbm(iqm/2.5)*.18;
+      sol=mix(sol,vec3(.9,.94,1.),clamp(frm*.75,0.,.7));
+      sol*=1.-.6*rimz*(1.-top); sol+=vec3(.9,.94,1.)*rimz*top*.5;
+      if(LOW<.5){ vec2 sgm=floor(iqm/8.); float twm=hash(sgm); sol+=step(.94,twm)*pow(max(0.,sin(T*2.6+twm*40.)),18.)*(1.-smoothstep(0.,.45,length(fract(iqm/8.)-.5)))*1.2; }
+      col=mix(col,sol,fzM);
+    }
+    col+=fzF*vec3(.85,.92,1.)*.6;   // 굳는 앞줄에 하얀 서리 띠
     float am=edge; gl_FragColor=vec4(col*am,am); return;
   }
   // ── 얼음이 차오르는 앞줄: 바닥에서 위로, 가장자리가 조금 먼저 (울퉁불퉁한 서리 경계) ──
@@ -36716,7 +36740,7 @@ void main(){
     let n = 0, col = m.col, frozen = false, sx = 0, sy = 0, sn = 0, y0 = 1e9, y1 = -1e9;
     for(const a of m.atoms){
       if(n >= MAXP) break;
-      if(a.tile || (m.metal && a.solid)) continue;   // 금속은 굳은 조각을 SVG 타일이 그린다
+      if(a.tile) continue;   // 처음부터 고체인 금속 조각(갈륨 등)은 SVG 타일이 그린다. 얼린 금속은 WebGL 덩어리로
       if(!col && a.col) col = a.col;
       const x1 = a.x * cY + a.z * sY, z1 = -a.x * sY + a.z * cY, y1_ = a.y * cX - z1 * sX, z2 = a.y * sX + z1 * cX, f = D / (D - z2);
       const X = (ox + (m.cx + x1 * m.sc * f) * s) * dpr, Y = (oy + (m.cy + y1_ * m.sc * f) * s) * dpr, rr = a.r * m.sc * f * s * dpr * 1.12;
