@@ -13081,7 +13081,7 @@ function rxFillRender(m, P){
   const sr = svg.getBoundingClientRect(), tr = st.getBoundingClientRect();
   if(sr.width < 2 || sr.height < 2) return;
   const n = m.atoms.length;
-  const dpr = Math.min(2, window.devicePixelRatio || 1) * (n > 60 ? 0.6 : n > 20 ? 0.8 : 1);   // 원자가 많을수록 해상도를 낮춰 부드럽게
+  const dpr = Math.min(2, window.devicePixelRatio || 1) * (n > 120 ? 0.7 : n > 60 ? 0.8 : 1);   // 원자가 아주 많을 때만 해상도를 조금 낮춘다
   const W = Math.round(sr.width * dpr), H = Math.round(sr.height * dpr);
   cv.style.left = (sr.left - tr.left - st.clientLeft) + 'px'; cv.style.top = (sr.top - tr.top - st.clientTop) + 'px';
   cv.style.width = sr.width + 'px'; cv.style.height = sr.height + 'px';
@@ -13123,27 +13123,50 @@ function rxFillRender(m, P){
         if(zs <= zb[k]) continue;
         zb[k] = zs; idb[k] = b.i;
         const nx = dx / R, ny = dy / R, nz = h / R;
-        const lam = Math.max(0, nx * lx + ny * ly + nz * lz);
+        // 주광(왼쪽 위) — 살짝 감싸는 확산광으로 부드럽게
+        const ndl = nx * lx + ny * ly + nz * lz, lam = Math.max(0, (ndl + 0.25) / 1.25);
+        // 보조광(오른쪽 아래, 푸르스름) + 가장자리 테두리 빛
+        const fil = Math.max(0, nx * 0.55 + ny * 0.5 + nz * 0.35) * 0.22;
+        const rim = Math.pow(1 - nz, 3) * 0.5;
         const sp = Math.max(0, (nx * hx + ny * hy + nz * hz) / hl);
-        const spec = Math.pow(sp, 36) * 0.55;
-        const sh = (0.34 + 0.76 * lam) * (0.7 + 0.3 * nz);        // 가장자리로 갈수록 어둡게
+        const spec = Math.pow(sp, 70) * 0.6 + Math.pow(sp, 9) * 0.08;   // 또렷한 점 반사 + 넓은 윤기
+        const sh = (0.22 + 0.86 * lam) * (0.78 + 0.22 * nz);
         const j = k * 4;
-        px[j] = Math.min(255, cr * sh + 255 * spec); px[j + 1] = Math.min(255, cg * sh + 255 * spec); px[j + 2] = Math.min(255, cb * sh + 255 * spec);
+        px[j] = Math.min(255, cr * (sh + fil * 0.8) + 255 * spec + 120 * rim); px[j + 1] = Math.min(255, cg * (sh + fil * 0.9) + 255 * spec + 150 * rim); px[j + 2] = Math.min(255, cb * (sh + fil * 1.15) + 255 * spec + 255 * rim);
         // 가장자리 한 픽셀은 반투명하게 (계단 줄이기)
         const edge = R - Math.sqrt(d2);
         px[j + 3] = edge < 1 ? 255 * edge : 255;
       }
     }
   }
-  // 공이 서로 파고든 경계에 살짝 그늘 (접촉 그림자)
-  for(let y = 1; y < H - 1; y++){
-    let k = y * W + 1;
-    for(let x = 1; x < W - 1; x++, k++){
-      const me = idb[k]; if(me < 0) continue;
-      const r = idb[k + 1], d = idb[k + W];
-      if((r >= 0 && r !== me) || (d >= 0 && d !== me)){
-        const j = k * 4; px[j] *= 0.72; px[j + 1] *= 0.72; px[j + 2] *= 0.72;
+  // 주변광 가림(AO): 깊이 버퍼에서 주변 8방향을 보고, 나보다 앞에 솟은 곳이 많을수록 어둡게.
+  // 공끼리 파고든 골짜기·안쪽이 자연스럽게 그늘진다
+  {
+    const Rs = C.filter(b => !b.clr).map(b => b.R).sort((a, b) => a - b);
+    const rr = Math.max(2, Math.round((Rs[Rs.length >> 1] || 10) * 0.42));
+    const D = [[1, 0], [-1, 0], [0, 1], [0, -1], [.7, .7], [-.7, .7], [.7, -.7], [-.7, -.7]].map(([a, b]) => [Math.round(a * rr), Math.round(b * rr)]);
+    const ao = RX_FB.ao && RX_FB.ao.length === W * H ? RX_FB.ao : (RX_FB.ao = new Float32Array(W * H));
+    const NQ = W * H > 260000 || n > 60 ? 4 : 8;   // 큰 그림·큰 분자는 4방향만 (폰에서도 부드럽게)
+    for(let y = 0; y < H; y++){
+      let k = y * W;
+      for(let x = 0; x < W; x++, k++){
+        const me = idb[k]; if(me < 0){ ao[k] = 0; continue; }
+        const z0 = zb[k]; let occ = 0;
+        for(let q = 0; q < NQ; q++){
+          const xx = x + D[q][0], yy = y + D[q][1];
+          if(xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+          const kk = yy * W + xx; if(idb[kk] < 0 || idb[kk] === me) continue;
+          const dz = zb[kk] - z0; if(dz > 0) occ += Math.min(1, dz / rr);
+        }
+        ao[k] = occ / NQ;
       }
+    }
+    for(let k = 0, j = 0; k < W * H; k++, j += 4){
+      if(idb[k] < 0) continue;
+      // 경계 한 줄은 살짝 더 진하게 (공의 윤곽이 또렷하게)
+      const x = k % W, edge = (x + 1 < W && idb[k + 1] >= 0 && idb[k + 1] !== idb[k]) || (k + W < W * H && idb[k + W] >= 0 && idb[k + W] !== idb[k]);
+      const f = (1 - 0.62 * Math.min(1, ao[k] * 1.4)) * (edge ? 0.82 : 1);
+      px[j] *= f; px[j + 1] *= f; px[j + 2] *= f;
     }
   }
   // 색 없는 원자(실제 색 설정의 수소·질소 등): 유리구슬처럼 뒤가 비친다. 가장자리일수록 뿌옇게
@@ -13177,17 +13200,42 @@ function rxFillRender(m, P){
     }
   }
   ctx.putImageData(img, 0, 0);
-  // 원소 기호: 공 가운데가 실제로 보이는 원자에만
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  for(const b of C){
-    const ms = rxMolSym(); if(ms === 'off' || b.R < (ms === 'all' ? 6 : 11) * dpr) continue;
-    const cx = Math.round(b.x), cy = Math.round(b.y);
-    if(cx < 0 || cy < 0 || cx >= W || cy >= H) continue;
-    if(b.clr ? zb[cy * W + cx] >= b.z + b.R : idb[cy * W + cx] !== b.i) continue;
-    const light = !b.clr && b.c[0] * 0.3 + b.c[1] * 0.59 + b.c[2] * 0.11 > 150;
-    ctx.font = `700 ${Math.round(b.R * 0.42)}px ui-monospace, monospace`;
-    ctx.fillStyle = light ? 'rgba(20,24,33,.55)' : 'rgba(255,255,255,.7)';
-    ctx.fillText(m.atoms[b.i].s, cx, cy + b.R * 0.04);
+  // 바닥 그림자: 분자 아래에 흐릿한 타원 (그려 둔 공 뒤로)
+  {
+    let x0 = 1e9, x1 = -1e9, y1 = -1e9;
+    C.forEach(b => { x0 = Math.min(x0, b.x - b.R); x1 = Math.max(x1, b.x + b.R); y1 = Math.max(y1, b.y + b.R); });
+    if(x1 > x0){
+      const cx = (x0 + x1) / 2, rw = (x1 - x0) * 0.5, cy = Math.min(H - rw * 0.2, y1 + rw * 0.16);
+      ctx.save(); ctx.globalCompositeOperation = 'destination-over';
+      ctx.translate(cx, cy); ctx.scale(1, 0.2);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rw);
+      g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(.55, 'rgba(0,0,0,.22)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rw, 0, 6.283); ctx.fill(); ctx.restore();
+    }
+  }
+  // 원소 기호: 실제로 '보이는 부분'이 충분한 원자에만, 보이는 부분의 한가운데에
+  const ms = rxMolSym();
+  if(ms !== 'off'){
+    const cnt = new Float32Array(n), sx = new Float32Array(n), sy = new Float32Array(n);
+    for(let y = 0; y < H; y += 2){ let k = y * W; for(let x = 0; x < W; x += 2, k += 2){ const i = idb[k]; if(i >= 0){ cnt[i]++; sx[i] += x; sy[i] += y; } } }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for(const b of C){
+      if(b.R < (ms === 'all' ? 6 : 11) * dpr) continue;
+      let cx = b.x, cy = b.y, vis = 1;
+      if(!b.clr){
+        const area = Math.PI * b.R * b.R / 4; vis = cnt[b.i] / area;
+        if(vis < 0.22) continue;
+        cx = sx[b.i] / cnt[b.i] + 1; cy = sy[b.i] / cnt[b.i] + 1;
+      } else {
+        const kx = Math.round(b.x), ky = Math.round(b.y);
+        if(kx < 0 || ky < 0 || kx >= W || ky >= H || zb[ky * W + kx] >= b.z + b.R) continue;
+      }
+      const light = !b.clr && b.c[0] * 0.3 + b.c[1] * 0.59 + b.c[2] * 0.11 > 150;
+      const fs = Math.round(b.R * 0.42 * Math.min(1, 0.55 + vis * 0.6));
+      ctx.font = `800 ${fs}px ui-monospace, monospace`;
+      ctx.fillStyle = light ? 'rgba(20,24,33,.6)' : 'rgba(255,255,255,.78)';
+      ctx.fillText(m.atoms[b.i].s, cx, cy + fs * 0.06);
+    }
   }
 }
 /* ── 광물 / 원자 구조 탭 ── */
