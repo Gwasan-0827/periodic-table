@@ -22572,6 +22572,21 @@ const RX_EXT_NOTE = {
   172: ['이 표의 끝이에요. 오가네손 아래 자리라 예측대로라면 18족이에요. 173번쯤부터는 가장 안쪽 전자가 너무 깊이 묶여서, 지금 이론으로는 원자가 어떻게 될지 확실히 몰라요.',
         'The end of this table. It sits under oganesson, so group 18 if the predictions hold. From about 173 the innermost electrons are bound so deeply that current theory cannot say for sure what happens to the atom.'],
 };
+/* 지금까지의 합성 시도 (전부 실패 또는 확인 안 됨) */
+Object.assign(RX_EXT_NOTE, {
+  119: ['일본 리켄 연구소가 바나듐-51 빔을 퀴륨-248 표적에 쏴서 만들려고 도전 중이에요. 만들어지면 8주기의 첫 원소가 돼요.<br><br><b>지난 시도</b> · 1985년 미국 버클리에서 아인슈타이늄-254에 칼슘-48을 쐈지만 하나도 안 나왔어요. 2012년 독일 GSI는 버클륨-249에 타이타늄-50을 쐈는데 역시 실패했어요.',
+        'RIKEN in Japan is trying to make it by firing a vanadium-51 beam at a curium-248 target. If it works, it becomes the first element of period 8.<br><br><b>Past attempts</b> · In 1985 Berkeley fired calcium-48 at einsteinium-254 and found nothing. In 2012 GSI in Germany fired titanium-50 at berkelium-249, with no luck either.'],
+  120: ['미국 버클리 연구소가 타이타늄-50 빔을 캘리포늄-249 표적에 쏴서 만들려고 도전하고 있어요. 22 + 98 = 120이에요. 119번보다 먼저 나올 수도 있어요.<br><br><b>지난 시도</b> · 2007년 러시아 두브나(플루토늄-244 + 철-58), 2007~2008년 독일 GSI(우라늄-238 + 니켈-64)는 실패했어요. 2010~2011년 GSI의 퀴륨-248 + 크로뮴-54 실험에서는 120번이 붕괴할 때 나올 법한 신호가 3번 잡혔지만, 확인되지 않아서 발견으로 인정받지 못했어요.',
+        'Berkeley Lab in the US is trying to make it by firing a titanium-50 beam at a californium-249 target: 22 + 98 = 120. It may turn up before 119 does.<br><br><b>Past attempts</b> · Dubna in Russia (plutonium-244 + iron-58, 2007) and GSI in Germany (uranium-238 + nickel-64, 2007–2008) came up empty. In GSI\'s curium-248 + chromium-54 run (2010–2011), three signals looked like element 120 decaying, but they could not be confirmed, so it does not count as a discovery.'],
+  122: ['<b>지난 시도</b> · 1972년 러시아 두브나(우라늄-238 + 아연), 1978년 독일 GSI(어븀 + 제논-136, 12시간 동안 쐈어요), 2000년 GSI(우라늄-238 + 아연-70) 모두 실패했어요. 2008년에는 자연의 토륨 속에서 찾았다는 주장이 나왔지만, 다른 연구진이 확인하지 못해서 인정받지 못했어요.',
+        '<b>Past attempts</b> · Dubna (uranium-238 + zinc, 1972), GSI (erbium + xenon-136, twelve hours of firing, 1978) and GSI again (uranium-238 + zinc-70, 2000) all failed. In 2008 there was a claim that it had been found in natural thorium, but nobody could confirm it and the claim was not accepted.'],
+  124: ['안정성의 섬 가까이에 있어서 비교적 오래 버틸 거라고 예상돼요.<br><br><b>지난 시도</b> · 2006년 프랑스 GANIL에서 우라늄-238에 저마늄을 쏴서 124번짜리 원자핵이 아주 잠깐 생겼다가 쪼개지는 모습을 연구했어요. 다만 원소를 만들어 확인한 건 아니라서 발견으로 치지는 않아요.',
+        'It sits near the island of stability, so it is expected to last relatively long.<br><br><b>Past attempts</b> · In 2006 GANIL in France fired germanium at uranium-238 and studied a nucleus with 124 protons that formed for an instant and split apart. It was not a confirmed element, so it does not count as a discovery.'],
+  126: ['양성자 126개는 원자핵이 유난히 튼튼해지는 "마법수" 후보예요(114·120·126이 후보). 맞다면 이웃 원소보다 오래 버틸지도 몰라요.<br><br><b>지난 시도</b> · 1971년 유럽 CERN에서 토륨-232에 크립톤-84를 쐈더니 에너지가 아주 큰 알파 입자가 나와서 126번의 흔적일 수도 있다고 했어요. 하지만 더 정밀한 실험에서 확인되지 않아서, 지금은 거의 아니라고 봐요.',
+        'A proton count of 126 is a candidate "magic number" that makes a nucleus unusually sturdy (114, 120 and 126 are the candidates). If so, it might last longer than its neighbours.<br><br><b>Past attempts</b> · In 1971 CERN fired krypton-84 at thorium-232 and saw very energetic alpha particles that might have hinted at element 126. More sensitive experiments later found nothing, so it is now thought very unlikely.'],
+  127: ['<b>지금까지 만들려고 해 본 가장 무거운 원소예요.</b> 1978년 독일 GSI에서 탄탈럼에 제논-136을 쐈지만 하나도 안 나왔어요. 그 뒤로는 아무도 다시 도전하지 않았어요.',
+        '<b>The heaviest element anyone has ever tried to make.</b> In 1978 GSI in Germany fired xenon-136 at tantalum and got nothing. Nobody has tried again since.'],
+});
 function rxExtPick(n){
   RX_EXT.sel = n;
   const en = LANG === 'en', nm = rxExtName(n), pos = rxExtPos(n), blk = RX_EXT_BLK[pos.blk];
