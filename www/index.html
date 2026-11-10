@@ -3920,7 +3920,7 @@ const EXACT = {
   "C55+H72+Mg1+N4+O5":["C₅₅H₇₂MgN₄O₅","엽록소","식물이 초록인 이유. 가운데 마그네슘이 햇빛을 받음"],
   "Al2+Fe3+O12+Si3":["Fe₃Al₂(SiO₄)₃","가넷","1월의 탄생석. 이름은 붉은 석류 씨앗에서 따왔음"],
   "Bi1+O4+Sb1":["BiSbO₄","크야수이트","지구에서 딱 한 조각만 발견된 세상에서 제일 희귀한 광물"],
-  "Ar1+N43+O11":["N₂ + O₂ + Ar","대기","질소가 대부분인데 다들 산소만 기억함"],
+  "Ar1+N156+O42":["N₂ + O₂ + Ar","대기","질소가 대부분인데 다들 산소만 기억함"],
   "Al4+Ca1+Fe1+K1+Mg1+Na1+O34+Si12":["O + Si + Al","지각","발밑. 절반 이상이 산소라는 게 안 믿김"],
   "Al1+Ca1+Fe8+Mg8+Ni1+O27+S1+Si8":["Fe + O + Si + Mg","지구","지각이랑 완전 다름. 핵이 철덩어리라서"],
   "Al5+Ca3+Fe2+Mg2+O34+Si9":["O + Si + Al + Ca","달","지각이랑 닮았는데 철이 적음. 떨어져 나간 흔적"],
@@ -9196,7 +9196,7 @@ const RX_SMILES = {
   'NAD⁺': 'NC(=O)c1ccc[n+](c1)C2OC(COP(=O)([O-])OP(=O)(O)OCC3OC(C(O)C3O)n4cnc5c(N)ncnc45)C(O)C2O',
   '큐베인': 'C12C3C4C1C5C2C3C45',
   // 섞인 것
-  '대기': 'N#N.N#N.N#N.O=O.[Ar]',
+  '대기': 'N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.[Ar]',   // 실제 공기처럼 분자 100개: 질소 78 · 산소 21 · 아르곤 1
   '금성 대기': 'O=C=O.O=C=O.N#N',
   '목성 대기': '[H][H].[H][H].[He]',
   '태양': '[H][H].[H][H].[He]',
@@ -9369,6 +9369,46 @@ function rxSmilesFormula(sm){
 }
 
 /* 입체 배치 */
+/* 기체 혼합물(대기): 분자들을 상자 안에 무작위로 흩뿌린다. 종류별로 줄 서지 않게, 방향도 제각각 */
+const RX_GAS_MIX = new Set(['대기']);
+function rxGasScatter(nm, m, rnd){
+  if(!m || !RX_GAS_MIX.has(nm)) return m;
+  const n = m.atoms.length, nb = m.atoms.map(() => []);
+  m.bonds.forEach(([a, b]) => { nb[a].push(b); nb[b].push(a); });
+  const comp = new Array(n).fill(-1), groups = [];
+  for(let i = 0; i < n; i++){
+    if(comp[i] >= 0) continue;
+    const g = [i], st = [i]; comp[i] = groups.length;
+    while(st.length){ const v = st.pop(); nb[v].forEach(w => { if(comp[w] < 0){ comp[w] = groups.length; g.push(w); st.push(w); } }); }
+    groups.push(g);
+  }
+  // 놓을 자리: 서로 너무 붙지 않게 (뽑아 보고 가까우면 다시)
+  const W = 300, H = 210, D = 170, C = [];
+  groups.forEach(() => {
+    let best = null, bd = -1;
+    for(let t = 0; t < 30; t++){
+      const p = [(rnd() - .5) * W, (rnd() - .5) * H, (rnd() - .5) * D];
+      const d = C.reduce((mn, q) => Math.min(mn, Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2])), 1e9);
+      if(d > bd){ bd = d; best = p; }
+      if(d > 34) break;
+    }
+    C.push(best);
+  });
+  groups.forEach((g, k) => {
+    const cx = g.reduce((s, i) => s + m.atoms[i].x, 0) / g.length, cy = g.reduce((s, i) => s + m.atoms[i].y, 0) / g.length, cz = g.reduce((s, i) => s + m.atoms[i].z, 0) / g.length;
+    // 아무 방향으로 돌리기
+    const a1 = rnd() * Math.PI * 2, a2 = Math.acos(2 * rnd() - 1), ca = Math.cos(a1), sa = Math.sin(a1), cb = Math.cos(a2), sb = Math.sin(a2);
+    g.forEach(i => {
+      const at = m.atoms[i]; let x = at.x - cx, y = at.y - cy, z = at.z - cz;
+      const x1 = x * ca - y * sa, y1 = x * sa + y * ca;          // z축
+      const y2 = y1 * cb - z * sb, z2 = y1 * sb + z * cb;        // x축
+      at.x = C[k][0] + x1; at.y = C[k][1] + y2; at.z = C[k][2] + z2;
+    });
+  });
+  m.gasMix = true;
+  return m;
+}
+
 function rxSmilesModel(sm, rnd){
   const { atoms, bonds } = rxSmilesParse(sm);
   const N = [];                                    // 원자 + 수소 + 비공유 전자쌍(보이지 않음)
@@ -13200,7 +13240,7 @@ function rxPickModel(kind, formula, fromMix, rawName, boom){
     else if(one && !RX_REDUCED && RX_GAS.has(one[0])) model = rxGasModel(one[0], one[1], rnd, nm);
     else if(one && !RX_REDUCED && one[0] === 'Ga') model = rxGalliumModel(one[1], rnd);
     else if(one && !RX_REDUCED && RX_LIQUID[one[0]]) model = rxLiquidModel(one[0], one[1], rnd);
-    else model = (!RX_REDUCED && typeof RX_SMILES !== 'undefined' && RX_SMILES[nm] ? rxSmilesModel(RX_SMILES[nm], rnd) : null)
+    else model = (!RX_REDUCED && typeof RX_SMILES !== 'undefined' && RX_SMILES[nm] ? rxGasScatter(nm, rxSmilesModel(RX_SMILES[nm], rnd), rnd) : null)
          || rxCrystal(fs, nm, atoms)
          || (lattice ? rxLattice(atoms, rnd) : rxMolecule(atoms, rnd));
     const mineral = boom ? null : rxMineral(nm);
@@ -15170,7 +15210,7 @@ const RX_TMI = {
   '눈물':'양파 썰 때 흘리는 눈물과 슬플 때 흘리는 눈물은 성분이 조금 다르다는 연구가 있어요.',
   '니코틴':'담배 식물이 원래 벌레를 쫓으려고 만드는 천연 살충 성분이에요.',
   '달':'달은 해마다 지구에서 약 3.8cm씩 멀어지고 있어요.',
-  '대기':'공기의 약 78%가 질소, 21%가 산소이고, 남은 1%의 대부분이 아르곤이에요.',
+  '대기':'분자 100개 중 질소 78개, 산소 21개, 아르곤 1개. 실제 공기 비율 그대로예요. 이산화탄소(0.04%), 네온, 헬륨, 크립톤, 수소, 제논, 라돈은 너무 적어서 100개 안에는 하나도 못 들어가요.',
   '더 큰 폭발':'폭발의 세기는 보통 "TNT 몇 톤과 맞먹는지"로 비교해요.',
   '도파민':'도파민은 "행복 물질"이라기보다 "기대하게 만드는 물질"에 가까워요.',
   '듀모티어라이트':'파란 바늘 결정이 석영 속에 들어가면 "듀모티어라이트 쿼츠"라고 불러요.',
@@ -47427,7 +47467,7 @@ void main(){
   function sync(){
     const tools = document.getElementById('mTools'); if(!tools) return;
     let b = tools.querySelector('.rx-exp');
-    const m = RX_M, ok = !!(m && m.atoms && m.atoms.length >= MIN && !m.crystal && !m.fill && !m.liquid && !m.faces && bondsOf(m).length && (RX_VIEW === 'ball' || RX_VIEW === 'stick'));
+    const m = RX_M, ok = !!(m && m.atoms && m.atoms.length >= MIN && !m.gasMix && !(typeof RX !== 'undefined' && RX && typeof RX_GAS_MIX !== 'undefined' && RX_GAS_MIX.has(RX.raw)) && !m.crystal && !m.fill && !m.liquid && !m.faces && bondsOf(m).length && (RX_VIEW === 'ball' || RX_VIEW === 'stick'));
     if(!b){
       b = document.createElement('button'); b.type = 'button'; b.className = 'rtool rx-exp';
       b.addEventListener('click', e => { e.stopPropagation(); go(!on); });
