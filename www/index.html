@@ -3921,6 +3921,7 @@ const EXACT = {
   "Al2+Fe3+O12+Si3":["Fe₃Al₂(SiO₄)₃","가넷","1월의 탄생석. 이름은 붉은 석류 씨앗에서 따왔음"],
   "Bi1+O4+Sb1":["BiSbO₄","크야수이트","지구에서 딱 한 조각만 발견된 세상에서 제일 희귀한 광물"],
   "Ar1+N156+O42":["N₂ + O₂ + Ar","대기","질소가 대부분인데 다들 산소만 기억함"],
+  "Ar1+H2+He1+Kr1+N156+Ne1+O42+Rn1+Xe1":["N₂ + O₂ + Ar + …","대기 (풀옵션)","들어갈 건 다 들어감. 비율은 묻지 마"],
   "Al4+Ca1+Fe1+K1+Mg1+Na1+O34+Si12":["O + Si + Al","지각","발밑. 절반 이상이 산소라는 게 안 믿김"],
   "Al1+Ca1+Fe8+Mg8+Ni1+O27+S1+Si8":["Fe + O + Si + Mg","지구","지각이랑 완전 다름. 핵이 철덩어리라서"],
   "Al5+Ca3+Fe2+Mg2+O34+Si9":["O + Si + Al + Ca","달","지각이랑 닮았는데 철이 적음. 떨어져 나간 흔적"],
@@ -4199,7 +4200,7 @@ function singleResult(sym, cnt){
   return [sym, `${e ? e.ko : sym} 덩어리`, `${cnt}개 모아봤자 그냥 ${e ? e.ko : sym}임`];
 }
 
-const GEMS = ["대기","지각","지구","달","바닷물","사람 몸","태양","화성 대기","금성 대기","목성 대기","혜성","포르스테라이트","진주","자개","루비", "사파이어", "에메랄드", "아쿠아마린", "자수정", "토파즈", "페리도트", "지르콘", "스피넬", "터키석", "오팔", "다이아몬드", "라피스라줄리", "형석", "녹주석", "노란색 사파이어"];
+const GEMS = ["대기","대기 (풀옵션)","지각","지구","달","바닷물","사람 몸","태양","화성 대기","금성 대기","목성 대기","혜성","포르스테라이트","진주","자개","루비", "사파이어", "에메랄드", "아쿠아마린", "자수정", "토파즈", "페리도트", "지르콘", "스피넬", "터키석", "오팔", "다이아몬드", "라피스라줄리", "형석", "녹주석", "노란색 사파이어"];
 
 
 /* 화학식의 유니코드 아래/위첨자를 <sub>/<sup> 로 */
@@ -5642,6 +5643,7 @@ const REC_EN = {
 "페닐에프린":["Phenylephrine","One oxygen short of adrenaline. A decongestant"],
 /* SINGLE 결과 */
 "대기":["Atmosphere","Mostly nitrogen, but everyone only remembers the oxygen"],
+"대기 (풀옵션)":["Atmosphere (fully loaded)","Everything is in there. Do not ask about the ratios"],
 "지각":["Earth's crust","Under your feet. Over half of it is oxygen"],
 "지구":["The whole Earth","Nothing like the crust — the core is a ball of iron"],
 "달":["The Moon","Much like the crust, but short on iron"],
@@ -9197,6 +9199,7 @@ const RX_SMILES = {
   '큐베인': 'C12C3C4C1C5C2C3C45',
   // 섞인 것
   '대기': 'N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.[Ar]',   // 실제 공기처럼 분자 100개: 질소 78 · 산소 21 · 아르곤 1
+  '대기 (풀옵션)': 'N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.N#N.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.O=O.[Ar].[Ne].[He].[Kr].[Xe].[H][H].[Rn]',   // 흔적 기체 하나씩 (실제로는 이만큼도 안 들어간다)
   '금성 대기': 'O=C=O.O=C=O.N#N',
   '목성 대기': '[H][H].[H][H].[He]',
   '태양': '[H][H].[H][H].[He]',
@@ -9370,7 +9373,7 @@ function rxSmilesFormula(sm){
 
 /* 입체 배치 */
 /* 기체 혼합물(대기): 분자들을 상자 안에 무작위로 흩뿌린다. 종류별로 줄 서지 않게, 방향도 제각각 */
-const RX_GAS_MIX = new Set(['대기']);
+const RX_GAS_MIX = new Set(['대기', '대기 (풀옵션)']);
 function rxGasScatter(nm, m, rnd){
   if(!m || !RX_GAS_MIX.has(nm)) return m;
   const n = m.atoms.length, nb = m.atoms.map(() => []);
@@ -14125,7 +14128,7 @@ addEventListener('keydown', ev => {
 const A_GEM = ['진주','자개','루비','사파이어','에메랄드','아쿠아마린','자수정','토파즈',
   '페리도트','지르콘','스피넬','터키석','오팔','다이아몬드','라피스라줄리','형석','녹주석',
   '노란색 사파이어','포르스테라이트'];
-const A_SPACE = ['대기','지각','지구','달','태양','화성 대기','금성 대기','목성 대기','혜성'];
+const A_SPACE = ['대기','대기 (풀옵션)','지각','지구','달','태양','화성 대기','금성 대기','목성 대기','혜성'];
 const A_BOOM = ['폭발','더 큰 폭발','존나 큰 폭발','루비듐 폭발'];
 const A_BODY = ['오줌','땀','침','눈물','방귀','사람 몸','뼈'];
 
@@ -15210,6 +15213,7 @@ const RX_TMI = {
   '눈물':'양파 썰 때 흘리는 눈물과 슬플 때 흘리는 눈물은 성분이 조금 다르다는 연구가 있어요.',
   '니코틴':'담배 식물이 원래 벌레를 쫓으려고 만드는 천연 살충 성분이에요.',
   '달':'달은 해마다 지구에서 약 3.8cm씩 멀어지고 있어요.',
+  '대기 (풀옵션)':'실제 공기 속 비율: 네온 0.0018%, 헬륨 0.0005%, 수소 0.00005%, 크립톤 0.0001%, 제논 0.0000087%, 라돈 0.000000000000000006%. 여기선 전부 1개씩이라 네온은 진짜보다 500배쯤, 라돈은 17경 배쯤 많아요.',
   '대기':'분자 100개 중 질소 78개, 산소 21개, 아르곤 1개. 실제 공기 비율 그대로예요. 이산화탄소(0.04%), 네온, 헬륨, 크립톤, 수소, 제논, 라돈은 너무 적어서 100개 안에는 하나도 못 들어가요.',
   '더 큰 폭발':'폭발의 세기는 보통 "TNT 몇 톤과 맞먹는지"로 비교해요.',
   '도파민':'도파민은 "행복 물질"이라기보다 "기대하게 만드는 물질"에 가까워요.',
