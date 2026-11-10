@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 557종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 565종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 557종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 565종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -50266,6 +50266,59 @@ void main(){
     }catch(e){ console.warn('ext2 pick', e); }
     return r;
   };
+})();
+</script>
+
+<script>
+/* ═══ 예측 화합물: 아직 아무도 못 만든, 계산으로만 있는 오가네손·테네신 화합물 ═══
+   상대론적 효과로 Og의 7s·7p½, Ts의 7s 전자쌍이 핵에 꽉 묶여서 모양을 밀어내는 비공유 전자쌍 노릇을 못 한다.
+   그래서 XeF₄(평면 사각형)와 달리 OgF₄는 정사면체, IF₃(T자)와 달리 TsF₃는 평면 삼각형으로 예측된다.
+   분자 모양 엔진은 RX_VALENCE_E에 없는 원소에 비공유 전자쌍을 안 붙이므로 그대로 그 모양이 나온다. */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const ADD = [
+    { key: 'F4+Og1', f: 'OgF₄', nm: '사플루오린화 오가네손', sub: 'XeF₄는 납작한데 얘는 사면체래요 (계산상)', sm: 'F[Og](F)(F)F',
+      en: ['Oganesson tetrafluoride', 'XeF₄ is flat, this one is a tetrahedron (on paper)'],
+      ko: '아직 아무도 만든 적 없는, 계산으로만 있는 화합물이에요. 바로 위 칸 제논의 XeF₄는 <b>평면 사각형</b>인데, OgF₄는 <b>정사면체</b>로 예측돼요. 오가네손은 너무 무거워서 안쪽 전자가 빛의 속도에 가깝게 움직이는데(상대론적 효과), 그 바람에 바깥 전자쌍 두 개(7s, 7p½)가 핵에 꽉 붙들려서 모양을 밀어내지 못하거든요. 같은 이유로 OgF₆은 아예 안 생길 거라고 해요.',
+      enT: 'Nobody has made this. It exists only in calculations. Xenon\'s XeF₄ is <b>square planar</b>, but OgF₄ is predicted to be a <b>tetrahedron</b>. Oganesson is so heavy that its inner electrons move at a good fraction of light speed (relativistic effects), and two of its outer electron pairs (7s and 7p½) get held so tightly that they no longer push the shape around. For the same reason, OgF₆ is not expected to hold together at all.' },
+    { key: 'F2+Og1', f: 'OgF₂', nm: '이플루오린화 오가네손', sub: '비활성 기체 맞냐 (계산상)', sm: 'F[Og]F',
+      en: ['Oganesson difluoride', 'Is this really a noble gas? (on paper)'],
+      ko: '계산으로만 있는 화합물이에요. 오가네손은 18족이라 반응을 안 할 것 같지만, 계산해 보면 플루오린과는 꽤 잘 붙어요. OgF₂가 생길 때 나오는 에너지가 라돈의 RnF₂보다 2배 넘게 커요(106 대 49 kcal/mol). 그중 거의 절반이 상대론적 효과(스핀-궤도 상호작용)에서 나와요. 결합도 전자를 나눠 갖기보다 이온 결합 쪽에 가까울 거래요.',
+      enT: 'This compound exists only in calculations. Oganesson sits in group 18 and looks like it should not react, but calculations say it bonds to fluorine quite readily. Forming OgF₂ releases more than twice the energy of radon\'s RnF₂ (106 vs 49 kcal/mol), and nearly half of that comes from relativistic spin–orbit effects. The bond is expected to be closer to ionic than shared.' },
+    { key: 'F3+Ts1', f: 'TsF₃', nm: '삼플루오린화 테네신', sub: 'IF₃는 T자인데 얘는 삼각형 (계산상)', sm: 'F[Ts](F)F',
+      en: ['Tennessine trifluoride', 'IF₃ is T-shaped, this one is a triangle (on paper)'],
+      ko: '계산으로만 있는 화합물이에요. 교과서의 전자쌍 반발 이론대로라면 같은 17족인 IF₃처럼 <b>T자</b>여야 해요. 그런데 상대론적 효과까지 넣고 계산하면 <b>평면 삼각형</b>이 더 안정하대요. 이렇게 무거운 원소에서는 교과서 규칙이 안 맞을 수도 있다는 예예요.',
+      enT: 'This compound exists only in calculations. By the textbook electron-pair repulsion rule (VSEPR) it should be <b>T-shaped</b> like its group 17 cousin IF₃. Add relativistic effects to the calculation, though, and a <b>flat triangle</b> comes out more stable. It is an example of textbook rules breaking down for very heavy elements.' },
+    { key: 'H1+Ts1', f: 'TsH', nm: '테네신화 수소', sub: '할로젠화 수소 막내, 결합이 제일 약함 (계산상)', sm: '[TsH]',
+      en: ['Hydrogen tennesside', 'Youngest hydrogen halide, weakest bond (on paper)'],
+      ko: '테네신으로 만들 수 있는 가장 간단한 화합물이에요. 아직은 계산으로만 있어요. HF, HCl, HBr, HI로 내려갈수록 결합이 길어지고 약해지는데, TsH는 그 끝에 있어요. 상대론적 효과 때문에 결합이 원래보다 17pm 더 길고, 세기는 3분의 2쯤밖에 안 될 거래요.',
+      enT: 'The simplest compound tennessine could make, so far only in calculations. Going down HF, HCl, HBr and HI the bond gets longer and weaker, and TsH sits at the end of that line. Relativistic effects make the bond about 17 pm longer and only about two thirds as strong as it would otherwise be.' },
+    { key: 'Og1+Ts4', f: 'OgTs₄', nm: '사테네신화 오가네손', sub: '둘 다 1초도 못 버팀 (계산상으로는 안정)', sm: '[Ts][Og]([Ts])([Ts])[Ts]',
+      en: ['Oganesson tetratennesside', 'Neither lasts a second (stable on paper)'],
+      ko: '주기율표 맨 끝 두 원소끼리 붙인 화합물이에요. 계산으로는 화학적으로 안정할 수도 있대요. 문제는 원자핵이에요. 오가네손-294는 1000분의 1초도 안 돼서, 테네신-294도 20분의 1초쯤이면 붕괴해요. 게다가 지금은 원자를 몇 개씩만 만들 수 있어서 실제로 만들 방법은 없어요.',
+      enT: 'A compound of the last two elements in the table. Calculations say it might be chemically stable. The problem is the nucleus: oganesson-294 decays in under a thousandth of a second and tennessine-294 in about a twentieth. On top of that, these atoms can only be made a few at a time, so there is no real way to make it.' },
+  ];
+  const NM = new Set(ADD.map(a => a.nm));
+  ADD.forEach(a => {
+    EXACT[a.key] = [a.f, a.nm, a.sub];
+    try{ REC_EN[a.nm] = a.en; }catch(e){}
+    try{ RX_SMILES[a.nm] = a.sm; }catch(e){}
+    try{ RX_TMI[a.nm] = a.ko; }catch(e){}
+    try{ if(typeof RX_TMI_EN !== 'undefined') RX_TMI_EN[a.nm] = a.enT; }catch(e){}
+  });
+  window.RX_PRED = NM;
+  // 분류: 예측 화합물
+  try{
+    Object.assign(RXT.ko, { kPred: '예측 화합물' }); Object.assign(RXT.en, { kPred: 'Predicted' });
+    RX_CARD_KIND_COL.kPred = '#ff9ad5';
+    const _k = rxKindOf;
+    rxKindOf = function(name, formula, kind){ if(kind !== 'fail' && NM.has(name)) return 'kPred'; return _k.apply(this, arguments); };
+  }catch(e){}
+  // 도감 꼬리표
+  try{
+    RX_TAGSET.pred = NM;
+    RX_HAZ_T.ko.tags.pred = '예측 화합물'; RX_HAZ_T.en.tags.pred = 'Predicted';
+  }catch(e){}
 })();
 </script>
 
