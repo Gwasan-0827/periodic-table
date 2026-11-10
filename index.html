@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 566종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 567종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 566종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 567종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -50331,6 +50331,18 @@ void main(){
   try{ REC_EN[nm] = ['Iodine trifluoride', 'T-shaped, falls apart above −28°C']; }catch(e){}
   try{ RX_SMILES[nm] = 'F[I](F)F'; }catch(e){}
   try{ RX_TMI[nm] = '노란 고체인데 아주 불안정해서, 영하 28°C만 넘어도 오플루오린화 아이오딘(IF₅)과 아이오딘으로 갈라져요. 아이오딘에 남은 비공유 전자쌍 2개가 자리를 차지해서 <b>T자</b> 모양이 돼요. 같은 17족 맨 아래 테네신의 TsF₃는 이 전자쌍이 힘을 못 써서 <b>평면 삼각형</b>이 될 거라고 예측돼요. 둘을 만들어서 비교해 보세요.'; }catch(e){}
+})();
+</script>
+<script>
+/* 메틸수은 CH₃Hg⁺: 바다에서 먹이사슬을 타고 쌓이는 수은. 미나마타병의 원인 */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const nm = '메틸수은';
+  EXACT['C1+H3+Hg1'] = ['CH₃Hg⁺', nm, '큰 생선 너무 많이 먹지 말라는 이유'];
+  try{ REC_EN[nm] = ['Methylmercury', 'Why you should go easy on big fish']; }catch(e){}
+  try{ RX_SMILES[nm] = 'C[Hg+]'; }catch(e){}
+  try{ RX_HAZ[nm] = 'e3'; }catch(e){}
+  try{ RX_TMI[nm] = '강이나 바다에 흘러든 수은을 물속 미생물이 메틸수은으로 바꿔요. 이건 몸에서 잘 빠져나가지 않아서, 작은 물고기를 먹는 큰 물고기 몸에 점점 더 쌓여요(<b>생물 농축</b>). 그래서 참치·상어·황새치 같은 큰 생선은 너무 자주 먹지 말라고 해요. 1950년대 일본 미나마타에서는 공장이 바다에 버린 메틸수은이 든 물고기를 먹은 사람들이 뇌와 신경을 크게 다쳤어요. 이걸 <b>미나마타병</b>이라고 불러요.'; }catch(e){}
 })();
 </script>
 </body>
