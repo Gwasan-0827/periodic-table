@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 565종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 566종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 565종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 566종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -50322,5 +50322,16 @@ void main(){
 })();
 </script>
 
+<script>
+/* IF₃: TsF₃(평면 삼각형 예측)와 비교하라고 넣는 진짜 화합물. 아이오딘에 비공유 전자쌍 2개 → T자 */
+(function(){
+  if(typeof EXACT === 'undefined') return;
+  const nm = '삼플루오린화 아이오딘';
+  EXACT['F3+I1'] = ['IF₃', nm, 'T자로 생김, 영하 28도만 넘어도 분해됨'];
+  try{ REC_EN[nm] = ['Iodine trifluoride', 'T-shaped, falls apart above −28°C']; }catch(e){}
+  try{ RX_SMILES[nm] = 'F[I](F)F'; }catch(e){}
+  try{ RX_TMI[nm] = '노란 고체인데 아주 불안정해서, 영하 28°C만 넘어도 오플루오린화 아이오딘(IF₅)과 아이오딘으로 갈라져요. 아이오딘에 남은 비공유 전자쌍 2개가 자리를 차지해서 <b>T자</b> 모양이 돼요. 같은 17족 맨 아래 테네신의 TsF₃는 이 전자쌍이 힘을 못 써서 <b>평면 삼각형</b>이 될 거라고 예측돼요. 둘을 만들어서 비교해 보세요.'; }catch(e){}
+})();
+</script>
 </body>
 </html>
