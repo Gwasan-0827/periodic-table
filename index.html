@@ -49677,5 +49677,332 @@ void main(){
 })();
 </script>
 
+<style>
+  /* ═══ 업적 화면 리워크: 거의 다 온 업적 · 최근 달성 · 걸러 보기 · 귀한 뱃지 반짝임 ═══ */
+  #achRow .a2-top{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;margin:0 0 12px}
+  #achRow .a2-box{border:1px solid rgba(154,168,255,.16);border-radius:16px;background:linear-gradient(170deg,rgba(154,168,255,.06),rgba(8,10,16,.45) 60%);padding:11px 12px 12px;min-width:0}
+  #achRow .a2-h{display:flex;align-items:baseline;gap:8px;margin:0 0 8px}
+  #achRow .a2-h b{font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.7)}
+  #achRow .a2-h span{font-size:12.5px;font-weight:750;color:#e6e9ff}
+  #achRow .a2-empty{font-size:11.5px;color:rgba(201,208,255,.5);padding:10px 2px}
+  /* 거의 다 왔어요 */
+  #achRow .a2-nx{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:4px 10px;padding:7px 8px;border-radius:11px;cursor:pointer;transition:background .15s}
+  #achRow .a2-nx:hover{background:rgba(154,168,255,.08)}
+  #achRow .a2-nx + .a2-nx{margin-top:2px}
+  #achRow .a2-nx .ic{grid-row:1 / span 2;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(154,168,255,.1);border:1px solid rgba(154,168,255,.22);font-size:17px}
+  #achRow .a2-nx .ic svg{width:20px;height:20px;opacity:.75}
+  #achRow .a2-nx .ds{font-size:12px;font-weight:650;color:#dfe3ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  #achRow .a2-nx .nb{font:800 11px/1 ui-monospace,monospace;color:#9ee7ff}
+  #achRow .a2-nx .br{grid-column:2 / span 2;height:5px;border-radius:3px;background:rgba(154,168,255,.12);overflow:hidden}
+  #achRow .a2-nx .br i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#9ee7ff,#b197fc);width:0;transition:width .9s cubic-bezier(.2,.9,.25,1)}
+  #achRow .a2-nx.bad .nb{color:#ff8fa3}
+  #achRow .a2-nx.bad .br i{background:linear-gradient(90deg,#ff8fa3,#ffb86b)}
+  #achRow .a2-nx .lf{grid-column:2 / span 2;font-size:10.5px;color:rgba(201,208,255,.55);margin-top:-1px}
+  /* 최근 달성 */
+  #achRow .a2-rc{display:flex;flex-direction:column;gap:6px}
+  #achRow .a2-r{position:relative;display:grid;grid-template-columns:34px 1fr;align-items:center;gap:0 10px;padding:6px 8px;border-radius:11px;cursor:pointer;transition:background .15s}
+  #achRow .a2-r:hover{background:rgba(255,212,59,.07)}
+  #achRow .a2-r .ic{grid-row:1 / span 2;width:34px;height:34px;display:grid;place-items:center;font-size:18px}
+  #achRow .a2-r .ic{position:relative;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:linear-gradient(135deg,#ffd43b,#ff9ad5)}
+  #achRow .a2-r .ic > *{position:absolute;inset:2px;display:grid;place-items:center;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:#14172a}
+  #achRow .a2-r .ic img{width:calc(100% - 4px);height:calc(100% - 4px);object-fit:cover;background:#fff}
+  #achRow .a2-r.bad .ic{background:linear-gradient(135deg,#ff8fa3,#ffb86b)}
+  #achRow .a2-r.sec .ic{background:linear-gradient(120deg,#ff6b9d,#ffd166,#5ad1ff,#a78bfa)}
+  #achRow .a2-r .nm{font-size:12.5px;font-weight:750;color:#ffe066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #achRow .a2-r.bad .nm{color:#ff8fa3}
+  #achRow .a2-r.sec .nm{color:#d0bfff}
+  #achRow .a2-r .wh{font:600 10.5px/1.2 ui-monospace,monospace;color:rgba(201,208,255,.55)}
+  #achRow .a2-r.new::after{content:"NEW";position:absolute;right:8px;top:50%;margin-top:-8px;padding:3px 6px;border-radius:6px;font:800 9px/1 ui-monospace,monospace;letter-spacing:.08em;color:#141833;background:#ffd43b}
+  /* 걸러 보기 · 정렬 */
+  #achRow .a2-bar{display:flex;align-items:center;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  #achRow .a2-bar::-webkit-scrollbar{display:none}
+  #achRow .a2-f{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;border:1px solid rgba(154,168,255,.2);background:rgba(10,13,24,.55);color:rgba(223,227,255,.8);font:inherit;font-size:12px;font-weight:650;cursor:pointer;transition:all .15s}
+  #achRow .a2-f b{font:800 10.5px/1 ui-monospace,monospace;color:rgba(201,208,255,.55)}
+  #achRow .a2-f:hover{border-color:rgba(201,208,255,.45)}
+  #achRow .a2-f.on{background:rgba(154,168,255,.2);border-color:#c9d0ff;color:#fff}
+  #achRow .a2-f.on b{color:#c9d0ff}
+  #achRow .a2-f.bad.on{background:rgba(255,143,163,.16);border-color:#ff8fa3}
+  #achRow .a2-f.sec.on{background:rgba(177,151,252,.18);border-color:#b197fc}
+  #achRow .a2-sp{flex:1}
+  #achRow .a2-sort{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:9px;border:1px dashed rgba(154,168,255,.3);background:none;color:rgba(223,227,255,.75);font:inherit;font-size:12px;cursor:pointer}
+  #achRow .a2-sort.on{border-style:solid;border-color:#9ee7ff;color:#9ee7ff}
+  #achRow .achchip[hidden]{display:none!important}
+  #achRow .a2-none{grid-column:1 / -1;text-align:center;padding:26px 0;color:rgba(201,208,255,.5);font-size:12.5px}
+  /* 귀한 뱃지(숨은 업적 · 마스터 급): 빛이 훑고 지나간다 */
+  body:not(.w95) #achRow .achchip.on.a2-rare{border-color:transparent!important;background:linear-gradient(rgba(14,14,26,.92),rgba(14,14,26,.92)) padding-box,linear-gradient(120deg,#ff6b9d,#ffd166,#7cf29c,#5ad1ff,#a78bfa,#ff6b9d) border-box!important;border:1.5px solid transparent!important}
+  body:not(.w95) #achRow .achchip.on.a2-rare::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.16) 45%,rgba(158,231,255,.1) 52%,transparent 66%);background-size:260% 100%;animation:a2Sheen 3.4s ease-in-out infinite}
+  @keyframes a2Sheen{0%,35%{background-position:140% 0}100%{background-position:-60% 0}}
+  body:not(.w95) #achRow .achchip.on.a2-rare .achn{background:linear-gradient(90deg,#ffd166,#ff9ad5,#9ee7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media (prefers-reduced-motion:reduce){ body:not(.w95) #achRow .achchip.on.a2-rare::after{animation:none} }
+  @media (max-width:700px){
+    #achRow .a2-top{grid-template-columns:1fr;gap:8px}
+    #achRow .a2-box{padding:9px 10px 10px}
+    #achRow .a2-r:nth-child(n+3), #achRow .a2-nx ~ .a2-nx ~ .a2-nx{display:none}
+    #achRow .a2-nx .lf{display:none}
+    #achRow .a2-r{padding:4px 6px}
+  }
+  body.w95 #achRow .a2-top, body.w95 #achRow .a2-bar{display:none}
+</style>
+<script>
+(function(){
+  if(typeof openDex !== 'function' || typeof ACH === 'undefined') return;
+  const EN = () => LANG === 'en', P = (ko, en) => EN() ? en : ko;
+  const LSF = 'pt_achf', LSS = 'pt_achsort';
+  const get = (k, d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } };
+  const put = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+  const RARE = new Set(['master', 'allAch']);
+  const isRare = a => a.secret || RARE.has(a.id);
+  const times = () => { try{ return (typeof rxAchTimes === 'function') ? rxAchTimes() : JSON.parse(localStorage.getItem('pt_ach_t') || '{}'); }catch(e){ return {}; } };
+  function ago(ms){
+    const s = (Date.now() - ms) / 1000;
+    if(s < 60) return P('방금', 'just now');
+    if(s < 3600) return P(`${Math.floor(s / 60)}분 전`, `${Math.floor(s / 60)} min ago`);
+    if(s < 86400) return P(`${Math.floor(s / 3600)}시간 전`, `${Math.floor(s / 3600)} h ago`);
+    if(s < 86400 * 30) return P(`${Math.floor(s / 86400)}일 전`, `${Math.floor(s / 86400)} d ago`);
+    const d = new Date(ms); return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  }
+  function prog(a){ if(!a.prog || a.secret) return null; try{ const [x, n] = a.prog(); return n > 0 ? [Math.min(x, n), n] : null; }catch(e){ return null; } }
+  const L = () => EN() ? 'en' : 'ko';
+  const open = id => { if(typeof rxAchOpen === 'function') rxAchOpen(id); };
+
+  function build(){
+    const row = document.getElementById('achRow'); if(!row || document.body.classList.contains('w95')) return;
+    const grid = row.querySelector('.achrow'); if(!grid) return;
+    row.querySelectorAll('.a2-top, .a2-bar').forEach(x => x.remove());
+    const got = loadAch(), T = times();
+    const chips = [...grid.querySelectorAll('.achchip[data-id]')];
+    // 귀한 뱃지 표시
+    chips.forEach(c => { const a = ACH.find(x => x.id === c.dataset.id); c.classList.toggle('a2-rare', !!a && isRare(a)); });
+
+    // ── 거의 다 왔어요: 진행 중인 것 중 비율 높은 순 ──
+    const near = ACH.filter(a => !got.has(a.id)).map(a => ({ a, p: prog(a) })).filter(x => x.p && x.p[0] > 0)
+      .sort((x, y) => y.p[0] / y.p[1] - x.p[0] / x.p[1]).slice(0, 3);
+    const nearHTML = near.length ? near.map(({ a, p }) => {
+      const c = chips.find(x => x.dataset.id === a.id), ic = c && c.querySelector('.bdg') ? c.querySelector('.bdg').innerHTML : '⭐';
+      const left = p[1] - p[0];
+      return `<div class="a2-nx${a.bad ? ' bad' : ''}" data-go="${a.id}"><span class="ic">${ic}</span><span class="ds">${a[L()][1]}</span><span class="nb">${p[0]}/${p[1]}</span>
+        <span class="br"><i data-w="${(p[0] / p[1] * 100).toFixed(1)}"></i></span><span class="lf">${P(`${left}개 남았어요`, `${left} to go`)}</span></div>`;
+    }).join('') : `<div class="a2-empty">${P('조합을 더 해 보면 여기에 다음 목표가 떠요', 'Mix more and your next goals show up here')}</div>`;
+
+    // ── 최근 달성 ──
+    const gl = [...got], rec = gl.filter(id => T[id]).sort((x, y) => T[y] - T[x]).concat(gl.filter(id => !T[id]).reverse()).slice(0, 3).map(id => ACH.find(a => a.id === id)).filter(Boolean);
+    const recHTML = rec.length ? rec.map(a => {
+      const img = (typeof RX_ACH_IMG !== 'undefined' && RX_ACH_IMG[a.id]) ? `<img alt="" src="${RX_ACH_IMG[a.id]}">` : `<span>${(typeof RX_ACH_IC !== 'undefined' && RX_ACH_IC[a.id]) || '⭐'}</span>`;
+      const fresh = T[a.id] && Date.now() - T[a.id] < 86400000;
+      return `<div class="a2-r${a.bad ? ' bad' : ''}${a.secret ? ' sec' : ''}${fresh ? ' new' : ''}" data-go="${a.id}"><span class="ic">${img}</span><span class="nm">${a[L()][0]}</span><span class="wh">${T[a.id] ? ago(T[a.id]) : P('예전에', 'a while ago')}</span></div>`;
+    }).join('') : `<div class="a2-empty">${P('아직 달성한 업적이 없어요', 'No badges yet')}</div>`;
+
+    const top = document.createElement('div'); top.className = 'a2-top';
+    top.innerHTML = `<div class="a2-box"><div class="a2-h"><b>NEXT UP</b><span>${P('거의 다 왔어요', 'Almost there')}</span></div>${nearHTML}</div>
+      <div class="a2-box"><div class="a2-h"><b>RECENT</b><span>${P('최근 달성', 'Recently earned')}</span></div><div class="a2-rc">${recHTML}</div></div>`;
+
+    // ── 걸러 보기 ──
+    const cnt = f => ACH.filter(f).length, gcnt = f => ACH.filter(a => f(a) && got.has(a.id)).length;
+    const F = [
+      ['all', P('전체', 'All'), `${got.size}/${ACH.length}`],
+      ['on', P('달성', 'Earned'), got.size],
+      ['off', P('남은 것', 'Locked'), ACH.length - got.size],
+      ['norm', P('업적', 'Normal'), `${gcnt(a => !a.bad && !a.secret)}/${cnt(a => !a.bad && !a.secret)}`, ''],
+      ['bad', P('실패', 'Fail'), `${gcnt(a => a.bad)}/${cnt(a => a.bad)}`, 'bad'],
+      ['sec', P('숨은', 'Secret'), `${gcnt(a => a.secret)}/${cnt(a => a.secret)}`, 'sec'],
+    ];
+    const cur = get(LSF, 'all'), srt = get(LSS, '') === 'near';
+    const bar = document.createElement('div'); bar.className = 'a2-bar';
+    bar.innerHTML = F.map(([k, nm, n, cl]) => `<button type="button" class="a2-f ${cl || ''}${k === cur ? ' on' : ''}" data-f="${k}">${nm}<b>${n}</b></button>`).join('') +
+      `<span class="a2-sp"></span><button type="button" class="a2-sort${srt ? ' on' : ''}">${srt ? '✓ ' : ''}${P('가까운 순', 'Closest first')}</button>`;
+
+    const hero = row.querySelector('.dx2-hero');
+    if(hero) hero.after(top, bar); else row.prepend(top, bar);
+    requestAnimationFrame(() => requestAnimationFrame(() => top.querySelectorAll('.br i').forEach(i => i.style.width = i.dataset.w + '%')));
+    apply();
+  }
+
+  function apply(){
+    const row = document.getElementById('achRow'); if(!row) return;
+    const grid = row.querySelector('.achrow'); if(!grid) return;
+    const got = loadAch(), f = get(LSF, 'all'), srt = get(LSS, '') === 'near';
+    const chips = [...grid.querySelectorAll('.achchip[data-id]')];
+    const ok = a => f === 'all' ? true : f === 'on' ? got.has(a.id) : f === 'off' ? !got.has(a.id) : f === 'norm' ? (!a.bad && !a.secret) : f === 'bad' ? !!a.bad : !!a.secret;
+    let shown = 0;
+    chips.forEach((c, i) => { if(c.dataset.o == null) c.dataset.o = i; const a = ACH.find(x => x.id === c.dataset.id); const v = !a || ok(a); c.hidden = !v; if(v) shown++; });
+    // 정렬: 가까운 순이면 진행률 높은 미달성 → 진행 없는 미달성 → 달성
+    const key = c => {
+      const a = ACH.find(x => x.id === c.dataset.id); if(!a) return 9;
+      if(got.has(a.id)) return 3;
+      const p = prog(a); return p ? 1 - p[0] / p[1] : 2;
+    };
+    const order = srt ? chips.slice().sort((x, y) => key(x) - key(y) || x.dataset.o - y.dataset.o) : chips.slice().sort((x, y) => x.dataset.o - y.dataset.o);
+    order.forEach(c => grid.appendChild(c));
+    grid.querySelector('.a2-none')?.remove();
+    if(!shown) grid.insertAdjacentHTML('beforeend', `<div class="a2-none">${P('여기엔 아직 아무것도 없어요', 'Nothing here yet')}</div>`);
+  }
+
+  document.addEventListener('click', e => {
+    const row = document.getElementById('achRow'); if(!row || !row.contains(e.target)) return;
+    const f = e.target.closest('.a2-f');
+    if(f){ put(LSF, f.dataset.f); row.querySelectorAll('.a2-f').forEach(b => b.classList.toggle('on', b === f)); apply(); return; }
+    const s = e.target.closest('.a2-sort');
+    if(s){ const on = get(LSS, '') !== 'near'; put(LSS, on ? 'near' : ''); s.classList.toggle('on', on); s.textContent = (on ? '✓ ' : '') + P('가까운 순', 'Closest first'); apply(); return; }
+    const g = e.target.closest('[data-go]');
+    if(g) open(g.dataset.go);
+  });
+  const _od = openDex;
+  openDex = function(){ const r = _od.apply(this, arguments); try{ build(); }catch(e){ console.warn('ach2', e); } return r; };
+  document.addEventListener('click', e => { if(e.target && e.target.closest && e.target.closest('#dexNav .dn')) setTimeout(() => { try{ build(); }catch(_){} }, 0); });
+})();
+</script>
+
+<style>
+  /* ═══ 설정 창 정리: 찾기 · 탭 안 묶음 머리글 · 줄 자리 정리 ═══ */
+  #setHead .a3-s{position:relative;flex:1;max-width:260px;margin-left:auto;display:flex;align-items:center}
+  #setHead .a3-s + .x{margin-left:8px!important}
+  #setHead .a3-s svg{position:absolute;left:10px;width:14px;height:14px;color:#9aa0c8;pointer-events:none}
+  #setHead .a3-s input{width:100%;height:32px;padding:0 30px 0 31px;border-radius:10px;border:1px solid rgba(150,160,255,.22);background:rgba(8,9,26,.5);color:#eef0ff;font:inherit;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}
+  #setHead .a3-s input::placeholder{color:#7c83b0}
+  #setHead .a3-s input:focus{border-color:#8f9bff;box-shadow:0 0 0 3px rgba(143,155,255,.18)}
+  #setHead .a3-s input::-webkit-search-cancel-button{display:none}
+  #setHead .a3-s .cl{position:absolute;right:6px;width:20px;height:20px;border:0;border-radius:6px;background:rgba(255,255,255,.08);color:#c9d0ff;font-size:12px;line-height:1;cursor:pointer;display:none}
+  #setHead .a3-s.has .cl{display:block}
+  html.setbg-light #setHead .a3-s input{background:#fff;color:#141821;border-color:#c3cbd8}
+  /* 묶음 머리글 */
+  #setBody > .a3-gh{display:none}
+  #setBody[data-cur="gen"] > .a3-gh[data-tab="gen"], #setBody[data-cur="view"] > .a3-gh[data-tab="view"], #setBody[data-cur="model"] > .a3-gh[data-tab="model"], #setBody[data-cur="cur"] > .a3-gh[data-tab="cur"]{display:flex}
+  #setBody .a3-gh{align-items:center;gap:8px;margin:16px 2px 2px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:#9aa0c8;text-transform:uppercase}
+  #setBody .a3-gh::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(150,160,255,.25),transparent)}
+  #setBody .a3-gh span{font:750 11.5px/1 system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#c9cdf0}
+  #setBody .stabh + .a3-gh{margin-top:6px}
+  /* 찾기 중: 모든 탭의 맞는 줄만 */
+  #setBody.a3-q > *{display:none!important}
+  #setBody.a3-q > .srow.a3-hit{display:flex!important;position:relative;margin-top:16px!important}
+  #setBody.a3-q > .a3-res{display:block!important}
+  #setBody .a3-res{margin:12px 2px 0;font-size:12.5px;color:#9aa0c8}
+  #setBody .a3-res b{color:#eef0ff}
+  #setBody.a3-q > .srow.a3-hit::after{content:attr(data-tl);position:absolute;left:12px;top:-9px;padding:2px 7px;border-radius:6px;font:700 10px/1.3 system-ui,sans-serif;color:#141833;background:linear-gradient(135deg,#8f9bff,#b18cff)}
+  #setBody mark.a3-m{background:rgba(255,212,59,.3);color:inherit;border-radius:3px;padding:0 1px}
+  #setNav.a3-dim button{opacity:.45}
+  @media (max-width:700px){
+    #setHead .a3-s{max-width:none}
+    #setHead .a3-s input{height:30px;font-size:12.5px}
+  }
+</style>
+<script>
+(function(){
+  if(typeof renderSettings !== 'function') return;
+  const EN = () => LANG === 'en', P = (ko, en) => EN() ? en : ko;
+  const TABN = { gen: ['일반', 'General'], view: ['화면', 'Display'], model: ['모형', 'Models'], cur: ['커서', 'Cursor'], acc: ['접근성', 'Accessibility'], data: ['기록', 'Records'], info: ['정보', 'About'] };
+  // 줄 이름표: 줄 안 조작 버튼의 data 속성 (라벨 글자는 언어마다 달라서)
+  function key(r){
+    const c = r.querySelector('[data-seg],[data-sw],[data-rxseg],[data-rxsw],[data-rxtut],[data-rxkb],[data-clr],[data-bak],[data-fb]');
+    if(c){ for(const a of ['seg', 'sw', 'rxseg', 'rxsw', 'rxtut', 'rxkb', 'clr', 'bak', 'fb']) if(c.dataset[a] != null) return a + '=' + c.dataset[a]; }
+    return 'k:' + [...r.querySelectorAll('[data-k]')].map(x => x.dataset.k).join(',');
+  }
+  const M = (...ks) => k => ks.some(x => x.endsWith('*') ? k.startsWith(x.slice(0, -1)) : k === x);
+  // 탭마다 묶음: [머리글(영), 한, 영, 고르는 함수]
+  const GROUPS = {
+    gen: [
+      ['BASICS', '기본', 'Basics', M('seg=lang', 'seg=safe', 'sw=snd')],
+      ['ON START', '시작할 때', 'When it opens', M('seg=start', 'rxseg=intro', 'rxtut=1', 'rxkb=1')],
+      ['FUN', '재미', 'Just for fun', M('seg=april', 'rxseg=riel')],
+    ],
+    view: [
+      ['TABLE', '주기율표', 'The table', M('sw=tox', 'rxseg=am', 'k:sq*', 'k:def*', 'k:round*', 'sw=atom')],
+      ['LOOK', '배경·효과', 'Background & effects', M('rxseg=theme', 'sw=bg', 'rxseg=fx', 'k:plain*', 'k:dark*', 'sw=w95')],
+      ['UNITS', '단위·알림', 'Units & alerts', M('k:c,*', 'k:k,*', 'k:f,*', 'k:bl*', 'k:tr*', 'k:off,*')],
+    ],
+    model: [
+      ['COLOUR', '색·표시', 'Colour & labels', M('seg=molcol', 'k:def,all*')],
+      ['SHAPE', '모양', 'Shape', M('rxseg=fillsz', 'seg=stseam')],
+    ],
+    cur: [
+      ['SHAPE', '커서 모양', 'Cursor shape', M('rxsw=cursor', 'rxseg=curmode', 'rxseg=curstyle', 'rxseg=cursz')],
+      ['MOTION', '꼬리·움직임', 'Trail & motion', M('k:off,lo,mid,hi', 'k:short,mid,long', 'k:slow,mid,fast')],
+    ],
+  };
+  const REST = { gen: ['MORE', '기타', 'More'], view: ['MORE', '기타', 'More'], model: ['MORE', '기타', 'More'], cur: ['EXTRAS', '덧붙임', 'Extras'] };
+  // 자리 옮기기: 막대 모형 이음매는 '모형' 탭으로
+  const MOVE = { 'seg=stseam': 'model' };
+
+  function organize(body){
+    body.querySelectorAll('.a3-gh, .a3-res').forEach(x => x.remove());
+    const rows = [...body.querySelectorAll(':scope > .srow[data-tab]')];
+    rows.forEach(r => { const k = key(r); r.dataset.a3 = k; if(MOVE[k]) r.dataset.tab = MOVE[k]; });
+    const L = EN() ? 2 : 1;
+    for(const tab in GROUPS){
+      const mine = rows.filter(r => r.dataset.tab === tab); if(!mine.length) continue;
+      const used = new Set(), seq = [];
+      const head = g => { const h = document.createElement('div'); h.className = 'a3-gh'; h.dataset.tab = tab; h.innerHTML = `${g[0]}<span>${g[L]}</span>`; return h; };
+      GROUPS[tab].forEach(g => {
+        const hit = mine.filter(r => !used.has(r) && g[3](r.dataset.a3)); if(!hit.length) return;
+        hit.forEach(r => used.add(r)); seq.push(head(g), ...hit);
+      });
+      const rest = mine.filter(r => !used.has(r));
+      if(rest.length) seq.push(head(REST[tab]), ...rest);
+      seq.forEach(el => body.appendChild(el));
+    }
+  }
+
+  // ── 찾기 ──
+  let Q = '';
+  const norm = s => String(s || '').toLowerCase().replace(/\s+/g, '');
+  function unmark(body){ body.querySelectorAll('mark.a3-m').forEach(m => m.replaceWith(document.createTextNode(m.textContent))); body.normalize && body.querySelectorAll('.srow').forEach(r => r.normalize()); }
+  function markIn(el, q){
+    const lab = el.querySelectorAll('.slab, .snote'); const ql = q.toLowerCase();
+    lab.forEach(n => {
+      const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT); const ts = []; while(w.nextNode()) ts.push(w.currentNode);
+      ts.forEach(t => { const i = t.data.toLowerCase().indexOf(ql); if(i < 0) return;
+        const m = document.createElement('mark'); m.className = 'a3-m'; const mid = t.splitText(i); mid.splitText(ql.length); m.textContent = mid.data; mid.replaceWith(m); });
+    });
+  }
+  function filter(){
+    const body = document.getElementById('setBody'), nav = document.getElementById('setNav'); if(!body) return;
+    unmark(body);
+    body.querySelectorAll('.a3-hit').forEach(r => r.classList.remove('a3-hit'));
+    body.querySelector(':scope > .a3-res')?.remove();
+    const q = Q.trim();
+    body.classList.toggle('a3-q', !!q); if(nav) nav.classList.toggle('a3-dim', !!q);
+    if(!q) return;
+    const hasMouse = (() => { try{ return matchMedia('(pointer: fine)').matches; }catch(e){ return true; } })();
+    const L = EN() ? 1 : 0, nq = norm(q);
+    let n = 0;
+    body.querySelectorAll(':scope > .srow[data-tab]').forEach(r => {
+      if(r.dataset.tab === 'cur' && !hasMouse) return;
+      const tl = TABN[r.dataset.tab]; const txt = norm(r.textContent) + (tl ? norm(tl[0] + tl[1]) : '');
+      if(txt.includes(nq)){ r.classList.add('a3-hit'); r.dataset.tl = tl ? tl[L] : ''; n++; markIn(r, q); }
+    });
+    const res = document.createElement('div'); res.className = 'a3-res';
+    res.innerHTML = n ? P(`<b>${n}개</b> 찾았어요`, `<b>${n}</b> found`) : P(`"<b>${q.replace(/[<>&]/g, '')}</b>"에 맞는 설정이 없어요`, `Nothing matches "<b>${q.replace(/[<>&]/g, '')}</b>"`);
+    body.insertBefore(res, body.firstChild);
+    body.scrollTop = 0;
+  }
+  function searchBox(){
+    const head = document.getElementById('setHead'); if(!head) return;
+    let s = head.querySelector('.a3-s');
+    if(!s){
+      s = document.createElement('label'); s.className = 'a3-s';
+      s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" autocomplete="off" spellcheck="false"><button type="button" class="cl" aria-label="clear">✕</button>`;
+      const x = head.querySelector('.x'); head.insertBefore(s, x || null);
+      const inp = s.querySelector('input');
+      inp.addEventListener('input', () => { Q = inp.value; s.classList.toggle('has', !!Q); filter(); });
+      inp.addEventListener('keydown', e => { if(e.key === 'Escape' && Q){ e.stopPropagation(); e.preventDefault(); inp.value = Q = ''; s.classList.remove('has'); filter(); } });
+      s.querySelector('.cl').addEventListener('click', e => { e.preventDefault(); inp.value = Q = ''; s.classList.remove('has'); filter(); inp.focus(); });
+    }
+    s.querySelector('input').placeholder = P('설정 찾기', 'Search settings');
+  }
+  // 탭을 누르면 찾기는 비운다
+  document.addEventListener('click', e => {
+    if(!Q || !e.target.closest || !e.target.closest('#setNav button[data-t]')) return;
+    const inp = document.querySelector('#setHead .a3-s input'); if(inp) inp.value = ''; Q = '';
+    document.querySelector('#setHead .a3-s')?.classList.remove('has');
+  }, true);
+
+  const _rs = renderSettings;
+  renderSettings = function(){
+    const r = _rs.apply(this, arguments);
+    try{ const body = document.getElementById('setBody'); if(body){ organize(body); searchBox(); filter(); } }catch(e){ console.warn('set2', e); }
+    return r;
+  };
+})();
+</script>
+
 </body>
 </html>
