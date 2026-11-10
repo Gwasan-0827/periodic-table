@@ -22243,7 +22243,8 @@ var RX_MAG_BUSY = false;
       if(cvs && cvs.width){
         let on = false;
         try{ on = typeof ATOM_MODE !== 'undefined' && ATOM_MODE === 'cloud' && window.rxOrbGL && rxOrbGL.draw(); }catch(e2){}
-        const g2 = document.getElementById('atomGL');
+        let g2 = document.getElementById('atomGL');
+        if(!RX_CV_FOCUS){ try{ on = ATOM_MODE === 'cloud' && window.rxFogGL && rxFogGL.draw(); }catch(e3){} g2 = document.getElementById('atomFogGL'); }
         if(on && g2 && g2.width){ const g = g2;
           const o = document.createElement('canvas'); o.width = cvs.width; o.height = cvs.height;
           const x = o.getContext('2d'); x.drawImage(g, 0, 0, o.width, o.height); x.drawImage(cvs, 0, 0);
@@ -50493,14 +50494,17 @@ void main(){
     let r;
     // 바탕 구름: 점을 더 많이, 안개 알갱이는 더 작게 → 오비탈 모양이 또렷하게 (저전력이면 예전 그대로)
     try{
-      const useGL = !window.RX_LOWPOW && atomEl && window.rxOrbGL && !rxOrbGL.failed;
+      const okOrb = window.rxOrbGL && !rxOrbGL.failed, okFog = window.rxFogGL && !rxFogGL.failed;
+      const useGL = !window.RX_LOWPOW && atomEl && (RX_CV_FOCUS ? okOrb : okFog);
       if(useGL || (!window.RX_LOWPOW && atomEl && !RX_CV_FOCUS)){
         if(fineKey !== atomEl.s){ fineKey = atomEl.s; RX_CLOUD_KEY = atomEl.s; RX_CLOUD = rxCloudPoints(atomEl.s, 2600); rxAtomSubs(); }
         const dpr = devicePixelRatio > 2 ? 2 : devicePixelRatio, w = cv.width / dpr, h = cv.height / dpr;
         rxCloudSpin(RX_CV, now);
-        // 고퀄: WebGL로 점 수만 개 (안 되면 2D 안개)
-        RX_ORBGL_ON = !!(useGL && rxOrbGL.draw());
-        if(RX_ORBGL_ON) ctx.clearRect(0, 0, w, h);
+        // 고퀄: 껍질 칩을 고르면 그 오비탈 하나(잎 모양), 아니면 원자 전체 안개 (둘 다 WebGL. 안 되면 2D 안개)
+        let drew = false;
+        if(useGL){ drew = RX_CV_FOCUS ? !!rxOrbGL.draw() : !!rxFogGL.draw(); }
+        RX_ORBGL_ON = drew && !!RX_CV_FOCUS;
+        if(drew) ctx.clearRect(0, 0, w, h);
         else rxCloudDraw(ctx, w, h, RX_CLOUD.pts, RX_CV, { fog: true, fogSize: .72, gain: 1.05, noNuc: true });
       } else { RX_ORBGL_ON = false; if(window.RX_LOWPOW) fineKey = ''; r = _d.apply(this, arguments); }
     }catch(e){ r = _d.apply(this, arguments); }
@@ -50522,7 +50526,8 @@ void main(){
         RX_CLOUD.pts.forEach(p => { const n = parseInt(p.k, 10); (byN[n] = byN[n] || []).push(Math.hypot(p.x, p.y, p.z)); });
         RX_CLOUD._rn = {}; for(const n in byN){ const a = byN[n].sort((x, y) => x - y); RX_CLOUD._rn[n] = a[a.length >> 1]; } }
       ns.forEach(n => {
-        const rr = (RX_CLOUD._rn[n] || 0) * sc, val = n === maxN;
+        const fr = (window.rxFogGL && !RX_CV_FOCUS && rxFogGL.rings.length) ? (rxFogGL.rings.find(x => x.n === n) || {}).r : null;
+        const rr = (fr != null ? fr : (RX_CLOUD._rn[n] || 0)) * sc, val = n === maxN;
         if(rr < 14) return;
         ctx.strokeStyle = val ? `rgba(${R},${G},${B},.42)` : 'rgba(180,190,255,.13)';
         ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2); ctx.stroke();
@@ -50695,6 +50700,164 @@ void main(){
   }
   setInterval(() => { if(cvG && cvG.style.display !== 'none' && performance.now() - lastDraw > 180) hide(); }, 200);
   window.rxOrbGL = { draw, hide, get failed(){ return failed; } };
+})();
+</script>
+
+<script>
+/* ═══ 원자 모형 칸 · 고퀄 전자 구름 (WebGL 볼륨 안개) ═══
+   원자 전체의 전자 구름을 안개로. 껍질(1s, 2s, 2p …)마다 수소 원자 식의 거리 분포 × 방향 분포를 더해
+   화면 픽셀마다 광선을 쏘아 빛을 모은다. 색은 s·p·d·f, 바깥 껍질은 더 밝게.
+   덜 찬 p·d·f 껍질은 훈트 규칙대로 들어간 방만 더해서 모양이 생긴다 (탄소 2p² → 납작한 고리 모양).
+   거리 분포는 미리 표(텍스처)로 만들어 두고 셰이더는 찾아 읽기만 한다. */
+(function(){
+  const MAXS = 20, TW = 256;
+  const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  const FS = `precision highp float;
+uniform vec2 R;uniform vec4 V;uniform sampler2D T;uniform int NS;
+uniform vec4 SA[${MAXS}];   // (표의 줄 v, l, 방향 칸(-1=공 모양), 밝기)
+uniform vec3 SC[${MAXS}];   // 색
+uniform float W[45];        // 덜 찬 껍질 3칸 × (p3 d5 f7) 방 점유
+uniform float LO;uniform float TM;
+float h3(vec3 p){ p=fract(p*.3183099+.1); p*=17.; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float n3(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.-2.*f);
+  return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z); }
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*R)/(min(R.x,R.y)*.46*V.z); uv.y=-uv.y;
+  if(dot(uv,uv)>1.3) { gl_FragColor=vec4(0.); return; }
+  float cY=cos(V.x),sY=sin(V.x),cX=cos(V.y),sX=sin(V.y);
+  vec3 acc=vec3(0.); float aa=0.;
+  const int ST=${'$'}{ST};
+  for(int i=0;i<ST;i++){
+    float t=(float(i)+.5)/float(ST)*2.-1.;
+    float y=uv.y*cX+t*sX, z1=-uv.y*sX+t*cX, x=uv.x*cY-z1*sY, z=uv.x*sY+z1*cY;
+    vec3 q=vec3(x,z,-y); float u=length(q); if(u>1.12) continue;
+    vec3 d=q/(u+1e-5); float X=d.x, Y=d.y, Z=d.z;
+    // 방향 분포 (실수 구면 조화 함수의 제곱)
+    float Y2[15];
+    Y2[0]=.2387*Y*Y; Y2[1]=.2387*Z*Z; Y2[2]=.2387*X*X;
+    Y2[3]=1.1937*X*X*Y*Y; Y2[4]=1.1937*Y*Y*Z*Z; Y2[5]=.0995*(3.*Z*Z-1.)*(3.*Z*Z-1.); Y2[6]=1.1937*X*X*Z*Z; Y2[7]=.2984*(X*X-Y*Y)*(X*X-Y*Y);
+    float a=.590044*Y*(3.*X*X-Y*Y), b=2.890611*X*Y*Z, c=.457046*Y*(5.*Z*Z-1.), e=.373176*Z*(5.*Z*Z-3.), f=.457046*X*(5.*Z*Z-1.), g=1.445306*Z*(X*X-Y*Y), h=.590044*X*(X*X-3.*Y*Y);
+    Y2[8]=a*a; Y2[9]=b*b; Y2[10]=c*c; Y2[11]=e*e; Y2[12]=f*f; Y2[13]=g*g; Y2[14]=h*h;
+    float A0=0.,A1=0.,A2=0.;
+    for(int k=0;k<15;k++){ A0+=W[k]*Y2[k]; A1+=W[15+k]*Y2[k]; A2+=W[30+k]*Y2[k]; }
+    float dep=.62+.38*(t+1.)*.5;
+    // 안개 결: 느리게 흐르는 잡음으로 밀도를 일렁이게 (전자가 '있을 법한 곳'이 깜빡이는 느낌)
+    float nz=n3(q*7.+vec3(0.,TM*.35,TM*.2))*.65+n3(q*15.-vec3(TM*.3,0.,TM*.25))*.35;
+    dep*=.35+1.3*nz*nz;
+    for(int s=0;s<${MAXS};s++){
+      if(s>=NS) break;
+      vec4 sa=SA[s];
+      float rr=texture2D(T,vec2(u/1.12,sa.x)).r; rr*=rr;
+      if(rr<.002) continue;
+      float A=sa.z<-.5?1.:(sa.z<.5?A0:(sa.z<1.5?A1:A2));
+      float w=rr*A*sa.w*(2./float(ST))*dep;
+      acc+=SC[s]*w; aa+=w;
+    }
+  }
+  vec3 col=1.-exp(-acc*LO); float al=1.-exp(-aa*LO*.85);
+  gl_FragColor=vec4(col,al);
+}`;
+  let gl = null, prog = null, cvG = null, tex = null, U = {}, failed = false, lastDraw = 0, key = '', NSUB = 0, STv = 0;
+  function lagJ(k, al, x){ let l0 = 1, l1 = 1 + al - x; if(k === 0) return l0; for(let j = 1; j < k; j++){ const l2 = ((2 * j + 1 + al - x) * l1 - (j + al) * l0) / (j + 1); l0 = l1; l1 = l2; } return l1; }
+  const Rh = (n, l, r) => { const rho = 2 * r / n; return Math.pow(rho, l) * Math.exp(-rho / 2) * lagJ(n - l - 1, 2 * l + 1, rho); };
+  function r96(n, l){ const dr = .05 * n; let s = 0; const P = []; for(let r = dr; r < 8 * n * n + 30; r += dr){ const v = Rh(n, l, r); s += v * v * r * r * dr; P.push([r, s]); } const t = P.find(p => p[1] >= s * .96); return t ? t[0] : P[P.length - 1][0]; }
+  const LI = { s: 0, p: 1, d: 2, f: 3 }, OFF = { p: 0, d: 3, f: 8 };
+  function init(){
+    if(failed) return false; if(gl) return true;
+    try{
+      cvG = document.createElement('canvas'); cvG.id = 'atomFogGL'; cvG.setAttribute('aria-hidden', 'true');
+      cvG.style.cssText = 'position:absolute;pointer-events:none;z-index:0';
+      gl = cvG.getContext('webgl', { premultipliedAlpha: false, alpha: true, antialias: false, preserveDrawingBuffer: true });
+      if(!gl) throw 0;
+      STv = innerWidth < 700 ? 40 : 56;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+      prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS.replace('${ST}', STv))); gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw gl.getProgramInfoLog(prog);
+      gl.useProgram(prog);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['R', 'V', 'T', 'NS', 'SA', 'SC', 'W', 'LO', 'TM'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      cvG.addEventListener('webglcontextlost', e => { e.preventDefault(); failed = true; hide(); });
+      return true;
+    }catch(e){ console.warn('foggl', e); failed = true; gl = null; return false; }
+  }
+  // 슬레이터 규칙: 다른 전자가 핵을 얼마나 가려 주는지 → 껍질마다 실제로 느끼는 핵전하(Z_eff)
+  const GRP = ['1s', '2sp', '3sp', '3d', '4sp', '4d', '4f', '5sp', '5d', '5f', '6sp', '6d', '7sp'];
+  const grp = sb => sb.n + (sb.l === 's' || sb.l === 'p' ? 'sp' : sb.l);
+  const NSTAR = [0, 1, 2, 3, 3.7, 4, 4.2, 4.3];
+  function zeff(subs, sb, Z){
+    const g = grp(sb), gi = GRP.indexOf(g); let S = 0;
+    subs.forEach(o => { const og = grp(o), oi = GRP.indexOf(og); const cnt = o.e - (o === sb ? 1 : 0); if(cnt <= 0) return;
+      if(og === g) S += cnt * (g === '1s' ? .3 : .35);
+      else if(oi < gi){ if(sb.l === 's' || sb.l === 'p') S += cnt * (o.n === sb.n - 1 ? .85 : o.n <= sb.n - 2 ? 1 : .35 * 0 + 1); else S += cnt; } });
+    return Math.max(1, Z - S);
+  }
+  let RINGS = [];
+  function build(sym){
+    const subs = rxCfgFull(sym).slice(-MAXS), maxN = Math.max(...subs.map(s => s.n));
+    const Z = (typeof atomEl !== 'undefined' && atomEl) ? atomEl.n : subs.reduce((a, s) => a + s.e, 0);
+    // 껍질마다 실제 크기(보어 반지름 단위): 수소 식 96% 반지름 × (n*/n)² ÷ Z_eff
+    const SZ = subs.map(sb => { const l = LI[sb.l], ze = zeff(subs, sb, Z), ns = NSTAR[sb.n] || sb.n; return { ze, k: (ns / sb.n) * (ns / sb.n) / ze, r: r96(sb.n, l) * (ns / sb.n) * (ns / sb.n) / ze }; });
+    const BOX = Math.max(...SZ.map(s => s.r)) * 1.04;   // 상자 반지름 = 가장 큰 껍질
+    RINGS = [];
+    let val = []; try{ val = rxCfg(sym).map(s => s.n + s.l); }catch(e){}
+    const rows = new Uint8Array(TW * MAXS * 4), SA = new Float32Array(MAXS * 4), SC = new Float32Array(MAXS * 3), W = new Float32Array(45);
+    let slot = 0;
+    subs.forEach((sb, i) => {
+      const l = LI[sb.l], Rn = SZ[i].r / BOX, sc = BOX / SZ[i].k;   // 상자 1 = 수소 식(Z=1) 거리 sc
+      // 상자 좌표 u 에서의 밀도 (전자 1개, 부피당) → 표에 넣고 최댓값으로 나눈다
+      const vals = []; let mx = 1e-20, norm = 0;
+      for(let r = .01; r < 8 * sb.n * sb.n + 30; r += .01 * sb.n){ const v = Rh(sb.n, l, r); norm += v * v * r * r * .01 * sb.n; }
+      // 기준 밝기 = '전자를 찾을 확률이 가장 큰 거리'에서의 밀도 (s 오비탈은 핵 바로 옆 밀도가 너무 커서, 최댓값으로 나누면 바깥이 안 보인다)
+      let pk = 0, pkD = 1e-20;
+      for(let k = 0; k < TW; k++){ const u = (k + .5) / TW * 1.12, v = Rh(sb.n, l, u * sc), d = v * v / norm * sc * sc * sc; vals.push(d); if(d * u * u > pk){ pk = d * u * u; pkD = d; } }
+      mx = pkD * 1.6;
+      vals.forEach((d, k) => { const o = (i * TW + k) * 4, q = Math.round(Math.min(1, Math.sqrt(d / mx)) * 255); rows[o] = rows[o + 1] = rows[o + 2] = q; rows[o + 3] = 255; });
+      // 방향: 꽉 찬 껍질(또는 s)은 공 모양. 덜 찬 p·d·f는 훈트 규칙으로 들어간 방만
+      const nR = 2 * l + 1, full = sb.e >= 2 * nR;
+      let sl = -1;
+      if(l > 0 && !full && slot < 3){
+        sl = slot++; const occ = new Array(nR).fill(0); for(let k = 0; k < sb.e; k++) occ[rxHundSlot(sb.l, k)]++;
+        // 방향 분포의 평균이 1이 되게 (공 모양과 같은 밝기 기준): Σ occ·Y² × 4π / e
+        occ.forEach((o, m) => { W[sl * 15 + OFF[sb.l] + m] = o * 4 * Math.PI / sb.e; });
+      }
+      // 밝기: 전자 수, 그리고 촘촘한 안쪽 껍질이 너무 하얗게 뜨지 않게 최댓값으로 눌러 준다
+      const vb = val.includes(sb.n + sb.l) ? 1.35 : 1;
+      // 안쪽 껍질은 작아서 빛줄기가 짧게 지나가므로, 크기에 반비례해 밝혀 줘야 층마다 색이 보인다
+      SA.set([(i + .5) / MAXS, l, sl, Math.pow(sb.e, .4) * vb * .55 / Math.pow(Math.max(Rn, .06), .85)], i * 4);
+      const c = RX_SUB_COL[sb.l] || RX_SUB_COL.s; SC.set([c[0] / 255, c[1] / 255, c[2] / 255], i * 3);
+    });
+    const byN = {}; subs.forEach((sb, i) => { const r = SZ[i].r / BOX * .55; if(!byN[sb.n] || r > byN[sb.n]) byN[sb.n] = r; });
+    RINGS = Object.keys(byN).map(n => ({ n: +n, r: byN[n] }));
+    NSUB = subs.length;
+    gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TW, MAXS, 0, gl.RGBA, gl.UNSIGNED_BYTE, rows);
+    gl.uniform4fv(U.SA, SA); gl.uniform3fv(U.SC, SC); gl.uniform1fv(U.W, W); gl.uniform1i(U.NS, NSUB); gl.uniform1i(U.T, 0);
+  }
+  function hide(){ if(cvG) cvG.style.display = 'none'; }
+  function draw(){
+    if(window.RX_LOWPOW || !init()) return false;
+    const atom = document.getElementById('atom'); if(!atom || !atomEl) return false;
+    if(cvG.parentNode !== atom.parentNode) atom.parentNode.insertBefore(cvG, atom);
+    if(getComputedStyle(atom).position === 'static'){ atom.style.position = 'relative'; atom.style.zIndex = '1'; }
+    gl.useProgram(prog);
+    if(key !== atomEl.s){ key = atomEl.s; build(atomEl.s); }
+    const w = atom.clientWidth, h = atom.clientHeight, dpr = Math.min(innerWidth < 700 ? 1 : 1.25, devicePixelRatio || 1);
+    cvG.style.display = ''; cvG.style.left = atom.offsetLeft + 'px'; cvG.style.top = atom.offsetTop + 'px'; cvG.style.width = w + 'px'; cvG.style.height = h + 'px';
+    const Wd = Math.round(w * dpr), Hd = Math.round(h * dpr);
+    if(cvG.width !== Wd || cvG.height !== Hd){ cvG.width = Wd; cvG.height = Hd; }
+    gl.viewport(0, 0, Wd, Hd); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, RX_CV.yaw, RX_CV.pitch, RX_CV.zoom || 1, 0); gl.uniform1f(U.LO, 1.15); gl.uniform1f(U.TM, performance.now() / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    lastDraw = performance.now();
+    return true;
+  }
+  setInterval(() => { if(cvG && cvG.style.display !== 'none' && performance.now() - lastDraw > 180) hide(); }, 200);
+  window.rxFogGL = { draw, hide, get failed(){ return failed; }, get rings(){ return RINGS; } };
 })();
 </script>
 
