@@ -48440,7 +48440,7 @@ void main(){
 </script>
 
 <style>
-  /* ═══ 도감 리워크: 분류별 진행 + 목록 보기 ═══ */
+  /* ═══ 도감 리워크: 분류별 진행 ═══ */
   #dxCat{margin:0 0 12px;border:1px solid rgba(154,168,255,.16);border-radius:16px;background:linear-gradient(170deg,rgba(154,168,255,.06),rgba(8,10,16,.4) 60%);overflow:hidden}
   #dexPane[data-cur="cmp"] > #dxCat{display:block!important}
   #dxCat .dc-h{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:0;color:#c9d0ff;font:inherit;cursor:pointer;text-align:left}
@@ -48467,31 +48467,6 @@ void main(){
   #dxCat .dc.full .ct{color:#ffd43b}
   #dxCat .dc.full::after{content:"COMPLETE";position:absolute;right:8px;top:7px;font:800 8px/1 ui-monospace,monospace;letter-spacing:.1em;color:#ffd43b}
 
-  /* 보기 전환 단추 */
-  #dexProg .dv{display:inline-flex;border:1px solid rgba(154,168,255,.25);border-radius:9px;overflow:hidden;flex:none}
-  #dexProg .dv button{display:grid;place-items:center;width:32px;height:28px;padding:0;border:0;background:rgba(154,168,255,.06);color:rgba(201,208,255,.6);cursor:pointer}
-  #dexProg .dv button.on{background:rgba(154,168,255,.28);color:#fff}
-  #dexProg .dv svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-
-  /* 목록 보기: 한 줄짜리 */
-  body:not(.w95) #dexPane #dexList.lv{display:flex!important;flex-direction:column;gap:4px}
-  body:not(.w95) #dexPane #dexList.lv .dx{display:flex!important;flex-direction:row!important;flex-wrap:wrap;align-items:center;justify-content:flex-start!important;gap:4px 12px;min-height:0!important;
-    padding:6px 92px 6px 10px!important;border-radius:10px;border-style:solid}
-  body:not(.w95) #dexPane #dexList.lv .dx:hover{transform:none}
-  body:not(.w95) #dexPane #dexList.lv .dx[hidden]{display:none!important}
-  body:not(.w95) #dexPane #dexList.lv .dx::after{top:50%!important;transform:translateY(-50%);right:12px}
-  body:not(.w95) #dexPane #dexList.lv .dx.dx-new::after{transform:translateY(-50%)}
-  body:not(.w95) #dexPane #dexList.lv .dx.open .dxth{order:0;flex:none;width:52px!important;height:38px!important;margin:0!important;border-radius:8px}
-  body:not(.w95) #dexPane #dexList.lv .dx.open .f{flex:0 0 150px;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  body:not(.w95) #dexPane #dexList.lv .dx.open .n{flex:0 0 140px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  body:not(.w95) #dexPane #dexList.lv .dx.open .s{flex:1 1 160px;min-width:0;display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;color:rgba(201,208,255,.6);font-size:12px}
-  body:not(.w95) #dexPane #dexList.lv .dx.open .dxk{margin:0!important;order:5}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked{background:repeating-linear-gradient(135deg,rgba(154,168,255,.03) 0 6px,transparent 6px 12px),rgba(8,10,16,.38)}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked::before{display:none}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked .tg{order:0;margin:0!important;flex:none;max-width:150px}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked .n{margin:0!important;flex:0 0 auto;font-size:12px}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked .hint{margin:0!important;flex:1 1 auto;min-width:0}
-  body:not(.w95) #dexPane #dexList.lv .dx.locked .hint.hx{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}
   @media (max-width:700px){
     body:not(.w95) #dexPane > #dexSearch{background:rgba(16,18,32,.97)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
     #dxCat .dc-g{grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 10px}
@@ -48500,12 +48475,6 @@ void main(){
     #dxCat .dc .pc{width:32px;left:8px;font-size:9px}
     #dxCat .dc .nm{font-size:11.5px}
     #dxCat .dc.full::after{display:none}
-    body:not(.w95) #dexPane #dexList.lv .dx{padding:6px 64px 6px 8px!important;gap:2px 8px}
-    body:not(.w95) #dexPane #dexList.lv .dx.open .dxth{width:44px!important;height:33px!important}
-    body:not(.w95) #dexPane #dexList.lv .dx.open .f{flex:1 1 auto;min-width:0;font-size:12.5px}
-    body:not(.w95) #dexPane #dexList.lv .dx.open .n{flex:1 1 auto;min-width:0;font-size:12px}
-    body:not(.w95) #dexPane #dexList.lv .dx.open .s,body:not(.w95) #dexPane #dexList.lv .dx.open .dxk{display:none!important}
-    body:not(.w95) #dexPane #dexList.lv .dx::after{font-size:8.5px;right:8px}
   }
 </style>
 <script>
@@ -48514,22 +48483,12 @@ void main(){
   const LSV = 'pt_dexview', LSC = 'pt_dexcat';
   const get = (k, d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } };
   const put = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
-  const ICG = '<svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>';
-  const ICL = '<svg viewBox="0 0 16 16"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11"/></svg>';
 
+  // 목록 보기는 뺐다 (카드 보기가 더 낫다). 예전에 목록으로 바꿔 둔 사람도 카드로 되돌린다
   function view(){
-    const list = document.getElementById('dexList'), prog = document.getElementById('dexProg');
-    if(!list || !prog) return;
-    let dv = prog.querySelector('.dv');
-    if(!dv){
-      dv = document.createElement('span'); dv.className = 'dv';
-      dv.innerHTML = `<button type="button" data-v="grid">${ICG}</button><button type="button" data-v="list">${ICL}</button>`;
-      dv.addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; put(LSV, b.dataset.v); view(); try{ SFX.pick(); }catch(_){} });
-      prog.appendChild(dv);
-    }
-    const v = get(LSV, 'grid');
-    dv.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.title = b.dataset.v === 'grid' ? (EN() ? 'Cards' : '카드로 보기') : (EN() ? 'List' : '목록으로 보기'); });
-    list.classList.toggle('lv', v === 'list');
+    const list = document.getElementById('dexList'); if(list) list.classList.remove('lv');
+    const dv = document.querySelector('#dexProg .dv'); if(dv) dv.remove();
+    try{ localStorage.removeItem(LSV); }catch(e){}
   }
 
   function cats(){
