@@ -50553,9 +50553,12 @@ void main(){
       const gl = ctx.createRadialGradient(cx, cy, 0, cx, cy, nr * 4.2);
       gl.addColorStop(0, `rgba(${R},${G},${B},.55)`); gl.addColorStop(.35, `rgba(${R},${G},${B},.14)`); gl.addColorStop(1, `rgba(${R},${G},${B},0)`);
       ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx, cy, nr * 4.2, 0, Math.PI * 2); ctx.fill();
-      const bl = ctx.createRadialGradient(cx - nr * .35, cy - nr * .35, nr * .1, cx, cy, nr);
-      bl.addColorStop(0, '#fff'); bl.addColorStop(.45, `rgb(${R},${G},${B})`); bl.addColorStop(1, `rgb(${R * .35 | 0},${G * .35 | 0},${B * .35 | 0})`);
-      ctx.fillStyle = bl; ctx.beginPath(); ctx.arc(cx, cy, nr, 0, Math.PI * 2); ctx.fill();
+      // 구름과 어울리게 입체 음영 없이 빛나는 점으로 (가운데 하얗고 가장자리는 원소 색으로 번짐)
+      const bl = ctx.createRadialGradient(cx, cy, 0, cx, cy, nr * 1.15);
+      bl.addColorStop(0, 'rgba(255,255,255,1)'); bl.addColorStop(.4, `rgba(${Math.min(255, R + 90)},${Math.min(255, G + 90)},${Math.min(255, B + 90)},.95)`); bl.addColorStop(1, `rgba(${R},${G},${B},0)`);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = bl; ctx.beginPath(); ctx.arc(cx, cy, nr * 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
       ctx.restore();
     }catch(e){}
     return r;
