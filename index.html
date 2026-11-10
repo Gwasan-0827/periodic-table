@@ -22244,7 +22244,20 @@ var RX_MAG_BUSY = false;
     mg.style.transformOrigin = `${c}px ${c}px`;
     // 렌즈 안에는 지금 보이는 원자 모형을 키워서 비춘다
     let snap = '';
-    try{ const cvs = box.querySelector('canvas'); if(cvs && cvs.width) snap = cvs.toDataURL('image/png'); }catch(err){}
+    try{
+      // 원자 모형 2D 캔버스 + (고퀄 오비탈이면) 그 뒤의 WebGL 캔버스를 한 장으로 합쳐서 찍는다
+      const cvs = document.getElementById('atom') || box.querySelector('canvas');
+      if(cvs && cvs.width){
+        let on = false;
+        try{ on = typeof ATOM_MODE !== 'undefined' && ATOM_MODE === 'cloud' && window.rxOrbGL && rxOrbGL.draw(); }catch(e2){}
+        const g2 = document.getElementById('atomGL');
+        if(on && g2 && g2.width){ const g = g2;
+          const o = document.createElement('canvas'); o.width = cvs.width; o.height = cvs.height;
+          const x = o.getContext('2d'); x.drawImage(g, 0, 0, o.width, o.height); x.drawImage(cvs, 0, 0);
+          snap = o.toDataURL('image/png');
+        } else snap = cvs.toDataURL('image/png');
+      }
+    }catch(err){}
     mg.innerHTML = `<div class="lens" style="left:${c - D / 2}px;top:${c - D / 2}px;width:${D}px;height:${D}px">${snap ? `<img src="${snap}" style="width:${r.width}px" alt="">` : ''}</div><img class="glass" src="${RX_MAG_IMG}" alt="">`;
     fx.appendChild(mg); document.body.appendChild(fx);
     const x0 = bx - c, y0 = by - c;                     // 렌즈가 원자 모형 한가운데 오는 자리
@@ -50632,7 +50645,7 @@ void main(){
     try{
       cvG = document.createElement('canvas'); cvG.id = 'atomGL'; cvG.setAttribute('aria-hidden', 'true');
       cvG.style.cssText = 'position:absolute;pointer-events:none;z-index:0';
-      gl = cvG.getContext('webgl', { premultipliedAlpha: false, alpha: true, antialias: false });
+      gl = cvG.getContext('webgl', { premultipliedAlpha: false, alpha: true, antialias: false, preserveDrawingBuffer: true });   // 돋보기·카드에서 그림을 가져갈 수 있게
       if(!gl) throw 0;
       NSv = innerWidth < 700 ? 56 : 80;
       const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
