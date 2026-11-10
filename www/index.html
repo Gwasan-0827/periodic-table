@@ -8875,6 +8875,25 @@ function buildNucleus(e){
 
 const ORBIT_FLAT = 0.42;   // 궤도 타원의 세로/가로 비율
 
+/* 보어 모형 그림 조각: 양성자·중성자 구슬, 전자 빛 (색마다 한 번만 만든다) */
+var RX_BOHR_SPR = {};
+function rxBohrSprites(col){
+  if(RX_BOHR_SPR[col]) return RX_BOHR_SPR[col];
+  const [R, G, B] = hex2rgb(col), mk = (s, fn) => { const c = document.createElement('canvas'); c.width = c.height = s; fn(c.getContext('2d'), s); return c; };
+  const ball = (r, g, b) => mk(32, (x, s) => {
+    const gr = x.createRadialGradient(s * .36, s * .34, 1, s * .5, s * .5, s * .5);
+    gr.addColorStop(0, `rgb(${Math.min(255, r + 120)},${Math.min(255, g + 120)},${Math.min(255, b + 120)})`);
+    gr.addColorStop(.45, `rgb(${r},${g},${b})`); gr.addColorStop(1, `rgb(${r * .35 | 0},${g * .35 | 0},${b * .35 | 0})`);
+    x.fillStyle = gr; x.beginPath(); x.arc(s / 2, s / 2, s / 2 - .5, 0, 7); x.fill();
+  });
+  const glow = (r, g, b) => mk(48, (x, s) => {
+    const gr = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    gr.addColorStop(0, '#fff'); gr.addColorStop(.16, `rgba(${r},${g},${b},1)`); gr.addColorStop(.36, `rgba(${r},${g},${b},.35)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    x.fillStyle = gr; x.fillRect(0, 0, s, s);
+  });
+  return RX_BOHR_SPR[col] = { p: ball(R, G, B), n: ball(150, 160, 178), e: glow(190, 205, 255), ev: glow(R, G, B) };
+}
+
 function orbitMaxR(w, h, minR){
   const pad = 18;
   const byWidth  = w / 2 - pad;
@@ -8909,59 +8928,88 @@ function draw(now){
   const shells = atomEl.sh;
   const minR = 30;
   const maxR = orbitMaxR(w, h, minR);
-
+  const F = ORBIT_FLAT, nSh = shells.length;
+  // 궤도면이 천천히 기울었다 돌아온다 (입체감)
+  const tilt = -0.14 + Math.sin(t * 0.23) * 0.1, ct = Math.cos(tilt), st = Math.sin(tilt);
+  const pos = (rr, a) => [cx + Math.cos(a) * rr * ct - Math.sin(a) * rr * F * st, cy + Math.cos(a) * rr * st + Math.sin(a) * rr * F * ct];
+  const S = rxBohrSprites(atomCol);
+  const ring = [];
   shells.forEach((cnt, i) => {
-    const rr = minR + (maxR - minR) * (shells.length === 1 ? 0.55 : i/(shells.length-1));
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, rr, rr*ORBIT_FLAT, 0, 0, Math.PI*2);
-    ctx.strokeStyle = rgba(0.16);
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    const speed = 0.55 / (i*0.45 + 1);
-    const dir = i % 2 ? -1 : 1;
-    const er = cnt > 20 ? 1.5 : (cnt > 10 ? 2 : 2.8);
-    for(let k = 0; k < cnt; k++){
-      const a = t*speed*dir + (k / cnt) * Math.PI*2;
-      const x = cx + Math.cos(a) * rr;
-      const y = cy + Math.sin(a) * rr * ORBIT_FLAT;
-      const front = Math.sin(a) > 0;
-      ctx.beginPath();
-      ctx.arc(x, y, er, 0, Math.PI*2);
-      ctx.fillStyle = front ? rgba(0.95) : rgba(0.4);
-      ctx.fill();
-    }
+    const rr = minR + (maxR - minR) * (nSh === 1 ? 0.55 : i / (nSh - 1));
+    const val = i === nSh - 1;
+    const speed = 0.55 / (i * 0.45 + 1), dir = i % 2 ? -1 : 1;
+    const er = (cnt > 20 ? 1.7 : cnt > 10 ? 2.2 : 3) * (val ? 1.15 : 1);
+    ring.push({ rr, cnt, val, speed, dir, er, i });
   });
+  // 궤도 반쪽 (back: 위쪽 반 = 뒤, front: 아래쪽 반 = 앞)
+  const drawRing = (o, back) => {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, o.rr, o.rr * F, tilt, back ? Math.PI : 0, back ? Math.PI * 2 : Math.PI);
+    ctx.strokeStyle = o.val ? rgba(back ? 0.22 : 0.5) : `rgba(170,182,255,${back ? 0.08 : 0.2})`;
+    ctx.lineWidth = o.val ? 1.4 : 1;
+    if(o.val && !back){ ctx.shadowColor = rgba(0.8); ctx.shadowBlur = 8; }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  };
+  const drawEls = (o, back) => {
+    for(let k = 0; k < o.cnt; k++){
+      const a = ((t * o.speed * o.dir + (k / o.cnt) * Math.PI * 2) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+      const front = a < Math.PI;
+      if(front === back) continue;
+      const d = Math.sin(a), sc = 0.82 + 0.3 * (d + 1) / 2;
+      const [x, y] = pos(o.rr, a);
+      // 꼬리: 지나온 궤도 위에 짧은 빛줄기
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, o.rr, o.rr * F, tilt, o.dir > 0 ? a - 0.32 : a, o.dir > 0 ? a : a + 0.32);
+      ctx.strokeStyle = o.val ? rgba(back ? 0.12 : 0.32) : `rgba(200,210,255,${back ? 0.06 : 0.16})`;
+      ctx.lineWidth = o.er * 1.2 * sc; ctx.lineCap = 'round'; ctx.stroke();
+      const r = o.er * sc * (back ? 0.85 : 1);
+      ctx.globalAlpha = back ? 0.45 : 1;
+      ctx.drawImage(o.val ? S.ev : S.e, x - r * 3, y - r * 3, r * 6, r * 6);
+      ctx.globalAlpha = 1;
+    }
+  };
+  ring.forEach(o => drawRing(o, true));
+  ring.forEach(o => drawEls(o, true));
 
   // 핵
   const nP = atomEl.n;
   const nN = Math.max(0, Math.round(atomEl.m) - atomEl.n);
   const total = nP + nN;
-  const coreR = Math.min(22, 5 + Math.sqrt(total) * 1.5);
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, coreR*1.9, 0, Math.PI*2);
-  const gl = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR*1.9);
-  gl.addColorStop(0, rgba(0.5));
-  gl.addColorStop(1, rgba(0));
-  ctx.fillStyle = gl; ctx.fill();
+  const coreR = Math.min(25, 6 + Math.sqrt(total) * 1.6);
+  const gl = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 2.4);
+  gl.addColorStop(0, rgba(0.42)); gl.addColorStop(0.45, rgba(0.12)); gl.addColorStop(1, rgba(0));
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx, cy, coreR * 2.4, 0, Math.PI * 2); ctx.fill();
 
   if(!nucleons.length) buildNucleus(atomEl);
-  const jit = 0.9 + instab * 2.6 + shakeHit * 3;
-  for(const q of nucleons){
-    const wx = Math.sin(t * (1.3 + instab*8) + q.ph) * jit;
-    const wy = Math.cos(t * (1.1 + instab*8) + q.ph * 1.7) * jit;
-    const x = cx + q.x * coreR + wx;
-    const y = cy + q.y * coreR + wy;
-    const depth = (q.z + 1) / 2;              // 0 뒤쪽 ~ 1 앞쪽
-    const rad = 2.6 * (0.78 + depth * 0.34);
-    ctx.beginPath();
-    ctx.arc(x, y, rad, 0, Math.PI*2);
-    ctx.globalAlpha = 0.55 + depth * 0.45;
-    ctx.fillStyle = q.p ? rgba(0.95) : 'rgba(190,200,215,.8)';
-    ctx.fill();
+  const jit = 0.6 + instab * 2.6 + shakeHit * 3;
+  const yaw = t * 0.35, cy2 = Math.cos(yaw), sy2 = Math.sin(yaw);
+  const nq = nucleons.length, nrad = Math.max(2.4, coreR * (nq > 40 ? 0.19 : nq > 15 ? 0.24 : 0.32));
+  const P = nucleons.map(q => ({ q, x: q.x * cy2 + q.z * sy2, z: -q.x * sy2 + q.z * cy2 })).sort((a, b) => a.z - b.z);
+  for(const o of P){
+    const q = o.q;
+    const wx = Math.sin(t * (1.3 + instab * 8) + q.ph) * jit, wy = Math.cos(t * (1.1 + instab * 8) + q.ph * 1.7) * jit;
+    const x = cx + o.x * coreR + wx, y = cy + q.y * coreR + wy;
+    const depth = (o.z + 1) / 2, rad = nrad * (0.8 + depth * 0.3);
+    ctx.globalAlpha = 0.6 + depth * 0.4;
+    ctx.drawImage(q.p ? S.p : S.n, x - rad, y - rad, rad * 2, rad * 2);
   }
   ctx.globalAlpha = 1;
+
+  ring.forEach(o => drawRing(o, false));
+  ring.forEach(o => drawEls(o, false));
+
+  // 껍질 이름 (K·L·M…) + 전자 수: 궤도 왼쪽 끝에 작게
+  if(w > 200){
+    ctx.font = '600 9px PTSym, system-ui, sans-serif'; ctx.textAlign = 'center';
+    ring.forEach(o => {
+      const [x, y] = pos(o.rr, Math.PI);
+      if(o.rr < coreR * 1.6) return;
+      ctx.fillStyle = o.val ? rgba(0.95) : 'rgba(190,200,240,.55)';
+      ctx.fillText('KLMNOPQ'[o.i], x, y - 4);
+      ctx.fillStyle = o.val ? rgba(0.75) : 'rgba(190,200,240,.4)';
+      ctx.fillText(o.cnt, x, y + 7);
+    });
+  }
 
   ctx.restore();
 
@@ -16538,6 +16586,81 @@ function rxHoloGrad(ctx, x0, y0, x1, y1){
   RX_HOLO.forEach((c, i) => g.addColorStop(i / (RX_HOLO.length - 1), c));
   return g;
 }
+/* 희귀도: 1 일반 · 2 고급 · 3 희귀 · 4 영웅 · 5 전설 */
+const RX_RAR = [null,
+  { c: '#9aa3b2', ko: '일반', en: 'COMMON' },
+  { c: '#51cf66', ko: '고급', en: 'UNCOMMON' },
+  { c: '#4dabf7', ko: '희귀', en: 'RARE' },
+  { c: '#b197fc', ko: '영웅', en: 'EPIC' },
+  { c: '#ffc94d', ko: '전설', en: 'LEGENDARY' }];
+const RX_QR = "1fcffee7f,104ee5341,174fa735d,174ddfa5d,174f4fb5d,105132541,1fd55557f,a7cf00,12ded0fa0,8a8dd9e3,11d6d7035,794a4a5a,1dc7775c9,d236d5ff,6d93a3e6,1a8c59f62,27ba9a52,f13197a8,479d88c7,168f83622,18dda9382,d0be29c7,1ce896169,d1963a39,125cd8df2,179eb19,1fc55c55e,1052ccd12,1749c71fb,1756f675a,1743b3795,10454ff00,1fd033d9a";
+function rxCardQR(ctx, x, y, size, ink, paper){
+  const rows = RX_QR.split(',').map(h => parseInt(h, 16).toString(2).padStart(33, '0')), n = rows.length, q = 3, cell = size / (n + q * 2);
+  ctx.save();
+  ctx.fillStyle = paper; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, size, size, 10) : ctx.rect(x, y, size, size); ctx.fill();
+  ctx.fillStyle = ink;
+  rows.forEach((r, i) => { for(let j = 0; j < n; j++) if(r[j] === '1') ctx.fillRect(Math.floor(x + (j + q) * cell), Math.floor(y + (i + q) * cell), Math.ceil(cell), Math.ceil(cell)); });
+  ctx.restore();
+}
+function rxCardFooter(ctx, W, H, C, dark, font, symFont, tier, ds){
+  const en = LANG === 'en', top = H - 168, qs = 112, qx = W - 66 - qs, qy = H - 58 - qs;
+  ctx.save();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(60, top); ctx.lineTo(W - 60, top); ctx.stroke();
+  // 앱 이름
+  ctx.textAlign = 'left'; ctx.fillStyle = dark ? '#f2f5fa' : '#141821';
+  ctx.font = font(800, 34);
+  const a = '페리오딕', b = '//', c = '테이블';
+  let x = 66; const yb = H - 108;
+  ctx.fillText(a, x, yb); x += ctx.measureText(a).width + 4;
+  ctx.fillStyle = tier.holo ? rxHoloGrad(ctx, x, yb - 30, x + 40, yb) : tier.col; ctx.fillText(b, x, yb); x += ctx.measureText(b).width + 4;
+  ctx.fillStyle = dark ? '#f2f5fa' : '#141821'; ctx.fillText(c, x, yb);
+  ctx.font = font(600, 23); ctx.fillStyle = C.dim;
+  ctx.fillText('gwasan-0827.github.io/periodic-table', 66, H - 70);
+  // 발견 날짜 (QR 왼쪽)
+  ctx.textAlign = 'right'; ctx.font = font(700, 20); ctx.fillStyle = C.dim;
+  ctx.fillText(en ? 'FOUND' : rt('cardFound'), qx - 22, qy + 40);
+  ctx.font = symFont(500, 28); ctx.fillStyle = dark ? '#dfe3ff' : '#141821';
+  ctx.fillText(ds, qx - 22, qy + 76);
+  ctx.font = font(600, 17); ctx.fillStyle = C.dim;
+  ctx.fillText(en ? 'scan to play →' : '찍으면 바로 해 봐요 →', qx - 22, qy + 106);
+  rxCardQR(ctx, qx, qy, qs, '#0c0f15', '#f4f6fb');
+  ctx.restore();
+}
+/* 맨 위 가운데 희귀도 명패 + 영웅·전설은 모서리 보석 */
+function rxCardRarity(ctx, W, H, T, font, symFont, dark){
+  const R = RX_RAR[T.rar || 1], en = LANG === 'en';
+  ctx.save();
+  const label = en ? R.en : R.ko, stars = T.rar || 1;
+  ctx.font = font(800, 24);
+  const lw = ctx.measureText(label).width, sw = 5 * 26, w = lw + sw + 64, h = 46, x = (W - w) / 2, y = 16 - h / 2 + 6;
+  const fill = T.holo ? rxHoloGrad(ctx, x, y, x + w, y + h) : R.c;
+  ctx.fillStyle = '#0c0f15';
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - 6, y - 6, w + 12, h + 12, 29) : ctx.rect(x - 6, y - 6, w + 12, h + 12); ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = fill;
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, 23) : ctx.rect(x, y, w, h); ctx.stroke();
+  // 별 다섯 칸
+  const star = (cx, cy, r) => { ctx.beginPath(); for(let k = 0; k < 10; k++){ const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * .45 : r; ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } ctx.closePath(); };
+  for(let k = 0; k < 5; k++){
+    star(x + 30 + k * 26, y + h / 2, 10);
+    if(k < stars){ ctx.fillStyle = fill; ctx.shadowColor = T.holo ? '#fff' : R.c; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0; }
+    else { ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(201,208,255,.35)'; ctx.stroke(); }
+  }
+  ctx.fillStyle = fill; ctx.textAlign = 'left';
+  ctx.fillText(label, x + 30 + 5 * 26 + 4, y + h / 2 + 8);
+  // 영웅 이상: 네 모서리 보석
+  if(stars >= 4){
+    const m = 16, gem = (gx, gy) => {
+      ctx.save(); ctx.translate(gx, gy); ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = '#0c0f15'; ctx.fillRect(-15, -15, 30, 30);
+      ctx.fillStyle = fill; ctx.fillRect(-10, -10, 20, 20);
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-10, -10, 8, 8);
+      ctx.restore();
+    };
+    gem(m + 22, m + 22); gem(W - m - 22, m + 22); gem(m + 22, H - m - 22); gem(W - m - 22, H - m - 22);
+  }
+  ctx.restore();
+}
 /* 그림 칸 뒤: 그림 칸 테두리에 은은한 등급 색 */
 function rxCardFrameBack(ctx, W, H, T, px, py, pw, ph){
   ctx.save();
@@ -16552,7 +16675,7 @@ function rxCardFrameFront(ctx, W, H, T, px, py, pw, ph, font, dark, kfont){
   ctx.save();
   // 바깥 테두리
   const m = 16;
-  ctx.lineWidth = 12;
+  ctx.lineWidth = 8 + (T.rar || 1) * 2;
   ctx.strokeStyle = T.holo ? rxHoloGrad(ctx, 0, 0, W, H) : T.col;
   ctx.beginPath(); ctx.roundRect ? ctx.roundRect(m, m, W - m * 2, H - m * 2, 36) : ctx.rect(m, m, W - m * 2, H - m * 2); ctx.stroke();
   ctx.lineWidth = 2; ctx.globalAlpha = 0.35;
@@ -16665,9 +16788,11 @@ async function rxSaveCard(theme){
   try{ await document.fonts.load(symFont(500, 40), 'KCNo0123'); await document.fonts.ready; }catch(e){}
   // 트레이딩 카드 테두리: 구조·이름 이상한 놈은 홀로그램, 위험한 놈은 경고색, 나머지는 분류 색
   const tier = rxCardTier();
+  try{ tier.rar = tier.holo ? 5 : rxCardStatVals(tier).vals[1]; }catch(e){ tier.rar = 1; }
+  tier.kindCol = tier.col; if(!tier.holo) tier.col = RX_RAR[tier.rar].c;
 
   // 그림 칸 (그림은 늘 어두운 전시장 위에)
-  const px = 60, py = 60, pw = W - 120, ph = 640;
+  const px = 60, py = 74, pw = W - 120, ph = 596;
   ctx.fillStyle = C.panel;
   ctx.beginPath(); ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 28) : ctx.rect(px, py, pw, ph); ctx.fill();
   rxCardFrameBack(ctx, W, H, tier, px, py, pw, ph);
@@ -16677,6 +16802,13 @@ async function rxSaveCard(theme){
   ctx.save(); ctx.globalAlpha = 0.28; ctx.fillStyle = glow; ctx.fillRect(px, py, pw, ph); ctx.restore();
   ctx.fillStyle = 'rgba(255,255,255,.06)';
   for(let y = py + 24; y < py + ph; y += 30) for(let x = px + 24; x < px + pw; x += 30){ ctx.fillRect(x, y, 2, 2); }
+  if(tier.rar >= 4){
+    ctx.save(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 28) : ctx.rect(px, py, pw, ph); ctx.clip();
+    const cx = W / 2, cy = py + ph * 0.48, n = tier.rar >= 5 ? 18 : 12;
+    ctx.globalAlpha = tier.rar >= 5 ? 0.13 : 0.08; ctx.fillStyle = tier.holo ? '#ffffff' : tier.col;
+    for(let k = 0; k < n; k++){ const a = k / n * Math.PI * 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, 900, a, a + Math.PI / n / 1.6); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  }
 
   // WebGL 액체: SVG 밖의 캔버스에 그려지므로 따로 옮겨 그린다 (SVG 와 같은 자리·배율로)
   try{
@@ -16690,14 +16822,30 @@ async function rxSaveCard(theme){
       ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip(); ctx.drawImage(gl, dx, dy, sr.width * k, sr.height * k); ctx.restore();
     }
   }catch(e){}
-  const svgText = rxInlineSvg(document.getElementById('mMol'));
+  const molEl = document.getElementById('mMol');
+  let svgText = rxInlineSvg(molEl), vb = null;
+  try{
+    const st = document.getElementById('mStage').classList;
+    if(!(RX_M && RX_M.mesh) && !st.contains('liq-gl') && !st.contains('opal-gl')){
+      const bb = molEl.getBBox(), A = (pw - 40) / (ph - 40);
+      if(bb.width > 4 && bb.height > 4){
+        let vh = Math.max(bb.height * 1.22, bb.width * 1.22 / A);
+        vh = Math.min(300 * 1.1, Math.max(300 / 1.55, vh));
+        const vw = vh * A, cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2;
+        vb = [cx - vw / 2, cy - vh / 2, vw, vh];
+        svgText = svgText.replace(/viewBox="[^"]*"/, `viewBox="${vb.map(v => v.toFixed(2)).join(' ')}"`).replace(/width="800"/, `width="${Math.round(vw * 2)}"`).replace(/height="600"/, `height="${Math.round(vh * 2)}"`);
+      }
+    }
+  }catch(e){ vb = null; }
   const url = URL.createObjectURL(new Blob([svgText], { type: 'image/svg+xml' }));
   await new Promise(res => {
     const img = new Image();
     img.onload = () => {
-      const s = Math.min((pw - 40) / 400, (ph - 40) / 300);
-      const iw = 400 * s, ih = 300 * s;
+      const s = vb ? (ph - 40) / vb[3] : Math.min((pw - 40) / 400, (ph - 40) / 300);
+      const iw = (vb ? vb[2] : 400) * s, ih = (vb ? vb[3] : 300) * s;
+      ctx.save(); ctx.beginPath(); ctx.rect(px + 4, py + 4, pw - 8, ph - 8); ctx.clip();
       ctx.drawImage(img, px + (pw - iw) / 2, py + (ph - ih) / 2, iw, ih);
+      ctx.restore();
       URL.revokeObjectURL(url); res();
     };
     img.onerror = () => { URL.revokeObjectURL(url); res(); };
@@ -16737,21 +16885,16 @@ async function rxSaveCard(theme){
   y += 70;
   ctx.fillStyle = C.dim;
   ctx.font = font(500, 34);
-  rxWrap(ctx, sub, W - 200).slice(0, 2).forEach(l => { ctx.fillText(l, W / 2, y); y += 48; });
+  rxWrap(ctx, sub, W - 200).slice(0, 2).forEach(l => { ctx.fillText(l, W / 2, y); y += 44; });
   // 스탯 칸
-  if(RX.kind !== 'fail') try{ rxCardStats(ctx, W, Math.max(y + 6, H - 290), C, dark, font, symFont, tier); }catch(e){}
+  if(RX.kind !== 'fail') try{ rxCardStats(ctx, W, Math.max(y + 4, H - 316), C, dark, font, symFont, tier); }catch(e){}
 
   // 아래 줄
   const d = new Date();
   const ds = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-  ctx.strokeStyle = C.line; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(60, H - 110); ctx.lineTo(W - 60, H - 110); ctx.stroke();
-  ctx.font = font(600, 28);
-  ctx.textAlign = 'left'; ctx.fillStyle = C.dim;
-  ctx.fillText(`${rt('cardFound')} ${ds}`, 60, H - 62);
-  ctx.textAlign = 'right';
-  ctx.fillText(`${LANG === 'en' ? 'Periodic Table' : '주기율표'} · gwasan-0827.github.io`, W - 60, H - 62);
+  rxCardFooter(ctx, W, H, C, dark, font, symFont, tier, ds);
   rxCardFrameFront(ctx, W, H, tier, px, py, pw, ph, symFont, dark, font);
+  try{ rxCardRarity(ctx, W, H, tier, font, symFont, dark); }catch(e){}
 
   try{ rxCardSheen(ctx, W, H, tier); }catch(e){}
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
