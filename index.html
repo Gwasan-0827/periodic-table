@@ -18331,7 +18331,7 @@ function rxCloudFog(c, w, h, pts, view, o){
   const rad = Math.max(7, scale * 0.075) * (o.fogSize || 1);
   const a0 = Math.min(0.2, 0.062 * Math.pow(2600 / Math.max(300, pts.length), 0.55)) * (o.fogAlpha || 1);
   // 발열 줄이기: 흐린 빛 수천 개를 절반 해상도 캔버스에 그린 뒤 한 번에 키워 붙인다 (어차피 흐릿해서 차이가 안 보임)
-  const tc = c.getTransform ? c.getTransform() : null, HS = .5;
+  const tc = c.getTransform ? c.getTransform() : null, HS = window.RX_LOWPOW ? .5 : .75;
   let dst = c, off = null;
   if(tc && c.canvas && c.canvas.width > 64){
     off = rxCloudFog._off || (rxCloudFog._off = document.createElement('canvas'));
@@ -50463,6 +50463,96 @@ void main(){
   };
   if(typeof rxAtomUI === 'function'){ const _u = rxAtomUI; rxAtomUI = function(){ const r = _u.apply(this, arguments); try{ place(); }catch(e){} return r; }; }
   if(typeof startAtom === 'function'){ const _s = startAtom; startAtom = function(){ const r = _s.apply(this, arguments); try{ setTimeout(place, 0); }catch(e){} return r; }; }
+})();
+</script>
+
+<script>
+/* ═══ 원자 모형 칸 · 전자 구름 리워크: 껍질 안내선 · 깜빡이는 전자 · 입체 핵 ═══
+   구름(안개)은 원래대로 두고 위에 덧그린다.
+   - 껍질 자리마다 옅은 점선 원 + K·L·M 이름 (보어 모형과 같은 이름), 최외각은 원소 색
+   - 전자는 궤도를 도는 게 아니라 "있을 법한 곳"에서 잠깐 반짝였다 사라진다 (구름 점 중에서 뽑음)
+   - 핵은 빛무리 + 작은 입체 구슬 */
+(function(){
+  if(typeof rxDrawCloud !== 'function') return;
+  const FL = [];   // 깜빡이는 전자: { p, t0, life }
+  let last = 0, lastEl = '';
+  const proj = (p, V, cx, cy, sc) => {
+    const cY = Math.cos(V.yaw), sY = Math.sin(V.yaw), cX = Math.cos(V.pitch), sX = Math.sin(V.pitch);
+    const x1 = p.x * cY + p.z * sY, z1 = -p.x * sY + p.z * cY, y1 = p.y * cX - z1 * sX, z2 = p.y * sX + z1 * cX;
+    return [cx + x1 * sc, cy + y1 * sc, z2];
+  };
+  const _d = rxDrawCloud;
+  let fineKey = '';
+  rxDrawCloud = function(now){
+    let r;
+    // 바탕 구름: 점을 더 많이, 안개 알갱이는 더 작게 → 오비탈 모양이 또렷하게 (저전력이면 예전 그대로)
+    try{
+      if(!window.RX_LOWPOW && atomEl && !RX_CV_FOCUS){
+        if(fineKey !== atomEl.s){ fineKey = atomEl.s; RX_CLOUD_KEY = atomEl.s; RX_CLOUD = rxCloudPoints(atomEl.s, 2600); rxAtomSubs(); }
+        const dpr = devicePixelRatio > 2 ? 2 : devicePixelRatio, w = cv.width / dpr, h = cv.height / dpr;
+        rxCloudSpin(RX_CV, now);
+        rxCloudDraw(ctx, w, h, RX_CLOUD.pts, RX_CV, { fog: true, fogSize: .72, gain: 1.05, noNuc: true });
+      } else { if(window.RX_LOWPOW) fineKey = ''; r = _d.apply(this, arguments); }
+    }catch(e){ r = _d.apply(this, arguments); }
+    try{
+      if(!atomEl || !RX_CLOUD || RX_CLOUD_KEY !== atomEl.s) return r;
+      const dpr = devicePixelRatio > 2 ? 2 : devicePixelRatio, w = cv.width / dpr, h = cv.height / dpr;
+      const cx = w / 2, cy = h / 2, sc = Math.min(w, h) * 0.46 * (RX_CV.zoom || 1);
+      const [R, G, B] = hex2rgb(atomCol), subs = RX_CLOUD.subs, maxN = Math.max(...subs.map(s => s.n));
+      if(lastEl !== atomEl.s){ lastEl = atomEl.s; FL.length = 0; }
+      ctx.save();
+      // ① 껍질 안내선: 주 양자수마다 하나 (구름 점을 찍을 때 쓰는 반지름과 같은 식)
+      const ns = [...new Set(subs.map(s => s.n))].sort((a, b) => b - a);   // 바깥부터 (이름표 겹치면 안쪽을 뺀다)
+      ctx.setLineDash([2, 5]); ctx.lineWidth = 1;
+      ctx.font = '600 9px PTSym, system-ui, sans-serif'; ctx.textAlign = 'center';
+      // 껍질마다 실제 구름 점들의 가운데 반지름 (전자를 찾을 확률이 가장 큰 거리 근처)
+      if(RX_CLOUD._rk !== RX_CLOUD.pts.length){ RX_CLOUD._rk = RX_CLOUD.pts.length; const byN = {};
+        RX_CLOUD.pts.forEach(p => { const n = parseInt(p.k, 10); (byN[n] = byN[n] || []).push(Math.hypot(p.x, p.y, p.z)); });
+        RX_CLOUD._rn = {}; for(const n in byN){ const a = byN[n].sort((x, y) => x - y); RX_CLOUD._rn[n] = a[a.length >> 1]; } }
+      ns.forEach(n => {
+        const rr = (RX_CLOUD._rn[n] || 0) * sc, val = n === maxN;
+        if(rr < 14) return;
+        ctx.strokeStyle = val ? `rgba(${R},${G},${B},.42)` : 'rgba(180,190,255,.13)';
+        ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2); ctx.stroke();
+        if(w > 200 && (ns._lr == null || ns._lr - rr >= 13)){
+          ns._lr = rr;
+          const a = Math.PI, lx = cx + Math.cos(a) * rr, ly = cy + Math.sin(a) * rr;
+          ctx.fillStyle = 'rgba(8,10,20,.75)'; ctx.beginPath(); ctx.arc(lx, ly, 6.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = val ? `rgb(${R},${G},${B})` : 'rgba(190,200,240,.6)';
+          ctx.fillText('KLMNOPQ'[n - 1] || '', lx, ly + 3);
+        }
+      });
+      ctx.setLineDash([]);
+      // ② 깜빡이는 전자: 전자 수에 맞춰 몇 개씩, 구름 점 가운데 하나에서 잠깐 반짝
+      const pts = (RX_CV_FOCUS && RX_CV_FPTS && RX_CV_FPTS.length) ? RX_CV_FPTS : RX_CLOUD.pts;
+      const dt = Math.min(80, now - (last || now)); last = now;
+      const want = Math.min(10, 3 + Math.round(Math.sqrt(atomEl.n)));
+      if(!window.RX_LOWPOW || Math.random() < .5) while(FL.filter(f => now - f.t0 < f.life).length < want && pts.length){
+        FL.push({ p: pts[(Math.random() * pts.length) | 0], t0: now + Math.random() * 400, life: 380 + Math.random() * 520 });
+      }
+      for(let i = FL.length - 1; i >= 0; i--) if(now - FL[i].t0 > FL[i].life) FL.splice(i, 1);
+      ctx.globalCompositeOperation = 'lighter';
+      FL.forEach(f => {
+        const k = (now - f.t0) / f.life; if(k < 0) return;
+        const a = Math.sin(Math.PI * Math.min(1, k)), [x, y, z] = proj(f.p, RX_CV, cx, cy, sc), d = .6 + .4 * (z + 1) / 2;
+        const col = RX_SUB_COL[f.p.l] || RX_SUB_COL.s, rr = (5 + 4 * a) * d;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, rr);
+        g.addColorStop(0, `rgba(255,255,255,${.95 * a * d})`); g.addColorStop(.3, `rgba(${col.join(',')},${.7 * a * d})`); g.addColorStop(1, `rgba(${col.join(',')},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      // ③ 핵: 빛무리 + 입체 구슬 (원래 점 위에 덮어 그림)
+      const nr = Math.min(7, 3 + Math.sqrt(atomEl.n) * .45);
+      const gl = ctx.createRadialGradient(cx, cy, 0, cx, cy, nr * 4.2);
+      gl.addColorStop(0, `rgba(${R},${G},${B},.55)`); gl.addColorStop(.35, `rgba(${R},${G},${B},.14)`); gl.addColorStop(1, `rgba(${R},${G},${B},0)`);
+      ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx, cy, nr * 4.2, 0, Math.PI * 2); ctx.fill();
+      const bl = ctx.createRadialGradient(cx - nr * .35, cy - nr * .35, nr * .1, cx, cy, nr);
+      bl.addColorStop(0, '#fff'); bl.addColorStop(.45, `rgb(${R},${G},${B})`); bl.addColorStop(1, `rgb(${R * .35 | 0},${G * .35 | 0},${B * .35 | 0})`);
+      ctx.fillStyle = bl; ctx.beginPath(); ctx.arc(cx, cy, nr, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }catch(e){}
+    return r;
+  };
 })();
 </script>
 
