@@ -8646,6 +8646,9 @@ function renderSettings(){
           seg('molcol', LANG === 'en' ? [['cpk','Convention'],['real','Real'],['oxy','Oxygen only'],['metox','Metal & O'],['custom','Custom']] : [['cpk','약속 색'],['real','실제 색'],['oxy','산소만'],['metox','금속&산소만'],['custom','커스터마이징']], rxMolCol()),
           LANG === 'en' ? 'Convention is the textbook scheme (red oxygen). Real gives sky-blue oxygen (its colour as a liquid) and see-through hydrogen and nitrogen. Oxygen only / Metal & O use real colours for just those atoms and the convention for the rest. Custom lets you pick a colour per element.'
                         : '약속 색은 교과서 색(산소 빨강)이에요. 실제 색은 산소가 하늘색(액체일 때 색), 수소·질소는 비쳐 보여요. 산소만은 산소만 실제 색, 금속&산소만은 금속과 산소만 실제 색이고 나머지는 약속 색이에요. 커스터마이징은 원소마다 색을 직접 골라요.')}
+    ${row(LANG === 'en' ? 'April Fools theme' : '만우절 테마',
+          seg('april', LANG === 'en' ? [['auto','Auto'],['on','Preview'],['off','Off']] : [['auto','자동'],['on','미리 보기'],['off','끄기']], (() => { try{ return localStorage.getItem('pt_april') || 'auto'; }catch(e){ return 'auto'; } })()),
+          LANG === 'en' ? 'Auto turns it on by itself on April 1.' : '자동이면 4월 1일에 저절로 켜져요.')}
     ${row(LANG === 'en' ? 'Stick model seams' : '막대 모형 이음매 선',
           seg('stseam', LANG === 'en' ? [['on','On'],['off','Off']] : [['on','켜기'],['off','끄기']], (() => { try{ return localStorage.getItem('pt_stickseam') === 'off' ? 'off' : 'on'; }catch(e){ return 'on'; } })()),
           LANG === 'en' ? 'Off draws each bond as one stick, so no line shows where the halves meet.' : '끄면 결합을 막대 하나로 이어 그려서, 막대 가운데와 원자 쪽에 보이던 이음매 선이 없어져요.')}
@@ -8685,6 +8688,7 @@ function renderSettings(){
       if(kind === 'safe' && (k === 'on') !== SAFE) hiddenBtn('safeBtn').click();
       if(kind === 'start'){ try{ localStorage.setItem('pt_start', k); }catch(e){} }
       if(kind === 'molcol') rxMolColSet(k);
+      if(kind === 'april'){ try{ localStorage.setItem('pt_april', k); }catch(e){} try{ rxAprilSync(); }catch(e){} }
       if(kind === 'stseam'){ try{ localStorage.setItem('pt_stickseam', k); }catch(e){} try{ if(RX_M && document.getElementById('mMol') && RX_M.gAt){ rxMount(RX.views && RX.views[RX_VIEW] || RX_M); rxStart(); } }catch(e){} }
       renderSettings();
     }));
@@ -48220,6 +48224,122 @@ void main(){
   window.rxDecayWin = open;
   // 기존 "☢ 붕괴 지켜보기" 버튼 → 새 창
   rxDecayStart = function(){ const e = byNum[selected], key = e && RX_DECAY[e.s]; if(key) open(key); };
+})();
+</script>
+
+<style>
+  /* ═══ 만우절 테마 (APRIL 4.2.5): 4월 1일 · ?4dnjf 1dlf · #4dnjf 1dlf · 설정 미리 보기 ═══ */
+  #aprBg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none}
+  html.april #aprBg{display:block}
+  html.april #y2kbg,html.april #glow,html.april #waves,html.april #bgfx{opacity:0!important}
+  #aprBg .sky{position:absolute;inset:0;background:linear-gradient(180deg,#ffc6e6 0%,#ffd9f0 38%,#e8d6ff 62%,#cfe6ff 100%)}
+  #aprBg .cl{position:absolute;border-radius:999px;background:radial-gradient(circle at 40% 40%,#fff,#ffeaf7 60%,rgba(255,234,247,0));filter:blur(2px);opacity:.9;animation:aprCl linear infinite}
+  @keyframes aprCl{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
+  #aprBg .floor{position:absolute;left:-50%;right:-50%;bottom:0;height:42%;transform-origin:50% 0;transform:perspective(500px) rotateX(62deg);
+    background:repeating-conic-gradient(#ff9ad5 0 25%,#fff4fb 0 50%) 0 0/80px 80px;animation:aprFl 3s linear infinite;opacity:.9;
+    -webkit-mask:linear-gradient(180deg,transparent,#000 30%);mask:linear-gradient(180deg,transparent,#000 30%)}
+  @keyframes aprFl{to{background-position:0 80px}}
+  #aprBg .duck{position:absolute;font-size:44px;animation:aprDk ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(160,80,140,.25))}
+  #aprBg .duck b{position:absolute;left:50%;top:-10px;transform:translateX(-50%);font:900 12px Kanit,system-ui,sans-serif;color:#7a2d6a;background:#fff;border-radius:6px;padding:0 5px;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+  @keyframes aprDk{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-22px) rotate(6deg)}}
+  /* 밝은 배경 위라 글자·칸이 잘 보이게 */
+  html.april body{color:#3a1f4d}
+  html.april #grid .cell{background:rgba(255,255,255,.62)!important;border-color:rgba(200,120,190,.45)!important}
+  html.april #grid .cell .sym{color:#3a1f4d!important}
+  html.april #grid .cell .ko,html.april #grid .cell .num,html.april #grid .cell .am{color:#7a5a8f!important}
+  /* 1. 뒤집힌 주기율표 */
+  #grid{transition:transform .9s cubic-bezier(.5,-.3,.3,1.4)}
+  html.april.apr-flip #grid{transform:rotate(180deg)}
+  /* 2. 기호 셔플 */
+  html.april #grid .cell .sym[data-fake]{color:#d6336c!important}
+  html.april #grid .cell .sym.apr-ok{animation:aprOk .5s}
+  @keyframes aprOk{40%{transform:scale(1.35) rotate(-8deg);color:#2b8a3e}}
+  /* 4. 가짜 119번 */
+  html.april .tease119{opacity:1!important;animation:aprFake 1.4s ease-in-out infinite!important;cursor:pointer;background:linear-gradient(135deg,#ffd43b,#ff9ad5)!important;border-color:#fff!important;color:#5a1f4d!important}
+  html.april .tease119 .t-sym{font-size:.95em}
+  @keyframes aprFake{50%{transform:scale(1.08) rotate(3deg);box-shadow:0 0 22px #ff9ad5}}
+  /* 5. 큐리 난입 */
+  #aprCu{position:fixed;left:-140px;bottom:120px;z-index:60;pointer-events:none;display:flex;align-items:center;gap:8px}
+  #aprCu.go{animation:aprCu 6.5s linear forwards}
+  @keyframes aprCu{to{left:calc(100vw + 160px)}}
+  #aprCu .t{width:58px;height:58px;border-radius:13px;display:grid;place-items:center;position:relative;font:900 22px Kanit,system-ui,sans-serif;color:#1b1c26;
+    background:linear-gradient(145deg,#f4f6ff,#9aa0bf);box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 1px 0 #fff;animation:aprHop .4s ease-in-out infinite alternate}
+  #aprCu .t i{position:absolute;left:5px;top:3px;font:800 10px system-ui;font-style:normal;color:#4a4f66}
+  #aprCu .t em{position:absolute;right:-6px;bottom:-6px;font-style:normal;font-size:18px}
+  @keyframes aprHop{to{transform:translateY(-10px) rotate(4deg)}}
+  #aprCu .say{font-size:13px;font-weight:900;padding:6px 11px;border-radius:12px;background:#fff;color:#3a1f4d;box-shadow:0 4px 10px rgba(0,0,0,.15);white-space:nowrap}
+  .apr-drop{position:fixed;z-index:59;width:12px;height:10px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,#fff,#c9cde0 40%,#6b6f84);animation:aprDrop 1.1s ease-out forwards}
+  @keyframes aprDrop{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+  html.lowpow #aprBg .cl,html.lowpow #aprBg .floor,html.lowpow #aprBg .duck{animation:none}
+</style>
+<script>
+(function(){
+  const EN = () => LANG === 'en';
+  const KEY = '4dnjf 1dlf';
+  const fromUrl = () => { try{ const s = decodeURIComponent((location.search + ' ' + location.hash).replace(/\+/g, ' ')).toLowerCase(); return s.includes(KEY) || s.includes(KEY.replace(' ', '')) || s.includes('4월 1일') || s.includes('4월1일'); }catch(e){ return false; } };
+  const isDay = () => { const d = new Date(); return d.getMonth() === 3 && d.getDate() === 1; };
+  const pref = () => { try{ return localStorage.getItem('pt_april') || 'auto'; }catch(e){ return 'auto'; } };
+  const want = () => pref() === 'on' || (pref() !== 'off' && (isDay() || fromUrl()));
+  let ON = false, revealed = new Set(), fake = {}, flipDone = false, cuT = 0;
+  const DUCKS = ['H', 'He', 'Hg', 'Fe', 'Au', 'O', 'Ne', 'C', 'Na'];
+
+  function bg(){ let b = document.getElementById('aprBg'); if(b) return b;
+    b = document.createElement('div'); b.id = 'aprBg';
+    b.innerHTML = '<div class="sky"></div>' + Array.from({ length: 6 }, (_, i) => `<i class="cl" style="top:${6 + i * 9}%;width:${160 + (i * 53) % 140}px;height:${50 + (i * 17) % 40}px;animation-duration:${40 + i * 9}s;animation-delay:${-i * 11}s"></i>`).join('') +
+      '<div class="floor"></div>' + DUCKS.map((s, i) => `<span class="duck" style="left:${4 + i * 11}%;top:${14 + (i * 37) % 48}%;animation-duration:${3 + (i % 4) * .7}s;animation-delay:${-i * .6}s">🦆<b>${s}</b></span>`).join('');
+    const y = document.getElementById('y2kbg'); y ? y.before(b) : document.body.prepend(b); return b; }
+
+  // 2. 기호 셔플: 아직 안 맞춘 칸은 엉뚱한 기호
+  function shuffleMap(){ const S = EL.map(e => e.s), P = S.slice(); for(let i = P.length - 1; i > 0; i--){ const j = (Math.random() * (i + 1)) | 0; [P[i], P[j]] = [P[j], P[i]]; }
+    fake = {}; EL.forEach((e, i) => { if(P[i] !== e.s) fake[e.n] = P[i]; }); }
+  function applyFake(){ document.querySelectorAll('#grid .cell').forEach(c => { const n = +c.dataset.n, sy = c.querySelector('.sym'); if(!sy) return;
+      const real = byNum[n] && byNum[n].s;
+      if(ON && flipDone && fake[n] && !revealed.has(n)){ sy.textContent = fake[n]; sy.dataset.fake = '1'; }
+      else if(sy.dataset.fake){ sy.textContent = real; delete sy.dataset.fake; } }); }
+  function reveal(c){ const n = +c.dataset.n; if(!ON || !flipDone || !fake[n] || revealed.has(n)) return;
+    revealed.add(n); const sy = c.querySelector('.sym'); if(sy){ sy.textContent = byNum[n].s; delete sy.dataset.fake; sy.classList.remove('apr-ok'); void sy.offsetWidth; sy.classList.add('apr-ok'); }
+    try{ tone(900 + Math.random() * 300, .05, 'sine', .05); }catch(e){}
+    if(Object.keys(fake).every(k => revealed.has(+k))){ try{ rxToast(EN() ? 'April Fools' : '만우절', EN() ? 'All symbols fixed!' : '기호를 전부 되찾았어요!', EN() ? 'The periodic table thanks you' : '주기율표가 고마워해요'); }catch(e){} try{ localStorage.setItem('pt_aprfix', '1'); }catch(e){} } }
+
+  // 4. 가짜 119번
+  function fake119(){ const t = document.querySelector('.tease119'); if(!t) return;
+    if(ON){ if(!t.dataset.apr){ t.dataset.apr = '1'; t._old = t.innerHTML; } t.innerHTML = `<span class="t-num">119</span><span class="t-sym">Fl00l</span>`; t.title = EN() ? 'Aprilfoolium' : '만우늄'; }
+    else if(t.dataset.apr){ t.innerHTML = t._old; delete t.dataset.apr; t.title = ''; } }
+  document.addEventListener('click', e => { if(!ON) return; const t = e.target.closest && e.target.closest('.tease119'); if(!t) return;
+    e.stopPropagation(); e.preventDefault();
+    try{ rxToast(EN() ? 'NEW ELEMENT!' : '새 원소 발견!', EN() ? '119 Aprilfoolium (Fl00l)' : '119번 만우늄 (Fl00l)', EN() ? 'Half-life: exactly one day' : '반감기: 정확히 하루'); }catch(_){}
+    try{ SFX.pick(); }catch(_){}
+    setTimeout(() => { try{ rxToast('', EN() ? '…just kidding' : '…는 거짓말ㅋ', EN() ? 'Happy April Fools\' Day' : '만우절이에요'); }catch(_){} }, 2200); }, true);
+
+  // 1. 첫 클릭: 뒤집힌 표가 원래대로
+  document.addEventListener('click', e => { if(!ON || flipDone) return; const g = e.target.closest && e.target.closest('#grid'); if(!g) return;
+    e.stopPropagation(); e.preventDefault(); flipDone = true; document.documentElement.classList.remove('apr-flip');
+    try{ rxToast(EN() ? 'April Fools' : '만우절', EN() ? 'Gotcha ㅋ' : '만우절이에요ㅋ', EN() ? 'Now hover over the cells — some symbols got mixed up' : '근데 기호가 좀 섞였네요? 칸에 마우스를 올려서 되찾아 주세요'); }catch(_){}
+    setTimeout(applyFake, 900); }, true);
+  document.addEventListener('pointerover', e => { if(!ON) return; const c = e.target.closest && e.target.closest('#grid .cell'); if(c) reveal(c); });
+  document.addEventListener('pointerdown', e => { if(!ON || !flipDone) return; const c = e.target.closest && e.target.closest('#grid .cell'); if(c) reveal(c); }, true);
+
+  // 5. 큐리 난입
+  function curie(){ if(!ON || document.hidden) return;
+    let c = document.getElementById('aprCu'); if(!c){ c = document.createElement('div'); c.id = 'aprCu'; document.body.appendChild(c); }
+    const L = EN() ? ['Mercury shot!!', 'April Fools~', 'Bang—!'] : ['이얍!! 수은 발사앗!!', '만우절이다~', '탕–!'];
+    c.innerHTML = `<span class="t"><i>80</i>Hg<em>⚠</em></span><span class="say">${L[(Math.random() * L.length) | 0]}</span>`;
+    c.classList.remove('go'); void c.offsetWidth; c.classList.add('go');
+    let k = 0; const iv = setInterval(() => { const r = c.getBoundingClientRect(); if(++k > 20 || r.left > innerWidth){ clearInterval(iv); return; }
+      for(let q = 0; q < 3; q++){ const d = document.createElement('i'); d.className = 'apr-drop'; d.style.left = (r.left + 50) + 'px'; d.style.top = (r.top + 20) + 'px';
+        d.style.setProperty('--dx', (80 + Math.random() * 160) + 'px'); d.style.setProperty('--dy', (-60 + Math.random() * 120) + 'px'); document.body.appendChild(d); setTimeout(() => d.remove(), 1200); } }, 300); }
+
+  function sync(){
+    const w = want(); if(w === ON) return; ON = w;
+    const H = document.documentElement; H.classList.toggle('april', ON);
+    if(ON){ bg(); shuffleMap(); revealed = new Set(); flipDone = false; H.classList.add('apr-flip'); clearInterval(cuT); setTimeout(curie, 5000); cuT = setInterval(curie, 45000); }
+    else { H.classList.remove('apr-flip'); clearInterval(cuT); }
+    applyFake(); fake119();
+  }
+  window.rxAprilSync = sync;
+  const _p = paint; paint = function(){ const r = _p.apply(this, arguments); try{ if(ON){ applyFake(); fake119(); } }catch(e){} return r; };
+  addEventListener('hashchange', () => { try{ if(fromUrl() && pref() === 'auto') sync(); }catch(e){} });
+  setTimeout(sync, 300);
 })();
 </script>
 
