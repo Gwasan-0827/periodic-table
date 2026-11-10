@@ -50397,6 +50397,7 @@ void main(){
 </script>
 <style>
   /* ═══ 오가네손: 껍질이 녹아내린 원자 (페르미 기체) ═══ */
+  #info > .og-fg-btn{display:flex;width:100%;justify-content:center;margin:10px 0 2px;padding:10px 14px;font-size:13px;border-radius:12px;box-sizing:border-box}
   .og-fg-btn{display:inline-flex;align-items:center;gap:6px;margin:6px 0 0;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,154,213,.55);background:rgba(255,154,213,.1);color:#ffd1ea;font:inherit;font-size:11.5px;font-weight:750;cursor:pointer}
   .og-fg-btn:hover{background:rgba(255,154,213,.2)}
   #ogFg{position:fixed;inset:0;z-index:74;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,6,14,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -50507,8 +50508,12 @@ void main(){
     if(!show){ if(b) b.remove(); return; }
     if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'ogFgBtn'; b.className = 'og-fg-btn'; b.addEventListener('click', ev => { ev.stopPropagation(); open(); }); }
     b.textContent = P('🫠 껍질이 녹아내린 원자 ›', '🫠 The atom whose shells melt ›');
-    if(b.parentNode !== note.parentNode || b.previousElementSibling !== note) note.after(b);
+    // 원소 정보 쪽(붕괴 지켜보기 아래)에 둔다. 없으면 원자 모형 설명 밑
+    const info = document.getElementById('info'), anc = info && (info.querySelector(':scope > .decay-box') || info.querySelector(':scope > .ihero'));
+    if(anc){ if(b.previousElementSibling !== anc) anc.after(b); }
+    else if(b.parentNode !== note.parentNode || b.previousElementSibling !== note) note.after(b);
   };
+  { const io = document.getElementById('info'); if(io) new MutationObserver(() => { try{ if(!document.getElementById('ogFgBtn') || !io.contains(document.getElementById('ogFgBtn'))) place(); }catch(e){} }).observe(io, { childList: true }); }
   if(typeof rxAtomUI === 'function'){ const _u = rxAtomUI; rxAtomUI = function(){ const r = _u.apply(this, arguments); try{ place(); }catch(e){} return r; }; }
   if(typeof startAtom === 'function'){ const _s = startAtom; startAtom = function(){ const r = _s.apply(this, arguments); try{ setTimeout(place, 0); }catch(e){} return r; }; }
 })();
