@@ -47533,5 +47533,408 @@ void main(){
 })();
 </script>
 
+<style>
+  /* ═══ 학습 › 안정성의 섬 · 주기율표의 역사 (ISLAND 4.2.5) ═══ */
+  .isl{display:grid;gap:14px;padding:4px 2px 18px}
+  .isl-lead{font-size:13px;line-height:1.65;color:#c3c8ee;padding:12px 14px;border-radius:14px;background:linear-gradient(90deg,rgba(143,155,255,.12),rgba(255,255,255,.02));border:1px solid rgba(150,160,255,.18);border-left:3px solid #8f9bff;word-break:keep-all}
+  .isl-lead b{color:#fff}
+  .isl-map{position:relative;height:min(62vh,520px);min-height:340px;border-radius:18px;overflow:hidden;border:1px solid rgba(150,160,255,.25);background:#060a1e;touch-action:none;cursor:grab;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .isl-map.drag{cursor:grabbing}
+  .isl-map canvas{position:absolute;inset:0;width:100%;height:100%}
+  .isl-tools{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+  .isl-tools button{font:inherit;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;cursor:pointer;color:#eef0ff;background:rgba(14,16,40,.78);border:1px solid rgba(150,160,255,.35);backdrop-filter:blur(6px)}
+  .isl-tools button:hover{background:rgba(60,66,140,.85)}
+  .isl-tools button.on{background:linear-gradient(135deg,#8f9bff,#b18cff);border-color:transparent;color:#fff}
+  .isl-tip{position:absolute;z-index:3;pointer-events:none;min-width:150px;padding:8px 11px;border-radius:12px;font-size:12px;line-height:1.5;color:#e9ecff;background:rgba(10,12,30,.92);border:1px solid rgba(150,160,255,.4);box-shadow:0 8px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .12s;white-space:nowrap}
+  .isl-tip.on{opacity:1}
+  .isl-tip b{font-size:15px;color:#fff}
+  .isl-tip i{font-style:normal;color:#9aa2d8;font-size:11px}
+  .isl-leg{position:absolute;right:10px;bottom:10px;z-index:2;padding:7px 10px;border-radius:12px;background:rgba(10,12,30,.78);border:1px solid rgba(150,160,255,.25);font-size:10.5px;color:#c3c8ee;backdrop-filter:blur(6px)}
+  .isl-leg .bar{width:190px;height:9px;border-radius:5px;margin:4px 0 3px}
+  .isl-leg .lb{display:flex;justify-content:space-between;width:190px}
+  .isl-badge{position:absolute;right:10px;top:10px;z-index:2;font-size:11.5px;font-weight:900;padding:5px 11px;border-radius:999px;color:#10122a;background:#8cf5d2;box-shadow:0 0 14px rgba(140,245,210,.5)}
+  .isl-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+  .isl-card{padding:12px 14px;border-radius:16px;background:linear-gradient(160deg,rgba(40,44,96,.5),rgba(14,15,36,.8));border:1px solid rgba(150,160,255,.2)}
+  .isl-card .k{font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
+  .isl-card h4{margin:3px 0 6px;font-size:15px;color:#fff}
+  .isl-card p{margin:0;font-size:12.5px;line-height:1.65;color:#d6daf8;word-break:keep-all}
+  .isl-card p b{color:#fff}
+  @media (max-width:700px){ .isl-map{height:58vh} .isl-leg .bar,.isl-leg .lb{width:150px} }
+
+  /* 역사 */
+  .hs{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:14px;padding:4px 2px 18px;align-items:start}
+  .hs-tl{position:relative;display:grid;gap:6px;padding-left:18px}
+  .hs-tl::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:2px;border-radius:2px;background:linear-gradient(180deg,#8f9bff,#b18cff 60%,#8cf5d2)}
+  .hs-ev{position:relative;display:grid;gap:1px;text-align:left;font:inherit;cursor:pointer;padding:8px 12px;border-radius:12px;color:#e6e8ff;background:rgba(255,255,255,.025);border:1px solid rgba(150,160,255,.14);transition:transform .15s,border-color .2s,background .2s}
+  .hs-ev::before{content:"";position:absolute;left:-17px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#14163a;border:2px solid #8f9bff}
+  .hs-ev:hover{transform:translateX(3px);border-color:rgba(150,160,255,.4)}
+  .hs-ev.on{background:linear-gradient(90deg,rgba(143,155,255,.2),rgba(255,255,255,.02));border-color:#8f9bff}
+  .hs-ev.on::before{background:#c5cbff;box-shadow:0 0 10px #8f9bff}
+  .hs-ev .y{font:900 12px ui-monospace,Menlo,monospace;color:#a6addf;letter-spacing:.06em}
+  .hs-ev b{font-size:13.5px;font-weight:900;color:#fff}
+  .hs-det{position:sticky;top:0;padding:16px;border-radius:18px;background:linear-gradient(160deg,rgba(40,44,96,.6),rgba(14,15,36,.88));border:1px solid rgba(150,160,255,.22);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .hs-det .k{font-size:9.5px;font-weight:900;letter-spacing:.16em;color:#8f97c8}
+  .hs-det h3{margin:3px 0 2px;font-size:21px;font-weight:900;color:#fff;word-break:keep-all}
+  .hs-det .who{font-size:12px;font-weight:800;color:#b9bfee;margin-bottom:10px}
+  .hs-det p{margin:8px 0 0;font-size:13px;line-height:1.7;color:#d6daf8;word-break:keep-all}
+  .hs-det p b{color:#fff}
+  .hs-vis{margin:8px 0 4px;padding:12px;border-radius:14px;background:rgba(6,8,24,.55);border:1px solid rgba(150,160,255,.14);overflow-x:auto}
+  .hs-vis svg{display:block;width:100%;height:auto}
+  .hs-grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+  .hs-grp div{padding:8px 10px;border-radius:10px;background:rgba(143,155,255,.08);border:1px solid rgba(150,160,255,.18);font-size:12px;line-height:1.55;color:#d6daf8}
+  .hs-grp div h5{margin:0 0 4px;font-size:11px;font-weight:900;letter-spacing:.06em;color:#c5cbff}
+  .hs-tri{display:grid;gap:8px}
+  .hs-tri .r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:#d6daf8}
+  .hs-tri .r span{padding:4px 9px;border-radius:9px;background:rgba(143,155,255,.12);border:1px solid rgba(150,160,255,.25);font-weight:800;color:#fff}
+  .hs-tri .r span.m{background:linear-gradient(135deg,rgba(143,155,255,.45),rgba(177,140,255,.45));border-color:#b18cff}
+  .hs-tri .r em{font-style:normal;color:#8cf5d2;font-weight:800}
+  .hs-oct{display:grid;grid-template-columns:repeat(7,minmax(34px,1fr));gap:3px;font-size:12px;text-align:center}
+  .hs-oct .n{font:900 10px ui-monospace,Menlo,monospace;color:#8f97c8;padding-bottom:2px}
+  .hs-oct .e{padding:7px 0;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(150,160,255,.15);font-weight:900;color:#fff}
+  .hs-oct .e.c0{background:rgba(143,155,255,.28);border-color:#8f9bff}
+  .hs-oct .e.bad{background:rgba(255,120,140,.18);border-color:rgba(255,140,160,.6)}
+  .hs-men{border-collapse:separate;border-spacing:2px;font-size:10.5px;min-width:520px;width:100%}
+  .hs-men th{font:900 9.5px ui-monospace,Menlo,monospace;color:#8f97c8;padding:2px}
+  .hs-men td{padding:4px 2px;border-radius:5px;text-align:center;white-space:nowrap;background:rgba(255,255,255,.035);color:#d6daf8}
+  .hs-men td b{color:#fff;font-size:11.5px}
+  .hs-men td.g8{white-space:normal;font-size:9.5px;line-height:1.35;min-width:74px}
+  .hs-men td.gap{background:rgba(255,212,59,.14);color:#ffd43b;font-weight:900;cursor:pointer;outline:1px dashed rgba(255,212,59,.6)}
+  .hs-men td.gap.on{background:rgba(255,212,59,.35);color:#fff}
+  .hs-men td.x{background:transparent}
+  .hs-pred{margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(255,212,59,.08);border:1px solid rgba(255,212,59,.35);font-size:12.5px;line-height:1.6;color:#f2ead0}
+  .hs-cmp{width:100%;border-collapse:collapse;font-size:12.5px}
+  .hs-cmp th,.hs-cmp td{padding:6px 8px;border-bottom:1px solid rgba(150,160,255,.14);text-align:left;color:#d6daf8}
+  .hs-cmp th{font-size:10.5px;letter-spacing:.08em;color:#a6addf}
+  .hs-cmp td.g{color:#8cf5d2;font-weight:800}
+  .hs-swap{display:grid;gap:8px}
+  .hs-swap .r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:#d6daf8}
+  .hs-swap .r span{padding:5px 10px;border-radius:9px;background:rgba(143,155,255,.12);border:1px solid rgba(150,160,255,.25);color:#fff;font-weight:800}
+  .hs-swap .r span small{display:block;font-size:10px;color:#a6addf;font-weight:700}
+  .hs-go{margin-top:12px;font:inherit;font-size:13px;font-weight:900;padding:9px 16px;border-radius:999px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#8f9bff,#b18cff);border:0;box-shadow:0 6px 18px rgba(143,155,255,.35)}
+  @media (max-width:700px){ .hs{grid-template-columns:1fr} .hs-det{position:static} }
+</style>
+<script>
+(function(){
+  if(typeof openHub !== 'function' || typeof hubHead !== 'function') return;
+  const EN = () => LANG === 'en';
+  // 핵종 데이터: Z(1~118)마다 [첫 중성자 수, 칸 문자열]. '!' 안정 · '~' 반감기 모름 · ' ' 없음 · 그 외 문자 = log10(반감기 초) + 24 (chr 48부터)
+  const NUC = [[0,"!!Q2223"],[1,"!!3H3G32"],[0,"~23!!HG3F!4"],[1,"~4O8!VIF3F33"],[1,"~3H6!!FFFF~F!E~~"],[2,"4GIK!!SHHGGGF!F!"],[3,"23FK!!IIHHGGFF!!"],[3,"24FJJ!!!IIIHGG4=!!"],[4,"!334JL!IIIHHGFF5E!~"],[5,"3~GHI!!!JJHGFFFFFF!~"],[6,"!3~HIP!MJHGGGGFFFFE!~!~"],[7,"=GGII!!!KMHHGGGGFFF~!~!"],[8,"!GHHIU!JKIHGGGGGFFF~~~~"],[8,"FGGGHI!!!LRIHHHGGGFFF~~~"],[9,"!!GGGIJ!NNIJIHHGGGGGF~~~"],[10,"!FGGHH!!!O!JLIIHHGGGG~~~"],[11,"!4!GGHH!U!KLJJIHHHGG~~~~~"],[11,"!~FGGHH!N!R!LQKKIIHHGG~~~~"],[12,"~!!!GHHK!Y!MMKKJIIHHHGFF~~~~~"],[13,"!!FGGHH!T!!!O!NcKIIIHGFF~~~~~"],[14,"!!!!!GHHLL!OMMLJIIHHGFFF~~~~~"],[15,"!!FGGGHQL!!!!!KJJHHGGGFFF~~~~"],[16,"!!!!GGHHKNOa!JJJIGHGGGGGFF~~~"],[17,"!FFGGGHMK!N!!!JKIIHHGGGGFF~~~~"],[18,"!!!GGGHGKNVO!LJHIGHGGGGGGGFF~~~"],[19,"EFFGGGGLK!P!!!OVKJIHHHHGGGGFFF~~"],[20,"!!!GGGGGMOOO!PLJIGHGHGGHGGGFFFF~"],[20,"EFFFGGGGNM!T!!!R!LMIIIIHHHHHGGGGF~~"],[23,"!!!GGGIJKLK!M!JMIJJIIIHHHHHGGGG~!"],[24,"EFGGGGJJMK!O!!!L!JMIJIIHHHHGGGG~!"],[25,"!!!!GGGJJKMML!K!MLKJIIIHHHHGGGGF!"],[26,"!FFGGGJILKOM!N!!!LeMLIIIIHHHGGG~~"],[27,"!!!!GGGJJKKMMON!MMLKIJIIHHHHG~~~~"],[29,"FFGGGJIKJNL!O!!!U!KcKJJIIHHGG~~~~"],[30,"!!!!~GIJJKLMMK!K!MLKJJJIIHHGGG~~~~"],[31,"FFFGGIIKJML!M!U!!!Q!LLJJIHHGGGGGGF~"],[34,"!A~GIJJKKJLJON!NZKKJJIIHHGGGGGGGF~"],[35,"FFGIIJJLKNM!O!!!OQMLKJIHHHGGGGGGGF~"],[36,"~FGGIIJIKKLMMO!MOLMKKIIHHHHHGGGGGFF"],[37,"~~GIIJJKKMLOM!!!V!OcMIHIHHHHHGGGGGFG~"],[38,"!!!GIIIJJKLMRW!TNMLHIHIIHHHHGGGGGGGFF~"],[39,"~~FHIIIKJLK!S!!!!!MbKKJJJIIHHGGGGGGGFF~"],[40,"!!!GHIIJJJLLMNVVUIKIJKKJIIHHHHGGGGGFFFF~"],[41,"~~~HHIIJJKL!M!!!!!O!LPJJJIHHHHHGGGGGFFFF~"],[43,"~!FHIIJJKKKNMPO!JMIKIJIIIHHHHHGGGGGGFFFF~"],[44,"~GHHIIJJKKML!N!!!V!M!KMJJIIIHHHGGGGGGGGF~~"],[45,"~AFHIIJJJKKLLOK!J!INLLIKJJIIHHHGGGGGGGGGF!"],[46,"~GHHIIJJKKLL!L!P!!!_!McLKJJIIHHHHHGGGGGGG!"],[47,"~GFHIIIJJJKKLLLMK!J^IKIJHIHIHHHHHHGGGGGGGG"],[49,"FHHIIIJJJKKLK!O!!!!!!!M!O!NULLJJJJHHHHGGG~"],[51,"!!HHHIIIIJJKJKKLJMK!M!OPNNMLKKJJHHHHHGGGG"],[52,"~BDFHIIIJJKKLLNM!N!!!!!MhLdKMKKIIHHHHGGGG~"],[53,"!~FDHHIIHJHJKKLLJMNON!KWMNLMKLJIIHHHGGGGG~"],[54,"DFGHHHIIJJJKKKML!M!N!!!!!N!MeJKJIHHHHGGGG~~"],[56,"~ECHHHIIJJJIKIKJLJMKNN!PVNQKKJIHHHHHGGGGG~"],[57,"~HHHHIIIIJJKJLKML!N!Q!!!!!LNKKIIIHHHHGGGGG"],[59,"~F~~HIIIIJJJJKKLLLKMKT[!MLLKJIIIHHHHGGGGG~"],[61,"~~H~IIIJJJJKKLLMM!M!O!N!MOJKJJIIHHHHGGGG!"],[62,"F~~HIHIHIJJJKKKKLJLJ!MNKLKKJJIIIIHHHGGGG~"],[64,"~H~H~IIIJJKKKKLKML!!_!!N!LbKKIIIIHHHHGG~"],[65,"~~HHHIIIIJJ~JJIKJOOQPPNMLMJJJJIIIHHHHG~~"],[66,"~H~HIHIIJJJJKKLK!OW[_!!Q!M!KMKKIIIHHHHH~~"],[67,"EF~~HHII~IHJHJINNNOOQbQ!PPNMKKJI~IIHHHG~!"],[69,"~~H~HIIIIJJJKOMQNVO^O!!!!!M!JKJJIIIHHH~~"],[70,"E~~~HHIHI~IILLLLMMMMNNQR!ONKKJJIIIIHHH~~"],[72,"~H~HHIIIJJJJKKLLVM!L!O!!!!!LMKKJJIIH~~~"],[73,"FFH~HHIIHIJJJJKKLKKKKLKSK!MLJJJJIIIH~~~"],[74,"~~~HHIIIIIIJJKKKLKML!L!M!!!N!LMJJJ~~~~~"],[75,"BCGHHH~IIHIIJJJKKKKLJMLNO!OPMLKKJJ~~~~!"],[78,"~H~HHIHHIJJJJJKKLKMK!N!!!!!N!LLKJ~~~~~"],[79,"GGHH~GHIIIJJJJJKJKKMMNNPP!ZNKLKJJJI~~~~"],[81,"~HHFGHIIIJJJJKJKJMMPM_O!!!!!OVLLJJ~~~~"],[82,"FGFGHH~IIIIJJJJKKKLLMLMLPL!ONLKKJI~I~H~~"],[83,"GEFGHHHIIIIJJJJKKKKLLNKbO!!!O!MOKK~~~~~~~"],[84,"~EEGHHHHIII~IJJJKKKKKJMMON!NZMMJKI~IIH~~~"],[85,"EEFFGGHHIIIIIJJJJJKKLMM]O_!!!!N!MPKKJJII~~~"],[86,"!~~FFGHHHIIIIIIIJJJKLLMMMMNN!O!MLJKIIJII~~~"],[87,"EDEEFFGGHHHIIIIJJJKKLLLNM[M!Q!!!M!KMJMII~~~~"],[89,"!~DCFFGGHHIIIIIJIJKKKKKLLMMON!MMKKIJJJJ~~~~"],[90,"DDDEEFFGGHHIIIIJJJJKKKLLRM!M!!!!!O!JKJJIJI~~~~~"],[95,"FFGHHHHIIII~JJJ~KKKLLLLLMMN!P!JJJJJJIIIII~~"],[96,"DEFGGHHIIIIJJJJ~KKKKLLMMTM!W!!!LQKMKKJJII~~"],[101,"F~FGGHIIJJJJJKKKKLLMMNNQUcNJLKKKJJJII~~~~"],[102,"DEDFEFGHHIIJJKKKKKLLNLPROHACDEGHJK~JK~~~~~"],[106,"EFFGGHHIIJJJKKKKLLLLLGABDDGHJJJJJJ~~~~~"],[107,"EEFFGGHHIIJJJKKKKLMKFABCEGIJKNKLJKIJI~~"],[110,"EFFGGHHHI~IJJJJKJFABCEFIJKKJJJJJJIIIH"],[113,"FFGGGGHHIIIIJHEABCFFIJNMNSKPJLJJII~"],[116,"GFFGGHGHHIGEABCFGIJLNMQLLJKJJJJJ~"],[118,"E~FGGGGHFDABCEEHHKKNPSTMZKNKKJK~"],[120,"FFFFFGFDABCFFHHJKMMNTMNLKKKJL~~"],[123,"EFEED~BCDEGGJKLNNQUUXWNYKM~K~"],[126,"E@~BBDFGHJJJKKKNPUVMMLKJJJ~"],[127,"~~~~~~~HJJKKKMKPOQTSQULWMNM"],[128,"F~~~~~HJ~JJJKJLLMMRMSMLKK~~"],[135,"~~IJKK~LLNNOQQSSWUL~K~"],[136,"JI~I~J~JJKLLNMS~OLLJ~~"],[139,"HFIJJJKKKMLORQRPNOLK"],[140,"~IIIIJJKJKLLMPNOOLN~"],[141,"EEGEIHIJJKLMMLMLOEH~"],[143,"HHHHIIJJJKKKLLOLN~~"],[146,"!DCHHJJJHIELG~~~~"],[148,"~HHIIIIIIJK~~~~M"],[149,"FCHFIFHFHGK~J~L~"],[150,"GHHHHHIJI~~LLM~L"],[152,"EHFGFHGIHJ~J~J~~"],[153,"GFG~HHII~~JHI~J~~~~"],[155,"EHEEGHII~~H~G~F~~~"],[156,"~E~F~H~~~HFHII~~~~"],[157,"C~DDG~D~~~F~GFIJ~~"],[161,"F~F~~~FGIIJ~~~~"],[164,"~E~~~GEIGII~~"],[165,"E~~~GGHII~~~I"],[170,"EGGHHHJ~"],[172,"GGHH~~"],[173,"~FFFG"],[174,"~~FG"],[175,"~EH"]];
+  const MAGIC = [2, 8, 20, 28, 50, 82, 126];
+  const ISL = { n: 184, z: 114, rn: 6.5, rz: 5 };
+  const SUP = s => String(s).replace(/[-0-9]/g, c => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
+  const cellAt = (z, n) => { const r = NUC[z - 1]; if(!r || !r[1]) return null; const k = n - r[0]; if(k < 0 || k >= r[1].length) return null; const c = r[1][k]; return c === ' ' ? null : c; };
+  // 색: 짧을수록 깊은 바다, 길수록 육지, 안정하면 하얀 산꼭대기
+  const STOPS = [[10, [29, 52, 122]], [20, [47, 98, 176]], [27, [63, 176, 201]], [33, [127, 224, 192]], [40, [199, 240, 138]], [48, [255, 224, 138]], [60, [255, 190, 120]]];
+  const colOf = c => {
+    if(c === '!') return [244, 246, 255];
+    if(c === '~') return [90, 96, 130];
+    const b = c.charCodeAt(0) - 48;
+    if(b <= STOPS[0][0]) return STOPS[0][1];
+    for(let i = 1; i < STOPS.length; i++) if(b <= STOPS[i][0]){ const [b0, c0] = STOPS[i - 1], [b1, c1] = STOPS[i], f = (b - b0) / (b1 - b0); return c0.map((v, j) => Math.round(v + (c1[j] - v) * f)); }
+    return STOPS[STOPS.length - 1][1];
+  };
+  const fmtT = c => {
+    if(c === '!') return EN() ? 'Stable' : '안정 (붕괴하지 않음)';
+    if(c === '~') return EN() ? 'Half-life not measured' : '반감기 측정값 없음';
+    const k = c.charCodeAt(0) - 48 - 24;
+    const U = EN() ? [[-9, 'ns'], [-6, 'μs'], [-3, 'ms'], [0, 's'], [2, 'min'], [4, 'h'], [5, 'days'], [8, 'years']] : [[-9, '나노초'], [-6, '마이크로초'], [-3, '밀리초'], [0, '초'], [2, '분'], [4, '시간'], [5, '일'], [8, '년']];
+    const DIV = { '-9': 1e-9, '-6': 1e-6, '-3': 1e-3, '0': 1, '2': 60, '4': 3600, '5': 86400, '8': 3.156e7 };
+    if(k < -9) return (EN() ? 'about 10' : '약 10') + SUP(k) + (EN() ? ' s' : '초');
+    let u = U[0]; U.forEach(x => { if(k >= x[0]) u = x; });
+    const v = Math.pow(10, k) / DIV[u[0]];
+    if(u[0] === 8 && v >= 1e12) return (EN() ? 'about 10' : '약 10') + SUP(Math.round(Math.log10(v))) + (EN() ? ' years' : '년');
+    if(u[0] === 8 && v >= 1e8) return EN() ? 'about ' + (v >= 1e9 ? Math.round(v / 1e9) + ' billion years' : Math.round(v / 1e6) + ' million years') : '약 ' + Math.round(v / 1e8).toLocaleString() + '억 년';
+    if(u[0] === 8 && v >= 1e4) return EN() ? 'about ' + (v >= 1e6 ? Math.round(v / 1e6) + ' million years' : Math.round(v / 1e3) + ' thousand years') : '약 ' + Math.round(v / 1e4).toLocaleString() + '만 년';
+    const r = v >= 10 ? Math.round(v) : Math.round(v * 10) / 10;
+    return (EN() ? 'about ' : '약 ') + r.toLocaleString() + (EN() ? ' ' : '') + u[1];
+  };
+  const elName = z => { try{ const e = byNum[z]; return EN() ? e.en : e.ko; }catch(_){ return ''; } };
+  const elSym = z => { try{ return byNum[z].s; }catch(_){ return '?'; } };
+
+  /* ── 안정성의 섬 지도 ── */
+  let V = null, RAF = 0, MAGON = true;
+  function islMap(box){
+    const cv = box.querySelector('canvas'), x = cv.getContext('2d'), tip = box.querySelector('.isl-tip');
+    let W = 0, H = 0, DPR = 1;
+    if(!V) V = { cx: 96, cy: 60, s: 0 };   // s(칸 크기 px)는 처음에 화면에 맞춘다
+    const fit = () => Math.min(W / 206, H / 136);
+    const resize = () => { const r = box.getBoundingClientRect(); DPR = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * DPR; cv.height = H * DPR; if(!V.s) V.s = fit(); };
+    resize();
+    const toS = (n, z) => [W / 2 + (n - V.cx) * V.s, H / 2 - (z - V.cy) * V.s];
+    const toW = (px, py) => [V.cx + (px - W / 2) / V.s, V.cy - (py - H / 2) / V.s];
+    let anim = null;
+    function draw(now){
+      RAF = 0;
+      if(!document.body.contains(cv)) return;
+      if(anim){ const k = Math.min(1, (now - anim.t0) / 1400), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        V.cx = anim.a.cx + (anim.b.cx - anim.a.cx) * e; V.cy = anim.a.cy + (anim.b.cy - anim.a.cy) * e; V.s = anim.a.s * Math.pow(anim.b.s / anim.a.s, e); if(k >= 1) anim = null; }
+      const t = now / 1000;
+      x.setTransform(DPR, 0, 0, DPR, 0, 0);
+      // 바다
+      const sea = x.createLinearGradient(0, 0, 0, H); sea.addColorStop(0, '#081232'); sea.addColorStop(1, '#040817');
+      x.fillStyle = sea; x.fillRect(0, 0, W, H);
+      if(!window.RX_LOWPOW && !RX_REDUCED){
+        x.strokeStyle = 'rgba(120,150,255,.05)'; x.lineWidth = 1;
+        for(let y = 0; y < H + 20; y += 22){ x.beginPath(); for(let px = 0; px <= W; px += 16){ const yy = y + Math.sin(px * .03 + t * .8 + y * .1) * 3; px ? x.lineTo(px, yy) : x.moveTo(px, yy); } x.stroke(); }
+      }
+      // 섬 (예측): 은은한 모래톱 + 점선 해안
+      { const [sx, sy] = toS(ISL.n, ISL.z), rx = ISL.rn * V.s, ry = ISL.rz * V.s, pul = 1 + Math.sin(t * 1.6) * .04;
+        const g = x.createRadialGradient(sx, sy, 0, sx, sy, rx * 1.6); g.addColorStop(0, 'rgba(140,245,210,.42)'); g.addColorStop(.55, 'rgba(140,245,210,.14)'); g.addColorStop(1, 'rgba(140,245,210,0)');
+        x.fillStyle = g; x.beginPath(); x.ellipse(sx, sy, rx * 1.6, ry * 1.6, 0, 0, 6.283); x.fill();
+        x.setLineDash([6, 5]); x.lineDashOffset = -t * 8; x.strokeStyle = 'rgba(160,255,220,.85)'; x.lineWidth = 1.6;
+        x.beginPath(); for(let q = 0; q <= 64; q++){ const a = q / 64 * 6.283, w = 1 + .12 * Math.sin(a * 3 + 1) + .07 * Math.sin(a * 5); const px = sx + Math.cos(a) * rx * w * pul, py = sy + Math.sin(a) * ry * w * pul; q ? x.lineTo(px, py) : x.moveTo(px, py); } x.closePath(); x.stroke(); x.setLineDash([]);
+        if(V.s > 2.2){ x.font = `900 ${Math.max(11, Math.min(18, V.s * 1.6))}px system-ui,sans-serif`; x.textAlign = 'center'; x.fillStyle = '#c9ffe9';
+          x.fillText(EN() ? 'Island of stability' : '안정성의 섬', sx, sy - ry * 1.15 - 6); x.font = `700 ${Math.max(9.5, Math.min(13, V.s * 1.1))}px system-ui,sans-serif`; x.fillStyle = 'rgba(201,255,233,.75)'; x.fillText(EN() ? '(predicted)' : '(예측)', sx, sy - ry * 1.15 + 9); } }
+      // 마법수 선
+      if(MAGON){
+        x.lineWidth = 1; x.font = '800 10px ui-monospace,Menlo,monospace';
+        MAGIC.concat([184]).forEach(m => { const [px] = toS(m - .5, 0); if(px < -2 || px > W + 2) return; x.strokeStyle = m === 184 ? 'rgba(160,255,220,.4)' : 'rgba(255,212,59,.28)'; if(m === 184) x.setLineDash([4, 4]); x.beginPath(); x.moveTo(px, 0); x.lineTo(px, H); x.stroke(); x.setLineDash([]); x.fillStyle = m === 184 ? 'rgba(160,255,220,.8)' : 'rgba(255,212,59,.75)'; x.textAlign = 'left'; x.fillText('N ' + m, px + 3, H - 8); });
+        MAGIC.concat([114]).forEach(m => { const [, py] = toS(0, m - .5); if(py < -2 || py > H + 2) return; x.strokeStyle = m === 114 ? 'rgba(160,255,220,.4)' : 'rgba(255,212,59,.28)'; if(m === 114) x.setLineDash([4, 4]); x.beginPath(); x.moveTo(0, py); x.lineTo(W, py); x.stroke(); x.setLineDash([]); x.fillStyle = m === 114 ? 'rgba(160,255,220,.8)' : 'rgba(255,212,59,.75)'; x.textAlign = 'left'; x.fillText('Z ' + m, 6, py - 4); });
+      }
+      // 핵종 칸
+      const [n0, z1] = toW(0, 0), [n1, z0] = toW(W, H), s = V.s, pad = s > 6 ? 1 : s > 3 ? .5 : 0;
+      for(let z = Math.max(1, Math.floor(z0)); z <= Math.min(118, Math.ceil(z1)); z++){
+        const r = NUC[z - 1]; if(!r || !r[1]) continue;
+        const str = r[1];
+        for(let k = 0; k < str.length; k++){
+          const c = str[k]; if(c === ' ') continue; const n = r[0] + k; if(n < n0 - 1 || n > n1 + 1) continue;
+          const [px, py] = toS(n - .5, z + .5), [R, G, B] = colOf(c);
+          x.fillStyle = `rgb(${R},${G},${B})`; x.fillRect(px + pad, py + pad, s - pad * 2, s - pad * 2);
+          if(c === '!' && s > 3){ x.strokeStyle = 'rgba(143,155,255,.9)'; x.lineWidth = 1; x.strokeRect(px + pad + .5, py + pad + .5, s - pad * 2 - 1, s - pad * 2 - 1); }
+          if(s > 26){ x.fillStyle = c === '!' || (c.charCodeAt(0) - 48) > 36 ? '#111430' : '#f2f4ff'; x.textAlign = 'center'; x.font = `800 ${s * .3}px system-ui,sans-serif`;
+            x.fillText(elSym(z), px + s / 2, py + s * .47); x.font = `700 ${s * .2}px system-ui,sans-serif`; x.fillText(String(z + n), px + s / 2, py + s * .78); }
+        }
+        // 원소 기호 (줄 왼쪽 끝)
+        if(s > 7 && s <= 26){ const [px, py] = toS(r[0] - 1, z); x.fillStyle = 'rgba(200,206,255,.75)'; x.font = `800 ${Math.min(11, s * .85)}px system-ui,sans-serif`; x.textAlign = 'right'; x.fillText(elSym(z), px + s * .4, py + s * .32); }
+      }
+      // 축
+      x.fillStyle = 'rgba(200,206,255,.6)'; x.font = '800 11px system-ui,sans-serif'; x.textAlign = 'right';
+      x.fillText(EN() ? 'Neutrons N →' : '중성자 수 N →', W - 12, 60);
+      x.save(); x.translate(16, H - 40); x.rotate(-Math.PI / 2); x.textAlign = 'left'; x.fillText(EN() ? 'Protons Z →' : '양성자 수 Z →', 0, 0); x.restore();
+      if(anim || (!window.RX_LOWPOW && !RX_REDUCED)) RAF = requestAnimationFrame(draw);
+    }
+    const kick = () => { if(!RAF) RAF = requestAnimationFrame(draw); };
+    box._kick = kick;
+    box._go = (b) => { anim = { t0: performance.now(), a: { cx: V.cx, cy: V.cy, s: V.s }, b }; kick(); };
+    box._fit = () => box._go({ cx: 96, cy: 60, s: fit() });
+    // 끌기 · 확대
+    const P = new Map(); let pinch = null;
+    const clampS = v => Math.max(fit() * .8, Math.min(60, v));
+    cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); P.set(e.pointerId, [e.clientX, e.clientY]); anim = null; box.classList.add('drag'); box._moved = 0;
+      if(P.size === 2){ const [a, b] = [...P.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: V.s }; } });
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      if(P.has(e.pointerId)){
+        const o = P.get(e.pointerId); P.set(e.pointerId, [e.clientX, e.clientY]);
+        if(P.size === 2 && pinch){ const [a, b] = [...P.values()]; V.s = clampS(pinch.s * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d); }
+        else if(P.size === 1){ V.cx -= (e.clientX - o[0]) / V.s; V.cy += (e.clientY - o[1]) / V.s; box._moved += Math.abs(e.clientX - o[0]) + Math.abs(e.clientY - o[1]); }
+        tip.classList.remove('on'); kick(); return;
+      }
+      showTip(mx, my);
+    });
+    const up = e => { P.delete(e.pointerId); if(P.size < 2) pinch = null; if(!P.size) box.classList.remove('drag');
+      if(e.type === 'pointerup' && (box._moved || 0) < 6){ const r = cv.getBoundingClientRect(); tapAt(e.clientX - r.left, e.clientY - r.top); } };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('pointerleave', () => tip.classList.remove('on'));
+    cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [wn, wz] = toW(mx, my);
+      V.s = clampS(V.s * Math.exp(-e.deltaY * .0015)); V.cx = wn - (mx - W / 2) / V.s; V.cy = wz + (my - H / 2) / V.s; anim = null; kick(); }, { passive: false });
+    function showTip(mx, my){
+      const [wn, wz] = toW(mx, my), n = Math.round(wn), z = Math.round(wz);
+      const inIsl = Math.pow((wn - ISL.n) / ISL.rn, 2) + Math.pow((wz - ISL.z) / ISL.rz, 2) < 1;
+      const c = z >= 1 && z <= 118 ? cellAt(z, n) : null;
+      if(!c && !inIsl){ tip.classList.remove('on'); return; }
+      tip.innerHTML = c ? `<b>${SUP(z + n)}${elSym(z)}</b> ${elName(z)}-${z + n}<br><i>Z ${z} · N ${n}</i><br>${fmtT(c)}`
+        : `<b>${EN() ? 'Island of stability' : '안정성의 섬'}</b><br><i>${EN() ? 'Predicted around Z 114, N 184' : '양성자 114 · 중성자 184 근처 (예측)'}</i><br>${EN() ? 'Nobody has landed here yet. Tap to plant a flag!' : '아직 아무도 도착 못 했어요. 눌러서 깃발 꽂기!'}`;
+      tip.style.left = Math.min(W - 170, mx + 14) + 'px'; tip.style.top = Math.min(H - 80, my + 14) + 'px'; tip.classList.add('on');
+    }
+    function tapAt(mx, my){
+      const [wn, wz] = toW(mx, my);
+      if(Math.pow((wn - ISL.n) / ISL.rn, 2) + Math.pow((wz - ISL.z) / ISL.rz, 2) < 1){
+        let first = false; try{ first = localStorage.getItem('pt_isl') !== '1'; localStorage.setItem('pt_isl', '1'); }catch(_){}
+        try{ rxToast(EN() ? 'Special find' : '특수 발견', EN() ? 'Island of stability' : '안정성의 섬', EN() ? 'You planted a flag where no lab has reached yet' : '아직 어떤 실험실도 못 간 곳에 깃발을 꽂았어요'); }catch(_){}
+        try{ SFX.pick(); }catch(_){}
+        if(first){ const bd = document.createElement('div'); bd.className = 'isl-badge'; bd.textContent = EN() ? '⚑ Landed' : '⚑ 섬 도착'; box.appendChild(bd); }
+      } else showTip(mx, my);
+    }
+    addEventListener('resize', () => { if(document.body.contains(cv)){ resize(); kick(); } });
+    kick();
+  }
+  function renderIsl(){
+    const landed = (() => { try{ return localStorage.getItem('pt_isl') === '1'; }catch(_){ return false; } })();
+    const grad = STOPS.map((s, i) => `rgb(${s[1].join(',')}) ${Math.round(i / (STOPS.length - 1) * 88)}%`).join(',') + ',#f4f6ff 100%';
+    qBodyEl.innerHTML = `<div class="isl">
+      <div class="isl-lead">${EN() ? 'Every square is one kind of atomic <b>nucleus</b>: up for more protons, right for more neutrons. White squares never decay. The rest fall apart, from billions of years down to a blink. Far past the heaviest elements we know, physicists predict an <b>island</b> where nuclei might last much longer.'
+        : '네모 하나가 원자<b>핵</b> 한 종류예요. 위로 갈수록 양성자가, 오른쪽으로 갈수록 중성자가 많아요. 하얀 칸은 영원히 안 깨지는 안정한 핵이고, 나머지는 몇십억 년에서 눈 깜짝할 새까지 저마다 시간이 지나면 깨져요. 지금 아는 가장 무거운 원소들 너머, 바다 건너에 다시 오래 버티는 핵이 모인 <b>섬</b>이 있을 거라고 과학자들은 예측해요.'}</div>
+      <div class="isl-map"><canvas></canvas>
+        <div class="isl-tools"><button type="button" data-a="fit">${EN() ? 'Whole map' : '전체 보기'}</button><button type="button" data-a="sail">⛵ ${EN() ? 'Sail to the island' : '섬으로 항해'}</button><button type="button" data-a="valley">${EN() ? 'Valley of stability' : '안정의 계곡'}</button><button type="button" data-a="mag" class="${MAGON ? 'on' : ''}">${EN() ? 'Magic numbers' : '마법수 선'}</button></div>
+        ${landed ? `<div class="isl-badge">${EN() ? '⚑ Landed' : '⚑ 섬 도착'}</div>` : ''}
+        <div class="isl-tip"></div>
+        <div class="isl-leg">${EN() ? 'Half-life' : '반감기'}<div class="bar" style="background:linear-gradient(90deg,${grad})"></div><div class="lb"><span>${EN() ? '1 ns' : '1나노초'}</span><span>${EN() ? '1 s' : '1초'}</span><span>${EN() ? '1 yr' : '1년'}</span><span>${EN() ? 'stable' : '안정'}</span></div></div>
+      </div>
+      <div class="isl-cards">
+        <div class="isl-card"><div class="k">01 // ${EN() ? 'WHY' : '왜 깨질까'}</div><h4>${EN() ? 'Heavy nuclei fall apart' : '무거울수록 깨지기 쉬워요'}</h4><p>${EN() ? 'Protons push each other apart. The <b>strong force</b> holds the nucleus together but only reaches its nearest neighbours, so big nuclei need extra neutrons as glue. Past lead and bismuth, nothing is truly stable.' : '양성자끼리는 서로 밀어내요. 핵을 붙잡는 <b>강한 핵력</b>은 바로 옆 입자에만 닿아서, 핵이 커질수록 중성자를 더 넣어 풀처럼 붙여야 해요. 그래서 계곡이 오른쪽으로 휘어요. 납과 비스무트를 넘으면 영원히 안정한 핵은 없어요.'}</p></div>
+        <div class="isl-card"><div class="k">02 // ${EN() ? 'MAGIC' : '마법수'}</div><h4>${EN() ? 'Magic numbers' : '마법수: 2, 8, 20, 28, 50, 82, 126'}</h4><p>${EN() ? 'Protons and neutrons fill shells like electrons do. A full shell (2, 8, 20, 28, 50, 82, 126) makes a nucleus extra sturdy. Lead-208 is <b>doubly magic</b>: 82 protons and 126 neutrons.' : '양성자와 중성자도 전자처럼 껍질을 채워요. 껍질이 꽉 차는 수가 되면 핵이 유난히 튼튼해져요. 납-208은 양성자 82개, 중성자 126개로 <b>둘 다 마법수</b>라 아주 단단해요. 지도의 노란 선이 마법수예요.'}</p></div>
+        <div class="isl-card"><div class="k">03 // ${EN() ? 'THE ISLAND' : '섬은 어디'}</div><h4>${EN() ? 'Not landed yet' : '아직 아무도 못 갔어요'}</h4><p>${EN() ? 'The next magic numbers are predicted near <b>114 protons</b> (maybe 120 or 126) and <b>184 neutrons</b>. The heaviest atoms made so far stop around 177 neutrons, because we cannot yet fuse nuclei with enough neutrons. Nuclei on the island might last minutes, days, or even longer — nobody knows.' : '다음 마법수는 <b>양성자 114개</b>(120이나 126이라는 예측도 있어요), <b>중성자 184개</b> 근처라고 예측해요. 지금까지 만든 가장 무거운 핵들은 중성자 177개 언저리에서 멈췄어요. 중성자를 그만큼 많이 가진 재료끼리 합치는 방법이 아직 없거든요. 섬의 핵은 몇 분, 며칠, 어쩌면 더 오래 버틸지도 모르는데, 아직 아무도 몰라요.'}</p></div>
+      </div></div>`;
+    const box = qBodyEl.querySelector('.isl-map');
+    cancelAnimationFrame(RAF); RAF = 0;
+    islMap(box);
+    qBodyEl.querySelectorAll('.isl-tools button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); const a = b.dataset.a; try{ SFX.tick(); }catch(_){}
+      if(a === 'fit') box._fit();
+      if(a === 'sail') box._go({ cx: 178, cy: 110, s: Math.min(box.clientWidth / 50, box.clientHeight / 34) });
+      if(a === 'valley') box._go({ cx: 60, cy: 45, s: Math.min(box.clientWidth / 70, box.clientHeight / 46) });
+      if(a === 'mag'){ MAGON = !MAGON; b.classList.toggle('on', MAGON); box._kick(); } }));
+  }
+
+  /* ── 주기율표의 역사 ── */
+  let HSEL = 'mend';
+  const M71 = [   // 멘델레예프 1871년 표 (Reihe 1~12 × Gruppe I~VIII). '-n' = 빈칸(원자량 n 예측)
+    [['H', 1]],
+    [['Li', 7], ['Be', 9.4], ['B', 11], ['C', 12], ['N', 14], ['O', 16], ['F', 19]],
+    [['Na', 23], ['Mg', 24], ['Al', 27.3], ['Si', 28], ['P', 31], ['S', 32], ['Cl', 35.5]],
+    [['K', 39], ['Ca', 40], ['-', 44], ['Ti', 48], ['V', 51], ['Cr', 52], ['Mn', 55], ['Fe 56 · Co 59 · Ni 59 · Cu 63']],
+    [['(Cu', 63], ['Zn', 65], ['-', 68], ['-', 72], ['As', 75], ['Se', 78], ['Br', 80]],
+    [['Rb', 85], ['Sr', 87], ['?Yt', 88], ['Zr', 90], ['Nb', 94], ['Mo', 96], ['-', 100], ['Ru 104 · Rh 104 · Pd 106 · Ag 108']],
+    [['(Ag', 108], ['Cd', 112], ['In', 113], ['Sn', 118], ['Sb', 122], ['Te', 125], ['J', 127]],
+    [['Cs', 133], ['Ba', 137], ['?Di', 138], ['?Ce', 140], [''], [''], [''], ['']],
+    [[''], [''], [''], [''], [''], [''], ['']],
+    [[''], [''], ['?Er', 178], ['?La', 180], ['Ta', 182], ['W', 184], [''], ['Os 195 · Ir 197 · Pt 198 · Au 199']],
+    [['(Au', 199], ['Hg', 200], ['Tl', 204], ['Pb', 207], ['Bi', 208], [''], ['']],
+    [[''], [''], [''], ['Th', 231], [''], ['U', 240], ['']]
+  ];
+  const PRED = {
+    44: { ko: ['에카붕소 (원자량 44)', '스칸듐 Sc', '1879년 닐손이 발견. 원자량 45'], en: ['Eka-boron (mass 44)', 'Scandium Sc', 'Found by Nilson in 1879. Mass 45'] },
+    68: { ko: ['에카알루미늄 (원자량 68)', '갈륨 Ga', '1875년 부아보드랑이 발견. 처음 잰 밀도가 4.7이라 예언(5.9)과 달랐는데, 멘델레예프가 "다시 재 보라"고 했고 정말 5.9가 나왔어요'], en: ['Eka-aluminium (mass 68)', 'Gallium Ga', 'Found by Lecoq de Boisbaudran in 1875. His first density, 4.7, missed the prediction of 5.9 — Mendeleev told him to measure again, and it came out 5.9'] },
+    72: { ko: ['에카규소 (원자량 72)', '저마늄 Ge', '1886년 빙클러가 발견. 아래 "예언 적중" 표에서 비교해 보세요'], en: ['Eka-silicon (mass 72)', 'Germanium Ge', 'Found by Winkler in 1886. Compare in "Predictions come true"'] },
+    100: { ko: ['에카망가니즈 (원자량 100)', '테크네튬 Tc', '자연에서는 끝내 못 찾고, 1937년 실험실에서 처음 만들어졌어요. 그래서 이름이 "인공"이라는 뜻이에요'], en: ['Eka-manganese (mass 100)', 'Technetium Tc', 'Never found in nature; first made in a lab in 1937, hence a name meaning "artificial"'] }
+  };
+  let PSEL = 72;
+  const HIS = [
+    { id: 'lav', y: '1789', ko: ['라부아지에의 원소 33개', '앙투안 라부아지에'], en: ['Lavoisier\'s 33 elements', 'Antoine Lavoisier'],
+      p: { ko: '"더 이상 쪼갤 수 없는 물질"을 원소라고 정하고, 처음으로 원소 목록을 만들었어요. 33개 중엔 <b>빛과 열소(열의 원소)</b>, 그리고 나중에 화합물로 밝혀진 석회·실리카 같은 "흙"도 섞여 있었어요. 아직 규칙은 없고 그냥 분류한 목록이에요.', en: 'He defined an element as a substance that cannot be broken down, and made the first list. Among the 33 were <b>light and caloric (heat)</b>, and "earths" like lime and silica that later turned out to be compounds. A list, not yet a pattern.' } },
+    { id: 'tri', y: '1829', ko: ['세쌍원소', '요한 되베라이너'], en: ['Triads', 'Johann Döbereiner'],
+      p: { ko: '성질이 비슷한 원소 셋을 원자량 순으로 놓으면, <b>가운데 원소의 원자량이 양쪽의 평균</b>과 거의 같다는 걸 알아챘어요. 원소 사이에 숫자 규칙이 있다는 첫 힌트예요.', en: 'Put three similar elements in order of atomic mass, and <b>the middle one\'s mass is close to the average</b> of the other two. The first hint that elements follow a number pattern.' } },
+    { id: 'helix', y: '1862', ko: ['지구 나선', '알렉상드르 드 샹쿠르투아'], en: ['The telluric screw', 'Alexandre-Émile de Chancourtois'],
+      p: { ko: '원기둥에 원자량 순으로 원소를 나선처럼 감았더니, <b>한 바퀴(16칸) 차이마다 비슷한 원소가 세로로 줄을 섰어요.</b> 처음으로 주기성을 그림으로 보여 줬지만, 논문에 그림이 빠지는 바람에 거의 주목받지 못했어요.', en: 'He wound the elements in order of mass around a cylinder, and <b>similar elements lined up vertically, one turn (16 units) apart.</b> The first picture of periodicity — but the journal left out the diagram, so almost nobody noticed.' } },
+    { id: 'oct', y: '1865', ko: ['옥타브 법칙', '존 뉴랜즈'], en: ['Law of octaves', 'John Newlands'],
+      p: { ko: '원자량 순으로 늘어놓으면 <b>8번째마다 성질이 되풀이</b>된다고 했어요. 도레미파솔라시 다음 도가 오는 것처럼요. 칼슘까지는 잘 맞았는데 그 뒤로 어긋났고, 학회에서 "알파벳 순으로도 해 봤냐"는 놀림까지 받았어요. 그래도 나중에 업적을 인정받아 상을 받았어요.', en: 'In order of mass, <b>properties repeat every eighth element</b>, like notes in a musical octave. It worked up to calcium, then broke down. At the society meeting someone asked if he had tried alphabetical order. He was honoured for it years later.' } },
+    { id: 'mend', y: '1869', ko: ['멘델레예프의 주기율표', '드미트리 멘델레예프'], en: ['Mendeleev\'s periodic table', 'Dmitri Mendeleev'],
+      p: { ko: '그때 알려진 원소 63개를 원자량 순으로 놓되, 성질이 맞지 않으면 <b>과감히 빈칸을 남기고 "아직 못 찾은 원소가 있다"</b>고 예언했어요. 그게 진짜 주기율표의 시작이에요. 아래는 1871년에 고친 표예요. <b>노란 빈칸</b>을 눌러 보세요. 같은 시기 독일의 로타르 마이어도 비슷한 표를 만들었지만, 예언까지 한 건 멘델레예프였어요.', en: 'He ordered the 63 known elements by mass, but when properties did not fit, he <b>boldly left gaps and predicted undiscovered elements</b>. That is the real start of the periodic table. Below is his revised 1871 table — tap a <b>yellow gap</b>. Lothar Meyer in Germany built a similar table at the same time, but Mendeleev made the predictions.' } },
+    { id: 'pred', y: '1875–86', ko: ['예언 적중', '갈륨 · 스칸듐 · 저마늄'], en: ['Predictions come true', 'Gallium · Scandium · Germanium'],
+      p: { ko: '빈칸 자리에서 정말로 원소가 하나씩 발견됐어요. 특히 저마늄은 멘델레예프가 15년 전에 적어 둔 성질과 놀랄 만큼 똑같았어요. 이걸로 주기율표는 확실하게 인정받았어요.', en: 'One by one, elements turned up in the gaps. Germanium matched what Mendeleev had written 15 years earlier almost exactly, and that won the periodic table its place.' } },
+    { id: 'noble', y: '1894–98', ko: ['새로운 세로줄', '레일리 · 램지'], en: ['A whole new column', 'Rayleigh · Ramsay'],
+      p: { ko: '공기에서 아르곤(1894)을 찾았는데, 표 어디에도 들어갈 자리가 없었어요. 곧 헬륨·네온·크립톤·제논까지 줄줄이 나오자 <b>표 오른쪽에 세로줄 하나를 통째로 새로 붙였어요.</b> 지금의 18족, 비활성 기체예요. 주기율표가 예상 못 한 것까지 품을 수 있다는 걸 보여 줬어요.', en: 'Argon turned up in air in 1894 with no place to go. Then helium, neon, krypton and xenon followed, so <b>a whole new column was added</b> — today\'s group 18, the noble gases. The table could even absorb a surprise.' } },
+    { id: 'mos', y: '1913', ko: ['원자번호의 발견', '헨리 모즐리'], en: ['Atomic number', 'Henry Moseley'],
+      p: { ko: 'X선으로 원소를 비춰 보고, 순서를 정하는 진짜 기준이 원자량이 아니라 <b>핵 속 양성자 수(원자번호)</b>라는 걸 밝혔어요. 멘델레예프가 감으로 뒤바꿔 둔 자리들이 정확히 설명됐어요. 모즐리는 2년 뒤 27살에 1차 세계대전에서 전사했어요.', en: 'Shining X-rays on elements, he showed the true order is not mass but <b>the number of protons — the atomic number</b>. It explained the swaps Mendeleev had made by instinct. Moseley was killed in World War I two years later, aged 27.' } },
+    { id: 'sea', y: '1945', ko: ['악티늄족을 아래로', '글렌 시보그'], en: ['Actinides move down', 'Glenn Seaborg'],
+      p: { ko: '우라늄 너머 원소들을 만들다 보니 성질이 전이 금속이 아니라 란타넘족과 닮았어요. 그래서 <b>악티늄족을 란타넘족 아래 따로 한 줄</b>로 빼자고 했어요. 다들 말렸지만 결국 그가 맞았고, 지금 표 아래 두 줄이 그렇게 생겼어요. 시보그는 노벨상을 받았고, 106번 시보귬은 살아 있는 사람 이름을 딴 첫 원소예요.', en: 'Making elements past uranium, he saw they behaved like the lanthanides, not transition metals, and proposed <b>a separate actinide row under the lanthanides</b>. Colleagues warned him off; he was right. That is why the table has two rows at the bottom. Element 106, seaborgium, was the first named after a living person.' } },
+    { id: 'full', y: '2016', ko: ['7주기 완성', 'IUPAC'], en: ['Period 7 complete', 'IUPAC'],
+      p: { ko: '113번 니호늄, 115번 모스코븀, 117번 테네신, 118번 오가네손의 이름이 정해지면서 <b>7주기가 꽉 찼어요.</b> 118칸이 전부 채워진 지금의 모습이에요. 2019년은 멘델레예프 주기율표 150주년이라 "국제 주기율표의 해"였어요.', en: 'Nihonium (113), moscovium (115), tennessine (117) and oganesson (118) were named and <b>period 7 was full</b> — all 118 squares, as you see it today. 2019, the table\'s 150th birthday, was the International Year of the Periodic Table.' } },
+    { id: 'next', y: '???', ko: ['다음은?', '8주기 · 안정성의 섬'], en: ['What next?', 'Period 8 · the island'],
+      p: { ko: '지금 여러 연구소가 <b>119번, 120번</b>을 만들려고 하고 있어요. 성공하면 표에 8번째 줄이 생겨요. 그리고 그 너머 어딘가에 오래 버티는 원소들의 "안정성의 섬"이 있을지도 몰라요.', en: 'Labs are now chasing <b>elements 119 and 120</b>. Make one and the table grows an eighth row. And somewhere past that, there may be an island of longer-lived elements.' } }
+  ];
+  function vis(id){
+    const en = EN();
+    if(id === 'lav'){
+      const G = en ? [['Light & heat & gases', 'Light, caloric, oxygen, nitrogen, hydrogen'], ['Non-metals', 'Sulfur, phosphorus, carbon + three acid "radicals"'], ['Metals (17)', 'Antimony, silver, arsenic, bismuth, cobalt, copper, tin, iron, manganese, mercury, molybdenum, nickel, gold, platinum, lead, tungsten, zinc'], ['Earths', 'Lime, magnesia, baryta, alumina, silica']]
+        : [['빛 · 열 · 기체', '빛, 열소, 산소, 질소, 수소'], ['비금속', '황, 인, 탄소 + 산을 만드는 "기" 3개'], ['금속 (17개)', '안티모니, 은, 비소, 비스무트, 코발트, 구리, 주석, 철, 망가니즈, 수은, 몰리브데넘, 니켈, 금, 백금, 납, 텅스텐, 아연'], ['흙', '석회, 마그네시아, 바리타, 알루미나, 실리카']];
+      return `<div class="hs-grp">${G.map(g => `<div><h5>${g[0]}</h5>${g[1]}</div>`).join('')}</div>`;
+    }
+    if(id === 'tri'){
+      const T = [['Li', 6.9, 'Na', 23.0, 'K', 39.1], ['Ca', 40.1, 'Sr', 87.6, 'Ba', 137.3], ['Cl', 35.5, 'Br', 79.9, 'I', 126.9]];
+      return `<div class="hs-tri">${T.map(t => `<div class="r"><span>${t[0]} ${t[1]}</span><span class="m">${t[2]} ${t[3]}</span><span>${t[4]} ${t[5]}</span> → ${en ? 'average' : '양쪽 평균'} <em>${((t[1] + t[5]) / 2).toFixed(1)}</em></div>`).join('')}</div>`;
+    }
+    if(id === 'helix'){
+      // 원기둥에 감긴 나선 (16칸에 한 바퀴): 1 · 17 · 33 처럼 한 바퀴 차이는 같은 세로줄
+      const S = [['H', 1], ['Li', 7], ['Be', 9], ['B', 11], ['C', 12], ['N', 14], ['O', 16], ['F', 19], ['Na', 23], ['Mg', 24], ['Al', 27], ['Si', 28], ['P', 31], ['S', 32], ['Cl', 35.5], ['K', 39], ['Ca', 40]];
+      const W = 300, X0 = 60, X1 = 240, top = 18, per = 16, hh = 84;
+      let path = '', pts = '';
+      for(let m = 0; m <= 44; m += .25){ const a = m / per * 6.283, xx = 150 + Math.sin(a) * 90, yy = top + m / per * hh; path += (m ? 'L' : 'M') + xx.toFixed(1) + ' ' + yy.toFixed(1); }
+      S.forEach(([s, m]) => { const a = m / per * 6.283, xx = 150 + Math.sin(a) * 90, yy = top + m / per * hh, front = Math.cos(a) > 0;
+        pts += `<g opacity="${front ? 1 : .45}"><circle cx="${xx.toFixed(1)}" cy="${yy.toFixed(1)}" r="9" fill="${['Li', 'Na', 'K'].includes(s) ? '#b18cff' : ['O', 'S'].includes(s) ? '#8cf5d2' : '#2a2f6a'}" stroke="#c5cbff"/><text x="${xx.toFixed(1)}" y="${(yy + 3.5).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">${s}</text></g>`; });
+      return `<svg viewBox="0 0 ${W} 260"><rect x="${X0}" y="${top - 6}" width="${X1 - X0}" height="240" rx="10" fill="rgba(143,155,255,.06)" stroke="rgba(150,160,255,.25)"/><path d="${path}" fill="none" stroke="rgba(197,203,255,.45)" stroke-width="1.5"/>${pts}<text x="150" y="255" text-anchor="middle" font-size="10" fill="#a6addf">${en ? 'Li · Na · K (purple) and O · S (mint) line up' : '보라(Li · Na · K)와 민트(O · S)가 세로로 줄 서요'}</text></svg>`;
+    }
+    if(id === 'oct'){
+      const N = en ? ['do', 're', 'mi', 'fa', 'sol', 'la', 'ti'] : ['도', '레', '미', '파', '솔', '라', '시'];
+      const R = [['H', 'Li', 'Be', 'B', 'C', 'N', 'O'], ['F', 'Na', 'Mg', 'Al', 'Si', 'P', 'S'], ['Cl', 'K', 'Ca', 'Cr', 'Ti', 'Mn', 'Fe']];
+      return `<div class="hs-oct">${N.map(n => `<div class="n">${n}</div>`).join('')}${R.map((r, i) => r.map((s, j) => `<div class="e${j === 1 && i > 0 ? ' c0' : ''}${i === 2 && j > 2 ? ' bad' : ''}">${s}</div>`).join('')).join('')}</div>
+        <p style="margin-top:8px;font-size:11.5px">${en ? 'Na and K land under Li — good. After Ca, Cr and Fe end up next to things they are nothing like (red).' : 'Na와 K가 Li 밑에 잘 들어가요. 그런데 Ca 다음부터 Cr·Fe가 전혀 안 닮은 원소들과 한 줄에 서게 돼요 (빨간 칸).'}</p>`;
+    }
+    if(id === 'mend'){
+      const gh = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+      const rows = M71.map((r, i) => `<tr><th>${i + 1}</th>${gh.map((_, j) => { const c = r[j]; if(!c) return '<td class="x"></td>';
+          if(c[0] === '-') return `<td class="gap${PSEL === c[1] ? ' on' : ''}" data-p="${c[1]}">— = ${c[1]}</td>`;
+          if(!c[0]) return '<td>—</td>';
+          return c.length === 1 ? `<td class="${j === 7 ? 'g8' : ''}">${c[0]}</td>` : `<td><b>${c[0]}</b> ${c[1]}</td>`; }).join('')}</tr>`).join('');
+      const P = PRED[PSEL][en ? 'en' : 'ko'];
+      return `<table class="hs-men"><tr><th>${en ? 'Row' : '줄'}</th>${gh.map(g => `<th>${g}</th>`).join('')}</tr>${rows}</table>
+        <div class="hs-pred">❓ <b>${P[0]}</b> → <b>${P[1]}</b><br>${P[2]}</div>
+        <p style="margin-top:6px;font-size:11px">${en ? 'J is the old symbol for iodine. "?" marks elements he was unsure about.' : 'J는 아이오딘의 옛 기호예요. "?"는 멘델레예프도 자리가 확실하지 않았던 원소예요.'}</p>`;
+    }
+    if(id === 'pred'){
+      const R = en ? [['Atomic mass', '72', '72.6'], ['Density (g/cm³)', '5.5', '5.32'], ['Oxide', 'EsO₂', 'GeO₂'], ['Oxide density', '4.7', '4.70'], ['Colour', 'Dark grey', 'Grey-white']]
+        : [['원자량', '72', '72.6'], ['밀도 (g/cm³)', '5.5', '5.32'], ['산화물', 'EsO₂', 'GeO₂'], ['산화물 밀도', '4.7', '4.70'], ['색', '어두운 회색', '회백색']];
+      return `<table class="hs-cmp"><tr><th></th><th>${en ? 'Eka-silicon (1871 prediction)' : '에카규소 (1871년 예언)'}</th><th>${en ? 'Germanium (1886 found)' : '저마늄 (1886년 발견)'}</th></tr>${R.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="g">${r[2]}</td></tr>`).join('')}</table>
+        <p style="margin-top:8px;font-size:11.5px">${en ? 'Gallium (1875) and scandium (1879) also filled his gaps.' : '갈륨(1875)과 스칸듐(1879)도 빈칸을 채웠어요.'}</p>`;
+    }
+    if(id === 'noble'){
+      const S = [['He', '1895'], ['Ne', '1898'], ['Ar', '1894'], ['Kr', '1898'], ['Xe', '1898'], ['Rn', '1899~']];
+      return `<div class="hs-swap">${S.map(s => `<div class="r"><span>${s[0]}<small>${s[1]}</small></span></div>`).join('')}</div>`.replace('class="hs-swap"', 'class="hs-swap" style="grid-template-columns:repeat(6,1fr)"');
+    }
+    if(id === 'mos'){
+      const S = [['Ar', '39.9', '18', 'K', '39.1', '19'], ['Co', '58.9', '27', 'Ni', '58.7', '28'], ['Te', '127.6', '52', 'I', '126.9', '53']];
+      return `<div class="hs-swap">${S.map(s => `<div class="r"><span>${s[0]}<small>${en ? 'mass' : '원자량'} ${s[1]} · Z ${s[2]}</small></span> → <span>${s[3]}<small>${en ? 'mass' : '원자량'} ${s[4]} · Z ${s[5]}</small></span></div>`).join('')}</div>
+        <p style="margin-top:8px;font-size:11.5px">${en ? 'By mass these pairs are backwards. By atomic number they are in the right order.' : '원자량으로 보면 순서가 거꾸로인데, 원자번호로 보면 딱 맞아요.'}</p>`;
+    }
+    if(id === 'sea' || id === 'full' || id === 'next'){
+      // 지금 모양의 작은 주기율표
+      const cw = 15, chh = 14; let out = '';
+      (typeof EL !== 'undefined' ? EL : []).forEach(e => { let c = e.g, r = e.p; if(!e.g){ const st = e.n >= 89 ? 89 : 57; c = 3 + (e.n - st); r = e.n >= 89 ? 9.4 : 8.4; }
+        const act = e.n >= 89 && e.n <= 103, lan = e.n >= 57 && e.n <= 71, nw = [113, 115, 117, 118].includes(e.n);
+        const f = id === 'sea' ? (act ? '#b18cff' : lan ? 'rgba(177,140,255,.35)' : 'rgba(143,155,255,.14)') : id === 'full' ? (nw ? '#8cf5d2' : 'rgba(143,155,255,.18)') : 'rgba(143,155,255,.14)';
+        out += `<rect x="${(c - 1) * cw + 2}" y="${(r - 1) * chh + 2}" width="${cw - 2}" height="${chh - 2}" rx="2" fill="${f}"/>`;
+        if((id === 'full' && nw) || (id === 'sea' && act && e.n % 2)) out += `<text x="${(c - 1) * cw + 2 + (cw - 2) / 2}" y="${(r - 1) * chh + 12}" text-anchor="middle" font-size="6.5" font-weight="900" fill="#10122a">${e.s}</text>`; });
+      if(id === 'next') out += [1, 2].map(k => `<rect x="${(k - 1) * cw + 2}" y="${7 * chh + 2}" width="${cw - 2}" height="${chh - 2}" rx="2" fill="none" stroke="#ffd43b" stroke-dasharray="2 2"/><text x="${(k - 1) * cw + 2 + (cw - 2) / 2}" y="${7 * chh + 12}" text-anchor="middle" font-size="5.5" font-weight="900" fill="#ffd43b">${118 + k}</text>`).join('');
+      return `<svg viewBox="0 0 ${18 * cw + 4} ${10.6 * chh}">${out}</svg>`;
+    }
+    return '';
+  }
+  function renderHis(){
+    const l = EN() ? 'en' : 'ko', h = HIS.find(x => x.id === HSEL) || HIS[0];
+    qBodyEl.innerHTML = `<div class="hs">
+      <div class="hs-tl">${HIS.map(x => `<button type="button" class="hs-ev${x.id === HSEL ? ' on' : ''}" data-h="${x.id}"><span class="y">${x.y}</span><b>${x[l][0]}</b></button>`).join('')}</div>
+      <div class="hs-det"><div class="k">HISTORY // ${h.y}</div><h3>${h[l][0]}</h3><div class="who">${h[l][1]}</div>
+        <div class="hs-vis">${vis(h.id)}</div><p>${h.p[l]}</p>
+        ${h.id === 'next' ? `<button type="button" class="hs-go">⛵ ${EN() ? 'Go to the island of stability' : '안정성의 섬 보러 가기'}</button>` : ''}</div></div>`;
+    qBodyEl.querySelectorAll('.hs-ev').forEach(b => b.addEventListener('click', () => { HSEL = b.dataset.h; try{ SFX.pick(); }catch(_){} renderHis(); if(innerWidth <= 700) try{ qBodyEl.querySelector('.hs-det').scrollIntoView({ behavior: 'smooth', block: 'start' }); }catch(_){} }));
+    qBodyEl.querySelectorAll('.hs-men td.gap').forEach(td => td.addEventListener('click', () => { PSEL = +td.dataset.p; try{ SFX.tick(); }catch(_){} renderHis(); }));
+    const go = qBodyEl.querySelector('.hs-go'); if(go) go.addEventListener('click', () => { HUB = 'isl'; openHub(); });
+  }
+
+  /* ── 학습 탭 두 개 추가 ── */
+  const TABS = [['isl', () => EN() ? 'Island of stability' : '안정성의 섬', renderIsl], ['his', () => EN() ? 'History' : '주기율표의 역사', renderHis]];
+  const _hh = hubHead;
+  hubHead = function(){
+    const r = _hh.apply(this, arguments);
+    const tabs = qHeadEl.querySelector('.hubtabs');
+    if(tabs) TABS.forEach(([id, nm]) => { if(tabs.querySelector(`[data-h="${id}"]`)) return;
+      const b = document.createElement('button'); b.className = 'hubt' + (HUB === id ? ' on' : ''); b.dataset.h = id; b.textContent = nm();
+      b.addEventListener('click', () => { HUB = id; openHub(); }); tabs.appendChild(b); });
+    return r;
+  };
+  const _oh = openHub;
+  openHub = function(){
+    const T = TABS.find(t => t[0] === HUB);
+    if(!T){ cancelAnimationFrame(RAF); RAF = 0; return _oh.apply(this, arguments); }
+    try{ setFocus(false); }catch(e){}
+    try{ QZ.on = false; QZ.q = null; MEM.on = false; }catch(e){}
+    try{ clearFill(); }catch(e){}
+    qBarEl.classList.remove('on');
+    quizEl.classList.add('on');
+    hubHead();
+    T[2]();
+  };
+})();
+</script>
 </body>
 </html>
