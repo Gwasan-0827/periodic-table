@@ -48232,21 +48232,27 @@ void main(){
   #aprBg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none}
   html.april #aprBg{display:block}
   html.april #y2kbg,html.april #glow,html.april #waves,html.april #bgfx{opacity:0!important}
-  #aprBg .sky{position:absolute;inset:0;background:linear-gradient(180deg,#ffc6e6 0%,#ffd9f0 38%,#e8d6ff 62%,#cfe6ff 100%)}
-  #aprBg .cl{position:absolute;border-radius:999px;background:radial-gradient(circle at 40% 40%,#fff,#ffeaf7 60%,rgba(255,234,247,0));filter:blur(2px);opacity:.9;animation:aprCl linear infinite}
-  @keyframes aprCl{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
-  #aprBg .floor{position:absolute;left:-50%;right:-50%;bottom:0;height:42%;transform-origin:50% 0;transform:perspective(500px) rotateX(62deg);
-    background:repeating-conic-gradient(#ff9ad5 0 25%,#fff4fb 0 50%) 0 0/80px 80px;animation:aprFl 3s linear infinite;opacity:.9;
-    -webkit-mask:linear-gradient(180deg,transparent,#000 30%);mask:linear-gradient(180deg,transparent,#000 30%)}
-  @keyframes aprFl{to{background-position:0 80px}}
-  #aprBg .duck{position:absolute;font-size:44px;animation:aprDk ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(160,80,140,.25))}
-  #aprBg .duck b{position:absolute;left:50%;top:-10px;transform:translateX(-50%);font:900 12px Kanit,system-ui,sans-serif;color:#7a2d6a;background:#fff;border-radius:6px;padding:0 5px;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-  @keyframes aprDk{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-22px) rotate(6deg)}}
-  /* 밝은 배경 위라 글자·칸이 잘 보이게 */
-  html.april body{color:#3a1f4d}
-  html.april #grid .cell{background:rgba(255,255,255,.62)!important;border-color:rgba(200,120,190,.45)!important}
-  html.april #grid .cell .sym{color:#3a1f4d!important}
-  html.april #grid .cell .ko,html.april #grid .cell .num,html.april #grid .cell .am{color:#7a5a8f!important}
+  /* 그림판으로 대충 그린 주기율표 */
+  #aprBg{background:#fff}
+  #aprBg svg{position:absolute;inset:0;width:100%;height:100%}
+  #aprBg .hdl{position:absolute;width:7px;height:7px;background:#fff;border:1px solid #000}
+  #aprBg .tb{position:absolute;left:10px;bottom:12px;display:flex;gap:3px;padding:4px;background:#ece9d8;border:1px solid #808080;box-shadow:inset 1px 1px #fff}
+  #aprBg .tb i{width:14px;height:14px;border:1px solid #808080;box-shadow:inset 1px 1px #000}
+  html.april body{background:#fff!important;color:#000}
+  html.april #grid .cell{font-family:"Comic Sans MS","Comic Neue","Chalkboard SE","Gaegu",cursive!important;border:2.5px solid #000!important;box-shadow:none!important;backdrop-filter:none!important;
+    border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important;
+    background:radial-gradient(circle at 78% 22%,#fff 0 5px,transparent 6px),var(--pc,#ff0)!important}
+  html.april #grid .cell::before,html.april #grid .cell::after{display:none!important}
+  html.april #grid .cell .sym{font-family:inherit!important;color:#000!important;text-shadow:none!important;font-weight:700!important}
+  html.april #grid .cell .ko,html.april #grid .cell .num,html.april #grid .cell .am{font-family:inherit!important;color:#000!important;opacity:.85}
+  html.april #grid .cell .st{display:none!important}
+  html.april #grid .cell:nth-child(5n){rotate:-2deg}
+  html.april #grid .cell:nth-child(5n+2){rotate:1.6deg;translate:0 2px}
+  html.april #grid .cell:nth-child(7n+3){rotate:-1deg;translate:1px -2px}
+  html.april #grid .cell:nth-child(11n+4){rotate:2.6deg;scale:.94}
+  html.april #grid .cell:nth-child(13n+6){translate:-2px 1px;scale:1.05}
+  html.april #grid .cell .sym[data-fake]{color:#000!important;text-decoration:wavy underline #fff 2px}
+  html.april #aprCu .say{font-family:"Comic Sans MS","Comic Neue",cursive}
   /* 1. 뒤집힌 주기율표 */
   #grid{transition:transform .9s cubic-bezier(.5,-.3,.3,1.4)}
   html.april.apr-flip #grid{transform:rotate(180deg)}
@@ -48255,7 +48261,7 @@ void main(){
   html.april #grid .cell .sym.apr-ok{animation:aprOk .5s}
   @keyframes aprOk{40%{transform:scale(1.35) rotate(-8deg);color:#2b8a3e}}
   /* 4. 가짜 119번 */
-  html.april .tease119{opacity:1!important;animation:aprFake 1.4s ease-in-out infinite!important;cursor:pointer;background:linear-gradient(135deg,#ffd43b,#ff9ad5)!important;border-color:#fff!important;color:#5a1f4d!important}
+  html.april .tease119{opacity:1!important;animation:aprFake 1.4s ease-in-out infinite!important;cursor:pointer;background:#ff00ff!important;border:2.5px solid #000!important;border-radius:20px 4px 18px 6px!important;color:#ffff00!important}
   html.april .tease119 .t-sym{font-size:.95em}
   @keyframes aprFake{50%{transform:scale(1.08) rotate(3deg);box-shadow:0 0 22px #ff9ad5}}
   /* 5. 큐리 난입 */
@@ -48270,7 +48276,7 @@ void main(){
   #aprCu .say{font-size:13px;font-weight:900;padding:6px 11px;border-radius:12px;background:#fff;color:#3a1f4d;box-shadow:0 4px 10px rgba(0,0,0,.15);white-space:nowrap}
   .apr-drop{position:fixed;z-index:59;width:12px;height:10px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,#fff,#c9cde0 40%,#6b6f84);animation:aprDrop 1.1s ease-out forwards}
   @keyframes aprDrop{to{transform:translate(var(--dx),var(--dy));opacity:0}}
-  html.lowpow #aprBg .cl,html.lowpow #aprBg .floor,html.lowpow #aprBg .duck{animation:none}
+  
 </style>
 <script>
 (function(){
@@ -48283,16 +48289,31 @@ void main(){
   let ON = false, revealed = new Set(), fake = {}, flipDone = false, cuT = 0;
   const DUCKS = ['H', 'He', 'Hg', 'Fe', 'Au', 'O', 'Ne', 'C', 'Na'];
 
+  // 그림판 색 (분류별 양동이 채우기)
+  const PAL = ['#ff0000','#ff8000','#ffff00','#00ff00','#00ffff','#0080ff','#ff00ff','#80ff80','#ff8080','#8080ff','#c0c0c0','#ffff80'];
   function bg(){ let b = document.getElementById('aprBg'); if(b) return b;
     b = document.createElement('div'); b.id = 'aprBg';
-    b.innerHTML = '<div class="sky"></div>' + Array.from({ length: 6 }, (_, i) => `<i class="cl" style="top:${6 + i * 9}%;width:${160 + (i * 53) % 140}px;height:${50 + (i * 17) % 40}px;animation-duration:${40 + i * 9}s;animation-delay:${-i * 11}s"></i>`).join('') +
-      '<div class="floor"></div>' + DUCKS.map((s, i) => `<span class="duck" style="left:${4 + i * 11}%;top:${14 + (i * 37) % 48}%;animation-duration:${3 + (i % 4) * .7}s;animation-delay:${-i * .6}s">🦆<b>${s}</b></span>`).join('');
+    const jag = (pts, j = 4) => pts.map((p, i) => (i ? 'L' : 'M') + (p[0] + (Math.random() - .5) * j).toFixed(1) + ' ' + (p[1] + (Math.random() - .5) * j).toFixed(1)).join('');
+    const circ = (cx, cy, r, n = 18) => jag(Array.from({ length: n + 1 }, (_, i) => [cx + Math.cos(i / n * 6.283) * r, cy + Math.sin(i / n * 6.283) * r]), 6);
+    const sun = `<path d="${circ(1700, 140, 70)}" fill="#ffff00" stroke="#000" stroke-width="4"/>` + Array.from({ length: 10 }, (_, i) => { const a = i / 10 * 6.283; return `<path d="${jag([[1700 + Math.cos(a) * 85, 140 + Math.sin(a) * 85], [1700 + Math.cos(a) * 135, 140 + Math.sin(a) * 135]], 8)}" stroke="#ffcc00" stroke-width="7" stroke-linecap="round"/>`; }).join('') +
+      `<circle cx="1678" cy="125" r="7"/><circle cx="1722" cy="125" r="7"/><path d="${jag([[1670, 160], [1685, 175], [1700, 180], [1715, 175], [1730, 160]], 3)}" fill="none" stroke="#000" stroke-width="4"/>`;
+    const stick = `<g stroke="#000" stroke-width="5" fill="none" stroke-linecap="round"><path d="${circ(150, 860, 32, 14)}"/><path d="${jag([[150, 892], [150, 990]])}"/><path d="${jag([[150, 920], [100, 960]])}"/><path d="${jag([[150, 920], [215, 880]])}"/><path d="${jag([[150, 990], [115, 1050]])}"/><path d="${jag([[150, 990], [190, 1050]])}"/></g>
+      <text x="230" y="860" font-size="38" font-family="Comic Sans MS,cursive" fill="#ff00ff">내가 그림 ㅋ</text>`;
+    const rain = ['#ff0000', '#ff8000', '#ffff00', '#00ff00', '#0080ff', '#8000ff'].map((c, i) => `<path d="${jag(Array.from({ length: 13 }, (_, k) => { const a = Math.PI + k / 12 * Math.PI; return [1650 + Math.cos(a) * (200 - i * 18), 1040 + Math.sin(a) * (200 - i * 18)]; }), 6)}" fill="none" stroke="${c}" stroke-width="16"/>`).join('');
+    const arrow = `<path d="${jag([[560, 70], [700, 120], [820, 110]], 5)}" fill="none" stroke="#ff0000" stroke-width="6"/><path d="${jag([[790, 85], [828, 110], [795, 140]], 5)}" fill="none" stroke="#ff0000" stroke-width="6"/><text x="380" y="80" font-size="40" font-family="Comic Sans MS,cursive" fill="#ff0000">주기율표임</text>`;
+    const spray = Array.from({ length: 140 }, () => { const a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * 60; return `<rect x="${(1150 + Math.cos(a) * r).toFixed(0)}" y="${(960 + Math.sin(a) * r).toFixed(0)}" width="3" height="3" fill="#0080ff"/>`; }).join('');
+    b.innerHTML = `<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">${sun}${stick}${rain}${arrow}${spray}
+      <text x="40" y="1060" font-size="22" font-family="Tahoma,sans-serif" fill="#888">제목 없음 - 그림판</text></svg>
+      <i class="hdl" style="right:2px;bottom:2px"></i><i class="hdl" style="right:2px;top:50%"></i><i class="hdl" style="left:50%;bottom:2px"></i>
+      <div class="tb">${PAL.map(c => `<i style="background:${c}"></i>`).join('')}</div>`;
     const y = document.getElementById('y2kbg'); y ? y.before(b) : document.body.prepend(b); return b; }
-
+  function bucket(){ document.querySelectorAll('#grid .cell').forEach(c => { const n = +c.dataset.n, e = byNum[n]; if(!e) return;
+      const cats = [...new Set(EL.map(x => x.c || x.cat || ''))], k = cats.indexOf(e.c || e.cat || '');
+      c.style.setProperty('--pc', PAL[(k < 0 ? n : k) % PAL.length]); }); }
   // 2. 기호 셔플: 아직 안 맞춘 칸은 엉뚱한 기호
   function shuffleMap(){ const S = EL.map(e => e.s), P = S.slice(); for(let i = P.length - 1; i > 0; i--){ const j = (Math.random() * (i + 1)) | 0; [P[i], P[j]] = [P[j], P[i]]; }
     fake = {}; EL.forEach((e, i) => { if(P[i] !== e.s) fake[e.n] = P[i]; }); }
-  function applyFake(){ document.querySelectorAll('#grid .cell').forEach(c => { const n = +c.dataset.n, sy = c.querySelector('.sym'); if(!sy) return;
+  function applyFake(){ if(ON) bucket(); document.querySelectorAll('#grid .cell').forEach(c => { const n = +c.dataset.n, sy = c.querySelector('.sym'); if(!sy) return;
       const real = byNum[n] && byNum[n].s;
       if(ON && flipDone && fake[n] && !revealed.has(n)){ sy.textContent = fake[n]; sy.dataset.fake = '1'; }
       else if(sy.dataset.fake){ sy.textContent = real; delete sy.dataset.fake; } }); }
@@ -48303,7 +48324,7 @@ void main(){
 
   // 4. 가짜 119번
   function fake119(){ const t = document.querySelector('.tease119'); if(!t) return;
-    if(ON){ if(!t.dataset.apr){ t.dataset.apr = '1'; t._old = t.innerHTML; } t.innerHTML = `<span class="t-num">119</span><span class="t-sym">Fl00l</span>`; t.title = EN() ? 'Aprilfoolium' : '만우늄'; }
+    if(ON){ t.style.fontFamily = 'Comic Sans MS,cursive'; if(!t.dataset.apr){ t.dataset.apr = '1'; t._old = t.innerHTML; } t.innerHTML = `<span class="t-num">119</span><span class="t-sym">Fl00l</span>`; t.title = EN() ? 'Aprilfoolium' : '만우늄'; }
     else if(t.dataset.apr){ t.innerHTML = t._old; delete t.dataset.apr; t.title = ''; } }
   document.addEventListener('click', e => { if(!ON) return; const t = e.target.closest && e.target.closest('.tease119'); if(!t) return;
     e.stopPropagation(); e.preventDefault();
