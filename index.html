@@ -16809,7 +16809,7 @@ async function rxSaveCard(theme){
   ctx.save(); ctx.globalAlpha = 0.28; ctx.fillStyle = glow; ctx.fillRect(px, py, pw, ph); ctx.restore();
   ctx.fillStyle = 'rgba(255,255,255,.06)';
   for(let y = py + 24; y < py + ph; y += 30) for(let x = px + 24; x < px + pw; x += 30){ ctx.fillRect(x, y, 2, 2); }
-  if(tier.rar >= 4){
+  if(false){   // 빛살은 뺐다 (그림을 가려서)
     ctx.save(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 28) : ctx.rect(px, py, pw, ph); ctx.clip();
     const cx = W / 2, cy = py + ph * 0.48, n = tier.rar >= 5 ? 18 : 12;
     ctx.globalAlpha = tier.rar >= 5 ? 0.13 : 0.08; ctx.fillStyle = tier.holo ? '#ffffff' : tier.col;
@@ -39718,6 +39718,8 @@ function rxCardStatVals(tier){
   let dng = 1 + Math.round(rnd(1) * .9);
   if(tier.haz) dng = Math.min(5, 2 + tier.haz.lv);
   if(/폭발|핵융합|boom/i.test(raw) || RX.boom) dng = 5;
+  // 독성이 아주 센 원소가 들어가면 최고치 (수은 웅덩이 같은 홑원소도)
+  try{ const ks = Object.keys(RX.c || {}); if(ks.some(k => [80, 81, 84, 94, 88, 48, 33, 4].includes(+k))) dng = 5; }catch(e){}   // Hg Tl Po Pu Ra Cd As Be
   let atoms = 0; try{ Object.values(RX.c || {}).forEach(v => atoms += +v || 0); }catch(e){}
   let rar = 1 + Math.log2(Math.max(1, atoms)) / 1.6 + (kind === 'kSpecial' || kind === 'kMin' ? 1 : 0) + (tier.holo ? 1 : 0) + rnd(2) * .6;
   rar = Math.max(1, Math.min(5, Math.round(rar)));
@@ -47985,20 +47987,37 @@ void main(){
     for(let i = 1; i < STOPS.length; i++) if(b <= STOPS[i][0]){ const [b0, c0] = STOPS[i - 1], [b1, c1] = STOPS[i], f = (b - b0) / (b1 - b0); return c0.map((v, j) => Math.round(v + (c1[j] - v) * f)); }
     return STOPS[STOPS.length - 1][1];
   };
-  const fmtT = c => {
+  // 잘 알려진 핵종은 정확한 반감기(초)를 따로 둔다. 지도 데이터는 10의 몇 제곱인지만 담고 있어서 최대 3배쯤 틀릴 수 있다
+  const Y = 3.15576e7, EXACT_T = {
+    '1,2': 12.32 * Y, '4,6': 1.387e6 * Y, '6,8': 5730 * Y, '6,5': 20.36 * 60, '7,6': 9.965 * 60, '8,7': 122.2, '9,9': 109.77 * 60,
+    '11,11': 2.602 * Y, '11,13': 14.997 * 3600, '13,13': 7.17e5 * Y, '15,17': 14.27 * 86400, '16,19': 87.37 * 86400, '17,19': 3.01e5 * Y,
+    '18,21': 269 * Y, '19,21': 1.248e9 * Y, '20,21': 9.94e4 * Y, '26,29': 2.744 * Y, '27,33': 5.271 * Y, '28,35': 101.2 * Y,
+    '36,49': 10.74 * Y, '38,52': 28.79 * Y, '43,56': 2.11e5 * Y, '53,78': 8.025 * 86400, '53,76': 1.57e7 * Y, '55,82': 30.08 * Y, '55,79': 2.065 * Y,
+    '61,84': 17.7 * Y, '63,89': 13.54 * Y, '84,126': 138.376 * 86400, '84,128': 2.99e-7, '84,130': 164.3e-6, '84,134': 3.098 * 60,
+    '86,136': 3.8235 * 86400, '88,138': 1600 * Y, '90,142': 1.405e10 * Y, '92,143': 7.04e8 * Y, '92,146': 4.468e9 * Y, '92,142': 2.455e5 * Y, '92,141': 1.592e5 * Y,
+    '94,145': 24110 * Y, '94,144': 87.7 * Y, '95,146': 432.2 * Y, '96,148': 18.1 * Y, '98,154': 2.645 * Y, '99,155': 275.7 * 86400,
+    '83,126': 2.01e19 * Y, '43,55': 4.2e6 * Y, '118,176': 0.69e-3, '117,177': 51e-3, '117,176': 22e-3, '114,175': 2.1, '112,173': 28,
+  };
+  const UNITS = () => EN() ? [[1e-9, 'ns'], [1e-6, 'μs'], [1e-3, 'ms'], [1, 's'], [60, 'min'], [3600, 'h'], [86400, 'days'], [Y, 'years']]
+                           : [[1e-9, '나노초'], [1e-6, '마이크로초'], [1e-3, '밀리초'], [1, '초'], [60, '분'], [3600, '시간'], [86400, '일'], [Y, '년']];
+  const big = v => EN() ? (v >= 1e9 ? +(v / 1e9).toPrecision(2) + ' billion' : v >= 1e6 ? +(v / 1e6).toPrecision(2) + ' million' : v >= 1e4 ? +(v / 1e3).toPrecision(2) + ' thousand' : (+v.toPrecision(v >= 100 ? 3 : 2)).toLocaleString())
+                        : (v >= 1e12 ? '10' + SUP(Math.round(Math.log10(v))) : v >= 1e8 ? +(v / 1e8).toPrecision(2) + '억' : v >= 1e4 ? +(v / 1e4).toPrecision(2) + '만' : (+v.toPrecision(v >= 100 ? 3 : 2)).toLocaleString());
+  const fmtSec = (sec, sig) => {
+    if(sec < 1e-9) return '10' + SUP(Math.round(Math.log10(sec))) + (EN() ? ' s' : '초');
+    let u = UNITS()[0]; UNITS().forEach(x => { if(sec >= x[0]) u = x; });
+    const v = sec / u[0];
+    if(sig) return big(v) + (EN() ? ' ' : '') + u[1];
+    const r = v >= 100 ? Math.round(v / 10 ** (Math.floor(Math.log10(v)) - 1)) * 10 ** (Math.floor(Math.log10(v)) - 1) : v >= 10 ? Math.round(v) : Math.round(v * 10) / 10;
+    return big(r) + (EN() ? ' ' : '') + u[1];
+  };
+  const fmtT = (c, z, n) => {
     if(c === '!') return EN() ? 'Stable' : '안정 (붕괴하지 않음)';
     if(c === '~') return EN() ? 'Half-life not measured' : '반감기 측정값 없음';
-    const k = c.charCodeAt(0) - 48 - 24;
-    const U = EN() ? [[-9, 'ns'], [-6, 'μs'], [-3, 'ms'], [0, 's'], [2, 'min'], [4, 'h'], [5, 'days'], [8, 'years']] : [[-9, '나노초'], [-6, '마이크로초'], [-3, '밀리초'], [0, '초'], [2, '분'], [4, '시간'], [5, '일'], [8, '년']];
-    const DIV = { '-9': 1e-9, '-6': 1e-6, '-3': 1e-3, '0': 1, '2': 60, '4': 3600, '5': 86400, '8': 3.156e7 };
-    if(k < -9) return (EN() ? 'about 10' : '약 10') + SUP(k) + (EN() ? ' s' : '초');
-    let u = U[0]; U.forEach(x => { if(k >= x[0]) u = x; });
-    const v = Math.pow(10, k) / DIV[u[0]];
-    if(u[0] === 8 && v >= 1e12) return (EN() ? 'about 10' : '약 10') + SUP(Math.round(Math.log10(v))) + (EN() ? ' years' : '년');
-    if(u[0] === 8 && v >= 1e8) return EN() ? 'about ' + (v >= 1e9 ? Math.round(v / 1e9) + ' billion years' : Math.round(v / 1e6) + ' million years') : '약 ' + Math.round(v / 1e8).toLocaleString() + '억 년';
-    if(u[0] === 8 && v >= 1e4) return EN() ? 'about ' + (v >= 1e6 ? Math.round(v / 1e6) + ' million years' : Math.round(v / 1e3) + ' thousand years') : '약 ' + Math.round(v / 1e4).toLocaleString() + '만 년';
-    const r = v >= 10 ? Math.round(v) : Math.round(v * 10) / 10;
-    return (EN() ? 'about ' : '약 ') + r.toLocaleString() + (EN() ? ' ' : '') + u[1];
+    const ex = z != null && EXACT_T[z + ',' + n];
+    if(ex) return (EN() ? 'Half-life ' : '반감기 ') + fmtSec(ex, true);
+    // 정확한 값이 없으면 범위로: 10의 몇 제곱까지만 알기 때문에
+    const k = c.charCodeAt(0) - 48 - 24, lo = Math.pow(10, k - .5), hi = Math.pow(10, k + .5);
+    return (EN() ? 'Half-life roughly ' : '반감기 대략 ') + fmtSec(lo) + ' ~ ' + fmtSec(hi);
   };
   const elName = z => { try{ const e = byNum[z]; return EN() ? e.en : e.ko; }catch(_){ return ''; } };
   const elSym = z => { try{ return byNum[z].s; }catch(_){ return '?'; } };
@@ -48095,7 +48114,7 @@ void main(){
       const inIsl = Math.pow((wn - ISL.n) / ISL.rn, 2) + Math.pow((wz - ISL.z) / ISL.rz, 2) < 1;
       const c = z >= 1 && z <= 118 ? cellAt(z, n) : null;
       if(!c && !inIsl){ tip.classList.remove('on'); return; }
-      tip.innerHTML = c ? `<b>${SUP(z + n)}${elSym(z)}</b> ${elName(z)}-${z + n}<br><i>Z ${z} · N ${n}</i><br>${fmtT(c)}`
+      tip.innerHTML = c ? `<b>${SUP(z + n)}${elSym(z)}</b> ${elName(z)}-${z + n}<br><i>Z ${z} · N ${n}</i><br>${fmtT(c, z, n)}`
         : `<b>${EN() ? 'Island of stability' : '안정성의 섬'}</b><br><i>${EN() ? 'Predicted around Z 114, N 184' : '양성자 114 · 중성자 184 근처 (예측)'}</i><br>${EN() ? 'Nobody has landed here yet. Tap to plant a flag!' : '아직 아무도 도착 못 했어요. 눌러서 깃발 꽂기!'}`;
       tip.style.left = Math.min(W - 170, mx + 14) + 'px'; tip.style.top = Math.min(H - 80, my + 14) + 'px'; tip.classList.add('on');
     }
