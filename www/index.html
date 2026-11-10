@@ -48127,20 +48127,32 @@ void main(){
     // 1 단위로 정규화 (반지름 1 구)
     const M = Math.max(...balls.map(b => Math.hypot(b.x, b.y, b.z))) + .5;
     balls.forEach(b => { b.x /= M; b.y /= M; b.z /= M; });
-    NS.balls = balls; NS.R = M; NS.br = .5 / M;
+    NS.balls = balls; NS.R = M; NS.br = .5 / M; NS.fis = 0;
   }
   function drawNuc(cv, t){
     const x = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
     if(cv.width !== Math.round(W * dpr)){ cv.width = W * dpr; cv.height = H * dpr; }
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
     const cx = W / 2, cy = H * .45, R = Math.min(W, H) * .3 * NS.sc * Math.min(1, .55 + NS.R / 12), br = R * NS.br * 1.08;
-    NS.yaw += .006; const cY = Math.cos(NS.yaw), sY = Math.sin(NS.yaw), tl = .35, cT = Math.cos(tl), sT = Math.sin(tl);
+    if(!NS.fis) NS.yaw += .006; const cY = Math.cos(NS.yaw), sY = Math.sin(NS.yaw), tl = .35, cT = Math.cos(tl), sT = Math.sin(tl);
     // 뒤 빛
     const gl = x.createRadialGradient(cx, cy, 0, cx, cy, R * 1.7); gl.addColorStop(0, `rgba(143,155,255,${.22 + NS.shake * .3})`); gl.addColorStop(1, 'rgba(143,155,255,0)');
     x.fillStyle = gl; x.beginPath(); x.arc(cx, cy, R * 1.7, 0, 6.283); x.fill();
-    const P = NS.balls.map(b => { const X = b.x * cY + b.z * sY, Z0 = -b.x * sY + b.z * cY, Y = b.y * cT - Z0 * sT, Z = b.y * sT + Z0 * cT;
+    // 자발 핵분열: 땅콩처럼 늘어났다가 → 목이 끊어지며 두 덩어리로 갈라져 양쪽으로 날아간다
+    let fk = -1; if(NS.fis){ fk = Math.max(0, Math.min(1, (t - NS.fis) / 2200)); }
+    const P = NS.balls.map(b => { let X = b.x * cY + b.z * sY, Z0 = -b.x * sY + b.z * cY, Y = b.y * cT - Z0 * sT, Z = b.y * sT + Z0 * cT;
       const j = NS.shake ? (Math.random() - .5) * NS.shake * .12 : 0;
-      return { b, X: cx + (X + j) * R, Y: cy + (Y + j) * R, Z }; }).sort((a, b) => a.Z - b.Z);
+      if(fk >= 0){
+        if(b.side === undefined) b.side = X >= NS.fisCut ? 1 : -1;
+        const k1 = Math.min(1, fk / .28), k2 = Math.max(0, (fk - .28) / .72), e2 = 1 - Math.pow(1 - k2, 3);
+        const wob = fk < .28 ? Math.sin(t / 22) * .03 * k1 : 0;
+        X = X * (1 + .45 * k1) + b.side * (.12 * k1 + e2 * .8) + wob;          // 늘어남 + 갈라져 날아감
+        Y = Y * (1 - .16 * k1 * (1 - k2)) + b.side * e2 * .22;
+        // 갈라진 조각은 다시 동그랗게 뭉친다
+        if(k2 > 0){ const gx = b.side * (.55 + e2 * .8); X = gx + (X - gx) * (1 - .3 * e2); }
+        if(b.gone && fk > .28) return null;
+      }
+      return { b, X: cx + (X + j) * R, Y: cy + (Y + j) * R, Z }; }).filter(Boolean).sort((a, b) => a.Z - b.Z);
     P.forEach(p => { const b = p.b, d = .55 + .45 * (p.Z + 1) / 2, fl = b.flash ? Math.max(0, b.flash - t) / 600 : 0;
       const c = b.p ? [255, 110, 140] : [170, 178, 205];
       const g = x.createRadialGradient(p.X - br * .35, p.Y - br * .35, br * .1, p.X, p.Y, br);
@@ -48161,7 +48173,15 @@ void main(){
         x.fillStyle = out ? '#bfefff' : '#e3d0ff'; x.font = '900 12px system-ui,sans-serif'; x.textAlign = 'center'; x.fillText(out ? (EN() ? 'e⁻ (electron)' : 'e⁻ (전자)') : (EN() ? 'e⁻ captured' : 'e⁻ 붙잡힘'), px, py - 12); }
       if(f.type === 'it'){ x.strokeStyle = `rgba(255,245,154,${1 - k})`; x.lineWidth = 2.5; x.beginPath();
         for(let q = 0; q <= 40; q++){ const dd = R * (1 + e * 2.4) * q / 40, w = Math.sin(q * 1.4) * 6; x.lineTo(cx + Math.cos(f.ang) * dd - Math.sin(f.ang) * w, cy + Math.sin(f.ang) * dd + Math.cos(f.ang) * w); } x.stroke(); }
-      if(f.type === 'sf'){ [-1, 1].forEach(sg => { const px = cx + sg * R * e * 2.2, py = cy + sg * R * e * .4; x.fillStyle = `rgba(255,122,138,${1 - k * .6})`; x.beginPath(); x.arc(px, py, R * .62 * (1 - k * .3), 0, 6.283); x.fill(); }); }
+      if(f.type === 'sf'){ // 끊어지는 순간의 섬광
+        const kk = Math.max(0, (k - .26) / .3); if(kk > 0 && kk < 1){ const g2 = x.createRadialGradient(cx, cy, 0, cx, cy, R * (.4 + kk * 1.6)); g2.addColorStop(0, `rgba(255,255,255,${(1 - kk) * .95})`); g2.addColorStop(.4, `rgba(255,214,242,${(1 - kk) * .5})`); g2.addColorStop(1, 'rgba(255,214,242,0)');
+          x.fillStyle = g2; x.beginPath(); x.arc(cx, cy, R * (.4 + kk * 1.6), 0, 6.283); x.fill(); } }
+      if(f.type === 'sfn'){ // 튀어나가는 중성자 2~3개
+        const kk = Math.max(0, (k - .28) / .72); if(kk > 0){ const ee = 1 - Math.pow(1 - kk, 2), d0 = R * (.3 + ee * 3.2), px = cx + Math.cos(f.ang) * d0, py = cy + Math.sin(f.ang) * d0;
+          x.strokeStyle = `rgba(200,206,235,${.55 * (1 - kk)})`; x.lineWidth = br * .35; x.lineCap = 'round'; x.beginPath(); x.moveTo(cx + Math.cos(f.ang) * R * .3, cy + Math.sin(f.ang) * R * .3); x.lineTo(px, py); x.stroke();
+          const g3 = x.createRadialGradient(px - br * .3, py - br * .3, br * .1, px, py, br); g3.addColorStop(0, '#fff'); g3.addColorStop(.4, '#aab2cd'); g3.addColorStop(1, '#4b5070');
+          x.fillStyle = g3; x.beginPath(); x.arc(px, py, br, 0, 6.283); x.fill();
+          if(f.lab){ x.fillStyle = '#dfe3ff'; x.font = '900 12px system-ui,sans-serif'; x.textAlign = 'center'; x.fillText(EN() ? 'n (neutron)' : 'n (중성자)', px, py - br * 1.6); } } }
     });
   }
 
@@ -48244,7 +48264,15 @@ void main(){
   function fire(){
     const c = S.C[S.i], d = el(), now = performance.now(), ang = Math.random() * 6.283;
     const ev = d.querySelector('.ev'); ev.textContent = T(c.mode); ev.style.background = MC[c.mode] || '#fff'; ev.classList.remove('on'); void ev.offsetWidth; ev.classList.add('on');
-    NS.fx.push({ type: c.mode, t0: now, dur: c.mode === 'a' ? 1300 : 1100, ang });
+    NS.fx.push({ type: c.mode, t0: now, dur: c.mode === 'a' ? 1300 : c.mode === 'sf' ? 2200 : 1100, ang });
+    if(c.mode === 'sf'){
+      // 갈라질 선: 지금 보이는 모양에서 가운데(조금 비대칭: 실제 분열 조각은 크기가 다르다)
+      NS.fis = now; NS.fisCut = (Math.random() - .5) * .25;
+      NS.balls.forEach(b => { b.side = undefined; b.gone = false; });
+      const nn = 2 + (Math.random() < .5 ? 1 : 0), ns = NS.balls.filter(b => !b.p);
+      for(let q = 0; q < nn; q++){ const b = ns[Math.floor(Math.random() * ns.length)]; if(b) b.gone = true;
+        NS.fx.push({ type: 'sfn', t0: now, dur: 2200, ang: (q / nn) * 6.283 + Math.random() * .8 + 1.2, lab: q === 0 }); }
+    }
     if(c.mode === 'b'){ const nb = NS.balls.find(b => !b.p); if(nb){ nb.p = true; nb.flash = now + 600; } }
     if(c.mode === 'e'){ const pb = NS.balls.find(b => b.p); if(pb){ pb.p = false; pb.flash = now + 1100; } }
     try{ c.mode === 'sf' ? SFX.boom() : SFX.pick(); }catch(_){}
@@ -48263,7 +48291,7 @@ void main(){
     E.querySelector('p').textContent = T(kind === 'stable' ? 'endSp' : kind === 'sf' ? 'endFp' : 'endUp').replace('{a}', name(a)).replace('{b}', name(b));
     E.querySelector('.st').innerHTML = [cnt('a') && T('nA').replace('{n}', cnt('a')), cnt('b') && T('nB').replace('{n}', cnt('b')), cnt('e') && T('nE').replace('{n}', cnt('e')), tot && T('tot').replace('{t}', rxDecayFmt(tot, EN()).replace(/^(약 |about )/, ''))].filter(Boolean).map(s => `<span>${s}</span>`).join('');
     E.querySelector('.ag').textContent = T('again'); E.querySelector('.cl').textContent = T('close');
-    setTimeout(() => E.classList.add('on'), kind === 'sf' ? 900 : 500);
+    setTimeout(() => E.classList.add('on'), kind === 'sf' ? 2500 : 500);
     try{ rxEvt('decayEnd'); }catch(_){}
     try{ if(typeof checkAch === 'function') checkAch(); }catch(_){}
   }
