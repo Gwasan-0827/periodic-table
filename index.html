@@ -50911,6 +50911,7 @@ void main(){
     let val = []; try{ val = rxCfg(sym).map(s => s.n + s.l); }catch(e){}
     if(ONLY >= 0) val = [opt.only];
     const skip = i => ONLY >= 0 && i !== ONLY;
+    const PAL = l => (opt.pal && opt.pal[l]) || RX_SUB_COL[l] || RX_SUB_COL.s;
     const rows = new Uint8Array(TW * MAXS * 4), SA = new Float32Array(MAXS * 4), SC = new Float32Array(MAXS * 3), W = new Float32Array(45);
     let slot = 0;
     subs.forEach((sb, i) => {
@@ -50938,7 +50939,7 @@ void main(){
       const vb = val.includes(sb.n + sb.l) ? 1.35 : 1;
       // 안쪽 껍질은 작아서 빛줄기가 짧게 지나가므로, 크기에 반비례해 밝혀 줘야 층마다 색이 보인다
       SA.set([(i + .5) / MAXS, l, sl, Math.pow(sb.e, .4) * vb * .55 / Math.pow(Math.max(Rn, .06), .85)], i * 4);
-      const c = RX_SUB_COL[sb.l] || RX_SUB_COL.s; SC.set([c[0] / 255, c[1] / 255, c[2] / 255], i * 3);
+      const c = PAL(sb.l); SC.set([c[0] / 255, c[1] / 255, c[2] / 255], i * 3);
     });
     // 점 뽑기: 거리는 수소 식 |R|²r² 누적표에서, 방향은 |Y|² 거절 표본. 바깥(원자가) 껍질에 많이, 방마다 다른 색
     const rnd = rxRand('foggl:' + sym), out = [];
@@ -50951,12 +50952,12 @@ void main(){
       const cdf = [], rs = [], dr = .02 * sb.n; let acc = 0;
       for(let r = dr / 2; r < 8 * sb.n * sb.n + 30; r += dr){ const v = Rh(sb.n, l, r); acc += v * v * r * r; cdf.push(acc); rs.push(r); }
       const occ = new Array(nR).fill(0); if(MSEL != null && i === ONLY) occ[MSEL] = 1; else if(sb.e >= 2 * nR || l === 0) occ.fill(1); else for(let k = 0; k < sb.e; k++) occ[MAPM[sb.l][rxHundSlot(sb.l, k)]]++;
-      const osum = occ.reduce((a, b) => a + b, 0), k0 = SZ[i].k / BOX, base = RX_SUB_COL[sb.l] || RX_SUB_COL.s;
+      const osum = occ.reduce((a, b) => a + b, 0), k0 = SZ[i].k / BOX, base = PAL(sb.l);
       for(let m = 0; m < nR; m++){
         if(!occ[m]) continue;
         const nm = Math.round(cnt * occ[m] / osum), fn = YF[sb.l][m], ym = ymax(sb.l, m);
         // 방 색: 껍질 색에 방마다 살짝 다른 빛 (겹쳐도 하얗게 뜨지 않게)
-        const rh = l === 0 ? base : (HUE[sb.l] || [base])[m % (HUE[sb.l] || [base]).length], hc = base.map((v, q) => v * .7 + rh[q] * .3);
+        const rh = l === 0 ? base : (HUE[sb.l] || [base])[m % (HUE[sb.l] || [base]).length], hc = opt.mono ? base : base.map((v, q) => v * .7 + rh[q] * .3);
         for(let j = 0; j < nm; j++){
           let X, Y, Z, yv;
           for(let g = 0; g < 60; g++){ Z = rnd() * 2 - 1; const a = rnd() * 6.2832, s = Math.sqrt(1 - Z * Z); X = s * Math.cos(a); Y = s * Math.sin(a); yv = fn(X, Y, Z); if(rnd() * ym * ym < yv * yv) break; }
@@ -50964,7 +50965,8 @@ void main(){
           const r = rs[lo] + (rnd() - .5) * dr, u = r * k0; if(u > 1.12) continue;
           const neg = yv * Rh(sb.n, l, r) < 0;
           let c = isV ? hc : base.map(v => v * .55 + 115);
-          if(neg && isV && l > 0) c = c.map(v => v * .6 + 40);
+          if(neg && opt.phase) c = opt.negCol || [255, 120, 160];
+          else if(neg && isV && l > 0) c = c.map(v => v * .6 + 40);
           out.push(X * u, Y * u, Z * u, c[0] / 255, c[1] / 255, c[2] / 255, isV ? .34 : .14, isV ? 2.4 : 1.7, rnd());
         }
       }
@@ -50988,8 +50990,8 @@ void main(){
     if(cvG.parentNode !== atom.parentNode) atom.parentNode.insertBefore(cvG, atom);
     if(getComputedStyle(atom).position === 'static'){ atom.style.position = 'relative'; atom.style.zIndex = '1'; }
     gl.useProgram(prog);
-    const kk0 = el.s + '|' + (o.only || '') + '|' + (o.m == null ? '' : o.m) + '|' + (o.big ? 1 : 0);
-    if(key !== kk0){ key = kk0; build(el.s, { Z: el.n, only: o.only, m: o.m, big: o.big }); }
+    const kk0 = el.s + '|' + (o.only || '') + '|' + (o.m == null ? '' : o.m) + '|' + (o.big ? 1 : 0) + '|' + JSON.stringify(o.pal || 0) + (o.mono ? 1 : 0) + (o.phase ? 1 : 0) + JSON.stringify(o.negCol || 0);
+    if(key !== kk0){ key = kk0; build(el.s, { Z: el.n, only: o.only, m: o.m, big: o.big, pal: o.pal, mono: o.mono, phase: o.phase, negCol: o.negCol }); }
     const w = atom.clientWidth, h = atom.clientHeight, dpr = Math.min(innerWidth < 700 ? 1 : (o.big ? 1.5 : 1.25), devicePixelRatio || 1);
     cvG.style.display = ''; cvG.style.left = atom.offsetLeft + 'px'; cvG.style.top = atom.offsetTop + 'px'; cvG.style.width = w + 'px'; cvG.style.height = h + 'px';
     const Wd = Math.round(w * dpr), Hd = Math.round(h * dpr);
@@ -51028,12 +51030,74 @@ window.rxFogMake = MAKE;
 })();
 </script>
 
+<style>
+  #orbPal{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 10px}
+  #orbPal .pc{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:999px;border:1px solid rgba(150,160,255,.22);background:rgba(10,13,24,.55);color:#dfe3ff;font:inherit;font-size:11.5px;font-weight:650;cursor:pointer}
+  #orbPal .pc.on{border-color:#c9d0ff;background:rgba(154,168,255,.18);color:#fff}
+  #orbPal .sw{display:inline-flex;width:30px;height:14px;border-radius:7px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.15) inset}
+  #orbPal .sw i{flex:1}
+  #orbPal .cust{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;border:1px dashed rgba(150,160,255,.35)}
+  #orbPal .cust.on{border-style:solid;border-color:#c9d0ff;background:rgba(154,168,255,.18)}
+  #orbPal .cust input{width:20px;height:20px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
+  #orbPal .cust input::-webkit-color-swatch-wrapper{padding:0}#orbPal .cust input::-webkit-color-swatch{border:0;border-radius:50%}
+  #orbPal .cust span{font-size:10.5px;color:#9aa0c8}
+  #orbPal .rst{font:inherit;font-size:11px;color:#9aa0c8;background:none;border:0;cursor:pointer;text-decoration:underline;padding:4px}
+</style>
 <script>
 /* ═══ 크게 보기 창(오비탈 상자)도 고퀄 점 구름 + 안개 ═══
    전자 채우기 재생 중에는 예전 그림(점이 하나씩 켜짐), 그 밖에는 WebGL. 점만 보기(dots)면 안개는 끈다 */
 (function(){
   if(typeof rxOrbTick !== 'function' || !window.rxFogMake) return;
   let FB = null;
+  // ── 오비탈 색 고르기 ──
+  const hx = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const PALS = {
+    def:  { ko: '기본', en: 'Default', c: null },
+    neon: { ko: '네온', en: 'Neon', c: { s: '#00e5ff', p: '#ff3df2', d: '#b6ff00', f: '#ffb300' } },
+    fire: { ko: '불꽃', en: 'Flame', c: { s: '#ffd166', p: '#ff8c42', d: '#ff4d6d', f: '#e0457b' } },
+    ice:  { ko: '얼음', en: 'Ice', c: { s: '#e0fbfc', p: '#8fd3ff', d: '#6e9bff', f: '#b8b8ff' } },
+    mint: { ko: '민트', en: 'Mint', c: { s: '#c7f9cc', p: '#57cc99', d: '#38a3a5', f: '#80ffdb' } },
+    elem: { ko: '원소 색', en: 'Element', c: 'elem' },
+  };
+  const LSP = 'pt_orbpal', LSC = 'pt_orbcol', LSN = 'pt_orbneg';
+  const get = (k, d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } };
+  const put = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+  const EN = () => LANG === 'en', T = (ko, en) => EN() ? en : ko;
+  function palette(){
+    const k = get(LSP, 'def');
+    if(k === 'cust'){ const c = hx(get(LSC, '#7cc4ff')); return { pal: { s: c, p: c, d: c, f: c, g: c }, mono: true }; }
+    const P = PALS[k] || PALS.def;
+    if(!P.c) return { pal: null, mono: false };
+    if(P.c === 'elem'){ let c = [154, 168, 255]; try{ c = hex2rgb(cssv(CAT[RX_ORB.el.c].v)); }catch(e){} return { pal: { s: c, p: c, d: c, f: c, g: c }, mono: true }; }
+    const o = {}; for(const l in P.c) o[l] = hx(P.c[l]); return { pal: o, mono: false };
+  }
+  function palUI(){
+    const side = document.getElementById('orbMs'); if(!side) return;
+    let sec = document.getElementById('orbPalSec'), box = document.getElementById('orbPal');
+    if(!sec){
+      sec = document.createElement('div'); sec.className = 'orb-sec'; sec.id = 'orbPalSec';
+      box = document.createElement('div'); box.id = 'orbPal';
+      side.after(sec, box);
+      box.addEventListener('click', e => {
+        const b = e.target.closest('.pc'); if(b){ put(LSP, b.dataset.p); palUI(); return; }
+        if(e.target.closest('.rst')){ put(LSP, 'def'); put(LSN, '#ff78a0'); palUI(); return; }
+        if(e.target.closest('.cust') && e.target.tagName !== 'INPUT'){ put(LSP, 'cust'); palUI(); }
+      });
+      box.addEventListener('input', e => {
+        if(e.target.id === 'orbPalC'){ put(LSC, e.target.value); put(LSP, 'cust'); box.querySelectorAll('.pc').forEach(x => x.classList.remove('on')); box.querySelector('.cust').classList.add('on'); }
+        if(e.target.id === 'orbPalN'){ put(LSN, e.target.value); }
+      });
+    }
+    sec.textContent = T('오비탈 색', 'Orbital colour');
+    const cur = get(LSP, 'def');
+    const sw = k => { const P = PALS[k]; if(!P.c) return ['s', 'p', 'd', 'f'].map(l => `rgb(${RX_SUB_COL[l].join(',')})`);
+      if(P.c === 'elem'){ let c = '#9aa8ff'; try{ c = cssv(CAT[RX_ORB.el.c].v); }catch(e){} return [c]; } return ['s', 'p', 'd', 'f'].map(l => P.c[l]); };
+    box.innerHTML = Object.keys(PALS).map(k => `<button type="button" class="pc${cur === k ? ' on' : ''}" data-p="${k}"><span class="sw">${sw(k).map(c => `<i style="background:${c}"></i>`).join('')}</span>${T(PALS[k].ko, PALS[k].en)}</button>`).join('')
+      + `<label class="cust${cur === 'cust' ? ' on' : ''}"><input type="color" id="orbPalC" value="${get(LSC, '#7cc4ff')}"><span>${T('직접', 'Custom')}</span></label>`
+      + `<label class="cust" title="${T('위상 색 구분을 켰을 때 − 쪽 색', 'Colour of the − side when phase colouring is on')}"><input type="color" id="orbPalN" value="${get(LSN, '#ff78a0')}"><span>${T('− 부호', '− sign')}</span></label>`
+      + `<button type="button" class="rst">${T('되돌리기', 'Reset')}</button>`;
+  }
+  if(typeof rxOrbUI === 'function'){ const _u = rxOrbUI; rxOrbUI = function(){ const r = _u.apply(this, arguments); try{ palUI(); }catch(e){} return r; }; }
   const _t = rxOrbTick;
   rxOrbTick = function(now){
     const O = RX_ORB;
@@ -51047,7 +51111,8 @@ window.rxFogMake = MAKE;
     const w = cvs.clientWidth, h = cvs.clientHeight; if(!w || !h) return;
     if(cvs.width !== Math.round(w * dpr) || cvs.height !== Math.round(h * dpr)){ cvs.width = Math.round(w * dpr); cvs.height = Math.round(h * dpr); }
     rxCloudSpin(O.view, now);
-    const ok = FB.draw({ host: cvs, el: O.el, view: O.view, only: O.sub || null, m: O.sub ? O.m : null, noFog: O.style === 'dots', big: true });
+    const PL = palette();
+    const ok = FB.draw({ host: cvs, el: O.el, view: O.view, only: O.sub || null, m: O.sub ? O.m : null, noFog: O.style === 'dots', big: true, pal: PL.pal, mono: PL.mono, phase: !!O.phase, negCol: hx(get(LSN, '#ff78a0')) });
     if(!ok) return _t.apply(this, arguments);
     // 위 캔버스(2D)에는 핵만
     const c = cvs.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
