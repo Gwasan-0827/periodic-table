@@ -51366,5 +51366,18 @@ window.rxFogMake = MAKE;
 })();
 </script>
 
+<script>
+(function(){
+  // 만우절 전용 타이틀: 페리오딕\\타브ㄹ
+  const AF = '페리오딕\\\\타브ㄹ';
+  let orig = null, origDoc = null;
+  const sync = () => { const h = document.querySelector('header h1'); if(!h) return;
+    const on = document.documentElement.classList.contains('april');
+    if(on){ if(h.dataset.apr !== '1'){ orig = h.innerHTML; origDoc = document.title; h.textContent = AF; h.dataset.apr = '1'; document.title = AF; } }
+    else if(h.dataset.apr === '1'){ h.innerHTML = orig; delete h.dataset.apr; if(origDoc) document.title = origDoc; } };
+  setInterval(sync, 600); sync();
+})();
+</script>
+
 </body>
 </html>
