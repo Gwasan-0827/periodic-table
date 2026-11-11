@@ -50778,7 +50778,7 @@ uniform vec2 R;uniform vec4 V;uniform sampler2D T;uniform int NS;
 uniform vec4 SA[${MAXS}];   // (표의 줄 v, l, 방향 칸(-1=공 모양), 밝기)
 uniform vec3 SC[${MAXS}];   // 색
 uniform float W[45];        // 덜 찬 껍질 3칸 × (p3 d5 f7) 방 점유
-uniform float LO;uniform float TM;uniform vec3 CT;
+uniform float LO;uniform float TM;uniform vec3 CT;uniform float PH;uniform vec3 NC;
 float h3(vec3 p){ p=fract(p*.3183099+.1); p*=17.; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
 float n3(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.-2.*f);
   return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z); }
@@ -50799,17 +50799,28 @@ void main(){
     Y2[3]=1.1937*X*X*Y*Y; Y2[4]=1.1937*Y*Y*Z*Z; Y2[5]=.0995*(3.*Z*Z-1.)*(3.*Z*Z-1.); Y2[6]=1.1937*X*X*Z*Z; Y2[7]=.2984*(X*X-Y*Y)*(X*X-Y*Y);
     float a=.590044*Y*(3.*X*X-Y*Y), b=2.890611*X*Y*Z, c=.457046*Y*(5.*Z*Z-1.), e=.373176*Z*(5.*Z*Z-3.), f=.457046*X*(5.*Z*Z-1.), g=1.445306*Z*(X*X-Y*Y), h=.590044*X*(X*X-3.*Y*Y);
     Y2[8]=a*a; Y2[9]=b*b; Y2[10]=c*c; Y2[11]=e*e; Y2[12]=f*f; Y2[13]=g*g; Y2[14]=h*h;
-    float A0=0.,A1=0.,A2=0.;
-    for(int k=0;k<15;k++){ A0+=W[k]*Y2[k]; A1+=W[15+k]*Y2[k]; A2+=W[30+k]*Y2[k]; }
+    float A0=0.,A1=0.,A2=0.,S0=0.,S1=0.,S2=0.;
+    // 위상(부호): 방마다 각도 함수의 부호. 방 여러 개가 겹치면 밀도 비율대로 섞는다
+    float Sg[15];
+    Sg[0]=sign(Y); Sg[1]=sign(Z); Sg[2]=sign(X); Sg[3]=sign(X*Y); Sg[4]=sign(Y*Z); Sg[5]=sign(3.*Z*Z-1.); Sg[6]=sign(X*Z); Sg[7]=sign(X*X-Y*Y);
+    Sg[8]=sign(a); Sg[9]=sign(b); Sg[10]=sign(c); Sg[11]=sign(e); Sg[12]=sign(f); Sg[13]=sign(g); Sg[14]=sign(h);
+    for(int k=0;k<15;k++){ A0+=W[k]*Y2[k]; A1+=W[15+k]*Y2[k]; A2+=W[30+k]*Y2[k]; S0+=W[k]*Y2[k]*Sg[k]; S1+=W[15+k]*Y2[k]*Sg[k]; S2+=W[30+k]*Y2[k]*Sg[k]; }
     float dep=.62+.38*(t+1.)*.5;
     for(int s=0;s<${MAXS};s++){
       if(s>=NS) break;
       vec4 sa=SA[s];
-      float rr=texture2D(T,vec2(u/1.12,sa.x)).r; rr*=rr;
+      vec2 tx=texture2D(T,vec2(u/1.12,sa.x)).rg; float rr=tx.r*tx.r;
       if(rr<.002) continue;
       float A=sa.z<-.5?1.:(sa.z<.5?A0:(sa.z<1.5?A1:A2));
       float w=rr*A*sa.w*(2./float(ST))*dep;
-      acc+=SC[s]*w; aa+=w;
+      vec3 cc=SC[s];
+      if(PH>.5){
+        float SS=sa.z<.5?S0:(sa.z<1.5?S1:S2);
+        float fp=sa.z<-.5?(sa.y<.5?1.:.5):clamp(.5+.5*SS/max(A,1e-6),0.,1.);
+        if(tx.g<.5) fp=1.-fp;
+        cc=mix(NC,SC[s],fp);
+      }
+      acc+=cc*w; aa+=w;
     }
   }
   vec3 col=1.-exp(-acc*LO); float al=1.-exp(-aa*LO*.85);
@@ -50865,7 +50876,7 @@ void main(){
       gl.useProgram(prog);
       const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
       const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['R', 'V', 'T', 'NS', 'SA', 'SC', 'W', 'LO', 'TM', 'CT'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+      ['R', 'V', 'T', 'NS', 'SA', 'SC', 'W', 'LO', 'TM', 'CT', 'PH', 'NC'].forEach(k => U[k] = gl.getUniformLocation(prog, k));
       tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -50916,9 +50927,10 @@ void main(){
       for(let r = .01; r < 8 * sb.n * sb.n + 30; r += .01 * sb.n){ const v = Rh(sb.n, l, r); norm += v * v * r * r * .01 * sb.n; }
       // 기준 밝기 = '전자를 찾을 확률이 가장 큰 거리'에서의 밀도 (s 오비탈은 핵 바로 옆 밀도가 너무 커서, 최댓값으로 나누면 바깥이 안 보인다)
       let pk = 0, pkD = 1e-20;
-      for(let k = 0; k < TW; k++){ const u = (k + .5) / TW * 1.12, v = Rh(sb.n, l, u * sc), d = v * v / norm * sc * sc * sc; vals.push(d); if(d * u * u > pk){ pk = d * u * u; pkD = d; } }
+      const sgn = [];
+      for(let k = 0; k < TW; k++){ const u = (k + .5) / TW * 1.12, v = Rh(sb.n, l, u * sc), d = v * v / norm * sc * sc * sc; vals.push(d); sgn.push(v); if(d * u * u > pk){ pk = d * u * u; pkD = d; } }
       mx = pkD * 1.6;
-      vals.forEach((d, k) => { const o = (i * TW + k) * 4, q = Math.round(Math.min(1, Math.sqrt(d / mx)) * 255); rows[o] = rows[o + 1] = rows[o + 2] = q; rows[o + 3] = 255; });
+      vals.forEach((d, k) => { const o = (i * TW + k) * 4, q = Math.round(Math.min(1, Math.sqrt(d / mx)) * 255); rows[o] = rows[o + 2] = q; rows[o + 1] = sgn[k] < 0 ? 0 : 255; rows[o + 3] = 255; });
       // 방향: 꽉 찬 껍질(또는 s)은 공 모양. 덜 찬 p·d·f는 훈트 규칙으로 들어간 방만
       const nR = 2 * l + 1, full = sb.e >= 2 * nR;
       let sl = -1;
@@ -50937,7 +50949,7 @@ void main(){
     });
     // 점 뽑기: 거리는 수소 식 |R|²r² 누적표에서, 방향은 |Y|² 거절 표본. 바깥(원자가) 껍질에 많이, 방마다 다른 색
     const rnd = rxRand('foggl:' + sym), out = [];
-    const total = ONLY >= 0 ? (innerWidth < 700 ? 9000 : 16000) : (opt.big ? (innerWidth < 700 ? 16000 : 34000) : (innerWidth < 700 ? 11000 : 22000));
+    const total = ONLY >= 0 ? (innerWidth < 700 ? 14000 : 28000) : (opt.big ? (innerWidth < 700 ? 16000 : 34000) : (innerWidth < 700 ? 11000 : 22000));
     const wgt = subs.map(sb => val.includes(sb.n + sb.l) ? sb.e * 2.2 : Math.pow(sb.e, .7));
     const wsum = wgt.reduce((a, b) => a + b, 0);
     subs.forEach((sb, i) => {
@@ -50962,7 +50974,7 @@ void main(){
           if(neg && opt.phase) c = opt.negCol || [255, 120, 160];
           else if(neg && isV && l > 0) c = c.map(v => v * .6 + 40);
           // 위상 색 구분: 안개를 옅게 깔고 점이 색을 맡으므로, 점을 더 진하게
-          const ph = opt.phase ? 1.6 : 1;
+          const ph = opt.phase ? 1.25 : 1;
           out.push(X * u, Y * u, Z * u, c[0] / 255, c[1] / 255, c[2] / 255, Math.min(.6, (isV ? .34 : .14) * ph), (isV ? 2.4 : 1.7) * (opt.phase ? 1.1 : 1), rnd());
         }
       }
@@ -50998,8 +51010,9 @@ void main(){
     // ① 바탕 안개 (옅게)
     gl.disable(gl.BLEND);
     gl.bindBuffer(gl.ARRAY_BUFFER, fbuf); gl.enableVertexAttribArray(U.a); gl.vertexAttribPointer(U.a, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform1f(U.LO, o.noFog ? 0 : (o.only ? .8 : .55) * (o.phase ? .18 : 1)); gl.uniform1f(U.TM, performance.now() / 1000);
+    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform1f(U.LO, o.noFog ? 0 : (o.only ? .8 : .55)); gl.uniform1f(U.TM, performance.now() / 1000);
     gl.uniform3f(U.CT, CT[0], CT[1], CT[2]);
+    const NCc = o.negCol || [255, 120, 160]; gl.uniform1f(U.PH, o.phase ? 1 : 0); gl.uniform3f(U.NC, NCc[0] / 255, NCc[1] / 255, NCc[2] / 255);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disableVertexAttribArray(U.a);
     // ② 반짝이는 점
