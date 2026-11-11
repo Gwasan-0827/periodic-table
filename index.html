@@ -51414,5 +51414,31 @@ window.rxFogMake = MAKE;
   html.april .tease119 .t-sym{color:#ffff00!important;-webkit-text-fill-color:#ffff00!important}
 </style>
 
+<style>
+  /* 만우절: 오른쪽(아래) 원자 모형 · 원소 정보 칸도 그림판 (흰 종이 + 검은 삐뚤 테두리) */
+  html.april #detail{background:transparent!important;border-color:#000!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important}
+  html.april #detail::before,html.april #detail::after{display:none!important}
+  html.april #detail :is(.ihero,.el-tmi,.ril-bub,.isec,.ix-quote,.ih-b,.fb-link,#detPager){
+    background:#fff!important;border:2.5px solid #000!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important}
+  html.april #detail :is(.ihero,.el-tmi,.isec,.ix-quote)::before,html.april #detail :is(.ihero,.el-tmi,.isec,.ix-quote)::after{opacity:0!important}
+  html.april #detail .ihero{rotate:-.8deg}
+  html.april #detail .el-tmi{rotate:.9deg}
+  html.april #detail .isec:nth-of-type(2n){rotate:.6deg}
+  html.april #detail .isec:nth-of-type(2n+1){rotate:-.5deg}
+  html.april #info :not(.ix-tw):not(.ix-tw *):not(svg):not(svg *){color:#000!important;-webkit-text-fill-color:#000!important;text-shadow:none!important}
+  html.april #info .ix-tw,html.april #info .ix-tw *{-webkit-text-fill-color:currentColor!important}
+  html.april #detail .ril-bub::before,html.april #detail .ril-bub::after{border-color:#000!important}
+  html.april #atomBox{background:#14151c!important;border:3px solid #000!important;border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important;box-shadow:none!important;overflow:hidden}
+  html.april #atomBox :is(#atomTabs,.atom-nuc,.atom-mu,.atom-fl,.atom-more,.at-c){background:#fff!important;border:2px solid #000!important;box-shadow:none!important;backdrop-filter:none!important;
+    border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important}
+  html.april #atomBox :is(#atomTabs,.atom-nuc,.atom-mu,.atom-fl,.atom-more,.at-c),html.april #atomBox :is(#atomTabs,.atom-nuc,.atom-mu,.atom-fl,.atom-more,.at-c) *{color:#000!important;-webkit-text-fill-color:#000!important;text-shadow:none!important}
+  html.april #atomBox #atomTabs button.on{background:#ffff00!important;border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important}
+  html.april #detail #addBtn{background:#fff!important;border:2.5px solid #000!important;color:#000!important;-webkit-text-fill-color:#000!important;box-shadow:none!important;
+    border-radius:255px 14px 225px 12px/14px 225px 12px 255px!important}
+  html.april #detPager button.on{color:#000!important}
+  html.april #detPager i.ind{background:#ffff00!important}
+</style>
+
 </body>
 </html>
