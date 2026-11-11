@@ -48791,11 +48791,11 @@ void main(){
 
   // 4. 가짜 119번
   function fake119(){ const t = document.querySelector('.tease119'); if(!t) return;
-    if(ON){ t.style.fontFamily = 'Comic Sans MS,cursive'; if(!t.dataset.apr){ t.dataset.apr = '1'; t._old = t.innerHTML; } t.innerHTML = `<span class="t-num">119</span><span class="t-sym">Fl00l</span>`; t.title = EN() ? 'Aprilfoolium' : '만우늄'; }
+    if(ON){ t.style.fontFamily = 'Comic Sans MS,cursive'; if(!t.dataset.apr){ t.dataset.apr = '1'; t._old = t.innerHTML; } t.innerHTML = `<span class="t-num">119</span><span class="t-sym">Uue</span>`; t.title = EN() ? 'Aprilfoolium' : '만우늄'; }
     else if(t.dataset.apr){ t.innerHTML = t._old; delete t.dataset.apr; t.title = ''; } }
   document.addEventListener('click', e => { if(!ON) return; const t = e.target.closest && e.target.closest('.tease119'); if(!t) return;
     e.stopPropagation(); e.preventDefault();
-    try{ rxToast(EN() ? 'NEW ELEMENT!' : '새 원소 발견!', EN() ? '119 Aprilfoolium (Fl00l)' : '119번 만우늄 (Fl00l)', EN() ? 'Half-life: exactly one day' : '반감기: 정확히 하루'); }catch(_){}
+    try{ rxToast(EN() ? 'NEW ELEMENT!' : '새 원소 발견!', EN() ? '119 Aprilfoolium (Uue)' : '119번 만우늄 (Uue)', EN() ? 'Half-life: exactly one day' : '반감기: 정확히 하루'); }catch(_){}
     try{ SFX.pick(); }catch(_){}
     setTimeout(() => { try{ rxToast('', EN() ? '…just kidding' : '…는 거짓말ㅋ', EN() ? 'Happy April Fools\' Day' : '만우절이에요'); }catch(_){} }, 2200); }, true);
 
