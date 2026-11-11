@@ -50514,6 +50514,7 @@ void main(){
 
 <style>
   #atomBox.cl-ph #atomTag{display:none!important}
+  #atomBox.cl-ph #atomOrbCap{top:auto!important;bottom:10px!important;left:auto!important;right:12px!important;text-align:right}
   #atomBox.cl-ph .atom-subs{top:auto!important;bottom:8px!important;left:8px!important;right:auto!important}
 </style>
 <script>
@@ -50537,7 +50538,7 @@ void main(){
     if(box) box.classList.toggle('cl-ph', nar);
     if(!nar) return null;
     const br = box.getBoundingClientRect(); let top = 0, bot = h;
-    [...box.children].forEach(el => { if(el.tagName === 'CANVAS' || !el.offsetParent || getComputedStyle(el).position !== 'absolute') return;
+    [...box.children].forEach(el => { if(el.tagName === 'CANVAS' || el.id === 'atomOrbCap' || !el.offsetParent || getComputedStyle(el).position !== 'absolute') return;
       const r = el.getBoundingClientRect(); if(r.width < 2 || r.height < 2) return; const t = r.top - br.top, b = r.bottom - br.top;
       if((t + b) / 2 < h / 2) top = Math.max(top, b); else bot = Math.min(bot, t); });
     const bh = Math.max(70, bot - top - 4);
@@ -50749,7 +50750,7 @@ void main(){
     if(cvG.width !== W || cvG.height !== H){ cvG.width = W; cvG.height = H; }
     gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     const pc = RX_SUB_COL[o.L] || RX_SUB_COL.s;
-    gl.uniform2f(U.R, W, H); { const B = window.RX_BAND, k = W / w; gl.uniform3f(U.CT, B ? B.cx * k : W / 2, B ? H - B.cy * k : H / 2, B ? B.sc * k : Math.min(W, H) * .46); } gl.uniform4f(U.V, RX_CV.yaw, RX_CV.pitch, (RX_CV.zoom || 1) * .86, 0);
+    gl.uniform2f(U.R, W, H); { const B = window.RX_BAND, k = W / w; gl.uniform3f(U.CT, B ? B.cx * k : W / 2, B ? H - B.cy * k : H / 2, B ? B.sc * k : Math.min(W, H) * .46); } gl.uniform4f(U.V, RX_CV.yaw, RX_CV.pitch, (RX_CV.zoom || 1) * (window.RX_BAND ? 1.2 : .92), 0);
     gl.uniform3f(U.O, o.n, o.l, 0); gl.uniform3f(U.CP, pc[0] / 255, pc[1] / 255, pc[2] / 255); gl.uniform3f(U.CN, 1, .53, .63);
     gl.uniform1f(U.DM, cur.DM); gl.uniform1f(U.RB, cur.RB); gl.uniform1f(U.LO, 2.7);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
