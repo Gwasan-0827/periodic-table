@@ -50769,6 +50769,7 @@ void main(){
    덜 찬 p·d·f 껍질은 훈트 규칙대로 들어간 방만 더해서 모양이 생긴다 (탄소 2p² → 납작한 고리 모양).
    거리 분포는 미리 표(텍스처)로 만들어 두고 셰이더는 찾아 읽기만 한다. */
 (function(){
+function MAKE(CID){
   const MAXS = 20, TW = 256;
   const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
   const FS = `precision highp float;
@@ -50847,10 +50848,12 @@ void main(){
   const Rh = (n, l, r) => { const rho = 2 * r / n; return Math.pow(rho, l) * Math.exp(-rho / 2) * lagJ(n - l - 1, 2 * l + 1, rho); };
   function r96(n, l){ const dr = .05 * n; let s = 0; const P = []; for(let r = dr; r < 8 * n * n + 30; r += dr){ const v = Rh(n, l, r); s += v * v * r * r * dr; P.push([r, s]); } const t = P.find(p => p[1] >= s * .96); return t ? t[0] : P[P.length - 1][0]; }
   const LI = { s: 0, p: 1, d: 2, f: 3 }, OFF = { p: 0, d: 3, f: 8 };
+  // 앱의 방 번호(RX_ANG 순서) → 여기 각도 함수 순서
+  const MAPM = { s: [0], p: [1, 2, 0], d: [2, 3, 1, 0, 4], f: [3, 4, 2, 5, 1, 6, 0] };
   function init(){
     if(failed) return false; if(gl) return true;
     try{
-      cvG = document.createElement('canvas'); cvG.id = 'atomFogGL'; cvG.setAttribute('aria-hidden', 'true');
+      cvG = document.createElement('canvas'); cvG.id = CID; cvG.setAttribute('aria-hidden', 'true');
       cvG.style.cssText = 'position:absolute;pointer-events:none;z-index:0';
       gl = cvG.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: true });
       if(!gl) throw 0;
@@ -50888,17 +50891,23 @@ void main(){
     return Math.max(1, Z - S);
   }
   let RINGS = [];
-  function build(sym){
+  function build(sym, opt){
+    opt = opt || {};
     const subs = rxCfgFull(sym).slice(-MAXS), maxN = Math.max(...subs.map(s => s.n));
-    const Z = (typeof atomEl !== 'undefined' && atomEl) ? atomEl.n : subs.reduce((a, s) => a + s.e, 0);
+    const Z = opt.Z || subs.reduce((a, s) => a + s.e, 0);
     // 껍질마다 실제 크기(보어 반지름 단위): 수소 식 96% 반지름 × (n*/n)² ÷ Z_eff
     const SZ = subs.map(sb => { const l = LI[sb.l], ze = zeff(subs, sb, Z), ns = NSTAR[sb.n] || sb.n; return { ze, k: (ns / sb.n) * (ns / sb.n) / ze, r: r96(sb.n, l) * (ns / sb.n) * (ns / sb.n) / ze }; });
-    const BOX = Math.max(...SZ.map(s => s.r)) * 1.04;   // 상자 반지름 = 가장 큰 껍질
+    // 껍질 하나만 볼 때(크게 보기): 그 껍질이 칸을 채우게
+    const ONLY = opt.only ? subs.findIndex(s => s.n + s.l === opt.only) : -1, MSEL = ONLY >= 0 && opt.m != null ? MAPM[subs[ONLY].l][opt.m] : null;
+    const BOX = (ONLY >= 0 ? SZ[ONLY].r : Math.max(...SZ.map(s => s.r))) * 1.04;   // 상자 반지름 = 가장 큰 껍질
     RINGS = [];
     let val = []; try{ val = rxCfg(sym).map(s => s.n + s.l); }catch(e){}
+    if(ONLY >= 0) val = [opt.only];
+    const skip = i => ONLY >= 0 && i !== ONLY;
     const rows = new Uint8Array(TW * MAXS * 4), SA = new Float32Array(MAXS * 4), SC = new Float32Array(MAXS * 3), W = new Float32Array(45);
     let slot = 0;
     subs.forEach((sb, i) => {
+      if(skip(i)) return;
       const l = LI[sb.l], Rn = SZ[i].r / BOX, sc = BOX / SZ[i].k;   // 상자 1 = 수소 식(Z=1) 거리 sc
       // 상자 좌표 u 에서의 밀도 (전자 1개, 부피당) → 표에 넣고 최댓값으로 나눈다
       const vals = []; let mx = 1e-20, norm = 0;
@@ -50911,10 +50920,12 @@ void main(){
       // 방향: 꽉 찬 껍질(또는 s)은 공 모양. 덜 찬 p·d·f는 훈트 규칙으로 들어간 방만
       const nR = 2 * l + 1, full = sb.e >= 2 * nR;
       let sl = -1;
-      if(l > 0 && !full && slot < 3){
-        sl = slot++; const occ = new Array(nR).fill(0); for(let k = 0; k < sb.e; k++) occ[rxHundSlot(sb.l, k)]++;
-        // 방향 분포의 평균이 1이 되게 (공 모양과 같은 밝기 기준): Σ occ·Y² × 4π / e
-        occ.forEach((o, m) => { W[sl * 15 + OFF[sb.l] + m] = o * 4 * Math.PI / sb.e; });
+      if(l > 0 && (!full || MSEL != null) && slot < 3){
+        sl = slot++; const occ = new Array(nR).fill(0);
+        if(MSEL != null) occ[MSEL] = 1; else for(let k = 0; k < sb.e; k++) occ[MAPM[sb.l][rxHundSlot(sb.l, k)]]++;
+        const os = occ.reduce((a, b) => a + b, 0);
+        // 방향 분포의 평균이 1이 되게 (공 모양과 같은 밝기 기준): Σ occ·Y² × 4π / 개수
+        occ.forEach((o, m) => { W[sl * 15 + OFF[sb.l] + m] = o * 4 * Math.PI / os; });
       }
       // 밝기: 전자 수, 그리고 촘촘한 안쪽 껍질이 너무 하얗게 뜨지 않게 최댓값으로 눌러 준다
       const vb = val.includes(sb.n + sb.l) ? 1.35 : 1;
@@ -50924,14 +50935,15 @@ void main(){
     });
     // 점 뽑기: 거리는 수소 식 |R|²r² 누적표에서, 방향은 |Y|² 거절 표본. 바깥(원자가) 껍질에 많이, 방마다 다른 색
     const rnd = rxRand('foggl:' + sym), out = [];
-    const total = innerWidth < 700 ? 11000 : 22000;
+    const total = ONLY >= 0 ? (innerWidth < 700 ? 9000 : 16000) : (opt.big ? (innerWidth < 700 ? 16000 : 34000) : (innerWidth < 700 ? 11000 : 22000));
     const wgt = subs.map(sb => val.includes(sb.n + sb.l) ? sb.e * 2.2 : Math.pow(sb.e, .7));
     const wsum = wgt.reduce((a, b) => a + b, 0);
     subs.forEach((sb, i) => {
+      if(skip(i)) return;
       const l = LI[sb.l], nR = 2 * l + 1, isV = val.includes(sb.n + sb.l), cnt = Math.round(total * wgt[i] / wsum);
       const cdf = [], rs = [], dr = .02 * sb.n; let acc = 0;
       for(let r = dr / 2; r < 8 * sb.n * sb.n + 30; r += dr){ const v = Rh(sb.n, l, r); acc += v * v * r * r; cdf.push(acc); rs.push(r); }
-      const occ = new Array(nR).fill(0); if(sb.e >= 2 * nR || l === 0) occ.fill(1); else for(let k = 0; k < sb.e; k++) occ[rxHundSlot(sb.l, k)]++;
+      const occ = new Array(nR).fill(0); if(MSEL != null && i === ONLY) occ[MSEL] = 1; else if(sb.e >= 2 * nR || l === 0) occ.fill(1); else for(let k = 0; k < sb.e; k++) occ[MAPM[sb.l][rxHundSlot(sb.l, k)]]++;
       const osum = occ.reduce((a, b) => a + b, 0), k0 = SZ[i].k / BOX, base = RX_SUB_COL[sb.l] || RX_SUB_COL.s;
       for(let m = 0; m < nR; m++){
         if(!occ[m]) continue;
@@ -50953,7 +50965,7 @@ void main(){
     PN = out.length / 9;
     gl.bindBuffer(gl.ARRAY_BUFFER, pbuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(out), gl.STATIC_DRAW);
     gl.useProgram(prog);
-    const byN = {}; subs.forEach((sb, i) => { const r = SZ[i].r / BOX * .55; if(!byN[sb.n] || r > byN[sb.n]) byN[sb.n] = r; });
+    const byN = {}; subs.forEach((sb, i) => { if(skip(i)) return; const r = SZ[i].r / BOX * .55; if(!byN[sb.n] || r > byN[sb.n]) byN[sb.n] = r; });
     RINGS = Object.keys(byN).map(n => ({ n: +n, r: byN[n] }));
     NSUB = subs.length;
     gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
@@ -50961,24 +50973,27 @@ void main(){
     gl.uniform4fv(U.SA, SA); gl.uniform3fv(U.SC, SC); gl.uniform1fv(U.W, W); gl.uniform1i(U.NS, NSUB); gl.uniform1i(U.T, 0);
   }
   function hide(){ if(cvG) cvG.style.display = 'none'; }
-  function draw(){
+  function draw(o){
+    o = o || {};
     if(window.RX_LOWPOW_ON || !init()) return false;
-    const atom = document.getElementById('atom'); if(!atom || !atomEl) return false;
+    const atom = o.host || document.getElementById('atom'), el = o.el || (typeof atomEl !== 'undefined' ? atomEl : null); if(!atom || !el) return false;
+    const VW = o.view || RX_CV, BD = o.host ? (o.band || null) : window.RX_BAND;
     if(cvG.parentNode !== atom.parentNode) atom.parentNode.insertBefore(cvG, atom);
     if(getComputedStyle(atom).position === 'static'){ atom.style.position = 'relative'; atom.style.zIndex = '1'; }
     gl.useProgram(prog);
-    if(key !== atomEl.s){ key = atomEl.s; build(atomEl.s); }
-    const w = atom.clientWidth, h = atom.clientHeight, dpr = Math.min(innerWidth < 700 ? 1 : 1.25, devicePixelRatio || 1);
+    const kk0 = el.s + '|' + (o.only || '') + '|' + (o.m == null ? '' : o.m) + '|' + (o.big ? 1 : 0);
+    if(key !== kk0){ key = kk0; build(el.s, { Z: el.n, only: o.only, m: o.m, big: o.big }); }
+    const w = atom.clientWidth, h = atom.clientHeight, dpr = Math.min(innerWidth < 700 ? 1 : (o.big ? 1.5 : 1.25), devicePixelRatio || 1);
     cvG.style.display = ''; cvG.style.left = atom.offsetLeft + 'px'; cvG.style.top = atom.offsetTop + 'px'; cvG.style.width = w + 'px'; cvG.style.height = h + 'px';
     const Wd = Math.round(w * dpr), Hd = Math.round(h * dpr);
     if(cvG.width !== Wd || cvG.height !== Hd){ cvG.width = Wd; cvG.height = Hd; }
     gl.viewport(0, 0, Wd, Hd); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
-    const B = window.RX_BAND, kk = Wd / w, CT = [B ? B.cx * kk : Wd / 2, B ? Hd - B.cy * kk : Hd / 2, B ? B.sc * kk : Math.min(Wd, Hd) * .46];
+    const B = BD, kk = Wd / w, CT = [B ? B.cx * kk : Wd / 2, B ? Hd - B.cy * kk : Hd / 2, B ? B.sc * kk : Math.min(Wd, Hd) * .46];
     // ① 바탕 안개 (옅게)
     gl.disable(gl.BLEND);
     gl.bindBuffer(gl.ARRAY_BUFFER, fbuf); gl.enableVertexAttribArray(U.a); gl.vertexAttribPointer(U.a, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, RX_CV.yaw, RX_CV.pitch, RX_CV.zoom || 1, 0); gl.uniform1f(U.LO, .55); gl.uniform1f(U.TM, performance.now() / 1000);
+    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform1f(U.LO, o.noFog ? 0 : (o.only ? .8 : .55)); gl.uniform1f(U.TM, performance.now() / 1000);
     gl.uniform3f(U.CT, CT[0], CT[1], CT[2]);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disableVertexAttribArray(U.a);
@@ -50989,7 +51004,7 @@ void main(){
       gl.enableVertexAttribArray(PU.p); gl.vertexAttribPointer(PU.p, 3, gl.FLOAT, false, 36, 0);
       gl.enableVertexAttribArray(PU.c); gl.vertexAttribPointer(PU.c, 4, gl.FLOAT, false, 36, 12);
       gl.enableVertexAttribArray(PU.s); gl.vertexAttribPointer(PU.s, 2, gl.FLOAT, false, 36, 28);
-      gl.uniform4f(PU.V, RX_CV.yaw, RX_CV.pitch, RX_CV.zoom || 1, 0); gl.uniform3f(PU.CT, CT[0], CT[1], CT[2]); gl.uniform2f(PU.R, Wd, Hd);
+      gl.uniform4f(PU.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform3f(PU.CT, CT[0], CT[1], CT[2]); gl.uniform2f(PU.R, Wd, Hd);
       gl.uniform1f(PU.TM, performance.now() / 1000); gl.uniform1f(PU.DP, kk * Math.max(.8, Math.min(1.25, CT[2] / kk / 150)));
       gl.drawArrays(gl.POINTS, 0, PN);
       gl.disableVertexAttribArray(PU.p); gl.disableVertexAttribArray(PU.c); gl.disableVertexAttribArray(PU.s);
@@ -50999,9 +51014,47 @@ void main(){
     return true;
   }
   setInterval(() => { if(cvG && cvG.style.display !== 'none' && performance.now() - lastDraw > 700) hide(); }, 250);   // 느린 폰에서 깜빡이지 않게 넉넉히
-  window.rxFogGL = { draw, hide, get failed(){ return failed; }, get rings(){ return RINGS; } };
+  return { draw, hide, get failed(){ return failed; }, get rings(){ return RINGS; } };
+}
+window.rxFogGL = MAKE('atomFogGL');
+window.rxFogMake = MAKE;
 })();
 </script>
 
+<script>
+/* ═══ 크게 보기 창(오비탈 상자)도 고퀄 점 구름 + 안개 ═══
+   전자 채우기 재생 중에는 예전 그림(점이 하나씩 켜짐), 그 밖에는 WebGL. 점만 보기(dots)면 안개는 끈다 */
+(function(){
+  if(typeof rxOrbTick !== 'function' || !window.rxFogMake) return;
+  let FB = null;
+  const _t = rxOrbTick;
+  rxOrbTick = function(now){
+    const O = RX_ORB;
+    const sub = O.sub ? (rxOrbSubOf() || {}) : null;
+    const can = O.on && !O.playing && !window.RX_LOWPOW_ON && (!sub || sub.l !== 'g');
+    if(!can){ if(FB) FB.hide(); return _t.apply(this, arguments); }
+    if(!FB) FB = rxFogMake('orbFogGL');
+    if(FB.failed) return _t.apply(this, arguments);
+    O.raf = requestAnimationFrame(rxOrbTick);
+    const cvs = document.getElementById('orbCv'); const dpr = Math.min(2, devicePixelRatio || 1);
+    const w = cvs.clientWidth, h = cvs.clientHeight; if(!w || !h) return;
+    if(cvs.width !== Math.round(w * dpr) || cvs.height !== Math.round(h * dpr)){ cvs.width = Math.round(w * dpr); cvs.height = Math.round(h * dpr); }
+    rxCloudSpin(O.view, now);
+    const ok = FB.draw({ host: cvs, el: O.el, view: O.view, only: O.sub || null, m: O.sub ? O.m : null, noFog: O.style === 'dots', big: true });
+    if(!ok) return _t.apply(this, arguments);
+    // 위 캔버스(2D)에는 핵만
+    const c = cvs.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+    const col = hex2rgb(cssv(CAT[O.el.c].v)), cx = w / 2, cy = h / 2, nr = O.sub ? 4 : Math.min(8, 3.5 + Math.sqrt(O.el.n) * .5);
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, nr * 4);
+    g.addColorStop(0, `rgba(${col.join(',')},.55)`); g.addColorStop(.35, `rgba(${col.join(',')},.14)`); g.addColorStop(1, `rgba(${col.join(',')},0)`);
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, nr * 4, 0, Math.PI * 2); c.fill();
+    const b = c.createRadialGradient(cx, cy, 0, cx, cy, nr * 1.15);
+    b.addColorStop(0, '#fff'); b.addColorStop(.4, `rgba(${col.map(v => Math.min(255, v + 90)).join(',')},.95)`); b.addColorStop(1, `rgba(${col.join(',')},0)`);
+    c.globalCompositeOperation = 'lighter'; c.fillStyle = b; c.beginPath(); c.arc(cx, cy, nr * 1.15, 0, Math.PI * 2); c.fill(); c.globalCompositeOperation = 'source-over';
+  };
+  // 창을 닫으면 숨김
+  if(typeof rxOrbClose === 'function'){ const _c = rxOrbClose; rxOrbClose = function(){ if(FB) FB.hide(); return _c.apply(this, arguments); }; }
+})();
+</script>
 </body>
 </html>
