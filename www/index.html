@@ -51138,5 +51138,94 @@ window.rxFogMake = MAKE;
 })();
 </script>
 <style>.elp-art{display:flex;justify-content:center;margin:4px 0 12px;padding:10px;border-radius:14px;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 22%,transparent),transparent)}.elp-art img{width:min(78%,300px);height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));animation:elpBob 2.6s ease-in-out infinite;user-select:none}@keyframes elpBob{50%{transform:translateY(-5px) rotate(-1.5deg)}}@media (prefers-reduced-motion:reduce){.elp-art img{animation:none}}</style>
+<style>
+  /* ═══ 모바일: 원자 모형 / 원소 정보 칸을 위로 쓸어 올려 크게 보기 (바텀 시트) ═══ */
+  #detGrip{display:none}
+  @media (max-width:900px){
+    #detGrip{display:block;position:relative;height:16px;flex-shrink:0;cursor:grab;touch-action:none;background:var(--panel)}
+    #detGrip::before{content:'';position:absolute;left:50%;top:6px;width:42px;height:4.5px;margin-left:-21px;border-radius:3px;background:rgba(200,210,255,.32);transition:background .2s,width .2s,margin .2s}
+    #detGrip:active::before,#detail.sh-drag #detGrip::before{background:rgba(200,210,255,.7);width:56px;margin-left:-28px}
+    #detGrip span{position:absolute;right:10px;top:1px;font-size:10px;color:var(--dim);opacity:.7;pointer-events:none}
+    #detPager{touch-action:none}
+    main.sh-anim #detail,main.sh-anim #tableWrap{transition:height .34s cubic-bezier(.25,1.15,.45,1)}
+    main.sh-up #tableWrap{height:0!important;min-height:0!important;flex:0 0 0!important;padding:0!important;border:0!important;overflow:hidden}
+    main.sh-up #detail{height:100%!important;border-top-color:transparent}
+    main.sh-up #detail.pg1 #atomBox{min-height:0}
+  }
+</style>
+<script>
+(function(){
+  const det = document.getElementById('detail'), main = det && det.parentElement, tw = document.getElementById('tableWrap');
+  if(!det || !main || !tw) return;
+  const mob = () => matchMedia('(max-width:900px)').matches;
+  const grip = document.createElement('div'); grip.id = 'detGrip'; grip.setAttribute('role', 'button'); grip.tabIndex = 0;
+  const lbl = () => { const up = main.classList.contains('sh-up'), en = typeof LANG !== 'undefined' && LANG === 'en';
+    grip.setAttribute('aria-label', up ? (en ? 'Collapse' : '내리기') : (en ? 'Expand' : '크게 보기'));
+    grip.innerHTML = `<span>${up ? (en ? '▼ swipe down' : '▼ 내려서 접기') : (en ? '▲ swipe up' : '▲ 올려서 크게')}</span>`; };
+  det.insertBefore(grip, det.firstChild); lbl();
+  let up = false;
+  const refit = () => { requestAnimationFrame(() => dispatchEvent(new Event('resize'))); setTimeout(() => dispatchEvent(new Event('resize')), 380); };
+  function set(v, anim){
+    up = !!v;
+    det.style.height = ''; tw.style.height = '';
+    if(anim !== false){ main.classList.add('sh-anim'); setTimeout(() => main.classList.remove('sh-anim'), 400); }
+    main.classList.toggle('sh-up', up); lbl(); refit();
+    try{ SFX.pick(); }catch(e){}
+  }
+  window.rxSheet = set;
+  // 끌기: 손잡이·1/2 페이지 탭 줄에서 위아래로
+  let y0 = 0, h0 = 0, H = 0, drag = false, moved = false, t0 = 0, lastY = 0, lastT = 0, vel = 0;
+  function start(e){
+    if(!mob()) return;
+    const p = e.touches ? e.touches[0] : e; y0 = lastY = p.clientY; t0 = lastT = Date.now(); vel = 0;
+    H = main.clientHeight; h0 = det.getBoundingClientRect().height; drag = true; moved = false;
+  }
+  function move(e){
+    if(!drag) return;
+    const p = e.touches ? e.touches[0] : e, dy = p.clientY - y0, now = Date.now();
+    if(!moved && Math.abs(dy) < 8) return;
+    if(!moved){ moved = true; det.classList.add('sh-drag'); main.classList.remove('sh-up', 'sh-anim'); }
+    vel = (p.clientY - lastY) / Math.max(1, now - lastT); lastY = p.clientY; lastT = now;
+    const h = Math.max(H * .3, Math.min(H, h0 - dy));
+    det.style.height = h + 'px'; tw.style.height = (H - h) + 'px';
+    if(e.cancelable) e.preventDefault();
+  }
+  function end(){
+    if(!drag) return; drag = false;
+    det.classList.remove('sh-drag');
+    if(!moved) return;
+    const h = det.getBoundingClientRect().height, base = H * .52;
+    // 빠르게 튕기면 그 방향, 아니면 가까운 쪽
+    const goUp = vel < -.45 ? true : vel > .45 ? false : h > (base + H) / 2;
+    det.style.height = h + 'px'; tw.style.height = (H - h) + 'px';
+    void det.offsetHeight;
+    main.classList.add('sh-anim');
+    det.style.height = goUp ? H + 'px' : ''; tw.style.height = goUp ? '0px' : '';
+    setTimeout(() => { set(goUp, false); main.classList.remove('sh-anim'); }, 340);
+    // 끌기 직후 생기는 클릭(탭 전환)은 무시
+    const kill = ev => { ev.stopPropagation(); ev.preventDefault(); };
+    det.addEventListener('click', kill, { capture: true, once: true }); setTimeout(() => det.removeEventListener('click', kill, { capture: true }), 60);
+  }
+  [grip, () => document.getElementById('detPager')].forEach(g => {
+    const add = el => { if(!el || el._shOn) return; el._shOn = 1;
+      el.addEventListener('touchstart', start, { passive: true });
+      el.addEventListener('pointerdown', e => { if(e.pointerType === 'mouse') start(e); }); };
+    if(typeof g === 'function'){ add(g()); setTimeout(() => add(g()), 500); } else add(g);
+  });
+  addEventListener('touchmove', move, { passive: false });
+  addEventListener('pointermove', e => { if(e.pointerType === 'mouse') move(e); });
+  addEventListener('touchend', end); addEventListener('touchcancel', end);
+  addEventListener('pointerup', e => { if(e.pointerType === 'mouse') end(); });
+  // 손잡이를 톡 누르면 열고 닫기
+  grip.addEventListener('click', () => { if(!moved) set(!up); });
+  grip.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); set(!up); } });
+  // 크게 본 상태에서 다른 원소를 고르려면 표가 보여야 하므로, 화면이 넓어지면 풀어 둔다
+  addEventListener('resize', () => { if(!mob() && up){ up = false; main.classList.remove('sh-up'); det.style.height = tw.style.height = ''; } });
+  // 뒤로 가기(안드로이드)로 접기
+  addEventListener('keydown', e => { if(e.key === 'Escape' && up && mob()) set(false); });
+  const _rl = window.applyLang; if(typeof _rl === 'function'){ window.applyLang = function(){ const r = _rl.apply(this, arguments); try{ lbl(); }catch(e){} return r; }; }
+})();
+</script>
+
 </body>
 </html>
