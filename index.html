@@ -50968,7 +50968,9 @@ void main(){
           let c = isV ? hc : base.map(v => v * .55 + 115);
           if(neg && opt.phase) c = opt.negCol || [255, 120, 160];
           else if(neg && isV && l > 0) c = c.map(v => v * .6 + 40);
-          out.push(X * u, Y * u, Z * u, c[0] / 255, c[1] / 255, c[2] / 255, isV ? .34 : .14, isV ? 2.4 : 1.7, rnd());
+          // 위상 색 구분: 안개를 옅게 깔고 점이 색을 맡으므로, 점을 더 진하게
+          const ph = opt.phase ? 1.6 : 1;
+          out.push(X * u, Y * u, Z * u, c[0] / 255, c[1] / 255, c[2] / 255, Math.min(.6, (isV ? .34 : .14) * ph), (isV ? 2.4 : 1.7) * (opt.phase ? 1.1 : 1), rnd());
         }
       }
     });
@@ -51003,7 +51005,7 @@ void main(){
     // ① 바탕 안개 (옅게)
     gl.disable(gl.BLEND);
     gl.bindBuffer(gl.ARRAY_BUFFER, fbuf); gl.enableVertexAttribArray(U.a); gl.vertexAttribPointer(U.a, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform1f(U.LO, o.noFog ? 0 : (o.only ? .8 : .55)); gl.uniform1f(U.TM, performance.now() / 1000);
+    gl.uniform2f(U.R, Wd, Hd); gl.uniform4f(U.V, VW.yaw, VW.pitch, VW.zoom || 1, 0); gl.uniform1f(U.LO, o.noFog ? 0 : (o.only ? .8 : .55) * (o.phase ? .18 : 1)); gl.uniform1f(U.TM, performance.now() / 1000);
     gl.uniform3f(U.CT, CT[0], CT[1], CT[2]);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disableVertexAttribArray(U.a);
