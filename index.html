@@ -3664,7 +3664,7 @@ const SUB_FALLBACK = {
 /* key = 원소기호를 알파벳순으로 정렬해 '+' 로 이은 것 */
 const RECIPES = {
   "Cl+Na":["NaCl","소금","음식에 넣으면 존나 맛있어짐"],
-  "H+O":["H₂O","물","그냥 물임"],
+  "H+O":["H₂O","물","그냥 물인데요?"],
   "C+O":["CO₂","이산화탄소","탄산음료의 그것 / 드라이아이스 그거 / 지구 데우는 중"],
   "C+H":["CH₄","메테인","소가 뀌면 나옴"],
   "H+N":["NH₃","암모니아","화장실 냄새"],
@@ -3986,7 +3986,7 @@ const EXACT = {
   "C9+H9+N1":["C₉H₉N","스카톨","똥 냄새의 정체. 근데 옅으면 꽃향기라 향수에 씀"],
   "C1+O1":["CO","일산화탄소","무색무취인데 조용히 죽임"],
   "C1+O2":["CO₂","이산화탄소","탄산음료의 그것 / 드라이아이스 그거 / 지구 데우는 중"],
-  "H2+O1":["H₂O","물","그냥 물임"],
+  "H2+O1":["H₂O","물","그냥 물인데요?"],
   "H1+O1":["OH·","하이드록시 라디칼","1초도 못 살고 사라짐"],
   "H2+O2":["H₂O₂","과산화수소","머리 탈색이랑 소독"],
   "Cl1+H1":["HCl","염산","니 위 속에 있음"],
@@ -51788,6 +51788,21 @@ Object.assign(RX_SMILES_PRE, {"Cc1cc2nc3cc(C)c(N)cc3[n+](-c3ccccc3)c2cc1N.[Cl-]"
   add("C66+Fe6+H54", "C₆₆H₅₄Fe₆", "헥사페로세닐벤젠", "벤젠 둘레에 페로센 여섯 개", "Hexaferrocenylbenzene", "Six ferrocenes around one benzene", "c1(-[C]2C=CC=C2)c(-[C]2C=CC=C2)c(-[C]2C=CC=C2)c(-[C]2C=CC=C2)c(-[C]2C=CC=C2)c1-[C]2C=CC=C2.[CH]1C=CC=C1.[CH]1C=CC=C1.[CH]1C=CC=C1.[CH]1C=CC=C1.[CH]1C=CC=C1.[CH]1C=CC=C1.[Fe].[Fe].[Fe].[Fe].[Fe].[Fe]", "가운데 벤젠의 수소 여섯 자리에 페로센을 하나씩 다 붙였어요. 너무 빽빽해서 페로센들이 위·아래로 번갈아 비켜 앉아 있어요. 오랫동안 '너무 붐벼서 못 만든다'고 여겨지다가 2006년에야 만들어졌어요.", "A ferrocene on every one of benzene's six spots. It is so crowded that the ferrocenes take turns tilting up and down. Long thought too crowded to make, it was finally made in 2006.", ["weird"]);
   try{ Object.assign(RX_DEX_ALIAS, { "비스(벤젠)크로뮴": "벤젠크롬 dibenzenechromium 크롬 샌드위치", "테트라페닐포르피린": "TPP tpp 포르피린 porphyrin", "사프라닌 O": "사프라닌 safranine 사프라닌오", "헥사페로세닐벤젠": "페로센 ferrocene" }); }catch(e){}
   try{ RX_BENZ.push("케쿨렌", "테트라페닐포르피린"); }catch(e){}
+})();
+</script>
+
+<script>
+/* 물 → 옥시데인 (IUPAC 이름). 속 이름("물")은 그대로 두고 보이는 이름만 바꾼다 — 저장된 도감·미션·업적이 안 깨지게 */
+(function(){
+  if(typeof locRec !== 'function') return;
+  const _l = locRec;
+  locRec = function(r){
+    const x = _l.apply(this, arguments);
+    try{ if(r && r[1] === '물' && x && !(typeof LANG !== 'undefined' && LANG === 'en') && !(typeof SAFE !== 'undefined' && SAFE && SAFE_REC && SAFE_REC['물'])) return [x[0], '옥시데인', x[2]]; }catch(e){}
+    return x;
+  };
+  try{ REC_EN['물'] = ['Oxidane', "It's just water?"]; }catch(e){}
+  try{ RX_DEX_ALIAS['물'] = ((RX_DEX_ALIAS['물'] || '') + ' 물 water 옥시데인 oxidane').trim(); }catch(e){}
 })();
 </script>
 
