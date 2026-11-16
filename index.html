@@ -53794,6 +53794,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   .at-note{margin-top:7px;font-size:11px;color:#9ec5ff;word-break:keep-all;line-height:1.45}
   .at-st{display:flex;justify-content:space-between;gap:6px;margin-top:9px;font-size:11.5px;color:var(--dim)}
   .at-st em{font-style:normal;color:#fff;font-weight:800;font-size:15px;margin:0 2px}
+  .at-re{display:block;width:100%;margin-top:6px;padding:7px;border-radius:9px;cursor:pointer;font:inherit;font-size:11.5px;font-weight:700;color:#dfe3ff;border:1px dashed rgba(154,168,255,.35);background:rgba(154,168,255,.05);transition:all .15s}
+  .at-re:hover{border-style:solid;border-color:var(--tc);color:#fff;background:color-mix(in srgb,var(--tc) 14%,transparent)}
   .at-more{display:block;margin:8px 0 0 auto;font:inherit;font-size:11px;color:#c9d0ff;background:none;border:0;cursor:pointer;padding:0}
 
   /* ── 모션그래픽 연출 (고퀄 v2) ── */
@@ -53974,6 +53976,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     if(s.streak % 7 === 0 && a.sh < SH_MAX){ a.sh++; res.newShield = true; }
     RW.forEach(r => { if(!a.got.includes(r.id) && r.ok(s)){ a.got.push(r.id); res.unlocks.push(r); } });
     if(res.unlocks.length) a.title = res.unlocks[res.unlocks.length - 1].id;
+    a.last = { k: t, shield: res.shield, newShield: res.newShield, broke: res.broke, un: res.unlocks.map(r => r.id) };
     save(a);
     res.stats = s; res.a = a;
     return res;
@@ -54151,7 +54154,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
       : pd < 0 ? `<div class="at-note" style="color:#ffa8b8">${P('보호막이 모자라서 연속 기록이 새로 시작돼요', 'Not enough shields, the streak will restart')}</div>` : '';
     return `<div class="at-h"><h4>${P('출석 체크', 'DAILY CHECK-IN')}</h4><span class="at-sh" title="${P('보호막: 하루 빠져도 연속 기록을 지켜 줘요. 7일 연속마다 1개 (최대 3개)', 'Shields protect your streak. +1 every 7-day streak (max 3)')}">${Array.from({ length: SH_MAX }, (_, i) => `<i class="${i < a.sh ? 'on' : ''}" style="background-image:url('${SHIELD}')"></i>`).join('')}</span></div>
       <div class="at-wk">${cells}</div>
-      <button type="button" class="at-go${done ? ' done' : ''}" id="atGo">${done ? P('✓ 오늘 출석 완료 · 내일 아침 9시에 또 만나요', '✓ Checked in · see you tomorrow 9 AM') : P('🖋 출석 도장 찍기', '🖋 Stamp today')}</button>${note}
+      <button type="button" class="at-go${done ? ' done' : ''}" id="atGo">${done ? P('✓ 오늘 출석 완료 · 내일 아침 9시에 또 만나요', '✓ Checked in · see you tomorrow 9 AM') : P('🖋 출석 도장 찍기', '🖋 Stamp today')}</button>${done ? `<button type="button" class="at-re" id="atRe">▶ ${P('출석 연출 다시 보기', 'Replay the stamp')}</button>` : ''}${note}
       <div class="at-st"><span>${P('연속', 'Streak')}<em>${s.streak}</em>${P('일', '')}</span><span>${P('최고', 'Best')}<em>${s.best}</em>${P('일', '')}</span><span>${P('총', 'Total')}<em>${s.total}</em>${P('일', '')}</span></div>
       <button type="button" class="at-more" id="atMore">${P('출석부 · 칭호 보기 →', 'Stamp book & titles →')}</button>`;
   }
@@ -54176,6 +54179,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
       fx(e, elCol(e.s), res);
       mount();
     });
+    host.querySelector('#atRe')?.addEventListener('click', () => replay());
     host.querySelector('#atMore').addEventListener('click', () => { try{ SFX.pick(); }catch(_){} book(); });
     box.querySelector('#atTtl')?.addEventListener('click', () => book(true));
   }
@@ -54211,6 +54215,13 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
       try{ if(HUB === 'today' && quizEl.classList.contains('on')) mount(); }catch(_){}
     }));
   }
+  function replay(){
+    const a = load(), t = TODAY(), sym = a.d[t]; if(!sym) return;
+    const e = EL.find(x => x.s === sym) || EL[0], L = a.last && a.last.k === t ? a.last : {};
+    try{ SFX.pick(); }catch(_){}
+    fx(e, elCol(sym), { shield: L.shield || 0, newShield: !!L.newShield, broke: !!L.broke, unlocks: (L.un || []).map(id => RW.find(r => r.id === id)).filter(Boolean), stats: stats(a), a });
+  }
+  window.rxAttendReplay = replay;
   window.rxAttendBook = book;
 
   const _rt = renderToday;
