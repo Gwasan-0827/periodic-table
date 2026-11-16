@@ -54406,14 +54406,14 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   function bus(a){
     if(BUS && BUS.a === a) return BUS;
     const comp = a.createDynamicsCompressor();
-    comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .25;
-    const master = a.createGain(); master.gain.value = .55;
+    comp.threshold.value = -18; comp.knee.value = 18; comp.ratio.value = 3; comp.attack.value = .003; comp.release.value = .25;
+    const master = a.createGain(); master.gain.value = .5;
     comp.connect(master); master.connect(a.destination);
     // 잔향: 2초짜리 감쇠 노이즈로 만든 공간
     const len = a.sampleRate * 2.2, ir = a.createBuffer(2, len, a.sampleRate);
-    for(let c = 0; c < 2; c++){ const d = ir.getChannelData(c); for(let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2); }
+    for(let c = 0; c < 2; c++){ const d = ir.getChannelData(c); { let p = 0; for(let i = 0; i < len; i++){ p = p * .55 + (Math.random() * 2 - 1) * .45; d[i] = p * Math.pow(1 - i / len, 3.4); } } }
     const conv = a.createConvolver(); conv.buffer = ir;
-    const wet = a.createGain(); wet.gain.value = .32; conv.connect(wet); wet.connect(comp);
+    const wet = a.createGain(); wet.gain.value = .38; conv.connect(wet); wet.connect(comp);
     BUS = { a, dry: comp, rev: conv };
     return BUS;
   }
@@ -54435,58 +54435,56 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + (att || .005)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
     s.connect(fl); fl.connect(g); out(b, g, rv); s.start(t, Math.random()); s.stop(t + dur + .05);
   }
-  // 소리 조각들
-  const whoosh = (b, t, dur, up) => { nz(b, t, dur, .22, 'bandpass', up ? 350 : 3200, up ? 3600 : 400, 1.4, .25, dur * .45); };
+  // 소리 조각들 (부드러운 버전)
+  const whoosh = (b, t, dur, up) => { nz(b, t, dur, .1, 'bandpass', up ? 300 : 1800, up ? 1800 : 300, .6, .3, dur * .5); };
   function riser(b, t, dur){
-    nz(b, t, dur, .12, 'highpass', 400, 5000, .7, .2, dur * .9);
+    nz(b, t, dur, .045, 'bandpass', 500, 2400, .5, .3, dur * .9);
     const a = b.a, o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
-    o.type = 'sawtooth'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(880, t + dur);
-    lp.type = 'lowpass'; lp.frequency.setValueAtTime(300, t); lp.frequency.exponentialRampToValueAtTime(5000, t + dur);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.06, t + dur * .95); g.gain.linearRampToValueAtTime(0, t + dur + .02);
-    o.connect(lp); lp.connect(g); out(b, g, .2); o.start(t); o.stop(t + dur + .05);
+    o.type = 'sine'; o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(660, t + dur);
+    lp.type = 'lowpass'; lp.frequency.value = 1400;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.035, t + dur * .9); g.gain.linearRampToValueAtTime(0, t + dur + .03);
+    o.connect(lp); lp.connect(g); out(b, g, .35); o.start(t); o.stop(t + dur + .05);
   }
-  function impact(b, t){
-    osc(b, t, 'sine', 150, 38, .55, .9, .1, .002);          // 킥: 음이 뚝 떨어지는 쿵
-    osc(b, t, 'sine', 48, 34, 1.3, .45, .05, .01);           // 바닥이 울리는 저음
-    nz(b, t, .18, .5, 'highpass', 2500, 900, .7, .35, .001); // 탁! 하는 파열음
-    nz(b, t, .5, .25, 'lowpass', 900, 120, 1, .4, .003);     // 먼지 같은 울림
-    osc(b, t, 'square', 1900, 1500, .07, .07, .3, .001);     // 금속 도장 딸깍
-    osc(b, t + .012, 'triangle', 2600, 2100, .12, .05, .4, .001);
+  // 도장 쾅-! : 살짝 누르는 소리 → 고무 도장이 책상에 쾅 → 종이 탁 → 방 울림
+  function stamp(b, t){
+    nz(b, t - .05, .07, .04, 'bandpass', 1200, 700, 1.2, .1, .04);   // 꾹 누르는 마찰
+    osc(b, t, 'sine', 120, 52, .7, .85, .25, .003);                  // 쾅: 묵직한 몸통
+    osc(b, t, 'sine', 230, 140, .22, .35, .2, .002);                 // 쾅: 단단한 윗소리
+    osc(b, t, 'triangle', 340, 210, .09, .12, .3, .001);             // 나무 책상 딱
+    nz(b, t, .11, .32, 'bandpass', 700, 350, 1.6, .35, .001);        // 책상 울림
+    nz(b, t, .05, .16, 'highpass', 2600, 1800, .5, .25, .001);       // 종이 탁
+    nz(b, t + .01, .9, .07, 'lowpass', 500, 90, .7, .7, .02);        // 방 안에 퍼지는 울림
+    osc(b, t + .015, 'sine', 62, 40, 1.1, .25, .15, .02);            // 바닥 저음 여운
   }
   function shimmer(b, t, len, n){
-    for(let i = 0; i < n; i++){ const tt = t + Math.random() * len, f = 2200 + Math.random() * 3800; osc(b, tt, 'sine', f, f * 1.02, .18 + Math.random() * .25, .035 + Math.random() * .03, .6, .002); }
+    for(let i = 0; i < n; i++){ const tt = t + Math.random() * len, f = 1600 + Math.random() * 1800; osc(b, tt, 'sine', f, 0, .35 + Math.random() * .4, .014 + Math.random() * .012, .75, .01); }
   }
   function ticks(b, t, len, n){
-    const k = Math.max(2, Math.min(16, n));
-    for(let i = 0; i < k; i++){ const p = i / (k - 1), tt = t + len * (1 - Math.pow(1 - p, 2.2)); osc(b, tt, 'square', 900 + p * 900, 0, .035, .045, .1, .001); }
+    const k = Math.max(2, Math.min(14, n));
+    for(let i = 0; i < k; i++){ const p = i / (k - 1), tt = t + len * (1 - Math.pow(1 - p, 2.2)); osc(b, tt, 'sine', 1100 + p * 500, 0, .07, .035, .25, .003); }
   }
   function bell(b, t, f, vol, dur){
-    osc(b, t, 'sine', f, 0, dur, vol, .55, .004);
-    osc(b, t, 'sine', f * 2.01, 0, dur * .6, vol * .35, .55, .004);
-    osc(b, t, 'sine', f * 3.02, 0, dur * .35, vol * .15, .55, .004);
+    osc(b, t, 'sine', f, 0, dur, vol, .6, .012);
+    osc(b, t, 'sine', f * 2, 0, dur * .5, vol * .18, .6, .012);
   }
   function chime(b, t){
-    [1046.5, 1318.5, 1568, 2093].forEach((f, i) => bell(b, t + i * .07, f, .12, 1.4));
-    osc(b, t, 'triangle', 523.25, 0, 1.2, .08, .4, .02);
-    osc(b, t, 'triangle', 659.25, 0, 1.2, .06, .4, .02);
+    [783.99, 987.77, 1174.66, 1567.98].forEach((f, i) => bell(b, t + i * .09, f, .075, 1.8));
+    osc(b, t, 'sine', 392, 0, 1.6, .06, .5, .08);
+    osc(b, t, 'sine', 493.88, 0, 1.6, .04, .5, .08);
   }
   function fanfare(b, t, k){
-    const base = [1568, 1976, 2349, 3136];
-    base.forEach((f, i) => bell(b, t + i * .05, f * (k ? 1.122 : 1), .08, .9));
-    nz(b, t, .5, .05, 'highpass', 6000, 9000, .5, .5, .1);
+    [1174.66, 1396.91, 1760, 2349.32].forEach((f, i) => bell(b, t + i * .06, f * (k ? 1.122 : 1), .05, 1.2));
     whoosh(b, t - .15, .3, true);
   }
   function shieldUp(b, t){
     const a = b.a, o = a.createOscillator(), g = a.createGain(), lfo = a.createOscillator(), lg = a.createGain();
-    o.type = 'triangle'; o.frequency.setValueAtTime(260, t); o.frequency.exponentialRampToValueAtTime(1040, t + .7);
-    lfo.frequency.value = 14; lg.gain.value = 18; lfo.connect(lg); lg.connect(o.frequency);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.09, t + .1); g.gain.setValueAtTime(.09, t + .6); g.gain.exponentialRampToValueAtTime(.0001, t + 1.1);
-    o.connect(g); out(b, g, .5); o.start(t); lfo.start(t); o.stop(t + 1.2); lfo.stop(t + 1.2);
-    [784, 1175, 1568].forEach((f, i) => bell(b, t + .55 + i * .06, f, .07, .9));
-    shimmer(b, t + .3, .8, 10);
-    // 보호막이 흩어지는 소리
-    nz(b, t + 1.3, .55, .16, 'highpass', 3000, 9000, .6, .5, .01);
-    shimmer(b, t + 1.3, .4, 8);
+    o.type = 'sine'; o.frequency.setValueAtTime(330, t); o.frequency.exponentialRampToValueAtTime(880, t + .7);
+    lfo.frequency.value = 7; lg.gain.value = 8; lfo.connect(lg); lg.connect(o.frequency);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.06, t + .15); g.gain.setValueAtTime(.06, t + .6); g.gain.exponentialRampToValueAtTime(.0001, t + 1.2);
+    o.connect(g); out(b, g, .6); o.start(t); lfo.start(t); o.stop(t + 1.3); lfo.stop(t + 1.3);
+    [659.25, 987.77, 1318.51].forEach((f, i) => bell(b, t + .55 + i * .08, f, .05, 1.2));
+    nz(b, t + 1.3, .6, .05, 'bandpass', 2500, 5000, .5, .6, .05);
+    shimmer(b, t + 1.3, .5, 6);
   }
 
   window.rxAttSfx = function(d0, res, n){
@@ -54499,8 +54497,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     whoosh(b, s, .5, true);
     whoosh(b, s + .1, .5, false);
     riser(b, s + .04, .62);
-    impact(b, s + .66);
-    shimmer(b, s + .7, 1, 22);
+    stamp(b, s + .66);
+    shimmer(b, s + .75, 1.1, 14);
     ticks(b, s + .85, .9, n);
     chime(b, s + 1.05);
     (res.unlocks || []).forEach((_, k) => fanfare(b, s + 1.75 + k * .2, k));
