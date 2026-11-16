@@ -55783,5 +55783,19 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
 })();
 </script>
 
+<style>
+  /* 원자 커서: body 바깥(html 바로 아래)에 붙는 창들(전용 패널·잠금·토스터 배지·굽기 카드)에서도 기본 커서 숨기기 */
+  body.rx-cur ~ *, body.rx-cur ~ * *, body.rx-cur ~ * *::before, body.rx-cur ~ * *::after{cursor:none!important}
+  body.rx-cur ~ * input:not([type=checkbox]):not([type=range]), body.rx-cur ~ * textarea{cursor:text!important}
+</style>
+<script>
+/* 원자 커서를 html 맨 끝으로 옮겨서, html에 직접 붙는 창들보다 항상 위에 그려지게 */
+(function(){
+  const top = () => { const c = document.getElementById('rxCur'); if(c && c !== document.documentElement.lastElementChild) document.documentElement.appendChild(c); };
+  new MutationObserver(top).observe(document.documentElement, { childList: true });
+  setTimeout(top, 500);
+})();
+</script>
+
 </body>
 </html>
