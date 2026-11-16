@@ -4371,7 +4371,7 @@ mixBtn.addEventListener('click', () => {
   }
   mixExtra(r, wasNew);
   const BOOMS = ['트라이나이트로톨루엔','나이트로글리세린','아자이도아자이드 아자이드'];
-  const boom = !!(r && r[1] && (r[1].includes('폭발') || BOOMS.includes(r[1])));
+  const boom = !!(r && r[1] && (r[1].includes('폭발') || BOOMS.includes(r[1]) || (typeof rxBoomLevel === 'function' && rxBoomLevel(r[1], r[0]) > 0)));   // 나중에 추가된 폭발물(RX_BOOM_NAMES·💥)도 소리·흔들림
   const gem  = !!(r && r[1] && GEMS.includes(r[1]));
 
   // 도감 등록
