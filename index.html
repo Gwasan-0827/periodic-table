@@ -56276,5 +56276,35 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 })();
 </script>
 
+<style>
+  /* ═══ 모바일 손질: 생일 달력 칸 겹침 + 연출 화면 깜빡임 ═══ */
+  /* 좁은 화면에선 칸 비율을 풀어서 7칸에 딱 맞게 (원래 aspect-ratio + min-height 때문에 칸이 64px로 커져 겹쳤음) */
+  @media (max-width:600px){
+    .bd-grid{gap:3px}
+    .bd-d{aspect-ratio:auto;min-width:0;min-height:48px;padding:4px 3px 5px 4px;font-size:10.5px}
+    .bd-d .sy{font-size:13.5px;white-space:nowrap}
+    .bd-d .sy small{font-size:8.5px;margin-left:1px}
+    .bd-d.today::after{content:"";right:3px;top:4px;width:6px;height:6px;border-radius:50%;background:#ffd43b;box-shadow:0 0 6px #ffd43b}
+    .bd-d.mine::before{font-size:10px;right:2px;top:2px}
+    .bd-me{gap:8px;padding:11px 12px}
+    .bd-me .lg{font-size:11.5px;letter-spacing:.07em;min-width:0;overflow:hidden;text-overflow:clip}
+    .bd-me small{font-size:10.5px;letter-spacing:0}
+    .bd-it .dt{white-space:nowrap;letter-spacing:.02em}
+  }
+  /* 터치 기기(안드로이드 웹뷰): 계속 남는 블러·드롭섀도 필터가 움직이는 배경 위에 있으면 화면이 깜빡여서 꺼 둠 */
+  @media (pointer:coarse){
+    #mbFx .bg{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(6,8,22,.9)}
+    #mbFx h1 b{filter:none!important;text-shadow:none}
+    #mbFx .tag{text-shadow:none}
+    #apFx .bg{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,7,16,.88)}
+    #atFx .day .n, #atFx .msg b, #atFx .stamp svg{filter:none!important}
+    #atFx .band.c{filter:none!important;opacity:.1}
+    #atFx *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+    #hbFx .hd{text-shadow:none}
+  }
+  /* 'TAP · 화면을 누르면 닫혀요'가 아래 띠에 가려지던 것 */
+  #atFx .tap{bottom:calc(3% + 12vw + 34px);z-index:5}
+</style>
+
 </body>
 </html>
