@@ -54798,8 +54798,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
 <style>
   /* ═══ 이스터에그: 🍞 토스터 모드 (권장 사양 카드의 토스터 문구 5번 연속 탭) ═══ */
   .gpu-req small{cursor:pointer;user-select:none;-webkit-user-select:none}
-  html.toaster{filter:url(#rxPxF) sepia(.3) saturate(1.25) contrast(1.05)}
-  html.toaster *{animation-timing-function:steps(3,end)!important;transition-timing-function:steps(2,end)!important}
+  html.toaster body{filter:url(#rxPxF) sepia(.3) saturate(1.25) contrast(1.05)}
+  html.toaster body *{animation-timing-function:steps(3,end)!important;transition-timing-function:steps(2,end)!important}
   html.toaster .cell{background:radial-gradient(120% 90% at 50% 30%,#f3cf8a,#d79a4e 60%,#9c5d22)!important;border-color:#6b3b12!important;
     box-shadow:inset 0 0 0 2px rgba(110,60,18,.65),inset 0 -6px 10px rgba(90,40,10,.45)!important;color:#3a1d06!important}
   html.toaster .cell *{color:#3a1d06!important;text-shadow:none!important}
@@ -54853,9 +54853,9 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   function badge(){
     let b = document.getElementById('toastBadge');
     if(!b){
-      b = document.createElement('div'); b.id = 'toastBadge'; document.body.appendChild(b);
+      b = document.createElement('div'); b.id = 'toastBadge'; document.documentElement.appendChild(b);
       b.addEventListener('click', tap);
-      const h = document.createElement('div'); h.id = 'toastHeat'; document.body.appendChild(h);
+      const h = document.createElement('div'); h.id = 'toastHeat'; document.documentElement.appendChild(h);
     }
     b.innerHTML = `<i>🍞</i> ${EN() ? 'Running on a toaster…' : '토스터에서 실행 중…'} <b>${temp}°C</b>`;
   }
@@ -54867,8 +54867,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     ON = false; clearInterval(heatT); document.documentElement.classList.remove('toaster');
     document.getElementById('toastBadge')?.remove(); document.getElementById('toastHeat')?.remove();
     snd('off');
-    const p = document.createElement('div'); p.className = 'toastPop'; p.textContent = '🍞'; document.body.appendChild(p); setTimeout(() => p.remove(), 1700);
-    const d = document.createElement('div'); d.className = 'toastDing'; d.textContent = EN() ? 'DING!' : '띵!'; document.body.appendChild(d); setTimeout(() => d.remove(), 1300);
+    const p = document.createElement('div'); p.className = 'toastPop'; p.textContent = '🍞'; document.documentElement.appendChild(p); setTimeout(() => p.remove(), 1700);
+    const d = document.createElement('div'); d.className = 'toastDing'; d.textContent = EN() ? 'DING!' : '띵!'; document.documentElement.appendChild(d); setTimeout(() => d.remove(), 1300);
   }
   function tap(){
     const now = Date.now(); taps = taps.filter(x => now - x < 2200); taps.push(now);
