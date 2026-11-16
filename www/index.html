@@ -52501,6 +52501,14 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   const P = (k, e) => EN() ? e : k;
   // [Z, 과녁 기호, 과녁 Z, 과녁 A, 빔 기호, 빔 Z, 빔 A, 나온 A, 중성자 수, 연도, 연구소(한/영)]
   const R = [
+    [43, 'Mo', 42, 96, 'H', 1, 2, 97, 1, 1937, '미국 버클리 사이클로트론 → 이탈리아 팔레르모 (첫 인공 원소!)', 'Berkeley cyclotron → Palermo, Italy (the first man-made element!)'],
+    [85, 'Bi', 83, 209, 'He', 2, 4, 211, 2, 1940, '미국 버클리', 'Berkeley, USA'],
+    [96, 'Pu', 94, 239, 'He', 2, 4, 242, 1, 1944, '미국 시카고 (맨해튼 계획 중)', 'Chicago, USA (during the Manhattan Project)'],
+    [97, 'Am', 95, 241, 'He', 2, 4, 243, 2, 1949, '미국 버클리', 'Berkeley, USA'],
+    [98, 'Cm', 96, 242, 'He', 2, 4, 245, 1, 1950, '미국 버클리', 'Berkeley, USA'],
+    [101, 'Es', 99, 253, 'He', 2, 4, 256, 1, 1955, '미국 버클리 (원자 17개)', 'Berkeley, USA (17 atoms)'],
+    [102, 'U', 92, 238, 'Ne', 10, 22, 256, 4, 1966, '러시아 두브나', 'Dubna, Russia'],
+    [103, 'Cf', 98, 252, 'B', 5, 10, 258, 4, 1961, '미국 버클리', 'Berkeley, USA'],
     [104, 'Cf', 98, 249, 'C', 6, 12, 257, 4, 1969, '미국 버클리', 'Berkeley, USA'],
     [105, 'Cf', 98, 249, 'N', 7, 15, 260, 4, 1970, '미국 버클리', 'Berkeley, USA'],
     [106, 'Cf', 98, 249, 'O', 8, 18, 263, 4, 1974, '미국 버클리', 'Berkeley, USA'],
@@ -52520,7 +52528,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   const sym = z => byNum[z] ? byNum[z].s : '?';
   const eun = w => { const ch = w.charCodeAt(w.length - 1); return (ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28) ? w + '은' : w + '는'; };
   const SUP = s => String(s).replace(/[0-9]/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
-  const DAY = { 104: .9, 105: .7, 106: .3, 107: 1 / 4, 108: 1 / 6, 109: 1 / 10, 110: 1 / 12, 111: 1 / 20, 112: 1 / 25, 113: 1 / 1100, 114: 1 / 14, 115: 1 / 20, 116: 1 / 30, 117: 1 / 40, 118: 1 / 45 };
+  const DAY = { 43: 1, 85: 1, 96: .95, 97: .8, 98: .8, 101: 1 / 3, 102: .5, 103: .5, 104: .9, 105: .7, 106: .3, 107: 1 / 4, 108: 1 / 6, 109: 1 / 10, 110: 1 / 12, 111: 1 / 20, 112: 1 / 25, 113: 1 / 1100, 114: 1 / 14, 115: 1 / 20, 116: 1 / 30, 117: 1 / 40, 118: 1 / 45 };
   const PL = { on: false, days: 0, atoms: 0, best: {}, flash: 0, queue: 0, rate: 0, strip: [], first: 0, msg: '', mcol: '' };
   let RX = R[R.length - 1], step = 0, t0 = 0, auto = false, raf = 0, at = 0;
   const T = () => { const [Z, ts, tz, ta, bs, bz, ba, A, nn] = RX; return { Z, ts, tz, ta, bs, bz, ba, A, nn, C: ta + ba }; };
@@ -52584,15 +52592,15 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   const STEPS = [
     { k: ['① 가속', '① Accelerate'], d: () => { const r = T(); return P(`가속기 안에서 ${SUP(r.ba)}${r.bs} 원자핵을 빙글빙글 돌리며 점점 빠르게 만들어요. 빛 속도의 약 10%까지 올려야 해요. 원자핵끼리는 둘 다 (+)라서 서로 밀어내는데, 이 반발을 뚫고 맞닿게 하려면 엄청 빨라야 하거든요.`,
       `Inside the accelerator, ${SUP(r.ba)}${r.bs} nuclei are whirled round and round, faster and faster — up to about 10% of light speed. Both nuclei are (+) and push each other away, so they must be very fast to touch at all.`); } },
-    { k: ['② 과녁에 쏘기', '② Hit the target'], d: () => { const r = T(); return P(`빠른 ${r.bs} 빔을 ${SUP(r.ta)}${r.ts} 원자로 만든 얇은 과녁에 쏴요. 과녁은 열에 녹지 않게 빙글빙글 돌아요. 그런데 거의 다 (+)끼리 밀어내서 <b>튕겨 나가요</b>. 1초에 수조 개를 쏘는데도 몇 주, 몇 달 동안 하나도 안 붙는 게 보통이에요.`,
-      `The fast ${r.bs} beam hits a thin, spinning target of ${SUP(r.ta)}${r.ts}. Almost every nucleus is <b>pushed away</b> by the (+)/(+) repulsion. Trillions are fired every second, yet weeks or months can pass without a single hit.`); } },
+    { k: ['② 과녁에 쏘기', '② Hit the target'], d: () => { const r = T(); return P(`빠른 ${r.bs} 빔을 ${SUP(r.ta)}${r.ts} 원자로 만든 얇은 과녁에 쏴요. 과녁은 열에 녹지 않게 빙글빙글 돌아요. 그런데 거의 다 (+)끼리 밀어내서 <b>튕겨 나가요</b>. ` + (r.Z >= 100 ? '1초에 수조 개를 쏘는데도 몇 주, 몇 달 동안 하나도 안 붙는 게 보통이에요.' : '그래도 빔이 가볍고 과녁 핵이 작으면 꽤 자주 붙어서, 하루에도 많이 만들어져요.'),
+      `The fast ${r.bs} beam hits a thin, spinning target of ${SUP(r.ta)}${r.ts}. Almost every nucleus is <b>pushed away</b> by the (+)/(+) repulsion. ` + (r.Z >= 100 ? 'Trillions are fired every second, yet weeks or months can pass without a single hit.' : 'With a light beam and a smaller target, hits are common enough to make plenty in a day.')); } },
     { k: ['③ 융합', '③ Fuse'], d: () => { const r = T(); return P(`아주 드물게 두 핵이 딱 맞닿으면 하나로 합쳐져요. 양성자 ${r.tz} + ${r.bz} = <b>${r.Z}개</b> → ${r.Z}번 원소 ${sym(r.Z)}! 막 합쳐진 핵(${SUP(r.C)}${sym(r.Z)}*)은 너무 뜨거워서 부들부들 떨려요.`,
       `Very rarely the two nuclei touch and merge. ${r.tz} + ${r.bz} protons = <b>${r.Z}</b> → element ${r.Z}, ${sym(r.Z)}! The fresh nucleus (${SUP(r.C)}${sym(r.Z)}*) is so hot that it quivers.`); } },
-    { k: ['④ 식히기', '④ Cool down'], d: () => { const r = T(); return P(`뜨거운 핵이 중성자 <b>${r.nn}개</b>를 툭툭 내보내며 식어요. 그러면 ${SUP(r.A)}${sym(r.Z)}가 남아요. 사실 대부분은 이 단계를 못 버티고 반으로 쪼개져(핵분열) 사라져요. 살아남는 건 아주 운이 좋은 소수예요.`,
-      `The hot nucleus cools by spitting out <b>${r.nn}</b> neutron${r.nn > 1 ? 's' : ''}, leaving ${SUP(r.A)}${sym(r.Z)}. Most never survive this — they split in two (fission) and vanish. Only the lucky few remain.`); } },
+    { k: ['④ 식히기', '④ Cool down'], d: () => { const r = T(); return P(`뜨거운 핵이 중성자 <b>${r.nn}개</b>를 툭툭 내보내며 식어요. 그러면 ${SUP(r.A)}${sym(r.Z)}가 남아요. ` + (r.Z >= 100 ? '사실 대부분은 이 단계를 못 버티고 반으로 쪼개져(핵분열) 사라져요. 살아남는 건 아주 운이 좋은 소수예요.' : '이 정도 무게의 핵은 비교적 잘 살아남아요.'),
+      `The hot nucleus cools by spitting out <b>${r.nn}</b> neutron${r.nn > 1 ? 's' : ''}, leaving ${SUP(r.A)}${sym(r.Z)}. ` + (r.Z >= 100 ? 'Most never survive this — they split in two (fission) and vanish. Only the lucky few remain.' : 'Nuclei this size survive fairly well.')); } },
     { k: ['⑤ 골라내기', '⑤ Separate'], d: () => P('새 원자는 빔과 같이 날아가니까, 자석으로 길을 휘어서 골라내요. 무게와 전하가 달라서 휘는 정도가 달라요. 빔 수조 개 사이에서 원자 단 하나를 찾아 검출기로 보내는 거예요.',
       'The new atom flies along with the beam, so magnets bend the paths apart. Different mass and charge bend differently, steering one single atom out of trillions into the detector.') },
-    { k: ['⑥ 확인하기', '⑥ Confirm'], d: () => { const r = T(); return P(`검출기에 박힌 원자는 금방 알파 붕괴를 이어 가요. 알파 입자가 나올 때마다 원자번호가 2씩 줄어드는데, 이 <b>붕괴 사슬의 에너지와 시간</b>이 이미 아는 원소와 딱 맞아떨어지면 "새 원소 발견!"이 인정돼요.`,
+    { k: ['⑥ 확인하기', '⑥ Confirm'], d: () => { const r = T(); if(r.Z < 100) return P(`만들어진 원자는 <b>화학적으로 분리</b>해서 성질을 확인하고, 내뿜는 <b>방사선</b>을 측정해 정체를 밝혀요. ${r.Z === 43 ? '테크네튬은 사이클로트론 부품(몰리브데넘 판)을 이탈리아로 보내 분석해서 찾았어요.' : ''}`, `The new atoms are <b>separated chemically</b> and identified by the <b>radiation</b> they give off.${r.Z === 43 ? ' Technetium was found in a molybdenum part of the cyclotron, mailed to Italy for analysis.' : ''}`); return P(`검출기에 박힌 원자는 금방 알파 붕괴를 이어 가요. 알파 입자가 나올 때마다 원자번호가 2씩 줄어드는데, 이 <b>붕괴 사슬의 에너지와 시간</b>이 이미 아는 원소와 딱 맞아떨어지면 "새 원소 발견!"이 인정돼요.`,
       `Lodged in the detector, the atom soon alpha-decays again and again, dropping 2 in atomic number each time. When the <b>energies and timings of this chain</b> match known nuclei, the new element is confirmed.`); } },
   ];
   const ICON = ['🌀', '🎯', '💥', '🌡', '🧲', '🔬'];
@@ -52706,6 +52714,13 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     const pz = path(.06, 1); lab(c, P('빔: 거의 곧게 지나감', 'beam: nearly straight'), pz[0] - 90, pz[1] - 24, '#ff9aa5', 11);
   };
   SCN[5] = (c, W, H, t, r, base) => { // 붕괴 사슬
+    if(r.Z < 100){ const cx = W * .42, cy = H * .5, rr = NR(r.A, base) * .9;
+      for(let q = 0; q < 10; q++){ const a = q * .63 + t * .4, k = ((t * .9 + q * .37) % 1); ion(c, cx + Math.cos(a) * (rr + k * 170), cy + Math.sin(a) * (rr + k * 170), Math.cos(a), Math.sin(a), 22, '255,236,140', 2); }
+      nuc(c, r.A, cx, cy, rr, 12, .3); lab(c, SUP(r.A) + sym(r.Z), cx, cy - rr - 18, '#ffe9a8', 14);
+      const gx = W * .78, gy = cy; c.fillStyle = metal(c, gx - 40, gy - 30, gx + 40, gy + 30, '#2a2f4c', '#59607f'); c.beginPath(); c.roundRect ? c.roundRect(gx - 46, gy - 32, 92, 64, 10) : c.rect(gx - 46, gy - 32, 92, 64); c.fill();
+      c.fillStyle = '#0b1a10'; c.fillRect(gx - 36, gy - 22, 72, 26); c.fillStyle = '#8dffb9'; c.font = '900 16px ui-monospace,monospace'; c.textAlign = 'center'; c.fillText(String(Math.floor(t * 37) % 1000).padStart(3, '0'), gx, gy - 3);
+      if(Math.sin(t * 23) > .7) glow(c, gx, gy - 9, 30, '141,255,185', .4);
+      lab(c, P('방사선 측정기', 'radiation counter'), gx, gy + 48, '#8dffb9', 12); return; }
     const n = Math.min(4, Math.max(3, Math.round((r.Z - 104) / 4) + 2)), per = 1.2, shown = Math.min(n + 1, Math.floor(t / per) + 1);
     const gap = Math.min(170, (W - 90) / (n + .6)), x0 = W / 2 - gap * n / 2, cy = H * .48, TM = ['0.7 ms', '50 ms', '0.5 s', '2.6 s', '30 s'];
     c.strokeStyle = 'rgba(170,180,255,.15)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x0 - 30, cy + 70); c.lineTo(x0 + gap * n + 30, cy + 70); c.stroke();
@@ -52775,7 +52790,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   function playText(){
     const d = el(), p = DAY[RX[0]], one = Math.round(1 / p), best = PL.best[RX[0]];
     d.querySelector('.txt').innerHTML = `<b class="k">${P('🎲 내가 연구소장! — 빔을 쏴서 ' + byNum[RX[0]].ko + ' 만들기', '🎲 You run the lab — make ' + byNum[RX[0]].en)}</b><p>${P(
-      `빔은 하루에 약 <b>5×10¹⁷개</b>의 ${SUP(RX[6])}${RX[4]}을 쏴요. 그래도 원자가 하나 생길 확률은 <b>하루에 약 1/${one}</b>이에요 (실제 실험 속도에 대충 맞춘 값).` + (best ? ` · 최고 기록: <b>${best}일</b> 만에 첫 원자` : ''),
+      `빔은 하루에 약 <b>5×10¹⁷개</b>의 ${SUP(RX[6])}${RX[4]}을 쏴요. 원자가 하나 생길 확률은 <b>${p >= .5 ? '거의 매일' : '하루에 약 1/' + one}</b>이에요 (실제 실험 속도에 대충 맞춘 값).` + (best ? ` · 최고 기록: <b>${best}일</b> 만에 첫 원자` : ''),
       `The beam fires about <b>5×10¹⁷</b> ${SUP(RX[6])}${RX[4]} per day, yet one atom appears with <b>about 1-in-${one} odds per day</b> (roughly matching real experiments).` + (best ? ` · Best: first atom on <b>day ${best}</b>` : ''))}</p>`;
   }
   function ui(){
@@ -52831,7 +52846,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     const io = document.getElementById('info'); if(!io) return;
     const e = (typeof atomEl !== 'undefined' && atomEl) || (typeof byNum !== 'undefined' && typeof selected !== 'undefined' && byNum[selected]);
     let b = document.getElementById('syBtn');
-    if(!e || e.n < 104 || e.n > 118){ if(b) b.remove(); return; }
+    if(!e || !R.some(q => q[0] === e.n)){ if(b) b.remove(); return; }
     if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'syBtn'; b.className = 'sy-btn'; b.addEventListener('click', ev => { ev.stopPropagation(); const e2 = (typeof atomEl !== 'undefined' && atomEl) || byNum[selected]; open(e2 && e2.n); }); }
     b.textContent = P(`⚛ ${eun(e.ko)} 어떻게 만들었을까?`, `⚛ How was ${e.en} made?`);
     const anchor = io.querySelector('#chBtn') || io.querySelector('#ogFgBtn') || io.querySelector('.decay-box');
