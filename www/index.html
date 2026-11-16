@@ -52571,11 +52571,14 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     return HOT[k] = { B, Rr };
   }
   function nucHot(c, A, x, y, r, seed, heat, wob, t, spin){
+    // (x, y 는 아래에서 흔들림을 더하므로 let 처럼 씀)
     const H = hotBalls(Math.min(A, 130), seed), sc = r / (H.Rr + .55), br = .53 * sc, cs = Math.cos(spin || 0), sn = Math.sin(spin || 0);
     if(heat > 0) glow(c, x, y, r * 2.6, '255,170,90', heat * .55);
+    // 통째로도 불안정하게 덜컹 (여러 진동수를 섞어서 불규칙하게)
+    x += (Math.sin(t * 43) + .7 * Math.sin(t * 71 + 1) + .4 * Math.sin(t * 117)) * r * .045 * heat; y += (Math.cos(t * 51) + .7 * Math.sin(t * 83 + 2)) * r * .04 * heat;
     const P2 = H.B.map(b => { let [bx, by, bz] = b.p; const X = bx * cs + bz * sn, Z = -bx * sn + bz * cs;
       // 물방울 출렁임: 위치만 늘였다 줄였다 (가로↔세로)
-      const jx = Math.sin(t * b.f + b.ph) * .16 * heat, jy = Math.cos(t * b.f * 1.13 + b.ph * 1.7) * .16 * heat;
+      const jx = (Math.sin(t * b.f * 2.2 + b.ph) + .6 * Math.sin(t * b.f * 3.7 + b.ph * 2.3)) * .3 * heat, jy = (Math.cos(t * b.f * 2.5 + b.ph * 1.7) + .6 * Math.cos(t * b.f * 4.1 + b.ph)) * .3 * heat;
       return { x: x + (X * (1 + wob) + jx) * sc, y: y + (by * (1 - wob * .85) + jy) * sc, z: Z, pr: b.pr }; }).sort((a, b) => a.z - b.z);
     c.save(); c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = br * .6;
     P2.forEach(b => { const d = .7 + .3 * (b.z / H.Rr + 1) / 2, rr = br * (.92 + .1 * d); c.globalAlpha = .55 + .45 * d; c.drawImage(ball(b.pr), b.x - rr, b.y - rr, rr * 2, rr * 2); });
@@ -52697,8 +52700,8 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       c.globalAlpha = ga; nuc(c, r.ta, cx + touch * 4, cy, rt, 3, touch * .6, 1 + touch * .06, 1 - touch * .04); nuc(c, r.ba, bx + touch * (rt * .35), cy, rb, 2, touch * .6, 1 - touch * .1, 1 + touch * .08); c.globalAlpha = 1; }
     if(touch > 0 && touch < 1 && !SCN.f2){ SCN.f2 = 1; burst(cx - rt * .7, cy, 60, '255,220,150', 1.2); }
     // 들뜬 핵: 덜덜 떨지 않고, 물방울처럼 늘었다 줄었다 출렁이며 점점 잦아든다 (가로로 늘면 세로로 줄어듦)
-    const tm = Math.max(0, t - 2.6 * .75), amp = .14 * Math.exp(-tm * .9) + .03, osc = Math.sin(tm * 7.5) * amp;
-    if(merge > 0){ nucHot(c, r.C, cx + wob, cy, rc, 5, 1 - merge * .3, osc * .6, t, t * .25);
+    const tm = Math.max(0, t - 2.6 * .75), amp = .22 * Math.exp(-tm * .5) + .1, osc = (Math.sin(tm * 9) + .5 * Math.sin(tm * 15.3)) * amp;
+    if(merge > 0){ nucHot(c, r.C, cx + wob, cy, rc, 5, 1, osc, t, t * .25);
       if(merge < .4){ const fl = 1 - merge / .4; glow(c, cx, cy, rc * 5, '255,255,230', fl * .9); c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(255,230,180,${fl})`; c.lineWidth = 3; c.beginPath(); c.arc(cx, cy, rc * (1.2 + (1 - fl) * 3), 0, 6.283); c.stroke();
         c.translate(cx, cy); for(let q = 0; q < 16; q++){ c.rotate(Math.PI / 8); c.fillStyle = `rgba(255,236,190,${fl * .5})`; c.beginPath(); c.moveTo(0, -3); c.lineTo(rc * (2.2 + (q % 2)), 0); c.lineTo(0, 3); c.fill(); } c.restore(); } }
     if(merge > 0) lab(c, SUP(r.C) + sym(r.Z) + '*   ' + P('양성자 ', 'protons ') + r.tz + ' + ' + r.bz + ' = ' + r.Z, cx, cy - rc - 26, '#ffe9a8', 14);
@@ -52706,8 +52709,8 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   };
   SCN[3] = (c, W, H, t, r, base) => { // 식히기
     const cx = W * .5, cy = H * .52, per = .9, done = Math.min(r.nn, Math.floor(t / per)), heat = Math.max(0, 1 - t / (per * r.nn + .5)), A = r.C - done, rr = NR(A, base);
-    const os2 = Math.sin(t * 7.5) * .12 * heat;
-    nucHot(c, A, cx, cy, rr, 5, heat, os2 * .6, t, t * .25);
+    const os2 = (Math.sin(t * 9) + .5 * Math.sin(t * 15.3)) * .2 * heat;
+    nucHot(c, A, cx, cy, rr, 5, heat, os2, t, t * .25);
     for(let q = 0; q < r.nn; q++){ const tq = t - q * per; if(tq < 0) continue; const a = -Math.PI / 2 + (q - (r.nn - 1) / 2) * .75, dd = rr + 8 + tq * 190, x = cx + Math.cos(a) * dd, y = cy + Math.sin(a) * dd;
       if(tq < .05 && !SCN['n' + q]){ SCN['n' + q] = 1; burst(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, 18, '140,170,255', .7); }
       if(dd < Math.max(W, H)){ neu(c, x, y, Math.cos(a), Math.sin(a)); if(tq < 1.2) lab(c, 'n  ' + P('중성자', 'neutron'), x, y - 20, '#cfe0ff', 11); } }
