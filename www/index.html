@@ -47484,6 +47484,23 @@ void main(){
   .elp-wip{display:inline-block;margin-left:4px;font-size:9.5px;padding:1px 6px;border-radius:999px;background:rgba(255,212,59,.18);color:#ffd43b;border:1px solid rgba(255,212,59,.4)}
   .elp-card.soon{cursor:default;opacity:.55;border-style:dashed}
   .elp-card.soon:hover{transform:none;box-shadow:none}
+  .elp-thumb{margin:-14px -14px 12px;height:150px;overflow:hidden;position:relative;border-bottom:1px solid color-mix(in srgb,var(--c) 35%,transparent);
+    background:radial-gradient(80% 90% at 50% 100%,color-mix(in srgb,var(--c) 35%,transparent),transparent 70%),#0d0f18}
+  .elp-thumb img{width:100%;height:100%;object-fit:cover;object-position:50% 14%;transition:transform .35s}
+  .elp-card:hover .elp-thumb img{transform:scale(1.06)}
+  .elp-thumb::after{content:"";position:absolute;inset:auto 0 0;height:40px;background:linear-gradient(transparent,rgba(16,18,28,.7))}
+  .elp-thumb.none{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c) 7%,transparent) 0 8px,transparent 8px 16px),radial-gradient(70% 80% at 50% 60%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%),#0d0f18}
+  .elp-thumb.none span{font-size:40px;filter:drop-shadow(0 4px 10px color-mix(in srgb,var(--c) 60%,transparent))}
+  .elp-thumb.none small{font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.12em;color:color-mix(in srgb,var(--c) 60%,#9aa0b8)}
+  .elp-cq{margin-top:9px;font-size:11.5px;font-style:italic;line-height:1.45;color:color-mix(in srgb,var(--c) 45%,#cfd5e6);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .elp-flt{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+  .elp-flt button{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;cursor:pointer;color:#cfd5e6;border:1px solid rgba(154,168,255,.2);background:rgba(154,168,255,.04);display:inline-flex;gap:6px;align-items:center}
+  .elp-flt button b{font:800 10px/1 ui-monospace,monospace;opacity:.6}
+  .elp-flt button.on{color:#141833;background:#c9d0ff;border-color:#c9d0ff}
+  .elp-flt .rnd{margin-left:auto;border-color:rgba(255,212,59,.4);color:#ffd43b;background:rgba(255,212,59,.07)}
+  .elp-card[hidden]{display:none}
+  @media (max-width:640px){ .elp-thumb{margin:-11px -11px 10px;height:110px} .elp-flt .rnd{margin-left:0} }
   .elp-foot{margin-top:16px;font-size:11.5px;color:var(--dim);text-align:center}
 
   /* 자세히 (rxPanel 안) */
@@ -47615,6 +47632,19 @@ void main(){
   const BY = {}; P.forEach(p => BY[p.s] = p);
   const el = s => EL.find(e => e.s === s);
   const tile = (p, cls) => { const e = el(p.s); return `<div class="elp-tile${cls || ''}"><em>${e.n}</em><b>${p.s}</b><u>${p.ic}</u></div>`; };
+  const thumb = p => p.art ? `<div class="elp-thumb"><img src="${p.art}" alt="" loading="lazy" draggable="false"></div>`
+    : `<div class="elp-thumb none"><span>${p.ic}</span><small>${EN() ? 'Art coming soon' : '일러스트 준비 중'}</small></div>`;
+  let FLT = 'all';
+  const grpOf = p => { const g = el(p.s).g; return g === 17 ? 'hal' : g === 18 ? 'nob' : 'etc'; };
+  const fltHTML = () => { const L = EN(); const F = [['all', L ? 'All' : '전체'], ['hal', L ? 'Halogens' : '할로젠 (17족)'], ['nob', L ? 'Noble gases' : '비활성 기체 (18족)'], ['etc', L ? 'Others' : '그 밖의 친구들'], ['art', L ? 'With art' : '일러스트 있음']];
+    return `<div class="elp-flt">${F.map(([k, n]) => `<button type="button" data-f="${k}" class="${FLT === k ? 'on' : ''}">${n}<b>${k === 'all' ? P.length : k === 'art' ? P.filter(p => p.art).length : P.filter(p => grpOf(p) === k).length}</b></button>`).join('')}
+      <button type="button" class="rnd" id="elpRand">🎲 ${L ? 'Random friend' : '랜덤 친구'}</button></div>`; };
+  const fltApply = () => { document.querySelectorAll('#elpDex .elp-card[data-s]:not(.soon)').forEach(c => { const p = BY[c.dataset.s]; c.hidden = !(FLT === 'all' || (FLT === 'art' ? !!p.art : grpOf(p) === FLT)); }); };
+  document.addEventListener('click', ev => {
+    const b = ev.target.closest && ev.target.closest('.elp-flt button'); if(!b) return;
+    if(b.id === 'elpRand'){ const live = P.filter(p => !p.wip); detail(live[(Math.random() * live.length) | 0].s); return; }
+    FLT = b.dataset.f; b.parentNode.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fltApply(); try{ SFX.tick(); }catch(_){}
+  });
 
   function detail(s){
     const p = BY[s]; if(!p) return; const t = p[EN() ? 'en' : 'ko'], e = el(s);
@@ -47647,9 +47677,9 @@ void main(){
         <p>${EN() ? 'Elements, as people. Characters from "Periodic // Table City" by the director.' : '원소가 사람이 된다면? 디렉터의 만화 「페리오딕 // 테이블 시티」 친구들이에요.'}</p></div>
         <div class="elp-big">${P.filter(p => !p.wip).length}<small> / 118</small></div></div>
       <div class="elp-mt">${mt}</div>
-      <div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card${p.wip ? ' wip' : ''}" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">
+      ${fltHTML()}<div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card${p.wip ? ' wip' : ''}" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">${thumb(p)}
         <div class="elp-top">${tile(p)}<div><div class="elp-nm">${t.nm}</div><div class="elp-el">${e.n} · ${EN() ? e.en : e.ko}${p.wip ? ` <b class="elp-wip">${EN() ? 'IN PROGRESS' : '작업 중'}</b>` : ''}</div></div></div>
-        <div class="elp-tag">${t.tag}</div><div class="elp-chips">${t.chips.map(c => `<span>${c}</span>`).join('')}</div></div>`; }).join('')}
+        <div class="elp-tag">${t.tag}</div><div class="elp-chips">${t.chips.map(c => `<span>${c}</span>`).join('')}</div>${t.q ? `<div class="elp-cq">“${t.q}”</div>` : ''}</div>`; }).join('')}
         <div class="elp-card soon" style="--c:#6b7086" data-s="?"><div class="elp-top"><div class="elp-tile"><b>?</b></div><div><div class="elp-nm">???</div><div class="elp-el">${EN() ? 'Coming soon' : '곧 만나요'}</div></div></div>
         <div class="elp-tag">${EN() ? 'More elements are on their way.' : '다른 원소 친구들도 준비 중이에요.'}</div></div>
       </div>
@@ -47673,7 +47703,7 @@ void main(){
         d.addEventListener('click', go);
         d.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(e); } });
       }
-      render(); d.scrollTop = 0;
+      render(); fltApply(); d.scrollTop = 0;
     } else {
       if(title && title.dataset.elpOrig){ title.textContent = title.dataset.elpOrig; delete title.dataset.elpOrig; }
       if(cnt && cnt.dataset.elpOrig != null){ cnt.textContent = cnt.dataset.elpOrig; delete cnt.dataset.elpOrig; }
@@ -47681,7 +47711,7 @@ void main(){
     box.classList.toggle('elp', on);
     if(sw) sw.textContent = on ? (EN() ? '《Back to Combination Index》' : '《조합 도감으로 돌아가기》') : (EN() ? '《Element Persona Index!》' : '《원소 의인화 도감!》');
   }
-  window.rxElpDex = set;
+  window.rxElpDex = set; window.RX_ELP_DATA = P; window.rxElpDetail = detail;
 
   const _od = openDex;
   openDex = function(){
@@ -52919,6 +52949,814 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   // 큐브 모형 연결
   try{ const _cm = RX_CUBE_MODEL; }catch(e){}
   try{ Object.assign(RX_DEX_ALIAS, { "큐네인": "cuneane 쿠네인", "펜타프리즈메인": "pentaprismane 프리즈메인", "스파이로펜테인": "spiropentane 스피로펜탄" }); }catch(e){}
+})();
+</script>
+
+<style>
+  /* ═══ 오늘의 원소 리워크 3: 원소 색 배경, 오늘의 친구, 방문 기록 ═══ */
+  .td2{position:relative;isolation:isolate}
+  .td2::before{content:"";position:absolute;inset:-18px -18px -10px;z-index:-1;pointer-events:none;border-radius:20px;
+    background:radial-gradient(70% 50% at 15% 0%,color-mix(in srgb,var(--tc) 26%,transparent),transparent 70%),
+      radial-gradient(60% 45% at 100% 100%,color-mix(in srgb,var(--tc) 14%,transparent),transparent 70%)}
+  .td2-fx{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;border-radius:18px}
+  .td2-fx i{position:absolute;bottom:-12px;width:6px;height:6px;border-radius:50%;background:var(--tc);box-shadow:0 0 10px var(--tc);opacity:0;animation:td3Up linear infinite}
+  @keyframes td3Up{0%{transform:translateY(0);opacity:0}12%{opacity:.55}100%{transform:translateY(-560px);opacity:0}}
+  .td2-hero{box-shadow:0 0 40px color-mix(in srgb,var(--tc) 18%,transparent)}
+  .td2-fort{border-color:color-mix(in srgb,var(--tc) 35%,transparent)!important;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 12%,transparent),rgba(154,168,255,.03))!important}
+
+  .td3-row{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;margin-top:12px}
+  .td3-box{position:relative;border-radius:14px;padding:13px 14px;border:1px solid rgba(154,168,255,.18);background:rgba(10,13,24,.7);overflow:hidden}
+  .td3-box h4{margin:0 0 9px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:rgba(201,208,255,.75)}
+  .td3-pal{cursor:pointer;border-color:color-mix(in srgb,var(--pc) 45%,transparent);transition:transform .15s,border-color .15s;
+    background:radial-gradient(120% 120% at 100% 0%,color-mix(in srgb,var(--pc) 18%,transparent),transparent 60%),rgba(10,13,24,.75)}
+  .td3-pal:hover{transform:translateY(-1px);border-color:var(--pc)}
+  .td3-pal .pw{display:flex;gap:12px;align-items:center}
+  .td3-pal .av{flex:none;width:64px;height:64px;border-radius:14px;overflow:hidden;border:1.5px solid var(--pc);display:grid;place-items:center;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--pc) 30%,#0b0e18),#0b0e18);font-size:30px;box-shadow:0 0 16px color-mix(in srgb,var(--pc) 35%,transparent)}
+  .td3-pal .av img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+  .td3-pal .nm{font-size:16px;font-weight:800}
+  .td3-pal .el{font-size:11px;color:var(--dim);margin-top:2px}
+  .td3-pal .q{margin-top:6px;font-size:12px;line-height:1.5;color:#dfe3ff;word-break:keep-all}
+  .td3-pal .why{position:absolute;right:10px;top:10px;font:700 9px/1 ui-monospace,monospace;letter-spacing:.1em;padding:4px 6px;border-radius:6px;color:var(--pc);border:1px solid color-mix(in srgb,var(--pc) 45%,transparent)}
+  .td3-wk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .td3-wk div{display:flex;flex-direction:column;align-items:center;gap:4px;font:600 9.5px/1 ui-monospace,monospace;color:rgba(201,208,255,.55)}
+  .td3-wk b{width:100%;max-width:28px;aspect-ratio:1;border-radius:8px;border:1px dashed rgba(154,168,255,.25);display:grid;place-items:center;font:700 10px/1 Kanit,system-ui,sans-serif;color:transparent}
+  .td3-wk b.on{border:1px solid var(--tc);background:color-mix(in srgb,var(--tc) 28%,transparent);color:#fff;box-shadow:0 0 10px color-mix(in srgb,var(--tc) 35%,transparent)}
+  .td3-wk div.now span{color:var(--tc)}
+  .td3-wk div.now b{outline:2px solid color-mix(in srgb,var(--tc) 60%,transparent);outline-offset:2px}
+  .td3-st{display:flex;justify-content:space-between;gap:6px;margin-top:11px;font-size:11.5px;color:var(--dim)}
+  .td3-st em{font-style:normal;color:#fff;font-weight:800;font-size:15px;margin-right:2px}
+  @media (max-width:560px){ .td3-row{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){ .td2-fx{display:none} }
+</style>
+<script>
+(function(){
+  if(typeof renderToday !== 'function') return;
+  const EN = () => LANG === 'en';
+  const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const DW = { ko: ['일', '월', '화', '수', '목', '금', '토'], en: ['S', 'M', 'T', 'W', 'T', 'F', 'S'] };
+  const hash = s => { let h = 2166136261; for(const c of s){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+
+  function stats(){
+    let days = []; try{ days = JSON.parse(localStorage.getItem('pt_todaydays') || '[]'); }catch(_){}
+    const set = new Set(days);
+    let best = 0, run = 0, prev = null;
+    [...set].sort().forEach(k => { const d = new Date(k + 'T12:00'); if(prev && (d - prev) / 864e5 < 1.5) run++; else run = 1; best = Math.max(best, run); prev = d; });
+    let cur = 0; const d = rxDayDate(); while(set.has(ymd(d))){ cur++; d.setDate(d.getDate() - 1); }
+    let total = +localStorage.getItem('pt_todaytotal') || 0;
+    if(total < set.size) total = set.size;
+    try{ localStorage.setItem('pt_todaytotal', total); }catch(_){}
+    return { set, cur, best: Math.max(best, cur), total };
+  }
+
+  function pal(e){
+    const P = window.RX_ELP_DATA; if(!P) return null;
+    const live = P.filter(p => !p.wip);
+    const own = live.find(p => p.s === e.s);
+    if(own) return { p: own, own: true };
+    if(!live.length) return null;
+    return { p: live[hash(ymd(rxDayDate()) + 'pal') % live.length], own: false };
+  }
+
+  const _rt = renderToday;
+  renderToday = function(){
+    _rt.apply(this, arguments);
+    try{
+      const box = qBodyEl.querySelector('.td2'); if(!box || box.querySelector('.td3-row')) return;
+      const en = EN(), L = en ? 'en' : 'ko';
+      let info; try{ info = todayElement(); }catch(_){ return; }
+      const e = info.el;
+      // 떠오르는 원소 색 입자
+      if(!window.RX_REDUCED){
+        const fx = document.createElement('div'); fx.className = 'td2-fx';
+        fx.innerHTML = Array.from({ length: 14 }, (_, i) => `<i style="left:${(i * 37 + 7) % 100}%;width:${3 + i % 4}px;height:${3 + i % 4}px;animation-duration:${7 + (i * 13) % 9}s;animation-delay:-${(i * 1.7) % 9}s"></i>`).join('');
+        box.prepend(fx);
+      }
+      const st = stats();
+      const d0 = rxDayDate(), cells = [];
+      for(let i = 6; i >= 0; i--){
+        const d = new Date(d0); d.setDate(d.getDate() - i);
+        const on = st.set.has(ymd(d));
+        cells.push(`<div class="${i === 0 ? 'now' : ''}"><span>${DW[L][d.getDay()]}</span><b class="${on ? 'on' : ''}">${on ? '✓' : ''}</b></div>`);
+      }
+      const f = pal(e);
+      let palH = '';
+      if(f){
+        const t = f.p[L], pe = EL.find(x => x.s === f.p.s);
+        palH = `<div class="td3-box td3-pal" role="button" tabindex="0" data-s="${f.p.s}" style="--pc:${f.p.c}">
+          <span class="why">${f.own ? (en ? 'MATCH!' : '오늘의 원소!') : (en ? 'RANDOM' : '랜덤')}</span>
+          <h4>${en ? "TODAY'S FRIEND" : '오늘의 친구'}</h4>
+          <div class="pw"><div class="av">${f.p.art ? `<img src="${f.p.art}" alt="" draggable="false">` : f.p.ic}</div>
+            <div style="min-width:0"><div class="nm">${t.nm}</div><div class="el">${pe ? pe.n + ' · ' + (en ? pe.en : pe.ko) : ''}</div>
+            <div class="q">${t.q ? `“${t.q}”` : t.tag}</div></div></div></div>`;
+      }
+      const row = document.createElement('div'); row.className = 'td3-row';
+      row.innerHTML = palH + `<div class="td3-box"><h4>${en ? 'VISIT LOG' : '방문 기록'}</h4><div class="td3-wk">${cells.join('')}</div>
+        <div class="td3-st"><span><em>${st.cur}</em>${en ? 'day streak' : '일 연속'}</span><span>${en ? 'best ' : '최고 '}<em>${st.best}</em>${en ? '' : '일'}</span><span>${en ? 'total ' : '총 '}<em>${st.total}</em>${en ? '' : '일'}</span></div></div>`;
+      if(!palH) row.style.gridTemplateColumns = '1fr';
+      const fort = box.querySelector('.td2-fort');
+      (fort || box.querySelector('.td2-hero')).after(row);
+      const card = row.querySelector('.td3-pal');
+      if(card){
+        const go = () => { try{ window.rxElpDetail(card.dataset.s); }catch(_){} };
+        card.addEventListener('click', go);
+        card.addEventListener('keydown', ev => { if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); go(); } });
+      }
+    }catch(err){ console.warn('today3', err); }
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 이온 탭 리워크: 전자가 떠나고 붙는 큰 애니메이션 + 이온 이동 실험 연결 ═══ */
+  .ix-res .ie-wrap,.ix-stage .ie-cap{display:none!important}
+  .ix-ex{position:relative;margin-top:12px;border-radius:14px;border:1px solid rgba(154,168,255,.2);overflow:hidden;
+    background:radial-gradient(60% 90% at 20% 50%,rgba(255,120,120,.09),transparent 70%),radial-gradient(60% 90% at 80% 50%,rgba(110,231,160,.09),transparent 70%),#080b15}
+  .ix-ex canvas{display:block;width:100%;height:230px}
+  .ix-ex .ex-steps{display:flex;gap:6px;padding:8px 10px 10px;border-top:1px solid rgba(154,168,255,.12)}
+  .ix-ex .ex-steps span{flex:1;min-width:0;font-size:11.5px;line-height:1.4;padding:6px 8px;border-radius:8px;color:rgba(223,227,255,.45);background:rgba(255,255,255,.02);border:1px solid transparent;word-break:keep-all;transition:all .25s}
+  .ix-ex .ex-steps span b{display:block;font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.12em;margin-bottom:3px}
+  .ix-ex .ex-steps span.on{color:#eef0ff;border-color:rgba(255,212,59,.45);background:rgba(255,212,59,.07)}
+  .ix-ex .ex-steps span.on b{color:#ffd43b}
+  .ix-ex .ex-btn{position:absolute;right:8px;top:8px;display:flex;gap:6px}
+  .ix-ex .ex-btn button{font:inherit;font-size:11.5px;padding:5px 9px;border-radius:8px;border:1px solid rgba(154,168,255,.3);background:rgba(10,13,24,.8);color:#dfe3ff;cursor:pointer}
+  .ix-ex .ex-btn button:hover{border-color:#9aa8ff;color:#fff}
+  .ix-go{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border-radius:14px;cursor:pointer;text-align:left;font:inherit;color:#eef0ff;
+    border:1px solid rgba(79,149,255,.4);background:linear-gradient(90deg,rgba(79,149,255,.14),rgba(162,75,214,.12));transition:transform .15s,border-color .15s}
+  .ix-go:hover{transform:translateY(-1px);border-color:#4f95ff}
+  .ix-go .gi{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:20px;background:rgba(79,149,255,.18)}
+  .ix-go b{display:block;font-size:13.5px}
+  .ix-go small{display:block;font-size:11.5px;color:var(--dim);margin-top:2px;word-break:keep-all}
+  .ix-go .ar{margin-left:auto;font-size:18px;color:#9ec5ff}
+  @media (max-width:560px){ .ix-ex .ex-steps{flex-direction:column} .ix-ex canvas{height:210px} }
+</style>
+<script>
+(function(){
+  if(typeof renderIon !== 'function' || typeof ION === 'undefined') return;
+  const EN = () => LANG === 'en';
+  const TX = {
+    ko: { s1: '전자 내놓기', s2: '전자 받기', s3: '끌어당기기', replay: '↻ 다시', slow: '🐢 느리게', fast: '🐇 보통',
+      give: (c, n) => `${c} 원자가 바깥 껍질 전자 ${n}개를 내놓아요`, take: (a, n, p) => p ? `${a} 원자단이 전자 ${n}개를 받아요` : `${a} 원자가 전자 ${n}개를 받아 껍질을 채워요`,
+      pull: '+ 이온과 − 이온이 서로 끌어당겨 붙어요', go: '이온은 전기를 따라 움직여요', goS: '이온 이동 실험에서 색깔 이온이 (+)극·(−)극으로 가는 걸 직접 봐요' },
+    en: { s1: 'Give e⁻', s2: 'Take e⁻', s3: 'Attract', replay: '↻ Replay', slow: '🐢 Slow', fast: '🐇 Normal',
+      give: (c, n) => `${c} gives away ${n} outer electron${n > 1 ? 's' : ''}`, take: (a, n, p) => p ? `The ${a} group takes ${n} electron${n > 1 ? 's' : ''}` : `${a} takes ${n} electron${n > 1 ? 's' : ''} to fill its shell`,
+      pull: 'The + and − ions pull together', go: 'Ions move with electricity', goS: 'See colored ions travel to the (+)/(−) electrodes in the ion migration lab' }
+  };
+  const sub = s => s.replace(/(\d)/g, m => '₀₁₂₃₄₅₆₇₈₉'[m]);
+  let slow = false;
+
+  function shells(sym){ const e = EL.find(x => x.s === sym); return e && e.sh ? e.sh.slice() : [1]; }
+
+  function build(c, a, na, nb){
+    // 원자(또는 원자단) 목록
+    const atoms = [];
+    for(let i = 0; i < na; i++){ atoms.push({ kind: 'c', sym: c.sym, sh: shells(c.sym), q: c.q }); }
+    for(let i = 0; i < nb; i++){ atoms.push({ kind: 'a', sym: a.sym, poly: !!a.poly, sh: a.poly ? null : shells(a.sym), q: a.q }); }
+    // 전자 이동 짝: 양이온 i 의 전자 → 음이온 j
+    const moves = []; let j = 0, need = atoms.filter(x => x.kind === 'a').map(x => -x.q);
+    const an = atoms.map((x, k) => k).filter(k => atoms[k].kind === 'a');
+    atoms.forEach((x, k) => { if(x.kind !== 'c') return; for(let e = 0; e < x.q; e++){ while(j < an.length && need[j] <= 0) j++; if(j >= an.length) break; need[j]--; moves.push({ from: k, to: an[j], idx: e }); } });
+    return { atoms, moves };
+  }
+
+  function stage(host, c, a, na, nb){
+    const L = EN() ? 'en' : 'ko', T = TX[L];
+    const wrap = document.createElement('div'); wrap.className = 'ix-ex';
+    const cn = EN() ? c.en : c.ko, anN = a.poly ? sub(a.sym) : (EN() ? a.en : a.ko.replace(/화$/, ''));
+    wrap.innerHTML = `<canvas></canvas><div class="ex-btn"><button type="button" data-k="slow">${T.slow}</button><button type="button" data-k="re">${T.replay}</button></div>
+      <div class="ex-steps"><span><b>① ${T.s1}</b>${T.give(cn, c.q)}</span><span><b>② ${T.s2}</b>${T.take(a.poly ? sub(a.sym) : (EN() ? a.en : anionAtom(a)), -a.q, a.poly)}</span><span><b>③ ${T.s3}</b>${T.pull}</span></div>`;
+    host.after(wrap);
+    const cv = wrap.querySelector('canvas'), ctx = cv.getContext('2d');
+    const steps = wrap.querySelectorAll('.ex-steps span');
+    const { atoms, moves } = build(c, a, na, nb);
+    const nC = na, nA = nb;
+    let W = 0, H = 0, dpr = 1, R = 30;
+    const fit = () => {
+      dpr = Math.min(2, window.devicePixelRatio || 1); W = cv.clientWidth || 360; H = cv.clientHeight || 230;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.max(nC, nA); R = Math.min(42, (H - 40) / (n * 2.3), W / 9);
+      // 처음 자리(좌우로 떨어져) 와 마지막 자리(가운데로 모여 격자)
+      atoms.forEach((x, k) => {
+        const col = x.kind === 'c' ? 0 : 1, idx = x.kind === 'c' ? k : k - nC, cnt = col ? nA : nC;
+        x.x0 = col ? W * .74 : W * .26; x.y0 = H / 2 + (idx - (cnt - 1) / 2) * R * 2.3;
+      });
+      // 모인 자리: 지그재그 결정 조각
+      const tot = atoms.length, order = [];
+      let ci = 0, ai = 0;
+      for(let i = 0; i < tot; i++){ const wantC = (i % 2 === 0 && ci < nC) || ai >= nA; order.push(wantC ? ci++ : nC + ai++); }
+      const cols = Math.min(tot, 3), rows = Math.ceil(tot / cols), step = Math.min(R * 2.05, (H - 46) / rows, W / (cols + .6));
+      order.forEach((k, i) => { const r = Math.floor(i / cols), cc = i % cols; atoms[k].x1 = W / 2 + (cc - (cols - 1) / 2) * step; atoms[k].y1 = H / 2 + (r - (rows - 1) / 2) * step; });
+    };
+    fit();
+    const ease = t => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+    const T1 = .9, perE = .55, T2 = T1 + moves.length * perE + .4, T3 = T2 + .9, END = T3 + 1.6;
+    let t0 = performance.now(), raf = 0, done = false;
+    const reduced = !!window.RX_REDUCED;
+
+    function atomDraw(x, k, t, morph, pull){
+      const px = x.x0 + (x.x1 - x.x0) * pull, py = x.y0 + (x.y1 - x.y0) * pull;
+      x.px = px; x.py = py;
+      const isC = x.kind === 'c', col = isC ? '255,138,138' : '110,231,160';
+      const sc = 1 + (isC ? -.22 : .14) * morph;
+      const rr = R * sc;
+      // 이온 빛
+      if(morph > 0){
+        const g = ctx.createRadialGradient(px, py, rr * .2, px, py, rr * 1.5);
+        g.addColorStop(0, `rgba(${col},${.25 * morph})`); g.addColorStop(1, `rgba(${col},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, rr * 1.5, 0, 6.283); ctx.fill();
+      }
+      // 껍질 + 전자
+      const out = x.lost || 0, got = x.got || 0;
+      if(!x.poly){
+        const sh = x.sh.slice(); const ns = sh.length;
+        for(let i = 0; i < ns; i++){
+          let cnt = sh[i];
+          if(i === ns - 1 && isC) cnt = Math.max(0, cnt - out);
+          if(i === ns - 1 && !isC) cnt += got;
+          const outer = i === ns - 1;
+          const empty = outer && isC && cnt === 0;
+          const r = rr * (.32 + .68 * (i + 1) / ns);
+          ctx.strokeStyle = `rgba(${col},${empty ? .25 * (1 - morph) : outer ? .55 : .22})`; ctx.lineWidth = outer ? 1.2 : .8;
+          ctx.setLineDash(outer ? [] : [2, 3]); ctx.beginPath(); ctx.arc(px, py, r, 0, 6.283); ctx.stroke(); ctx.setLineDash([]);
+          const show = Math.min(cnt, outer ? 10 : 8), sp = (i % 2 ? -1 : 1) * (.5 + .25 / (i + 1));
+          for(let e = 0; e < show; e++){
+            const ang = e / show * 6.283 + t * sp + k;
+            ctx.fillStyle = outer ? '#ffe066' : 'rgba(255,255,255,.45)';
+            ctx.beginPath(); ctx.arc(px + Math.cos(ang) * r, py + Math.sin(ang) * r, outer ? 2.6 : 1.5, 0, 6.283); ctx.fill();
+          }
+        }
+        // 핵
+        ctx.fillStyle = `rgb(${col})`; ctx.beginPath(); ctx.arc(px, py, Math.max(4, rr * .2), 0, 6.283); ctx.fill();
+      } else {
+        // 원자단: 둥근 덩어리 + 받은 전자
+        ctx.fillStyle = `rgba(${col},.12)`; ctx.strokeStyle = `rgba(${col},.6)`; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(px, py, rr * .8, 0, 6.283); ctx.fill(); ctx.stroke();
+        for(let e = 0; e < got; e++){ const ang = e / Math.max(1, -x.q) * 6.283 + t * .8; ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.arc(px + Math.cos(ang) * rr * .8, py + Math.sin(ang) * rr * .8, 2.6, 0, 6.283); ctx.fill(); }
+      }
+      // 기호
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `800 ${Math.max(10, Math.round(rr * (x.poly ? .42 : .34)))}px Kanit,system-ui,sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 4;
+      ctx.fillText(x.poly ? sub(x.sym) : x.sym, px, py + (x.poly ? 0 : rr * .02)); ctx.shadowBlur = 0;
+      // 전하 딱지
+      if(morph > .05){
+        const q = x.q, lab = (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '−');
+        const bx = px + rr * .78, by = py - rr * .78, br = 9 * (.6 + .4 * morph);
+        ctx.globalAlpha = morph; ctx.fillStyle = isC ? '#ff6b6b' : '#40c070';
+        ctx.beginPath(); ctx.arc(bx, by, br, 0, 6.283); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = '800 10px system-ui,sans-serif'; ctx.fillText(lab, bx, by + .5); ctx.globalAlpha = 1;
+      }
+    }
+
+    function frame(now){
+      if(!cv.isConnected){ cancelAnimationFrame(raf); return; }
+      if(cv.clientWidth && Math.abs(cv.clientWidth - W) > 2) fit();
+      let t = (now - t0) / 1000 * (slow ? .45 : 1);
+      if(reduced) t = END;
+      ctx.clearRect(0, 0, W, H);
+      // 전자 진행 상황
+      atoms.forEach(x => { x.lost = 0; x.got = 0; });
+      const flying = [];
+      moves.forEach((m, i) => {
+        const s = T1 + i * perE, p = (t - s) / (perE * 1.4);
+        if(p >= 0) atoms[m.from].lost++;
+        if(p >= 1) atoms[m.to].got++;
+        else if(p >= 0) flying.push([m, ease(p)]);
+      });
+      const morph = ease((t - T2) / .9), pull = ease((t - T3) / 1.2);
+      // 끌림 선
+      if(t > T2 && pull < 1){
+        ctx.strokeStyle = `rgba(255,212,59,${.25 * morph * (1 - pull)})`; ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+        atoms.filter(x => x.kind === 'c').forEach(cx => atoms.filter(x => x.kind === 'a').forEach(ax => { ctx.beginPath(); ctx.moveTo(cx.px || cx.x0, cx.py || cx.y0); ctx.lineTo(ax.px || ax.x0, ax.py || ax.y0); ctx.stroke(); }));
+        ctx.setLineDash([]);
+      }
+      atoms.forEach((x, k) => atomDraw(x, k, t, morph, pull));
+      // 날아가는 전자 (곡선 + 꼬리)
+      flying.forEach(([m, p]) => {
+        const A = atoms[m.from], B = atoms[m.to];
+        const ax = A.px + R * .9, ay = A.py, bx = B.px - R * .9, by = B.py;
+        const cx = (ax + bx) / 2, cy = Math.min(ay, by) - R * 1.2 - (m.idx * 10);
+        for(let s = 0; s < 6; s++){
+          const q = Math.max(0, p - s * .035), x = (1 - q) * (1 - q) * ax + 2 * (1 - q) * q * cx + q * q * bx, y = (1 - q) * (1 - q) * ay + 2 * (1 - q) * q * cy + q * q * by;
+          ctx.fillStyle = s ? `rgba(255,224,102,${.35 - s * .05})` : '#ffe066';
+          ctx.beginPath(); ctx.arc(x, y, s ? 3 - s * .35 : 3.6, 0, 6.283); ctx.fill();
+          if(!s){ ctx.fillStyle = '#141833'; ctx.font = '800 7px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('−', x, y + .3); }
+        }
+      });
+      // 완성 화학식
+      if(pull > .6){
+        ctx.globalAlpha = (pull - .6) / .4; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        ctx.font = '800 16px Kanit,system-ui,sans-serif';
+        const lx = qBodyEl.querySelector('.ix-f'); const f = lx ? lx.textContent.trim() : '';
+        ctx.fillText(sub(f), W / 2, H - 10); ctx.globalAlpha = 1;
+      }
+      const st = t < T1 + moves.length * perE * .5 ? 0 : t < T2 ? 1 : 2;
+      steps.forEach((s, i) => s.classList.toggle('on', i === st && t < END + 99));
+      if(t < END || !reduced) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    wrap.querySelector('[data-k="re"]').addEventListener('click', () => { t0 = performance.now(); try{ SFX.pick(); }catch(_){} });
+    wrap.querySelector('[data-k="slow"]').addEventListener('click', ev => { slow = !slow; ev.currentTarget.textContent = slow ? T.fast : T.slow; t0 = performance.now(); });
+  }
+  function anionAtom(a){ const e = EL.find(x => x.s === a.sym); return e ? e.ko : a.sym; }
+
+  const _ri = renderIon;
+  renderIon = function(){
+    const r = _ri.apply(this, arguments);
+    try{
+      if(ION.view && ION.view !== 'bond') return r;
+      const res = qBodyEl.querySelector('.ix-stage.ok .ix-res');
+      const c = CATIONS[ION.ci], a = ANIONS[ION.ai];
+      if(res && !qBodyEl.querySelector('.ix-ex')) stage(res, c, a, ION.a, ION.b);
+      const host = qBodyEl.querySelector('.ix-stage');
+      if(host && !host.querySelector('.ix-go')){
+        const T = TX[EN() ? 'en' : 'ko'];
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'ix-go';
+        b.innerHTML = `<span class="gi">⚡</span><span><b>${T.go}</b><small>${T.goS}</small></span><span class="ar">→</span>`;
+        b.addEventListener('click', () => { ION.view = 'move'; try{ SFX.pick(); }catch(_){} renderIon(); qBodyEl.scrollTop = 0; });
+        host.appendChild(b);
+      }
+    }catch(err){ console.warn('ion3', err); }
+    return r;
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 퀴즈 업그레이드: 그림 문제 · 타임어택 · 오답 노트 ═══ */
+  .qp-pic{display:flex;justify-content:center;margin:6px 0 2px}
+  .qp-pic svg{width:180px;height:150px;overflow:visible}
+  .qp-pic.wide svg{width:220px}
+  .qp-fl{transform-origin:60px 128px;animation:qpFl 1.1s ease-in-out infinite alternate}
+  .qp-fl2{transform-origin:60px 128px;animation:qpFl 0.8s .2s ease-in-out infinite alternate-reverse}
+  @keyframes qpFl{0%{transform:scale(1,1) skewX(0)}50%{transform:scale(.96,1.05) skewX(3deg)}100%{transform:scale(1.03,.97) skewX(-3deg)}}
+  .qp-spin{animation:qpSp 9s linear infinite;transform-origin:0 0}
+  @keyframes qpSp{to{transform:rotate(360deg)}}
+  .qz-mode.qz-new::after{content:"NEW";position:absolute;right:8px;top:8px;font:800 8.5px/1 ui-monospace,monospace;letter-spacing:.1em;padding:3px 5px;border-radius:5px;color:#141833;background:#ffd43b}
+  .qz-mode{position:relative}
+  .qta{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font:800 13px/1 Kanit,system-ui,sans-serif;color:#ffd43b;border:1px solid rgba(255,212,59,.45);background:rgba(255,212,59,.08)}
+  .qta.low{color:#ff6b6b;border-color:rgba(255,107,107,.6);background:rgba(255,107,107,.1);animation:qtaB .5s steps(2) infinite}
+  @keyframes qtaB{50%{opacity:.55}}
+  .qz-ta .qz-prog{display:none!important}
+  .qta-bar{height:4px;border-radius:4px;background:rgba(255,212,59,.12);overflow:hidden;margin:0 0 10px}
+  .qta-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff6b6b,#ffd43b);transition:width 1s linear}
+  .qta-res{margin:12px 0 4px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,212,59,.4);background:rgba(255,212,59,.07);text-align:center;font-size:13.5px;word-break:keep-all}
+  .qta-res b{font:800 22px/1 Kanit,system-ui,sans-serif;color:#ffd43b;margin:0 3px}
+  .qn-box{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,140,160,.28);background:rgba(255,120,140,.05)}
+  .qn-h{display:flex;align-items:center;gap:8px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:#ffa8b8}
+  .qn-h span{margin-left:auto;font:inherit;letter-spacing:.05em;color:var(--dim)}
+  .qn-list{display:flex;flex-direction:column;gap:5px;margin-top:9px;max-height:168px;overflow:auto}
+  .qn-it{display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.025)}
+  .qn-it .m{flex:none;font:700 9.5px/1 ui-monospace,monospace;padding:3px 5px;border-radius:5px;color:#c9d0ff;background:rgba(154,168,255,.12)}
+  .qn-it .p{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cfd5e6}
+  .qn-it .a{flex:none;color:#8ce99a;font-weight:700}
+  .qn-it .x{flex:none;cursor:pointer;color:var(--dim);border:0;background:none;font:inherit;padding:0 2px}
+  .qn-btns{display:flex;gap:8px;margin-top:10px}
+  .qn-btns button{flex:1;font:inherit;font-size:12.5px;font-weight:750;padding:9px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,140,160,.4);background:rgba(255,120,140,.12);color:#ffd5dd}
+  .qn-btns button.g{flex:none;background:none;border-color:rgba(154,168,255,.2);color:var(--dim)}
+  .qn-empty{margin-top:8px;font-size:12px;color:var(--dim)}
+</style>
+<script>
+(function(){
+  if(typeof genQ !== 'function' || typeof QZ === 'undefined' || typeof UI === 'undefined') return;
+  const en = () => LANG === 'en';
+  const P = (k, e) => en() ? e : k;
+  Object.assign(UI.ko, { qm_pic: '그림 문제', qm_ta: '타임어택', qm_note: '오답 노트' });
+  Object.assign(UI.en, { qm_pic: 'Picture', qm_ta: 'Time attack', qm_note: 'Mistake notes' });
+  const TA_SEC = 60;
+  const uid = () => 'q' + Math.random().toString(36).slice(2, 8);
+  const byS = s => EL.find(x => x.s === s);
+
+  /* ── 그림 ── */
+  const FLAME = { Li: '#ff2448', Na: '#ffc21a', K: '#b38bff', Ca: '#ff6a2a', Sr: '#ff1f2f', Ba: '#b8ff4a', Cu: '#24f0c0' };
+  function flameSVG(col){
+    const g = uid();
+    return `<svg viewBox="0 0 120 160"><defs><radialGradient id="${g}" cx=".5" cy=".78" r=".65"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${col}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${g}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${col}" stop-opacity=".45"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="60" cy="80" r="60" fill="url(#${g}b)"/>
+      <path class="qp-fl" d="M60 8C72 38 96 58 90 96c-4 24-18 34-30 34S34 120 30 96C24 58 48 38 60 8Z" fill="url(#${g})"/>
+      <path class="qp-fl2" d="M60 52c7 18 18 30 15 50-2 13-9 20-15 20s-13-7-15-20c-3-20 8-32 15-50Z" fill="#fff" fill-opacity=".55"/>
+      <rect x="44" y="128" width="32" height="26" rx="3" fill="#3a4258" stroke="#6b7590"/><rect x="40" y="124" width="40" height="7" rx="2" fill="#555f7a"/>
+      <path d="M108 30 82 92" stroke="#c9ccd6" stroke-width="2"/><circle cx="82" cy="92" r="3.5" fill="#fff" stroke="#c9ccd6"/></svg>`;
+  }
+  function orbSVG(k){
+    const g = uid(), lobe = (a, d, rx, ry, ph) => `<ellipse cx="0" cy="${-d}" rx="${rx}" ry="${ry}" transform="rotate(${a})" fill="url(#${g}${ph ? 'b' : 'a'})" stroke="${ph ? '#ffb070' : '#7fb2ff'}" stroke-opacity=".7"/>`;
+    let body = '';
+    if(k === 's') body = `<circle r="40" fill="url(#${g}a)" stroke="#7fb2ff" stroke-opacity=".7"/>`;
+    else if(k === 'p') body = lobe(0, 27, 17, 27, 0) + lobe(180, 27, 17, 27, 1);
+    else if(k === 'd') body = [45, 135, 225, 315].map((a, i) => lobe(a, 26, 12, 24, i % 2)).join('');
+    else body = [0, 60, 120, 180, 240, 300].map((a, i) => lobe(a, 28, 9, 22, i % 2)).join('') + [30, 90, 150, 210, 270, 330].map((a, i) => lobe(a, 14, 5, 10, (i + 1) % 2)).join('');
+    return `<svg viewBox="-70 -62 140 124"><defs>
+      <radialGradient id="${g}a" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#d6e6ff"/><stop offset=".55" stop-color="#4f8dff" stop-opacity=".85"/><stop offset="1" stop-color="#2346a8" stop-opacity=".6"/></radialGradient>
+      <radialGradient id="${g}b" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffe6cc"/><stop offset=".55" stop-color="#ff8a3d" stop-opacity=".85"/><stop offset="1" stop-color="#a84a14" stop-opacity=".6"/></radialGradient></defs>
+      <path d="M-64 0H64M0-58V58" stroke="rgba(201,208,255,.25)" stroke-dasharray="3 3"/>
+      <g class="${k === 's' ? '' : 'qp-spin'}" style="animation-duration:${k === 'f' ? 14 : 10}s">${body}</g><circle r="3" fill="#fff"/></svg>`;
+  }
+  function crySVG(k){
+    const at = (x, y, r, c) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="rgba(0,0,0,.35)"/><circle cx="${x - r * .35}" cy="${y - r * .35}" r="${r * .3}" fill="#fff" fill-opacity=".45"/>`;
+    const ln = (a, b, c, d, s, w) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${s || 'rgba(200,205,220,.55)'}" stroke-width="${w || 2}"/>`;
+    let o = '';
+    if(k === 'nacl'){
+      const pts = [];
+      [1, 0].forEach(z => { for(let y = 0; y < 3; y++) for(let x = 0; x < 3; x++) pts.push({ x: 30 + x * 40 + z * 22, y: 30 + y * 36 - z * 16, z, cl: (x + y + z) % 2 === 0 }); });
+      pts.forEach((p, i) => pts.forEach((q, j) => { if(j > i && p.z === q.z && Math.abs(p.x - q.x) + Math.abs(p.y - q.y) < 41) o += ln(p.x, p.y, q.x, q.y); if(j > i && p.z !== q.z && Math.abs(p.x - q.x) === 22 && Math.abs(p.y - q.y) === 16) o += ln(p.x, p.y, q.x, q.y, 'rgba(200,205,220,.3)'); }));
+      pts.forEach(p => o += at(p.x, p.y, p.cl ? 12 : 7.5, p.cl ? '#5fd35f' : '#b07cff'));
+    } else if(k === 'dia'){
+      // 다이아몬드 단위 세포: 면심 입방 + 안쪽 4개, 사면체 결합
+      const pr = (x, y, z) => [40 + x * 82 + z * 34, 100 - y * 82 - z * 22 + 4];
+      const fcc = [];
+      for(const x of [0, 1]) for(const y of [0, 1]) for(const z of [0, 1]) fcc.push([x, y, z]);
+      [[.5, .5, 0], [.5, .5, 1], [.5, 0, .5], [.5, 1, .5], [0, .5, .5], [1, .5, .5]].forEach(p => fcc.push(p));
+      const ins = [[.25, .25, .25], [.75, .75, .25], [.75, .25, .75], [.25, .75, .75]];
+      const E = [[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1],[1,1,1,0,1,1],[1,1,1,1,0,1],[1,1,1,1,1,0],[1,0,0,1,1,0],[1,0,0,1,0,1],[0,1,0,1,1,0],[0,1,0,0,1,1],[0,0,1,1,0,1],[0,0,1,0,1,1]];
+      E.forEach(e => { const p = pr(e[0], e[1], e[2]), q = pr(e[3], e[4], e[5]); o += ln(p[0], p[1], q[0], q[1], 'rgba(201,208,255,.28)', 1).replace('/>', ' stroke-dasharray="3 3"/>'); });
+      const all = fcc.concat(ins).map(p => ({ p, z: p[2] })).sort((a, b) => b.z - a.z);
+      ins.forEach(i => fcc.forEach(f => { if(Math.hypot(i[0] - f[0], i[1] - f[1], i[2] - f[2]) < .45){ const p = pr(...i), q = pr(...f); o += ln(p[0], p[1], q[0], q[1], '#9aa3b8', 3); } }));
+      all.forEach(a => { const p = pr(...a.p), inn = ins.includes(a.p); o += at(p[0], p[1], inn ? 7 : 6 - a.z * 1.2, inn ? '#d6dcf0' : '#aeb7cf'); });
+    } else if(k === 'gra'){
+      // 흑연: 벌집 판이 층층이
+      const sz = 17, pts = [];
+      for(let i = -3; i <= 3; i++) for(let j = 0; j <= 1; j++){
+        const cx = i * Math.sqrt(3) * sz + j * Math.sqrt(3) / 2 * sz, cy = j * 1.5 * sz;
+        for(let v = 0; v < 6; v++){ const a = (30 + v * 60) * Math.PI / 180, x = cx + Math.cos(a) * sz, y = cy + Math.sin(a) * sz;
+          if(Math.abs(x) < 64 && !pts.some(p => Math.hypot(p.x - x, p.y - y) < 1)) pts.push({ x, y }); }
+      }
+      const bonds = [];
+      pts.forEach((p, i) => pts.forEach((q, j) => { if(j > i && Math.abs(Math.hypot(p.x - q.x, p.y - q.y) - sz) < 1) bonds.push([p, q]); }));
+      [2, 1, 0].forEach(L => {
+        const ox = 85 + (L % 2) * 9, oy = 12 + L * 36, P2 = p => [ox + p.x, oy + p.y * .4];
+        if(L < 2) pts.filter((_, i) => i % 5 === 0).forEach(p => { const a = P2(p); o += ln(a[0], a[1], a[0], a[1] + 36, 'rgba(201,208,255,.22)', 1).replace('/>', ' stroke-dasharray="2 3"/>'); });
+        bonds.forEach(([p, q]) => { const a = P2(p), b = P2(q); o += ln(a[0], a[1], b[0], b[1], '#79819a', 1.6); });
+        pts.forEach(p => { const a = P2(p); o += at(a[0], a[1], 3, '#5a6276'); });
+      });
+    } else {
+      for(let y = 0; y < 3; y++) for(let x = 0; x < 4; x++){
+        const cx = 22 + x * 38 + (y % 2) * 19, cy = 24 + y * 40, a = ((x * 2 + y * 3) % 4) * 45, rd = a * Math.PI / 180, dx = Math.cos(rd) * 11, dy = Math.sin(rd) * 11;
+        o += ln(cx - dx, cy - dy, cx + dx, cy + dy, '#aab', 3) + at(cx - dx, cy - dy, 6, '#ff5a5a') + at(cx + dx, cy + dy, 6, '#ff5a5a') + at(cx, cy, 5.5, '#555');
+      }
+    }
+    return `<svg viewBox="0 0 170 120">${o}</svg>`;
+  }
+  const ORB = { s: 'H', p: 'O', d: 'Fe', f: 'U' };
+  const CRY = { nacl: ['Na', '소금(염화 나트륨)', 'Salt (NaCl)'], dia: ['C', '다이아몬드', 'Diamond'], gra: ['C', '흑연', 'Graphite'], dry: ['O', '드라이아이스', 'Dry ice'] };
+  const orbName = k => P(`${k} 오비탈`, `${k} orbital`);
+  function picHTML(pic){
+    if(pic.k === 'flame') return `<div class="qp-pic">${flameSVG(FLAME[pic.v])}</div>`;
+    if(pic.k === 'orb') return `<div class="qp-pic">${orbSVG(pic.v)}</div>`;
+    return `<div class="qp-pic wide">${crySVG(pic.v)}</div>`;
+  }
+  function picLabel(pic){
+    if(pic.k === 'flame') return P('불꽃 반응 색이 이런 원소는?', 'Which element gives this flame color?');
+    if(pic.k === 'orb') return P('이 모양의 오비탈은?', 'Which orbital has this shape?');
+    return P('어떤 물질의 결정 구조일까요?', 'Whose crystal structure is this?');
+  }
+  function picQ(){
+    const k = ['flame', 'flame', 'orb', 'cry'][(Math.random() * 4) | 0];
+    if(k === 'flame'){
+      let keys = shuffle(Object.keys(FLAME)); const v = keys[0];
+      keys = keys.filter(s => !(v === 'Li' && s === 'Sr') && !(v === 'Sr' && s === 'Li'));
+      const four = keys.slice(0, 4).map(byS);
+      return { mode: 'pic', pic: { k, v }, e: byS(v), ans: elName(byS(v)), options: shuffle(four.map(elName)) };
+    }
+    if(k === 'orb'){ const v = 'spdf'[(Math.random() * 4) | 0]; return { mode: 'pic', pic: { k, v }, e: byS(ORB[v]), ans: orbName(v), options: 'spdf'.split('').map(orbName) }; }
+    const ks = Object.keys(CRY), v = ks[(Math.random() * ks.length) | 0];
+    return { mode: 'pic', pic: { k: 'cry', v }, e: byS(CRY[v][0]), ans: P(CRY[v][1], CRY[v][2]), options: shuffle(ks.map(x => P(CRY[x][1], CRY[x][2]))) };
+  }
+
+  /* ── 오답 노트 저장 ── */
+  const NK = 'pt_qnote';
+  const noteGet = () => { try{ return JSON.parse(localStorage.getItem(NK) || '[]'); }catch(_){ return []; } };
+  const noteSet = a => { try{ localStorage.setItem(NK, JSON.stringify(a.slice(-40))); }catch(_){} };
+  const strip = h => String(h || '').replace(/<[^>]+>/g, '');
+  const keyOf = q => q.nk || (q.mode + '|' + (q.pic ? q.pic.k + q.pic.v : strip(q.prompt)) + '|' + q.ans);
+  function noteAdd(q){
+    if(!q || q.mode === 'find') return;
+    const a = noteGet(), k = keyOf(q);
+    const i = a.findIndex(x => x.k === k); if(i >= 0) a.splice(i, 1);
+    a.push({ k, mode: q.mode, prompt: q.prompt || '', ans: q.ans, options: q.options, s: q.e ? q.e.s : null, pic: q.pic || null, big: q.big, key: q.key, lang: LANG });
+    noteSet(a);
+  }
+  function noteDel(k){ noteSet(noteGet().filter(x => x.k !== k)); }
+
+  /* ── 문제 만들기 ── */
+  const _gq = genQ;
+  genQ = function(){
+    if(QZ.noteRun){
+      const it = (QZ.noteQ || []).shift();
+      if(it) return { mode: it.mode, prompt: it.prompt, ans: it.ans, options: shuffle(it.options.slice()), e: it.s ? byS(it.s) : byS('H'), pic: it.pic, nk: it.k, big: it.big, key: it.key };
+    }
+    if(QZ.mode === 'pic') return picQ();
+    const ta = QZ.mode === 'ta';
+    if((QZ.mode === 'mixed' || ta) && Math.random() < .12) return picQ();
+    if(!ta) return _gq.apply(this, arguments);
+    QZ.mode = 'mixed';
+    try{ let q = _gq.apply(this, arguments); for(let k = 0; k < 10 && q && q.mode === 'find'; k++) q = _gq.apply(this, arguments); return q; }
+    finally{ QZ.mode = 'ta'; }
+  };
+
+  const _rq = renderQ;
+  renderQ = function(){
+    const r = _rq.apply(this, arguments);
+    try{
+      const q = QZ.q;
+      if(q && q.pic){
+        const lab = qBodyEl.querySelector('.qlabel'); if(lab) lab.textContent = picLabel(q.pic);
+        let pr = qBodyEl.querySelector('.qprompt');
+        if(!pr){ pr = document.createElement('div'); pr.className = 'qprompt'; (lab || qBodyEl.firstChild).after(pr); }
+        pr.classList.remove('big'); pr.innerHTML = picHTML(q.pic);
+        const mt = qBodyEl.querySelector('.qz-card .mt'); if(mt) mt.lastChild.textContent = t('qm_pic');
+      }
+      if(QZ.mode === 'ta' && QZ.on){
+        qBodyEl.classList.add('qz-ta');
+        if(!qBodyEl.querySelector('.qta-bar')) qBodyEl.insertAdjacentHTML('afterbegin', `<div class="qta-bar"><i style="width:${(TA.left / TA_SEC * 100).toFixed(1)}%"></i></div>`);
+      }
+    }catch(e){ console.warn('quiz3', e); }
+    return r;
+  };
+
+  /* ── 타임어택 ── */
+  const TA = { left: TA_SEC, tm: 0, saved: 10 };
+  const _qhh = qHeadHTML;
+  qHeadHTML = function(){
+    let h = _qhh.apply(this, arguments);
+    if(QZ.mode === 'ta' && QZ.on) h = h.replace(/<span class="qprog">[^<]*<\/span>/, `<span class="qta${TA.left <= 10 ? ' low' : ''}" id="qTa">⏱ <b>${TA.left}</b>s</span>`);
+    return h;
+  };
+  function taTick(){
+    TA.left--;
+    const el = document.getElementById('qTa'); if(el){ el.querySelector('b').textContent = TA.left; el.classList.toggle('low', TA.left <= 10); }
+    const bar = qBodyEl.querySelector('.qta-bar i'); if(bar) bar.style.width = (TA.left / TA_SEC * 100).toFixed(1) + '%';
+    if(TA.left <= 10 && TA.left > 0) try{ SFX.tick(); }catch(_){}
+    if(TA.left <= 0){ clearInterval(TA.tm); taEnd(); }
+  }
+  function taEnd(){
+    const n = (QZ.hist || []).length;
+    QZ.len = Math.max(1, n);
+    qBarEl.classList.remove('on');
+    qShowResult();
+    try{
+      const bk = 'pt_qta_best_' + QZ.diff, prev = +localStorage.getItem(bk) || 0, best = Math.max(prev, QZ.score);
+      try{ localStorage.setItem(bk, best); }catch(_){}
+      const box = document.createElement('div'); box.className = 'qta-res';
+      box.innerHTML = P(`${TA_SEC}초 동안 <b>${QZ.score}</b>문제 정답 (${n}문제 풀이)${QZ.score > prev ? ' · 🎉 새 기록!' : ''}<br><small>타임어택 최고 기록 ${best}</small>`,
+        `<b>${QZ.score}</b> correct in ${TA_SEC}s (${n} tried)${QZ.score > prev ? ' · 🎉 New record!' : ''}<br><small>Time attack best ${best}</small>`);
+      const rh = qBodyEl.querySelector('.qz-chips') || qBodyEl.querySelector('.qscore'); if(rh) rh.after(box);
+      const ch = qBodyEl.querySelectorAll('.qz-chip'); if(ch[2]) ch[2].innerHTML = `<b>${best}</b><span>${P('타임어택 최고', 'TA best')}</span>`;
+    }catch(e){}
+    QZ.len = TA.saved;
+  }
+  const _sr = qStartRun;
+  qStartRun = function(){
+    clearInterval(TA.tm);
+    qBodyEl.classList.remove('qz-ta');
+    if(QZ.noteRun){
+      const a = noteGet().filter(x => !x.lang || x.lang === LANG);
+      if(!a.length){ QZ.noteRun = false; }
+      else { QZ.noteQ = shuffle(a.slice()).slice(0, 10); QZ.noteSaved = QZ.noteSaved || QZ.len; QZ.len = QZ.noteQ.length; }
+    }
+    if(QZ.mode === 'ta' && !QZ.noteRun){ TA.saved = QZ.len === 999 ? TA.saved : QZ.len; QZ.len = 999; TA.left = TA_SEC; }
+    const r = _sr.apply(this, arguments);
+    if(QZ.mode === 'ta' && !QZ.noteRun){ qHeadEl.innerHTML = qHeadHTML(); try{ bindQClose(); }catch(_){} TA.tm = setInterval(taTick, 1000); }
+    return r;
+  };
+  const _ac = answerChoice;
+  answerChoice = function(picked, btn){
+    const was = QZ.answered;
+    const r = _ac.apply(this, arguments);
+    if(!was && QZ.mode === 'ta' && QZ.on && TA.left > 0){
+      const ok = (QZ.hist || []).slice(-1)[0];
+      const nx = document.getElementById('qNext'); if(nx) nx.style.visibility = 'hidden';
+      setTimeout(() => { if(QZ.mode === 'ta' && QZ.on && TA.left > 0 && QZ.answered) nextQ(); }, ok ? 420 : 950);
+    }
+    return r;
+  };
+  const _ms = markScore;
+  markScore = function(ok, q){
+    const r = _ms.apply(this, arguments);
+    try{ if(!ok) noteAdd(q); else if(q && q.nk && QZ.noteRun) noteDel(q.nk); }catch(_){}
+    return r;
+  };
+  const _res = qShowResult;
+  qShowResult = function(){
+    const r = _res.apply(this, arguments);
+    if(QZ.noteRun){
+      try{
+        const left = noteGet().length;
+        const box = document.createElement('div'); box.className = 'qta-res'; box.style.borderColor = 'rgba(255,140,160,.45)'; box.style.background = 'rgba(255,120,140,.07)';
+        box.innerHTML = P(`오답 노트 복습 끝! 남은 오답 <b style="color:#ffa8b8">${left}</b>개`, `Review done! <b style="color:#ffa8b8">${left}</b> mistakes left`);
+        const rh = qBodyEl.querySelector('.qz-chips') || qBodyEl.querySelector('.qscore'); if(rh) rh.after(box);
+      }catch(_){}
+      if(QZ.noteSaved){ QZ.len = QZ.noteSaved; }
+      if(!noteGet().length) QZ.noteRun = false;
+    }
+    return r;
+  };
+  const _qe = qEnd;
+  qEnd = function(){
+    clearInterval(TA.tm); qBodyEl.classList.remove('qz-ta');
+    if(QZ.len === 999) QZ.len = TA.saved;
+    if(QZ.noteRun && QZ.noteSaved) QZ.len = QZ.noteSaved;
+    QZ.noteRun = false; QZ.noteSaved = 0;
+    return _qe.apply(this, arguments);
+  };
+
+  /* ── 시작 화면 ── */
+  const MINE = {
+    pic: ['<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>', '불꽃색·오비탈·결정 그림 보고 맞히기', 'Flames, orbitals and crystals'],
+    ta: ['<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6M12 2v3"/>', `${TA_SEC}초 동안 최대한 많이!`, `As many as you can in ${TA_SEC}s`],
+  };
+  const DESC2 = k => P(MINE[k][1], MINE[k][2]);
+  const ico = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${MINE[k][0]}</svg>`;
+  function decorate(cur){
+    const row = document.getElementById('qModeRow'); if(!row || row.querySelector('[data-k="pic"]')) return;
+    const add = k => {
+      const b = document.createElement('button'); b.className = 'qpick qz-mode qz-new'; b.dataset.k = k;
+      b.innerHTML = `${ico(k)}<span class="t">${t('qm_' + k)}</span><span class="d">${DESC2(k)}</span>`;
+      row.appendChild(b);
+    };
+    add('pic'); add('ta');
+    const title = () => {
+      const k = QZ.mode, tt = document.getElementById('qzT'), ss = document.getElementById('qzS');
+      if(MINE[k]){ if(tt) tt.innerHTML = ico(k) + `<span>${t('qm_' + k)}</span>`; if(ss) ss.textContent = DESC2(k); }
+      const lr = document.getElementById('qLenRow'); if(lr) lr.style.opacity = k === 'ta' ? '.35' : '';
+      const ring = qBodyEl.querySelector('.qz-ring b');
+      if(k === 'ta' && ring){ let b = 0; try{ b = +localStorage.getItem('pt_qta_best_' + QZ.diff) || 0; }catch(_){} ring.textContent = b; const bl = document.getElementById('qBestLine'); if(bl) bl.textContent = P(`타임어택 최고 — ${b}문제`, `Time attack best — ${b}`); }
+    };
+    row.addEventListener('click', e => {
+      const b = e.target.closest('.qpick'); if(!b) return;
+      if(MINE[b.dataset.k]){
+        QZ.mode = b.dataset.k; row.querySelectorAll('.qpick').forEach(x => x.classList.toggle('on', x === b)); try{ SFX.pick(); }catch(_){}
+      }
+      setTimeout(title, 0);
+    });
+    const dr = document.getElementById('qDiffRow'); if(dr) dr.addEventListener('click', () => setTimeout(title, 0));
+    if(cur && MINE[cur]){ QZ.mode = cur; row.querySelectorAll('.qpick').forEach(x => x.classList.toggle('on', x.dataset.k === cur)); title(); }
+    const go = document.getElementById('qGo'); if(go) go.addEventListener('click', () => { QZ.noteRun = false; }, true);
+    noteBox();
+  }
+  function noteBox(){
+    const set = qBodyEl.querySelector('.qset'); if(!set) return;
+    let box = set.querySelector('.qn-box'); if(!box){ box = document.createElement('div'); box.className = 'qn-box'; set.appendChild(box); }
+    const a = noteGet().filter(x => !x.lang || x.lang === LANG).slice().reverse();
+    const pv = it => it.pic ? `🖼 ${picLabel(it.pic)}` : strip(it.prompt) || t('qm_' + it.mode);
+    box.innerHTML = `<div class="qn-h">✎ ${P('오답 노트', 'MISTAKE NOTES')}<span>${a.length}${P('개', '')}</span></div>` + (a.length ? `
+      <div class="qn-list">${a.slice(0, 20).map(it => `<div class="qn-it"><span class="m">${t('qm_' + it.mode)}</span><span class="p">${pv(it)}</span><span class="a">${it.ans}</span><button class="x" data-k="${encodeURIComponent(it.k)}" title="${P('지우기', 'Remove')}">×</button></div>`).join('')}</div>
+      <div class="qn-btns"><button type="button" id="qnGo">${P(`틀린 문제 다시 풀기 (${Math.min(10, a.length)}문제)`, `Retry mistakes (${Math.min(10, a.length)})`)}</button><button type="button" class="g" id="qnClr">${P('모두 지우기', 'Clear')}</button></div>
+      <div class="qn-empty">${P('다시 풀어서 맞히면 노트에서 지워져요.', 'Answer correctly to clear a note.')}</div>`
+      : `<div class="qn-empty">${P('틀린 문제가 여기 모여요. 아직 하나도 없어요!', 'Questions you miss land here. None yet!')}</div>`);
+    box.querySelectorAll('.qn-it .x').forEach(b => b.addEventListener('click', () => { noteDel(decodeURIComponent(b.dataset.k)); noteBox(); }));
+    const g = box.querySelector('#qnGo'); if(g) g.addEventListener('click', () => { if(QZ.mode === 'ta') QZ.mode = 'mixed'; QZ.noteRun = true; QZ.noteSaved = QZ.len; try{ SFX.pick(); }catch(_){} qStartRun(); });
+    const c = box.querySelector('#qnClr'); if(c) c.addEventListener('click', () => { noteSet([]); noteBox(); });
+  }
+  const _qh = qHome;
+  qHome = function(){
+    const cur = QZ.mode;
+    if(MINE[cur]) QZ.mode = 'mixed';
+    let r;
+    try{ r = _qh.apply(this, arguments); }
+    finally{ if(MINE[cur]) QZ.mode = cur; }
+    try{ decorate(cur); }catch(e){ console.warn('quiz3', e); }
+    return r;
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 원소 생일 달력: 발견일이 알려진 원소들 ═══ */
+  .bd-card{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px 14px;border-radius:14px;cursor:pointer;font:inherit;color:#eef0ff;text-align:left;width:100%;
+    border:1px solid rgba(255,154,213,.35);background:linear-gradient(90deg,rgba(255,154,213,.12),rgba(154,168,255,.06));transition:transform .15s,border-color .15s}
+  .bd-card:hover{transform:translateY(-1px);border-color:#ff9ad5}
+  .bd-card .ic{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:rgba(255,154,213,.16)}
+  .bd-card b{display:block;font-size:13.5px}
+  .bd-card small{display:block;margin-top:2px;font-size:11.5px;color:var(--dim);word-break:keep-all}
+  .bd-card .ar{margin-left:auto;color:#ffc2e6;font-size:18px}
+  .bd-card.hb{border-color:#ffd43b;background:linear-gradient(90deg,rgba(255,212,59,.18),rgba(255,154,213,.12));animation:bdGlow 2s ease-in-out infinite alternate}
+  @keyframes bdGlow{to{box-shadow:0 0 22px rgba(255,212,59,.3)}}
+  .bd{--pk:#ff9ad5}
+  .bd-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .bd-nav h4{margin:0;font:800 18px/1 Kanit,system-ui,sans-serif;letter-spacing:.02em}
+  .bd-nav button{font:inherit;width:34px;height:34px;border-radius:10px;cursor:pointer;color:#dfe3ff;border:1px solid rgba(154,168,255,.25);background:rgba(154,168,255,.06);font-size:16px}
+  .bd-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .bd-grid .w{font:700 10px/1 ui-monospace,monospace;text-align:center;color:var(--dim);padding:4px 0}
+  .bd-grid .w:first-child{color:#ff8a8a}.bd-grid .w:nth-child(7){color:#8ab4ff}
+  .bd-d{position:relative;aspect-ratio:1.45/1;min-height:44px;border-radius:9px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);font:600 11px/1 system-ui,sans-serif;color:rgba(223,227,255,.55);padding:5px;text-align:left;cursor:default;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+  .bd-d.e{border:0;background:none}
+  .bd-d.has{cursor:pointer;color:#fff;border-color:color-mix(in srgb,var(--c) 60%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 30%,transparent),rgba(10,13,24,.6))}
+  .bd-d.has:hover{transform:translateY(-1px);box-shadow:0 0 12px color-mix(in srgb,var(--c) 40%,transparent)}
+  .bd-d .sy{font:800 15px/1 Kanit,system-ui,sans-serif;color:#fff;margin-top:auto}
+  .bd-d .sy small{font-size:10px;opacity:.75;margin-left:2px}
+  .bd-d.today{outline:2px solid #ffd43b;outline-offset:1px}
+  .bd-d.today::after{content:"TODAY";position:absolute;right:4px;top:5px;font:800 7px/1 ui-monospace,monospace;color:#ffd43b}
+  .bd-d.on{box-shadow:0 0 0 2px #fff inset}
+  .bd-info{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .bd-it{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:12px;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);background:color-mix(in srgb,var(--c) 8%,rgba(10,13,24,.7))}
+  .bd-it .tl{flex:none;width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font:800 20px/1 Kanit,system-ui,sans-serif;color:#10121c;background:var(--c);position:relative}
+  .bd-it .tl em{position:absolute;left:4px;top:3px;font:700 8px/1 system-ui;font-style:normal;color:rgba(16,18,28,.7)}
+  .bd-it .nm{font-size:14.5px;font-weight:800}
+  .bd-it .dt{font:700 10.5px/1 ui-monospace,monospace;color:var(--pk);margin:4px 0 5px;letter-spacing:.05em}
+  .bd-it p{margin:0;font-size:12.5px;line-height:1.55;color:#cfd5e6;word-break:keep-all}
+  .bd-it .go{margin-left:auto;flex:none;font:inherit;font-size:11.5px;padding:6px 9px;border-radius:8px;cursor:pointer;color:#dfe3ff;border:1px solid rgba(154,168,255,.3);background:rgba(154,168,255,.06)}
+  .bd-hint{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.5;word-break:keep-all}
+  .bd-up{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .bd-up span{font-size:11.5px;padding:4px 8px;border-radius:7px;background:rgba(255,154,213,.08);border:1px solid rgba(255,154,213,.25);color:#ffd5ec;cursor:pointer}
+</style>
+<script>
+(function(){
+  if(typeof renderToday !== 'function' || typeof rxPanel !== 'function') return;
+  const EN = () => LANG === 'en';
+  // [원자 번호, 월, 일, 연도, 한국어 설명, 영어 설명] — 날짜가 기록으로 남아 있는 것만
+  const BD = [
+    [8, 8, 1, 1774, '프리스틀리가 산화 수은을 가열해 "탈플로지스톤 공기"(산소)를 얻었어요.', 'Priestley heated mercury oxide and collected "dephlogisticated air" (oxygen).'],
+    [19, 10, 6, 1807, '데이비가 녹인 수산화 칼륨에 전기를 흘려 처음으로 칼륨을 분리했어요.', 'Davy passed current through molten potash and isolated potassium for the first time.'],
+    [2, 8, 18, 1868, '개기 일식 때 잔센이 태양 스펙트럼에서 처음 보는 노란 선을 관측했어요. 지구보다 태양에서 먼저 발견된 원소!', 'During a total eclipse, Janssen saw a new yellow line in sunlight. Found on the Sun before Earth!'],
+    [31, 8, 27, 1875, '르코크 드 부아보드랑이 스펙트럼에서 새 보라색 선을 찾았어요. 멘델레예프가 예언한 "에카알루미늄"이었죠.', 'Lecoq de Boisbaudran spotted new violet lines: Mendeleev\'s predicted "eka-aluminium".'],
+    [32, 2, 6, 1886, '빙클러가 광물 아기로다이트에서 찾아냈어요. 멘델레예프의 "에카규소" 예언이 딱 맞았어요.', 'Winkler found it in argyrodite, matching Mendeleev\'s "eka-silicon" prediction.'],
+    [9, 6, 26, 1886, '무아상이 수십 년 동안 수많은 화학자를 다치게 한 플루오린을 드디어 분리했어요. 이 공로로 노벨상!', 'Moissan finally isolated fluorine after decades of injured chemists. Nobel Prize followed.'],
+    [18, 8, 13, 1894, '레일리와 램지가 공기 속 "게으른" 새 기체를 발표했어요.', 'Rayleigh and Ramsay announced a lazy new gas hiding in air.'],
+    [36, 5, 30, 1898, '램지와 트래버스가 액체 공기를 증발시키고 남은 찌꺼기에서 찾았어요. 이름 뜻은 "숨겨진 것".', 'Ramsay and Travers found it in the residue of evaporated liquid air. The name means "hidden".'],
+    [54, 7, 12, 1898, '램지와 트래버스가 크립톤 속에서 또 다른 기체를 찾아냈어요. 이름 뜻은 "낯선 것".', 'Ramsay and Travers found yet another gas inside krypton. The name means "stranger".'],
+    [84, 7, 18, 1898, '퀴리 부부가 발표했어요. 마리 퀴리의 조국 폴란드에서 이름을 땄어요.', 'Announced by the Curies, named after Marie\'s homeland, Poland.'],
+    [88, 12, 26, 1898, '퀴리 부부가 피치블렌드에서 아주 강한 방사선을 내는 새 원소를 발표했어요.', 'The Curies announced a fiercely radioactive element from pitchblende.'],
+    [94, 2, 23, 1941, '시보그 연구팀이 화학적으로 확인했어요. 전쟁 중이라 한동안 비밀이었어요.', 'Seaborg\'s team confirmed it chemically, but it stayed secret during the war.'],
+    [97, 12, 19, 1949, '버클리 연구팀이 아메리슘에 알파 입자를 쏘아 만들었어요. 도시 버클리에서 이름을 땄어요.', 'Made at Berkeley by bombarding americium with alpha particles; named after the city.'],
+    [98, 2, 9, 1950, '버클리 연구팀이 퀴륨에 알파 입자를 쏘아 만들었어요. 캘리포니아주에서 이름을 땄어요.', 'Made at Berkeley from curium and alpha particles; named after California.'],
+    [99, 11, 1, 1952, '첫 수소 폭탄 실험(아이비 마이크)의 잔해에서 발견됐어요. 날짜는 실험일이에요.', 'Found in the debris of the first H-bomb test, Ivy Mike. The date is the test day.'],
+    [100, 11, 1, 1952, '아인슈타이늄과 함께 아이비 마이크 실험 잔해에서 발견됐어요. 날짜는 실험일이에요.', 'Found with einsteinium in the Ivy Mike debris. The date is the test day.'],
+    [103, 2, 14, 1961, '버클리 연구팀이 캘리포늄에 붕소 이온을 쏘아 만들었어요. 밸런타인데이 원소!', 'Made at Berkeley by firing boron ions at californium. A Valentine\'s Day element!'],
+    [109, 8, 29, 1982, '독일 GSI 연구소에서 원자 딱 1개가 만들어졌어요.', 'A single atom was made at GSI, Germany.'],
+    [110, 11, 9, 1994, '독일 GSI 연구소에서 납과 니켈을 충돌시켜 만들었어요.', 'Made at GSI by smashing nickel into lead.'],
+    [111, 12, 8, 1994, '독일 GSI 연구소에서 비스무트와 니켈을 충돌시켜 만들었어요.', 'Made at GSI by smashing nickel into bismuth.'],
+    [112, 2, 9, 1996, '독일 GSI 연구소에서 납과 아연을 충돌시켜 만들었어요. 코페르니쿠스 생일(2월 19일)에 이름이 발표됐어요.', 'Made at GSI from lead and zinc; the name was announced on Copernicus\'s birthday, Feb 19.'],
+    [113, 7, 23, 2004, '일본 이화학연구소(RIKEN)가 처음 원자를 관측했어요. 아시아에서 처음 찾은 원소, 이름은 "일본".', 'RIKEN in Japan saw its first atom: the first element found in Asia, named after Japan.'],
+  ];
+  const byN = n => EL.find(e => e.n === n);
+  const col = e => { try{ return cssv(CAT[e.c].v); }catch(_){ return '#ff9ad5'; } };
+  const nm = e => EN() ? e.en : e.ko;
+  const MON = { ko: m => `${m}월`, en: m => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1] };
+  const WD = { ko: ['일', '월', '화', '수', '목', '금', '토'], en: ['S', 'M', 'T', 'W', 'T', 'F', 'S'] };
+  const today = () => { const d = rxDayDate(); return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }; };
+  const on = (m, d) => BD.filter(b => b[1] === m && b[2] === d);
+  function nextBD(){
+    const t = today(), base = new Date(t.y, t.m - 1, t.d);
+    let best = null;
+    BD.forEach(b => { let dt = new Date(t.y, b[1] - 1, b[2]); if(dt < base) dt = new Date(t.y + 1, b[1] - 1, b[2]); const dd = Math.round((dt - base) / 864e5); if(!best || dd < best.dd) best = { b, dd }; });
+    return best;
+  }
+  function itHTML(b){
+    const e = byN(b[0]); if(!e) return '';
+    const age = today().y - b[3];
+    return `<div class="bd-it" style="--c:${col(e)}"><div class="tl"><em>${e.n}</em>${e.s}</div>
+      <div style="flex:1;min-width:0"><div class="nm">${nm(e)}</div>
+      <div class="dt">${b[3]}.${String(b[1]).padStart(2, '0')}.${String(b[2]).padStart(2, '0')} · ${EN() ? `${age} years` : `${age}번째 생일`}</div>
+      <p>${EN() ? b[5] : b[4]}</p></div><button type="button" class="go" data-n="${e.n}">${EN() ? 'Open' : '보기'}</button></div>`;
+  }
+  let M = today().m, SEL = null;
+  function render(box){
+    const L = EN() ? 'en' : 'ko', t = today(), y = t.y;
+    const first = new Date(y, M - 1, 1).getDay(), days = new Date(y, M, 0).getDate();
+    let g = WD[L].map(w => `<div class="w">${w}</div>`).join('');
+    for(let i = 0; i < first; i++) g += '<div class="bd-d e"></div>';
+    for(let d = 1; d <= days; d++){
+      const hs = on(M, d), e = hs.length ? byN(hs[0][0]) : null, isT = M === t.m && d === t.d;
+      g += `<div class="bd-d${hs.length ? ' has' : ''}${isT ? ' today' : ''}${SEL === d ? ' on' : ''}" data-d="${d}"${e ? ` style="--c:${col(e)}" role="button" tabindex="0"` : ''}>${d}${e ? `<span class="sy">${e.s}${hs.length > 1 ? `<small>+${hs.length - 1}</small>` : ''}</span>` : ''}</div>`;
+    }
+    const monthList = BD.filter(b => b[1] === M).sort((a, b) => a[2] - b[2]);
+    const shown = SEL ? on(M, SEL) : monthList;
+    box.innerHTML = `<div class="bd">
+      <div class="bd-nav"><button type="button" data-k="-1" aria-label="prev">‹</button><h4>${EN() ? `${MON.en(M)}` : MON.ko(M)} <small style="font-size:12px;color:var(--dim)">${EN() ? `${monthList.length} birthdays` : `원소 생일 ${monthList.length}개`}</small></h4><button type="button" data-k="1" aria-label="next">›</button></div>
+      <div class="bd-grid">${g}</div>
+      <div class="bd-info">${shown.length ? shown.map(itHTML).join('') : `<div class="bd-hint">${EN() ? 'No recorded element birthdays this month. Try another month!' : '이 달에는 기록된 원소 생일이 없어요. 다른 달도 넘겨 봐요!'}</div>`}</div>
+      <div class="bd-hint">${EN() ? 'Only elements whose discovery day is on record are shown. Most old elements only have a year.' : '발견한 "날짜"까지 기록이 남은 원소만 있어요. 오래된 원소는 대부분 연도만 알려져 있어요.'}</div></div>`;
+    box.querySelectorAll('.bd-nav button').forEach(b => b.addEventListener('click', () => { M = (M + 11 + +b.dataset.k) % 12 + 1; SEL = null; render(box); try{ SFX.tick(); }catch(_){} }));
+    box.querySelectorAll('.bd-d.has').forEach(c => c.addEventListener('click', () => { SEL = SEL === +c.dataset.d ? null : +c.dataset.d; render(box); }));
+    box.querySelectorAll('.bd-it .go').forEach(b => b.addEventListener('click', () => { const n = +b.dataset.n; try{ rxPanelClose(); }catch(_){} try{ qEnd(); }catch(_){} select(n); }));
+  }
+  function open(){
+    M = today().m; SEL = on(M, today().d).length ? today().d : null;
+    rxPanel(EN() ? 'Element Birthday Calendar' : '원소 생일 달력', EN() ? 'Discovery days on record' : '발견한 날이 기록된 원소들', '<div id="bdBox"></div>');
+    const box = document.getElementById('bdBox'); if(box) render(box);
+  }
+  window.rxBdayOpen = open;
+
+  const _rt = renderToday;
+  renderToday = function(){
+    _rt.apply(this, arguments);
+    try{
+      const box = qBodyEl.querySelector('.td2'); if(!box || box.querySelector('.bd-card')) return;
+      const t = today(), hs = on(t.m, t.d);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'bd-card' + (hs.length ? ' hb' : '');
+      if(hs.length){
+        const e = byN(hs[0][0]);
+        b.innerHTML = `<span class="ic">🎂</span><span><b>${EN() ? `Happy birthday, ${hs.map(h => byN(h[0]).en).join(' & ')}!` : `오늘은 ${hs.map(h => byN(h[0]).ko).join('·')}의 생일!`}</b><small>${EN() ? `Discovered on this day in ${hs[0][3]} · open the birthday calendar` : `${hs[0][3]}년 오늘 발견됐어요 · 원소 생일 달력 보기`}</small></span><span class="ar">→</span>`;
+      } else {
+        const nx = nextBD(), e = byN(nx.b[0]);
+        b.innerHTML = `<span class="ic">📅</span><span><b>${EN() ? 'Element birthday calendar' : '원소 생일 달력'}</b><small>${EN() ? `Next: ${e.en} (${MON.en(nx.b[1])} ${nx.b[2]}), in ${nx.dd} day${nx.dd > 1 ? 's' : ''}` : `다음 생일: ${e.ko} (${nx.b[1]}월 ${nx.b[2]}일) · ${nx.dd}일 남았어요`}</small></span><span class="ar">→</span>`;
+      }
+      b.addEventListener('click', () => { try{ SFX.pick(); }catch(_){} open(); });
+      const row = box.querySelector('.td3-row') || box.querySelector('.td2-fort');
+      if(row) row.after(b); else box.appendChild(b);
+    }catch(err){ console.warn('bday', err); }
+  };
 })();
 </script>
 
