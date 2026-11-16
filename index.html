@@ -47373,7 +47373,7 @@ void main(){
     const tools = document.getElementById('mTools'); if(!tools) return;
     let b = tools.querySelector('.eg-sty');
     const v = typeof RX_VIEW !== 'undefined' ? RX_VIEW : '';
-    const show = typeof RX !== 'undefined' && RX && RX.views && (v === 'ball' || v === 'stick' || v === 'min' || v === 'atom');
+    const show = typeof RX !== 'undefined' && RX && RX.views && (v === 'ball' || v === 'stick' || v === 'atom');   // 광물(min)·액체(liq) 탭에서는 숨김
     if(!b){
       b = document.createElement('button'); b.type = 'button'; b.className = 'rtool eg-sty';
       b.addEventListener('click', e => {
