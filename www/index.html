@@ -53789,68 +53789,91 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   .at-st em{font-style:normal;color:#fff;font-weight:800;font-size:15px;margin:0 2px}
   .at-more{display:block;margin:8px 0 0 auto;font:inherit;font-size:11px;color:#c9d0ff;background:none;border:0;cursor:pointer;padding:0}
 
-  /* ── 모션그래픽 연출 ── */
-  #atFx{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;font-family:Kanit,system-ui,sans-serif;--c:#9aa8ff;cursor:pointer}
-  #atFx .bd{position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%,rgba(10,12,28,.9),rgba(4,5,12,.97));animation:atIn .3s both}
-  @keyframes atIn{from{opacity:0}}
-  #atFx .rays{position:absolute;width:220vmax;height:220vmax;left:50%;top:50%;margin:-110vmax 0 0 -110vmax;opacity:0;
-    background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--c) 16%,transparent) 0 3deg,transparent 3deg 12deg);animation:atRays 1s var(--d0) both,atSpin 24s linear infinite;
-    -webkit-mask:radial-gradient(closest-side,transparent 8%,#000 30%,transparent 72%);mask:radial-gradient(closest-side,transparent 8%,#000 30%,transparent 72%)}
-  @keyframes atRays{from{opacity:0;transform:scale(.4)}to{opacity:1}}
-  @keyframes atSpin{to{rotate:360deg}}
-  #atFx .band{position:absolute;left:-20%;right:-20%;height:58px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;font:900 26px/1 Kanit,system-ui,sans-serif;letter-spacing:.08em}
-  #atFx .band.a{top:7%;transform:rotate(-8deg);background:var(--c);color:#0b0d18;animation:atBandL .45s var(--d0) cubic-bezier(.2,.9,.2,1) both}
-  #atFx .band.b{bottom:4%;transform:rotate(-8deg);background:#fff;color:#0b0d18;animation:atBandR .45s calc(var(--d0) + .08s) cubic-bezier(.2,.9,.2,1) both}
-  #atFx .band span{display:inline-block;padding-right:24px;animation:atMarq 6s linear infinite}
+  /* ── 모션그래픽 연출 (고퀄 v2) ── */
+  #atFx{position:fixed;inset:0;z-index:2147483000;overflow:hidden;cursor:pointer;--c:#9aa8ff;--S:min(29vmin,330px);font-family:Kanit,system-ui,sans-serif;isolation:isolate}
+  #atFx .bg{position:absolute;inset:0;background:radial-gradient(70% 70% at 50% 46%,color-mix(in srgb,var(--c) 18%,#070912),#03040a 75%);animation:afFade .35s both}
+  #atFx canvas{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:screen}
+  #atFx .grain{position:absolute;inset:-50%;opacity:.07;pointer-events:none;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:afGrain .5s steps(4) infinite}
+  @keyframes afGrain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-1%,3%)}}
+  #atFx .vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(75% 75% at 50% 50%,transparent 55%,rgba(0,0,0,.65))}
+  #atFx .huge{position:absolute;left:50%;top:50%;white-space:nowrap;font:900 calc(var(--S) * 1.05)/1 Kanit,system-ui,sans-serif;letter-spacing:-.02em;color:transparent;
+    -webkit-text-stroke:1.5px color-mix(in srgb,var(--c) 45%,transparent);opacity:0;transform:translate(-50%,-50%);animation:afHuge 1.2s calc(var(--d0) + .55s) cubic-bezier(.2,.8,.2,1) forwards,afDrift 14s calc(var(--d0) + .55s) linear infinite}
+  @keyframes afHuge{from{opacity:0;letter-spacing:.3em;filter:blur(10px)}to{opacity:.32;letter-spacing:-.02em;filter:none}}
+  @keyframes afDrift{to{translate:-6% 0}}
+  #atFx .band{position:absolute;left:-15%;right:-15%;height:calc(var(--S) * .13);display:flex;align-items:center;overflow:hidden;white-space:nowrap;
+    transform:rotate(-7deg);box-shadow:0 10px 40px rgba(0,0,0,.45)}
+  #atFx .band::before,#atFx .band::after{content:"";position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.55)}
+  #atFx .band::before{top:3px}#atFx .band::after{bottom:3px}
+  #atFx .band span{display:inline-flex;gap:1.4em;padding-right:1.4em;font:800 calc(var(--S) * .055)/1 Kanit,system-ui,sans-serif;letter-spacing:.32em;animation:afMarq 11s linear infinite}
+  #atFx .band span em{font-style:normal;color:transparent;-webkit-text-stroke:1px currentColor}
+  #atFx .band.a{top:4%;color:#0b0d18;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 40%,color-mix(in srgb,var(--c) 60%,#000));animation:afBandL .7s calc(var(--d0) + .02s) cubic-bezier(.16,1,.3,1) both}
+  #atFx .band.b{bottom:3%;color:#0b0d18;background:linear-gradient(90deg,#fff,#e8ebff 60%,#c9d0ff);animation:afBandR .7s calc(var(--d0) + .1s) cubic-bezier(.16,1,.3,1) both}
   #atFx .band.b span{animation-direction:reverse}
-  @keyframes atBandL{from{transform:rotate(-8deg) translateX(-110%)}}
-  @keyframes atBandR{from{transform:rotate(-8deg) translateX(110%)}}
-  @keyframes atMarq{to{transform:translateX(-50%)}}
-  #atFx .stage{position:relative;display:flex;flex-direction:column;align-items:center;animation:atShake .45s calc(var(--d0) + .55s) both}
-  @keyframes atShake{0%{transform:translate(0,0)}15%{transform:translate(-9px,6px)}30%{transform:translate(8px,-7px)}45%{transform:translate(-6px,-4px)}60%{transform:translate(5px,5px)}80%{transform:translate(-2px,1px)}100%{transform:none}}
-  #atFx .stamp{position:relative;width:min(46vw,210px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-    border:7px solid var(--c);box-shadow:0 0 0 4px rgba(0,0,0,.25) inset,0 0 0 2px var(--c) inset,0 0 60px color-mix(in srgb,var(--c) 60%,transparent);
-    background:radial-gradient(circle,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 10%,transparent) 70%);
-    animation:atSlam .5s calc(var(--d0) + .2s) cubic-bezier(.5,0,.75,0) both}
-  @keyframes atSlam{0%{transform:scale(3.4) rotate(-38deg);opacity:0;filter:blur(6px)}70%{opacity:1;filter:none}100%{transform:scale(1) rotate(-12deg)}}
-  #atFx .stamp::before{content:"";position:absolute;inset:10px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c) 70%,#fff)}
-  #atFx .stamp .sy{font:900 clamp(54px,15vw,84px)/1 Kanit,system-ui,sans-serif;color:#fff;text-shadow:0 0 22px var(--c),0 4px 0 rgba(0,0,0,.3)}
-  #atFx .stamp .ar{position:absolute;inset:0;animation:atSpin 14s linear infinite}
-  #atFx .stamp .ar text{font:800 11px Kanit,system-ui,sans-serif;letter-spacing:.32em;fill:#fff}
-  #atFx .ring{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;border:3px solid var(--c);opacity:0;animation:atRing .9s calc(var(--d0) + .7s + var(--k) * .12s) cubic-bezier(.1,.8,.3,1) forwards}
-  @keyframes atRing{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(3.2)}}
-  #atFx .p{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);border-radius:var(--br);background:var(--pc);opacity:0;animation:atP 1.1s calc(var(--d0) + .68s) cubic-bezier(.1,.7,.3,1) forwards}
-  @keyframes atP{0%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
-  #atFx .day{display:flex;align-items:baseline;gap:8px;margin-top:22px;font:900 22px/1 Kanit,system-ui,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.7);animation:atUp .5s calc(var(--d0) + .8s) cubic-bezier(.2,1.4,.4,1) both}
-  #atFx .num{display:inline-flex;overflow:hidden;height:64px;font-size:64px;color:#fff;letter-spacing:0;text-shadow:0 0 20px var(--c)}
-  #atFx .num i{font-style:normal;display:flex;flex-direction:column;line-height:64px;animation:atRoll 1s calc(var(--d0) + .85s + var(--k) * .1s) cubic-bezier(.3,1.3,.5,1) both}
-  @keyframes atRoll{from{transform:translateY(0)}to{transform:translateY(calc(var(--n) * -64px))}}
-  @keyframes atUp{from{opacity:0;transform:translateY(24px) scale(.9)}}
-  #atFx .msg{margin-top:10px;display:flex;font:900 28px/1.1 system-ui,sans-serif;color:#fff}
-  #atFx .msg b{display:inline-block;animation:atLet .5s calc(var(--d0) + 1s + var(--k) * .05s) cubic-bezier(.2,1.6,.4,1) both;white-space:pre}
-  @keyframes atLet{from{opacity:0;transform:translateY(-30px) rotate(-20deg) scale(.4)}}
-  #atFx .sub{margin-top:10px;font:700 14px/1.4 system-ui,sans-serif;color:#ffd8a8;animation:atUp .5s calc(var(--d0) + 1.35s) both;text-align:center;word-break:keep-all;padding:0 20px}
-  #atFx .sub small{display:block;color:rgba(255,255,255,.55);font-weight:600;font-size:12px;margin-top:4px}
-  #atFx .shield{position:absolute;display:flex;flex-direction:column;align-items:center;gap:12px;animation:atShOut .45s 1.25s ease-in both}
-  #atFx .shield .ic{width:120px;height:136px;background:no-repeat center/contain;filter:drop-shadow(0 0 24px rgba(120,180,255,.9));animation:atShIn .5s .1s cubic-bezier(.2,1.6,.4,1) both,atShGl .5s .6s ease-in-out 2 alternate}
-  #atFx .shield .tx{font:900 22px/1.2 system-ui,sans-serif;color:#cfe3ff;text-align:center;animation:atUp .4s .3s both;word-break:keep-all}
-  #atFx .shield .tx small{display:block;font-size:13px;font-weight:600;color:rgba(207,227,255,.7);margin-top:4px}
-  @keyframes atShIn{from{transform:scale(0) rotate(-30deg);opacity:0}}
-  @keyframes atShGl{to{filter:drop-shadow(0 0 40px rgba(160,210,255,1)) brightness(1.4)}}
-  @keyframes atShOut{to{opacity:0;transform:scale(1.6);filter:blur(8px)}}
-  #atFx .rw{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px;perspective:600px}
-  #atFx .rc{position:relative;min-width:150px;max-width:220px;padding:12px 14px;border-radius:14px;text-align:center;color:#fff;
-    background:linear-gradient(160deg,#3a3016,#2a1a2a);border:1px solid rgba(255,212,59,.6);box-shadow:0 0 26px rgba(255,212,59,.3);
-    animation:atFlip .7s calc(var(--d0) + 1.7s + var(--k) * .18s) cubic-bezier(.2,1.2,.4,1) both}
-  @keyframes atFlip{from{opacity:0;transform:rotateY(100deg) translateY(20px)}}
-  #atFx .rc .k{font:800 9.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:#ffd43b}
-  #atFx .rc .e{font-size:30px;margin:6px 0 2px}
-  #atFx .rc b{display:block;font:800 15px/1.25 system-ui,sans-serif}
-  #atFx .rc small{display:block;margin-top:3px;font-size:11px;color:rgba(255,255,255,.65);word-break:keep-all}
-  #atFx .tap{position:absolute;bottom:5%;font:700 11px/1 ui-monospace,monospace;letter-spacing:.2em;color:rgba(255,255,255,.45);animation:atUp .4s calc(var(--d0) + 2s) both,atBl 1.2s calc(var(--d0) + 2.4s) infinite}
-  @keyframes atBl{50%{opacity:.2}}
-  #atFx.out{animation:atOut .35s ease-in forwards}
-  @keyframes atOut{to{opacity:0;transform:scale(1.04)}}
+  #atFx .band.c{top:30%;height:calc(var(--S) * .32);opacity:.18;filter:blur(6px);color:#fff;background:linear-gradient(90deg,transparent,var(--c),transparent);transform:rotate(9deg);animation:afBandR 1s calc(var(--d0) + .05s) cubic-bezier(.16,1,.3,1) both}
+  #atFx .band.c span{font-size:calc(var(--S) * .2);letter-spacing:.1em}
+  @keyframes afBandL{from{transform:rotate(-7deg) translateX(-105%)}}
+  @keyframes afBandR{from{transform:rotate(-7deg) translateX(105%)}}
+  @keyframes afMarq{to{transform:translateX(-50%)}}
+  @keyframes afFade{from{opacity:0}}
+  #atFx .cam{position:absolute;inset:0;display:grid;place-items:center;animation:afPush 6s calc(var(--d0) + .7s) cubic-bezier(.2,.6,.3,1) both}
+  @keyframes afPush{from{transform:scale(1.07)}to{transform:scale(1)}}
+  #atFx .stage{position:relative;display:flex;flex-direction:column;align-items:center;animation:afShake .55s calc(var(--d0) + .66s) both}
+  @keyframes afShake{0%{transform:translate(0,0) rotate(0)}12%{transform:translate(-1.4vmin,1vmin) rotate(-.6deg)}26%{transform:translate(1.2vmin,-1.1vmin) rotate(.5deg)}40%{transform:translate(-.8vmin,-.5vmin)}55%{transform:translate(.6vmin,.6vmin)}72%{transform:translate(-.3vmin,.2vmin)}100%{transform:none}}
+  #atFx .sw{position:relative;width:var(--S);height:var(--S)}
+  #atFx .ink{position:absolute;inset:-28%;opacity:0;animation:afInk .5s calc(var(--d0) + .66s) cubic-bezier(.1,.9,.2,1) forwards}
+  @keyframes afInk{0%{opacity:0;transform:scale(.55) rotate(-12deg)}25%{opacity:.95}100%{opacity:.8;transform:scale(1) rotate(-12deg)}}
+  #atFx .stamp{position:absolute;inset:0;opacity:0;animation:afSlam .48s calc(var(--d0) + .2s) cubic-bezier(.55,0,.8,.2) forwards,afAber .45s calc(var(--d0) + .66s) ease-out}
+  @keyframes afSlam{0%{opacity:0;transform:translateY(-10vmin) scale(2.6) rotate(-40deg);filter:blur(14px) brightness(1.6)}60%{opacity:1;filter:blur(4px)}100%{opacity:1;transform:scale(1) rotate(-12deg);filter:none}}
+  @keyframes afAber{0%{filter:drop-shadow(1.2vmin 0 0 rgba(255,40,90,.75)) drop-shadow(-1.2vmin 0 0 rgba(40,220,255,.75)) brightness(1.5)}100%{filter:drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent)}}
+  #atFx .stamp svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 1.4vmin 2.4vmin rgba(0,0,0,.55))}
+  #atFx .spin{transform-origin:200px 200px;animation:afSpin 30s linear infinite}
+  @keyframes afSpin{to{transform:rotate(360deg)}}
+  #atFx .flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,#fff,color-mix(in srgb,var(--c) 60%,#fff) 30%,transparent 70%);opacity:0;mix-blend-mode:screen;pointer-events:none;animation:afFlash .5s calc(var(--d0) + .66s) ease-out}
+  @keyframes afFlash{0%{opacity:.95}100%{opacity:0}}
+  #atFx .day{display:flex;align-items:center;gap:calc(var(--S) * .05);margin-top:calc(var(--S) * .12);opacity:0;animation:afUp .7s calc(var(--d0) + .85s) cubic-bezier(.16,1,.3,1) forwards}
+  #atFx .day .k{font:700 calc(var(--S) * .07)/1 ui-monospace,monospace;letter-spacing:.5em;color:rgba(255,255,255,.6);padding-left:.5em;border-left:2px solid var(--c)}
+  #atFx .day .n{font:900 calc(var(--S) * .3)/.8 Kanit,system-ui,sans-serif;font-variant-numeric:tabular-nums;
+    background:linear-gradient(180deg,#fff 30%,color-mix(in srgb,var(--c) 55%,#fff) 60%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 2.2vmin color-mix(in srgb,var(--c) 70%,transparent))}
+  #atFx .msg{display:flex;margin-top:calc(var(--S) * .05);font:900 calc(var(--S) * .13)/1.1 system-ui,sans-serif;letter-spacing:.02em}
+  #atFx .msg b{display:inline-block;white-space:pre;opacity:0;background:linear-gradient(180deg,#fff,#dfe3ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 1.2vmin rgba(255,255,255,.35));animation:afLet .8s calc(var(--d0) + 1.02s + var(--k) * .045s) cubic-bezier(.16,1.4,.3,1) forwards}
+  @keyframes afLet{0%{opacity:0;transform:translateY(60%) scale(.6);filter:blur(8px)}100%{opacity:1;transform:none}}
+  @keyframes afUp{from{opacity:0;transform:translateY(3vmin);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+  #atFx .sub{margin-top:calc(var(--S) * .05);display:flex;flex-direction:column;align-items:center;gap:.6vmin;opacity:0;animation:afUp .6s calc(var(--d0) + 1.4s) forwards;text-align:center;padding:0 20px}
+  #atFx .pill{display:inline-flex;align-items:center;gap:.6em;padding:.55em 1.1em;border-radius:999px;font:800 calc(var(--S) * .055)/1 system-ui,sans-serif;color:#ffe0b8;
+    background:linear-gradient(90deg,rgba(255,140,60,.18),rgba(255,212,59,.12));border:1px solid rgba(255,190,110,.45);box-shadow:0 0 2vmin rgba(255,150,60,.25)}
+  #atFx .sub small{font:600 calc(var(--S) * .042)/1.4 system-ui,sans-serif;color:#b9d7ff}
+  #atFx .rw{display:flex;gap:calc(var(--S) * .06);flex-wrap:wrap;justify-content:center;margin-top:calc(var(--S) * .09);perspective:900px}
+  #atFx .rc{position:relative;width:calc(var(--S) * .6);padding:calc(var(--S) * .05) calc(var(--S) * .04) calc(var(--S) * .045);border-radius:calc(var(--S) * .05);text-align:center;color:#fff;overflow:hidden;opacity:0;
+    background:linear-gradient(160deg,#3b3220,#1b1626 45%,#2c1a2c);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,220,140,.55);box-shadow:0 0 0 1px rgba(255,255,255,.06) inset,0 1.5vmin 4vmin rgba(0,0,0,.5),0 0 4vmin rgba(255,200,80,.18);
+    animation:afFlip .9s calc(var(--d0) + 1.75s + var(--k) * .2s) cubic-bezier(.16,1.2,.3,1) forwards}
+  #atFx .rc::after{content:"";position:absolute;top:-50%;bottom:-50%;width:40%;left:-60%;transform:rotate(20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+    animation:afSheen 2.6s calc(var(--d0) + 2.4s + var(--k) * .2s) ease-in-out infinite}
+  @keyframes afSheen{0%{left:-60%}45%,100%{left:130%}}
+  @keyframes afFlip{0%{opacity:0;transform:rotateY(-110deg) translateY(4vmin) scale(.8)}100%{opacity:1;transform:none}}
+  #atFx .rc .k{font:800 calc(var(--S) * .03)/1 ui-monospace,monospace;letter-spacing:.24em;color:#ffd96a}
+  #atFx .rc .e{width:calc(var(--S) * .2);height:calc(var(--S) * .2);margin:calc(var(--S) * .035) auto calc(var(--S) * .025);border-radius:50%;display:grid;place-items:center;font-size:calc(var(--S) * .1);
+    background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.35),rgba(255,200,80,.15) 50%,transparent 70%);box-shadow:0 0 0 1px rgba(255,220,140,.5),0 0 3vmin rgba(255,200,80,.35)}
+  #atFx .rc b{display:block;font:850 calc(var(--S) * .055)/1.25 system-ui,sans-serif}
+  #atFx .rc small{display:block;margin-top:.5vmin;font-size:calc(var(--S) * .036);color:rgba(255,255,255,.65);word-break:keep-all}
+  #atFx .shield{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:afShOut .5s 1.3s cubic-bezier(.6,0,.9,.4) forwards}
+  #atFx .shield .w{display:flex;flex-direction:column;align-items:center;gap:calc(var(--S) * .06)}
+  #atFx .shield .afhx{position:relative;width:calc(var(--S) * .78);height:calc(var(--S) * .78);display:grid;place-items:center}
+  #atFx .shield .afhx svg.r{position:absolute;inset:0;width:100%;height:100%;animation:afSpin 6s linear infinite;opacity:.8}
+  #atFx .shield .ic{position:absolute;inset:16% 20%;background:no-repeat center/contain;filter:drop-shadow(0 0 3vmin rgba(120,180,255,.95));animation:afShIn .6s .1s cubic-bezier(.16,1.5,.3,1) both,afShGl .45s .7s ease-in-out 2 alternate}
+  #atFx .shield .tx{font:900 calc(var(--S) * .11)/1.15 system-ui,sans-serif;color:#e4f0ff;text-align:center;text-shadow:0 0 2vmin rgba(120,180,255,.8);animation:afUp .5s .35s both;word-break:keep-all}
+  #atFx .shield .tx small{display:block;font-size:.42em;font-weight:600;color:rgba(207,227,255,.75);margin-top:.5vmin;text-shadow:none}
+  @keyframes afShIn{from{transform:scale(0) rotate(-40deg);opacity:0}}
+  @keyframes afShGl{to{filter:drop-shadow(0 0 6vmin rgba(170,215,255,1)) brightness(1.5)}}
+  @keyframes afShOut{to{opacity:0;transform:scale(1.5);filter:blur(12px)}}
+  #atFx .tap{position:absolute;left:0;right:0;bottom:3.2%;text-align:center;font:700 calc(var(--S) * .03)/1 ui-monospace,monospace;letter-spacing:.4em;color:rgba(255,255,255,.5);opacity:0;animation:afUp .5s calc(var(--d0) + 2.2s) forwards,afBl 1.4s calc(var(--d0) + 2.7s) infinite}
+  @keyframes afBl{50%{opacity:.2}}
+  #atFx.out{animation:afOut .45s cubic-bezier(.6,0,.9,.4) forwards}
+  @keyframes afOut{to{opacity:0;transform:scale(1.06);filter:blur(8px)}}
+  @media (max-width:640px){ #atFx{--S:min(52vmin,300px)} #atFx .band.c{display:none} }
 
   /* ── 출석부 패널 ── */
   .atp-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
@@ -53949,47 +53972,161 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     return res;
   }
 
-  /* ── 모션그래픽 ── */
+  /* ── 모션그래픽 (고퀄 v2: 캔버스 빛·불꽃 + SVG 도장) ── */
+  function stampSVG(e, col, n){
+    const id = 'as' + Math.random().toString(36).slice(2, 7);
+    const ticks = Array.from({ length: 72 }, (_, i) => { const a = i / 72 * 6.283, r1 = i % 6 ? 176 : 172, r2 = 182; return `<line x1="${(200 + Math.cos(a) * r1).toFixed(1)}" y1="${(200 + Math.sin(a) * r1).toFixed(1)}" x2="${(200 + Math.cos(a) * r2).toFixed(1)}" y2="${(200 + Math.sin(a) * r2).toFixed(1)}" stroke="#fff" stroke-opacity="${i % 6 ? .35 : .8}" stroke-width="${i % 6 ? 1 : 2}"/>`; }).join('');
+    const ring = P(`PERIODIC // TABLE ✦ 출석 도장 ✦ ${TODAY().replace(/-/g, '.')} ✦ DAY ${n} ✦ `, `PERIODIC // TABLE ✦ CHECK-IN ✦ ${TODAY().replace(/-/g, '.')} ✦ DAY ${n} ✦ `);
+    return `<svg viewBox="0 0 400 400"><defs>
+      <linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="color-mix(in srgb, ${col} 55%, #fff)"/><stop offset=".55" stop-color="${col}"/><stop offset=".8" stop-color="color-mix(in srgb, ${col} 55%, #000)"/><stop offset="1" stop-color="color-mix(in srgb, ${col} 80%, #fff)"/></linearGradient>
+      <radialGradient id="${id}f" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="${col}" stop-opacity=".55"/><stop offset=".7" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="#0a0c18" stop-opacity=".85"/></radialGradient>
+      <linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="color-mix(in srgb, ${col} 25%, #fff)"/><stop offset="1" stop-color="color-mix(in srgb, ${col} 60%, #fff)"/></linearGradient>
+      <filter id="${id}g" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="${(Math.random() * 99) | 0}" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 4.1" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+      <path id="${id}p" d="M200,200 m-150,0 a150,150 0 1,1 300,0 a150,150 0 1,1 -300,0"/></defs>
+      <circle cx="200" cy="200" r="194" fill="#0b0d18"/><g filter="url(#${id}g)">
+        <circle cx="200" cy="200" r="190" fill="url(#${id}f)"/>
+        <circle cx="200" cy="200" r="190" fill="none" stroke="url(#${id}m)" stroke-width="16"/>
+        <path d="M58 120A170 170 0 0 1 280 40" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
+        ${ticks}
+        <circle cx="200" cy="200" r="166" fill="none" stroke="${col}" stroke-width="2"/>
+        <circle cx="200" cy="200" r="126" fill="none" stroke="url(#${id}m)" stroke-width="5"/>
+        <circle cx="200" cy="200" r="117" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 5"/>
+        <g class="spin"><text font-family="Kanit,system-ui,sans-serif" font-weight="800" font-size="19" letter-spacing="5.2" fill="#fff"><textPath href="#${id}p">${ring}</textPath></text></g>
+        <text x="200" y="164" text-anchor="middle" font-family="ui-monospace,monospace" font-weight="700" font-size="17" letter-spacing="4" fill="#fff" fill-opacity=".75">No.${e.n}</text>
+        <text x="200" y="258" text-anchor="middle" font-family="Kanit,system-ui,sans-serif" font-weight="900" font-size="${e.s.length > 1 ? 118 : 136}" fill="url(#${id}s)" stroke="color-mix(in srgb, ${col} 60%, #000)" stroke-width="2" paint-order="stroke">${e.s}</text>
+        <text x="200" y="292" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="16" letter-spacing="3" fill="#fff" fill-opacity=".8">${EN() ? e.en.toUpperCase() : e.ko}</text>
+        ${[0, 1, 2, 3].map(i => { const a = i * 1.5708 + .785, x = 200 + Math.cos(a) * 146, y = 200 + Math.sin(a) * 146; return `<path d="M${x} ${y - 7}L${x + 2} ${y - 2}L${x + 7} ${y}L${x + 2} ${y + 2}L${x} ${y + 7}L${x - 2} ${y + 2}L${x - 7} ${y}L${x - 2} ${y - 2}Z" fill="${col}"/>`; }).join('')}
+      </g></svg>`;
+  }
+  function inkSVG(col){
+    const id = 'ai' + Math.random().toString(36).slice(2, 7), pts = [];
+    const N = 34;
+    for(let i = 0; i < N; i++){ const a = i / N * 6.283, r = 196 + Math.random() * 26 + (Math.random() < .22 ? 30 + Math.random() * 40 : 0); pts.push([200 + Math.cos(a) * r, 200 + Math.sin(a) * r]); }
+    let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+    for(let i = 0; i < N; i++){ const p = pts[i], q = pts[(i + 1) % N]; d += `Q${p[0].toFixed(1)} ${p[1].toFixed(1)} ${((p[0] + q[0]) / 2).toFixed(1)} ${((p[1] + q[1]) / 2).toFixed(1)}`; }
+    const drops = Array.from({ length: 22 }, () => { const a = Math.random() * 6.283, r = 240 + Math.random() * 80, s = 2 + Math.random() * 9; return `<circle cx="${(200 + Math.cos(a) * r).toFixed(1)}" cy="${(200 + Math.sin(a) * r).toFixed(1)}" r="${s.toFixed(1)}"/>`; }).join('');
+    return `<svg viewBox="-112 -112 624 624" style="width:100%;height:100%;overflow:visible"><defs><filter id="${id}" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="${(Math.random() * 99) | 0}"/><feDisplacementMap in="SourceGraphic" scale="26"/></filter>
+      <radialGradient id="${id}r"><stop offset=".55" stop-color="${col}" stop-opacity="0"/><stop offset=".8" stop-color="${col}" stop-opacity=".55"/><stop offset="1" stop-color="${col}" stop-opacity=".25"/></radialGradient></defs>
+      <g filter="url(#${id})" fill="${col}" fill-opacity=".5"><path d="${d}Z" fill="url(#${id}r)" fill-opacity="1"/>${drops}</g></svg>`;
+  }
+  function canvasFx(ov, col, d0){
+    const cv = ov.querySelector('canvas'), ctx = cv.getContext('2d');
+    const dpr = Math.min(1.5, devicePixelRatio || 1);
+    let W = 0, H = 0, cx = 0, cy = 0, S = 300;
+    const fit = () => { W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const r = ov.querySelector('.sw').getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; S = r.width || 300; };
+    fit(); addEventListener('resize', fit);
+    const rgb = (() => { const c = document.createElement('canvas').getContext('2d'); c.fillStyle = col; const h = c.fillStyle; if(h[0] === '#'){ const v = parseInt(h.slice(1), 16); return [v >> 16, v >> 8 & 255, v & 255]; } return [154, 168, 255]; })();
+    const C = a => `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
+    const rays = Array.from({ length: 22 }, (_, i) => ({ a: i / 22 * 6.283 + Math.random() * .2, w: .02 + Math.random() * .05, l: .8 + Math.random() * .6, sp: (Math.random() < .5 ? -1 : 1) * (.03 + Math.random() * .05), al: .35 + Math.random() * .65 }));
+    const dust = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 2.6, vy: -(.004 + Math.random() * .012), vx: (Math.random() - .5) * .004, ph: Math.random() * 6.28 }));
+    const sparks = [], stars = [];
+    const T0 = d0 + .66;
+    let fired = false, raf = 0, last = 0;
+    const st0 = performance.now();
+    function boom(){
+      const cols = ['#ffffff', col, '#ffe08a', '#ffb4e1'];
+      for(let i = 0; i < 190; i++){
+        const a = Math.random() * 6.283, sp = (6 + Math.random() * 20) * (S / 300);
+        sparks.push({ x: cx + Math.cos(a) * S * .42, y: cy + Math.sin(a) * S * .42, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, max: .7 + Math.random() * 1.1, c: cols[i % 4], w: .8 + Math.random() * 2.2 });
+      }
+      for(let i = 0; i < 26; i++){ const a = Math.random() * 6.283, r = S * (.7 + Math.random() * 1.4); stars.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * .8, s: 3 + Math.random() * 9, t0: Math.random() * .8, d: .6 + Math.random() * .9 }); }
+    }
+    function star(x, y, s, a){
+      ctx.save(); ctx.translate(x, y); ctx.globalAlpha = a; ctx.fillStyle = '#fff'; ctx.shadowColor = col; ctx.shadowBlur = s * 2;
+      ctx.beginPath(); ctx.moveTo(0, -s); ctx.quadraticCurveTo(0, 0, s, 0); ctx.quadraticCurveTo(0, 0, 0, s); ctx.quadraticCurveTo(0, 0, -s, 0); ctx.quadraticCurveTo(0, 0, 0, -s); ctx.fill(); ctx.restore();
+    }
+    function frame(now){
+      if(!ov.isConnected){ removeEventListener('resize', fit); return; }
+      const t = (now - st0) / 1000, dt = Math.min(.05, last ? (now - last) / 1000 : .016); last = now;
+      if(!fired && t >= T0){ fired = true; boom(); }
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      const k = Math.min(1, Math.max(0, (t - d0) / .6)), hit = fired ? Math.max(0, 1 - (t - T0) / .8) : 0;
+      // 빛줄기
+      const R = Math.hypot(W, H) * .75;
+      rays.forEach(r => {
+        const a = r.a + t * r.sp, w = r.w * (1 + hit * 1.5), L = R * r.l;
+        const g = ctx.createRadialGradient(cx, cy, S * .3, cx, cy, L);
+        g.addColorStop(0, C(.22 * r.al * k + .3 * hit)); g.addColorStop(.35, C(.08 * r.al * k + .1 * hit)); g.addColorStop(1, C(0));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, L, a - w, a + w); ctx.closePath(); ctx.fill();
+      });
+      // 중심 빛
+      const gl = ctx.createRadialGradient(cx, cy, 0, cx, cy, S * (1.3 + hit));
+      gl.addColorStop(0, C(.28 * k + .5 * hit)); gl.addColorStop(1, C(0));
+      ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
+      // 먼지(보케)
+      dust.forEach(p => {
+        p.y += p.vy * dt * 6; p.x += p.vx * dt * 6; if(p.y < -.05){ p.y = 1.05; p.x = Math.random(); }
+        const x = p.x * W, y = p.y * H, a = (.25 + .25 * Math.sin(t * 2 + p.ph)) * k, r = p.r * (S / 300) * 2.2;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r * 3); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.4, C(a * .5)); g.addColorStop(1, C(0));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 3, 0, 6.283); ctx.fill();
+      });
+      // 충격파
+      if(fired) for(let i = 0; i < 3; i++){
+        const p = (t - T0 - i * .14) / 1.1; if(p <= 0 || p >= 1) continue;
+        const e = 1 - Math.pow(1 - p, 3), rr = S * (.5 + e * (2.4 + i * .5));
+        ctx.lineWidth = (1 - p) * (i ? 3 : 14) * (S / 300); ctx.strokeStyle = i ? `rgba(255,255,255,${(1 - p) * .7})` : C((1 - p) * .9);
+        ctx.shadowColor = col; ctx.shadowBlur = 20; ctx.beginPath(); ctx.ellipse(cx, cy, rr, rr * .92, 0, 0, 6.283); ctx.stroke(); ctx.shadowBlur = 0;
+      }
+      // 불꽃
+      for(let i = sparks.length - 1; i >= 0; i--){
+        const s = sparks[i]; s.life += dt; if(s.life > s.max){ sparks.splice(i, 1); continue; }
+        s.vx *= Math.pow(.06, dt); s.vy = s.vy * Math.pow(.06, dt) + 9 * dt * (S / 300); s.x += s.vx * dt * 60; s.y += s.vy * dt * 60;
+        const a = 1 - s.life / s.max;
+        ctx.strokeStyle = s.c; ctx.globalAlpha = a; ctx.lineWidth = s.w * (S / 300) * 1.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(s.x - s.vx * 2.2, s.y - s.vy * 2.2); ctx.lineTo(s.x, s.y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      // 반짝이
+      if(fired) stars.forEach(s => { const p = (t - T0 - s.t0) / s.d; if(p > 0 && p < 1) star(s.x, s.y, s.s * (S / 300) * 1.4 * Math.sin(p * 3.14), Math.sin(p * 3.14)); });
+      ctx.globalCompositeOperation = 'source-over';
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }
   function fx(e, col, res){
     document.getElementById('atFx')?.remove();
-    const d0 = res.shield ? 1.55 : 0;
-    const n = String(res.stats.total), digits = n.split('').map((ch, i) => {
-      const v = +ch, roll = 10 + v; let col2 = ''; for(let j = 0; j <= roll; j++) col2 += `<span>${j % 10}</span>`;
-      return `<i style="--k:${i};--n:${roll}">${col2}</i>`;
-    }).join('');
+    const d0 = res.shield ? 1.7 : 0;
+    const n = res.stats.total, nS = String(n).padStart(2, '0');
     const msg = P('출석 완료!', 'CHECKED IN!').split('').map((ch, i) => `<b style="--k:${i}">${ch}</b>`).join('');
-    const mq = (P(`출석 ✦ DAY ${n} ✦ ${e.s} ✦ `, `ATTENDANCE ✦ DAY ${n} ✦ ${e.s} ✦ `)).repeat(8);
-    const parts = Array.from({ length: 34 }, (_, i) => {
-      const a = (i / 34) * 6.283 + Math.random() * .3, r = 140 + Math.random() * 220;
-      const sq = i % 3 === 0;
-      return `<i class="p" style="--x:${(Math.cos(a) * r).toFixed(0)}px;--y:${(Math.sin(a) * r).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg;--s:${sq ? 9 : 6 + Math.random() * 6}px;--br:${sq ? '2px' : '50%'};--pc:${['#fff', col, '#ffd43b', '#ff9ad5'][i % 4]}"></i>`;
-    }).join('');
+    const unit = P(`<i>출석</i> ✦ <em>DAY ${nS}</em> ✦ <i>${e.s}</i> ✦ <em>${e.ko}</em> ✦ `, `<i>CHECK-IN</i> ✦ <em>DAY ${nS}</em> ✦ <i>${e.s}</i> ✦ <em>${e.en.toUpperCase()}</em> ✦ `).replace(/<i>|<\/i>/g, '');
+    const mq = unit.repeat(10);
     const s = res.stats;
-    const sub = res.broke ? P(`연속 기록이 끊겼지만 다시 시작! 🔥 1일째`, `Streak reset, fresh start! 🔥 Day 1`)
-      : P(`🔥 ${s.streak}일 연속 출석`, `🔥 ${s.streak}-day streak`);
-    const sub2 = res.newShield ? P(`🛡 7일 연속 보너스: 보호막 +1 (지금 ${res.a.sh}개)`, `🛡 7-day bonus: +1 shield (now ${res.a.sh})`) : '';
-    const rw = res.unlocks.map((r, i) => `<div class="rc" style="--k:${i}"><div class="k">${P('NEW 칭호 · 뱃지', 'NEW TITLE · BADGE')}</div><div class="e">${r.e}</div><b>${rwName(r)}</b><small>${EN() ? r.ed : r.kd}</small></div>`).join('');
+    const sub = res.broke ? P(`🔥 새로운 시작 · 1일째`, `🔥 Fresh start · Day 1`) : P(`🔥 ${s.streak}일 연속 출석`, `🔥 ${s.streak}-day streak`);
+    const sub2 = res.newShield ? P(`🛡 7일 연속 보너스 · 보호막 +1 (보유 ${res.a.sh})`, `🛡 7-day bonus · +1 shield (now ${res.a.sh})`) : '';
+    const rw = res.unlocks.map((r, i) => `<div class="rc" style="--k:${i}"><div class="k">${P('NEW · 칭호 해금', 'NEW · TITLE UNLOCKED')}</div><div class="e">${r.e}</div><b>${rwName(r)}</b><small>${EN() ? r.ed : r.kd}</small></div>`).join('');
+    const hex = `<svg class="r" viewBox="0 0 200 200"><polygon points="100,6 181,53 181,147 100,194 19,147 19,53" fill="none" stroke="#8fc3ff" stroke-width="2" stroke-dasharray="10 6"/><polygon points="100,22 167,61 167,139 100,178 33,139 33,61" fill="rgba(120,180,255,.08)" stroke="rgba(160,205,255,.5)" stroke-width="1"/></svg>`;
     const ov = document.createElement('div'); ov.id = 'atFx';
     ov.style.setProperty('--c', col); ov.style.setProperty('--d0', d0 + 's');
-    ov.innerHTML = `<div class="bd"></div><div class="rays"></div>
+    ov.innerHTML = `<div class="bg"></div><canvas></canvas>
+      <div class="huge">DAY ${nS}</div>
+      <div class="band c"><span>${mq}</span><span>${mq}</span></div>
       <div class="band a"><span>${mq}</span><span>${mq}</span></div><div class="band b"><span>${mq}</span><span>${mq}</span></div>
-      ${res.shield ? `<div class="shield"><div class="ic" style="background-image:url('${SHIELD}')"></div><div class="tx">${P('보호막 발동!', 'SHIELD UP!')}<small>${P(`빠진 ${res.shield}일을 막아서 연속 기록을 지켰어요`, `Covered ${res.shield} missed day${res.shield > 1 ? 's' : ''}, streak saved`)}</small></div></div>` : ''}
-      <div class="stage">
-        ${[0, 1, 2].map(k => `<i class="ring" style="--k:${k}"></i>`).join('')}${parts}
-        <div class="stamp"><svg class="ar" viewBox="0 0 200 200"><defs><path id="atC" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#atC">${P('PERIODIC // TABLE ✦ 출석 도장 ✦ ', 'PERIODIC // TABLE ✦ CHECK-IN ✦ ')}${TODAY().replace(/-/g, '.')} ✦</textPath></text></svg><span class="sy">${e.s}</span></div>
-        <div class="day">DAY <span class="num">${digits}</span></div>
+      ${res.shield ? `<div class="shield"><div class="w"><div class="afhx">${hex}<div class="ic" style="background-image:url('${SHIELD}')"></div></div><div class="tx">${P('보호막 발동!', 'SHIELD UP!')}<small>${P(`빠진 ${res.shield}일을 막아서 연속 기록을 지켰어요`, `Covered ${res.shield} missed day${res.shield > 1 ? 's' : ''}, streak saved`)}</small></div></div></div>` : ''}
+      <div class="cam"><div class="stage">
+        <div class="sw"><div class="ink">${inkSVG(col)}</div><div class="stamp">${stampSVG(e, col, nS)}</div></div>
+        <div class="day"><span class="k">DAY</span><span class="n" id="afN">00</span></div>
         <div class="msg">${msg}</div>
-        <div class="sub">${sub}${sub2 ? `<small>${sub2}</small>` : ''}</div>
+        <div class="sub"><span class="pill">${sub}</span>${sub2 ? `<small>${sub2}</small>` : ''}</div>
         ${rw ? `<div class="rw">${rw}</div>` : ''}
-      </div>
-      <div class="tap">${P('화면을 누르면 닫혀요', 'TAP TO CLOSE')}</div>`;
+      </div></div>
+      <div class="flash"></div><div class="vig"></div><div class="grain"></div>
+      <div class="tap">${P('TAP · 화면을 누르면 닫혀요', 'TAP TO CLOSE')}</div>`;
     document.body.appendChild(ov);
+    const stop = window.RX_REDUCED ? () => {} : canvasFx(ov, col, d0);
+    // DAY 숫자 올라가기
+    const nEl = ov.querySelector('#afN'), cs = performance.now() + (d0 + .85) * 1000;
+    const cnt = now => { if(!nEl.isConnected) return; const p = Math.min(1, Math.max(0, (now - cs) / 900)), v = Math.round(n * (1 - Math.pow(1 - p, 3))); nEl.textContent = String(v).padStart(2, '0'); if(p < 1) requestAnimationFrame(cnt); };
+    requestAnimationFrame(cnt);
     const t0 = Date.now();
-    setTimeout(() => { try{ (res.unlocks.length ? SFX.gem : SFX.ok)(); }catch(_){} }, (d0 + .68) * 1000);
+    setTimeout(() => { try{ (res.unlocks.length ? SFX.gem : SFX.ok)(); }catch(_){} }, (d0 + .66) * 1000);
     if(res.shield) setTimeout(() => { try{ SFX.pick(); }catch(_){} }, 150);
-    const close = () => { if(Date.now() - t0 < 900) return; ov.classList.add('out'); setTimeout(() => ov.remove(), 360); };
+    const close = () => { if(Date.now() - t0 < 900 || ov.classList.contains('out')) return; ov.classList.add('out'); setTimeout(() => { stop(); ov.remove(); }, 460); };
     ov.addEventListener('click', close);
-    addEventListener('keydown', function k(ev){ if(!ov.isConnected){ removeEventListener('keydown', k); return; } if(ev.key === 'Escape' || ev.key === 'Enter'){ close(); } });
+    addEventListener('keydown', function k(ev){ if(!ov.isConnected){ removeEventListener('keydown', k); return; } if(ev.key === 'Escape' || ev.key === 'Enter') close(); });
   }
 
   /* ── 오늘의 원소 화면: 출석 칸 ── */
