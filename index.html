@@ -38007,15 +38007,20 @@ function rxSunGem(){
         // 위경선 구 (찌그러지면 한쪽이 불룩, 다른 쪽이 홀쭉: 쌍극자)
         const P = (u, v) => { // u 경도, v 위도
           let x = Math.cos(v) * Math.cos(u + rot), y = Math.sin(v), z = Math.cos(v) * Math.sin(u + rot);
-          const b = 1 + s.sq * .28 * y;            // 위는 불룩, 아래는 홀쭉
-          return [cx + x * R * b, cy - y * R * (1 + s.sq * .12), z];
+          const b = 1 + s.sq * .09 * y;            // 위가 아주 살짝 통통한 달걀 (쌍극자)
+          return [cx + x * R * b * (1 - s.sq * .04), cy - y * R * (1 + s.sq * .07) - s.sq * R * .03, z];
         };
         c.lineWidth = 1;
         for(let i = -4; i <= 4; i++){ const v = i / 5 * Math.PI / 2; c.beginPath(); for(let j = 0; j <= 48; j++){ const p = P(j / 48 * Math.PI * 2, v); j ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); } c.strokeStyle = 'rgba(201,208,255,.35)'; c.stroke(); }
         for(let i = 0; i < 12; i++){ const u = i / 12 * Math.PI * 2; c.beginPath(); for(let j = 0; j <= 32; j++){ const p = P(u, -Math.PI / 2 + j / 32 * Math.PI); j ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); } c.strokeStyle = 'rgba(154,168,255,.3)'; c.stroke(); }
         const core = c.createRadialGradient(cx - R * .3, cy - R * .3, 2, cx, cy, R * 1.05);
         core.addColorStop(0, 'rgba(255,255,255,.55)'); core.addColorStop(1, 'rgba(154,168,255,.05)');
-        c.fillStyle = core; c.beginPath(); c.ellipse(cx, cy - s.sq * R * .04, R * (1 + s.sq * .05), R * (1 + s.sq * .12), 0, 0, 7); c.fill();
+        c.fillStyle = core; c.beginPath(); c.ellipse(cx, cy - s.sq * R * .04, R * (1 - s.sq * .02), R * (1 + s.sq * .07), 0, 0, 7); c.fill();
+        // 찌그러지면: 전하가 한쪽으로 살짝 쏠림 (전기 쌍극자) 표시
+        if(s.sq > .05){ c.globalAlpha = Math.min(1, s.sq); c.font = '800 15px system-ui,sans-serif'; c.textAlign = 'center';
+          c.fillStyle = '#ffb27a'; c.fillText('δ−', cx, cy - R * 1.16); c.fillStyle = '#9fd0ff'; c.fillText('δ+', cx, cy + R * 1.24);
+          c.strokeStyle = 'rgba(255,178,122,.85)'; c.lineWidth = 2; c.beginPath(); c.moveTo(cx + R * 1.22, cy + R * .45); c.lineTo(cx + R * 1.22, cy - R * .45); c.lineTo(cx + R * 1.15, cy - R * .3); c.moveTo(cx + R * 1.22, cy - R * .45); c.lineTo(cx + R * 1.29, cy - R * .3); c.stroke();
+          c.font = '700 10px system-ui,sans-serif'; c.fillStyle = 'rgba(255,200,160,.9)'; c.fillText(EN() ? 'dipole' : '쌍극자', cx + R * 1.22, cy + R * .62); c.globalAlpha = 1; }
         c.fillStyle = '#fff'; c.font = '800 22px Kanit,system-ui,sans-serif'; c.textAlign = 'center'; c.fillText('e⁻', cx, cy + 8);
         c.font = '700 12px system-ui,sans-serif';
         c.fillStyle = s.tgt ? '#ffb27a' : '#8dffb9';
