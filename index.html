@@ -51494,5 +51494,283 @@ window.rxFogMake = MAKE;
 })();
 </script>
 
+<style>
+  /* ═══ 초보자 도우미 2: ① 어려운 말 톡 사전 · ② 조합 실시간 힌트 · ③ 안 열어 본 기능 안내 ═══ */
+  .gl-t{border-bottom:1.5px dotted rgba(170,180,255,.75);cursor:help;border-radius:2px;transition:background .15s}
+  .gl-t:hover,.gl-t.on{background:rgba(143,155,255,.18)}
+  #glPop{position:fixed;z-index:2147483000;max-width:min(300px,86vw);padding:11px 13px 10px;border-radius:14px;color:#eef0ff;font-size:13px;line-height:1.55;
+    background:linear-gradient(160deg,rgba(40,44,96,.97),rgba(18,20,44,.98));border:1px solid rgba(170,180,255,.4);box-shadow:0 14px 34px rgba(0,0,0,.45);
+    opacity:0;transform:translateY(6px) scale(.97);transition:opacity .16s,transform .2s cubic-bezier(.2,1.3,.3,1);pointer-events:none}
+  #glPop.on{opacity:1;transform:none;pointer-events:auto}
+  #glPop b{display:block;font-size:12px;letter-spacing:.03em;color:#c9cfff;margin-bottom:3px}
+  #glPop b::before{content:'📖 '}
+  #glPop small{display:block;margin-top:5px;font-size:11px;color:#9aa0c8}
+  html.april #glPop{background:#fff;color:#000;border:2.5px solid #000;border-radius:255px 14px 225px 12px/14px 225px 12px 255px}
+  html.april #glPop b,html.april #glPop small{color:#333}
+  html.april .gl-t{border-bottom-color:#000}
+
+  #mixHint{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) translateY(4px);z-index:5;display:flex;align-items:center;gap:6px;
+    padding:5px 8px 5px 11px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;color:#eef0ff;
+    background:rgba(28,30,60,.92);border:1px solid rgba(170,180,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s,transform .25s}
+  #mixHint.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+  #mixHint.ready{border-color:rgba(255,209,102,.6);color:#ffe9a8}
+  #mixHint .op{padding:1px 6px;border-radius:999px;background:rgba(105,219,124,.16);border:1px solid rgba(105,219,124,.4);color:#b8f5c8}
+  #mixHint .op.sub{background:rgba(255,107,129,.14);border-color:rgba(255,107,129,.4);color:#ffc2c9}
+  #mixHint .x{border:0;background:none;color:#9aa0c8;font-size:13px;padding:0 3px;cursor:pointer}
+  html.april #mixHint{background:#fff;color:#000;border:2px solid #000}
+
+  #discTip{position:fixed;left:14px;bottom:86px;z-index:2147482900;width:min(290px,calc(100vw - 28px));padding:12px 13px 11px;border-radius:16px;color:#eef0ff;
+    background:linear-gradient(160deg,rgba(40,44,96,.96),rgba(18,20,44,.97));border:1px solid rgba(255,209,102,.45);box-shadow:0 16px 40px rgba(0,0,0,.45);
+    opacity:0;transform:translateY(14px);transition:opacity .25s,transform .35s cubic-bezier(.2,1.3,.3,1);pointer-events:none}
+  #discTip.on{opacity:1;transform:none;pointer-events:auto}
+  #discTip .k{font-size:10.5px;font-weight:900;letter-spacing:.06em;color:#ffd166}
+  #discTip .t{margin:3px 0 2px;font-size:15px;font-weight:850}
+  #discTip .d{font-size:12.5px;line-height:1.5;color:#c8cdf0}
+  #discTip .b{display:flex;gap:6px;margin-top:9px}
+  #discTip .b button{flex:1;padding:7px 8px;border-radius:10px;border:1px solid rgba(170,180,255,.35);background:rgba(143,155,255,.14);color:#eef0ff;font-weight:800;font-size:12.5px;cursor:pointer}
+  #discTip .b button.go{background:linear-gradient(135deg,#8f9bff,#c9a8ff);color:#141633;border:0}
+  #discTip .b button.no{flex:none;background:none;border:0;color:#9aa0c8;font-weight:700}
+  html.april #discTip{background:#fff;color:#000;border:2.5px solid #000;border-radius:255px 14px 225px 12px/14px 225px 12px 255px}
+  html.april #discTip .d{color:#333} html.april #discTip .b button{background:#fff;color:#000;border:2px solid #000}
+  @media (max-width:900px){ #discTip{bottom:calc(150px + env(safe-area-inset-bottom))} }
+</style>
+<script>
+(function(){
+  const P = (k, e) => (typeof LANG !== 'undefined' && LANG === 'en') ? e : k;
+  const ls = { get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+
+  /* ─────────── ① 어려운 말 톡 사전 ─────────── */
+  // [한국어 낱말들, 영어 낱말들, 쉬운 설명(한), 쉬운 설명(영), 예시(한), 예시(영)]
+  const G = [
+    [['전기음성도'], ['electronegativity'], '결합한 전자를 자기 쪽으로 끌어당기는 힘이에요. 클수록 전자 욕심쟁이예요.', 'How strongly an atom pulls shared electrons toward itself. Bigger = greedier.', '플루오린이 1등이에요', 'Fluorine is #1'],
+    [['이온화 에너지'], ['ionization energy'], '원자에서 전자 하나를 떼어 내는 데 드는 에너지예요. 클수록 전자를 잘 안 내줘요.', 'The energy needed to pull one electron off an atom. Bigger = holds on tighter.', '비활성 기체가 제일 커요', 'Noble gases are highest'],
+    [['원자량'], ['atomic mass', 'atomic weight'], '원자 하나의 무게를 탄소-12의 1/12을 1로 놓고 잰 값이에요.', 'How heavy one atom is, measured with 1/12 of carbon-12 as 1.', '수소 ≈ 1, 탄소 = 12', 'H ≈ 1, C = 12'],
+    [['동위원소'], ['isotope', 'isotopes'], '양성자 수는 같고 중성자 수만 다른 원자예요. 화학적 성질은 거의 같아요.', 'Atoms with the same protons but different neutrons. Chemistry is almost the same.', '탄소-12, 탄소-14', 'C-12, C-14'],
+    [['반감기'], ['half-life'], '방사성 원자가 처음 양의 절반으로 줄어드는 데 걸리는 시간이에요.', 'The time it takes for half of a radioactive sample to decay.', '탄소-14는 약 5730년', 'C-14: about 5,730 years'],
+    [['오비탈'], ['orbital', 'orbitals'], '전자가 있을 확률이 높은 공간의 모양이에요. s는 공, p는 아령 모양이에요.', 'The shape of the space where an electron is likely to be. s is a ball, p is a dumbbell.', '1s, 2p, 3d…', '1s, 2p, 3d…'],
+    [['전자 배치'], ['electron configuration'], '전자가 어느 껍질·오비탈에 몇 개씩 들어 있는지 적은 거예요.', 'A list of how many electrons sit in each shell and orbital.', '나트륨: 1s² 2s² 2p⁶ 3s¹', 'Na: 1s² 2s² 2p⁶ 3s¹'],
+    [['원자가 전자', '최외각 전자'], ['valence electron', 'valence electrons'], '맨 바깥 껍질에 있는 전자예요. 화학 반응은 거의 이 전자들이 해요.', 'Electrons in the outermost shell. They do almost all the chemistry.', '같은 족은 원자가 전자 수가 같아요', 'Same group = same count'],
+    [['양이온'], ['cation', 'cations'], '전자를 잃어서 (+) 전하를 띠게 된 이온이에요.', 'An ion that lost electrons and became (+).', 'Na⁺', 'Na⁺'],
+    [['음이온'], ['anion', 'anions'], '전자를 얻어서 (−) 전하를 띠게 된 이온이에요.', 'An ion that gained electrons and became (−).', 'Cl⁻', 'Cl⁻'],
+    [['산화수'], ['oxidation state', 'oxidation number'], '원자가 전자를 몇 개 잃었는지(+)·얻었는지(−) 셈하는 숫자예요.', 'A number counting how many electrons an atom lost (+) or gained (−).', 'H₂O에서 O는 −2', 'O in H₂O is −2'],
+    [['공유 결합'], ['covalent bond', 'covalent bonds'], '두 원자가 전자를 나눠 가지면서 붙는 결합이에요. 주로 비금속끼리 해요.', 'Two atoms stick together by sharing electrons. Usually nonmetals.', 'H₂O, CO₂', 'H₂O, CO₂'],
+    [['이온 결합'], ['ionic bond', 'ionic bonds'], '전자를 주고받아 생긴 (+) 이온과 (−) 이온이 끌어당겨 붙는 결합이에요.', 'A (+) ion and a (−) ion pulled together after trading electrons.', 'NaCl (소금)', 'NaCl (salt)'],
+    [['금속 결합'], ['metallic bond'], '금속 원자들이 전자를 바다처럼 함께 쓰면서 붙는 결합이에요. 그래서 전기가 잘 통해요.', 'Metal atoms share a "sea" of electrons. That is why metals conduct.', '구리, 철', 'Cu, Fe'],
+    [['할로젠'], ['halogen', 'halogens'], '17족 원소예요. 전자 하나만 더 얻으면 안정해서 반응성이 아주 커요.', 'Group 17. One more electron makes them stable, so they react a lot.', 'F, Cl, Br, I', 'F, Cl, Br, I'],
+    [['비활성 기체'], ['noble gas', 'noble gases'], '18족 원소예요. 바깥 껍질이 꽉 차 있어서 거의 반응하지 않아요.', 'Group 18. Full outer shell, so they barely react.', 'He, Ne, Ar', 'He, Ne, Ar'],
+    [['알칼리 금속'], ['alkali metal', 'alkali metals'], '1족 금속(수소 빼고)이에요. 전자 하나를 쉽게 내놔서 물과 격렬하게 반응해요.', 'Group 1 metals (not H). Give away one electron easily and react wildly with water.', 'Li, Na, K', 'Li, Na, K'],
+    [['알칼리 토금속'], ['alkaline earth metal', 'alkaline earth metals'], '2족 금속이에요. 전자 두 개를 내놓고 +2 이온이 돼요.', 'Group 2 metals. Give away two electrons to become +2 ions.', 'Mg, Ca', 'Mg, Ca'],
+    [['전이 금속'], ['transition metal', 'transition metals'], '3~12족 금속이에요. d 오비탈에 전자가 채워지고, 색깔 있는 화합물을 많이 만들어요.', 'Groups 3–12. Their d orbitals fill up and they make many colourful compounds.', 'Fe, Cu, Au', 'Fe, Cu, Au'],
+    [['란타넘족'], ['lanthanide', 'lanthanides'], '57~71번 원소예요. 4f 오비탈이 채워지고 성질이 서로 많이 닮았어요.', 'Elements 57–71. Their 4f orbitals fill and they are very alike.', '네오디뮴 자석', 'Neodymium magnets'],
+    [['악티늄족'], ['actinide', 'actinides'], '89~103번 원소예요. 5f 오비탈이 채워지고 전부 방사성이에요.', 'Elements 89–103. Their 5f orbitals fill and all are radioactive.', '우라늄, 플루토늄', 'U, Pu'],
+    [['준금속'], ['metalloid', 'metalloids'], '금속과 비금속의 중간 성질을 가진 원소예요. 반도체로 많이 써요.', 'Halfway between metal and nonmetal. Often used as semiconductors.', '규소(Si)', 'Silicon'],
+    [['방사성'], ['radioactive'], '원자핵이 불안정해서 스스로 방사선을 내며 다른 원자로 바뀌는 성질이에요.', 'An unstable nucleus that gives off radiation and turns into another atom.', '우라늄, 라듐', 'U, Ra'],
+    [['알파 붕괴'], ['alpha decay'], '핵이 헬륨 핵(양성자 2 + 중성자 2)을 내보내는 붕괴예요. 원자번호가 2 줄어요.', 'The nucleus spits out a helium nucleus. Atomic number drops by 2.', '우라늄-238 → 토륨-234', 'U-238 → Th-234'],
+    [['베타 붕괴'], ['beta decay'], '핵 속 중성자가 양성자로 바뀌며 전자를 내보내는 붕괴예요. 원자번호가 1 늘어요.', 'A neutron turns into a proton and shoots out an electron. Atomic number goes up by 1.', '탄소-14 → 질소-14', 'C-14 → N-14'],
+    [['동소체'], ['allotrope', 'allotropes'], '같은 원소인데 원자가 붙은 모양이 달라 성질이 다른 물질이에요.', 'Same element, different arrangement, different properties.', '다이아몬드와 흑연', 'Diamond and graphite'],
+    [['녹는점'], ['melting point'], '고체가 녹아서 액체가 되는 온도예요.', 'The temperature where a solid turns liquid.', '얼음 0℃', 'Ice: 0 °C'],
+    [['끓는점'], ['boiling point'], '액체가 끓어서 기체가 되는 온도예요.', 'The temperature where a liquid boils into gas.', '물 100℃', 'Water: 100 °C'],
+    [['밀도'], ['density'], '같은 부피에 얼마나 무거운지예요. 물(1 g/cm³)보다 작으면 물에 떠요.', 'How heavy something is for its size. Less than water (1 g/cm³) floats.', '오스뮴이 제일 무거워요', 'Osmium is densest'],
+    [['촉매'], ['catalyst', 'catalysts'], '자기는 변하지 않으면서 반응을 빠르게 해 주는 물질이에요.', 'Speeds up a reaction without being used up.', '백금, 효소', 'Platinum, enzymes'],
+    [['합금'], ['alloy', 'alloys'], '금속에 다른 원소를 섞어 녹여 만든 금속이에요. 더 단단해지기도 해요.', 'A metal melted together with other elements, often stronger.', '청동, 강철', 'Bronze, steel'],
+    [['산화'], ['oxidation'], '전자를 잃는 것(또는 산소와 결합하는 것)이에요. 녹스는 것도 산화예요.', 'Losing electrons (or joining with oxygen). Rusting is oxidation.', '철 → 녹', 'Iron → rust'],
+    [['환원'], ['reduction'], '전자를 얻는 것(또는 산소를 잃는 것)이에요. 산화와 항상 같이 일어나요.', 'Gaining electrons (or losing oxygen). Always happens with oxidation.', '광석 → 금속', 'Ore → metal'],
+    [['원자핵'], ['nucleus'], '원자 한가운데의 아주 작은 덩어리예요. 양성자와 중성자가 모여 있어요.', 'The tiny centre of an atom, made of protons and neutrons.', '원자 질량의 99.9%', '99.9% of the mass'],
+    [['양성자'], ['proton', 'protons'], '원자핵 속 (+) 입자예요. 개수가 곧 원자번호예요.', 'A (+) particle in the nucleus. Its count is the atomic number.', '탄소는 6개', 'Carbon has 6'],
+    [['중성자'], ['neutron', 'neutrons'], '원자핵 속 전하가 없는 입자예요. 개수가 달라지면 동위원소가 돼요.', 'A neutral particle in the nucleus. Different counts make isotopes.', '탄소-14는 8개', 'C-14 has 8'],
+    [['몰'], ['mole'], '입자 6.02×10²³개 묶음이에요. 원자를 셀 때 쓰는 "한 다스" 같은 거예요.', '6.02×10²³ particles — like a "dozen" for atoms.', '물 1몰 = 18 g', '1 mol water = 18 g'],
+  ];
+  // 낱말 → 설명 (긴 말부터 찾기)
+  const IDX = []; G.forEach((g, i) => { g[0].forEach(w => IDX.push([w, i, 'ko'])); g[1].forEach(w => IDX.push([w, i, 'en'])); });
+  IDX.sort((a, b) => b[0].length - a[0].length);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const RE = { ko: null, en: null };
+  const re = lang => RE[lang] || (RE[lang] = new RegExp(IDX.filter(x => x[2] === lang).map(x => lang === 'en' ? '\\b' + esc(x[0]) + '\\b' : esc(x[0])).join('|'), lang === 'en' ? 'gi' : 'g'));
+  const lookup = (w, lang) => { const f = IDX.find(x => x[2] === lang && x[0].toLowerCase() === w.toLowerCase()); return f ? f[1] : -1; };
+  const SKIP = 'BUTTON,INPUT,TEXTAREA,SELECT,SVG,CANVAS,SCRIPT,STYLE,A,CODE,H1,H2,KBD';
+  function mark(root){
+    if(!root || ls.get('pt_gloss_off', false)) return;
+    const lang = (typeof LANG !== 'undefined' && LANG === 'en') ? 'en' : 'ko', R = re(lang), used = new Set();
+    root.querySelectorAll('.gl-t').forEach(s => used.add(+s.dataset.g));
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode(n){
+      if(!n.nodeValue || n.nodeValue.length < 2) return NodeFilter.FILTER_REJECT;
+      for(let p = n.parentElement; p && p !== root; p = p.parentElement){
+        if(SKIP.includes(p.tagName) || p.classList.contains('gl-t') || p.isContentEditable || p.closest('.ix-tw,#atomBox,.atom-subs')) return NodeFilter.FILTER_REJECT; }
+      return NodeFilter.FILTER_ACCEPT; } });
+    const nodes = []; while(tw.nextNode()) nodes.push(tw.currentNode);
+    nodes.forEach(n => {
+      const s = n.nodeValue; R.lastIndex = 0; let m, last = 0, frag = null;
+      while((m = R.exec(s))){
+        const gi = lookup(m[0], lang); if(gi < 0 || used.has(gi)) continue;
+        // 한국어: 더 긴 말의 일부("산화"가 "산화수" 안)는 위에서 긴 말부터 찾으니 괜찮다. "환원"이 "순환원소" 같은 데 붙는 건 거의 없음
+        used.add(gi); frag = frag || document.createDocumentFragment();
+        frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        const sp = document.createElement('span'); sp.className = 'gl-t'; sp.dataset.g = gi; sp.textContent = m[0]; sp.tabIndex = 0; sp.setAttribute('role', 'button');
+        frag.appendChild(sp); last = m.index + m[0].length;
+      }
+      if(frag){ frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag, n); }
+    });
+  }
+  const pop = document.createElement('div'); pop.id = 'glPop'; pop.setAttribute('role', 'tooltip'); document.body.appendChild(pop);
+  let popFor = null;
+  function show(sp){
+    const g = G[+sp.dataset.g]; if(!g) return;
+    const en = typeof LANG !== 'undefined' && LANG === 'en';
+    pop.innerHTML = `<b>${en ? g[1][0] : g[0][0]}</b>${en ? g[3] : g[2]}<small>${P('예', 'e.g.')} · ${en ? g[5] : g[4]}</small>`;
+    document.querySelectorAll('.gl-t.on').forEach(x => x.classList.remove('on')); sp.classList.add('on'); popFor = sp;
+    const r = sp.getBoundingClientRect(); pop.classList.add('on');
+    const pw = pop.offsetWidth, ph = pop.offsetHeight;
+    let x = Math.min(innerWidth - pw - 8, Math.max(8, r.left + r.width / 2 - pw / 2)), y = r.top - ph - 8;
+    if(y < 8) y = r.bottom + 8;
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+    try{ SFX.pick(); }catch(e){}
+    try{ const s = ls.get('pt_gloss_seen', []); if(!s.includes(+sp.dataset.g)){ s.push(+sp.dataset.g); ls.set('pt_gloss_seen', s); } }catch(e){}
+  }
+  const hide = () => { pop.classList.remove('on'); if(popFor) popFor.classList.remove('on'); popFor = null; };
+  document.addEventListener('click', e => { const sp = e.target.closest && e.target.closest('.gl-t'); if(sp){ e.stopPropagation(); if(popFor === sp) hide(); else show(sp); return; } if(!pop.contains(e.target)) hide(); }, true);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') hide(); const sp = document.activeElement; if((e.key === 'Enter' || e.key === ' ') && sp && sp.classList && sp.classList.contains('gl-t')){ e.preventDefault(); show(sp); } });
+  addEventListener('scroll', hide, true); addEventListener('resize', hide);
+  // 원소 정보 칸 · 조합 결과 카드가 바뀔 때마다 표시 (한 번에 몰아서)
+  const roots = ['info', 'card'];
+  let tq = 0; const queue = () => { clearTimeout(tq); tq = setTimeout(() => roots.forEach(id => { try{ mark(document.getElementById(id)); }catch(e){} }), 250); };
+  const mo = new MutationObserver(muts => { if(muts.some(m => [...m.addedNodes].some(n => n.nodeType === 1 ? !n.classList.contains('gl-t') : true))) queue(); });
+  const watch = () => roots.forEach(id => { const el = document.getElementById(id); if(el && !el._glW){ el._glW = 1; mo.observe(el, { childList: true, subtree: true }); } });
+  watch(); setTimeout(watch, 1500); queue();
+  window.rxGloss = { list: G, mark };
+
+  /* ─────────── ② 조합 실시간 힌트 (조합하기 누르기 전에) ─────────── */
+  let ENT = null;
+  const ents = () => ENT || (ENT = (typeof allEntries === 'function' ? allEntries() : []).map(x => {
+    const parts = String(x.key || '').split('+').map(p => { const m = p.match(/^([A-Z][a-z]?)(\d*)$/); return m ? [m[1], +(m[2] || 1)] : null; }).filter(Boolean);
+    return { x, map: Object.fromEntries(parts), exact: !!x.exact };
+  }).filter(e => Object.keys(e.map).length));
+  const tray = document.getElementById('tray');
+  const hint = document.createElement('div'); hint.id = 'mixHint'; hint.setAttribute('aria-live', 'polite');
+  if(tray){ if(getComputedStyle(tray).position === 'static') tray.style.position = 'relative'; tray.appendChild(hint); }
+  let hintOff = false;
+  function cur(){ const c = {}; (typeof mix !== 'undefined' ? mix : []).forEach(n => { const s = byNum[n] && byNum[n].s; if(s) c[s] = (c[s] || 0) + 1; }); return c; }
+  function best(c){
+    const syms = Object.keys(c); let ready = null, near = null;
+    ents().forEach(e => {
+      const keys = new Set([...syms, ...Object.keys(e.map)]), ops = []; let cost = 0;
+      if(e.exact) keys.forEach(s => { const d = (e.map[s] || 0) - (c[s] || 0); if(d){ ops.push([s, d]); cost += Math.abs(d); } });
+      else keys.forEach(s => { const a = !!c[s], b = !!e.map[s]; if(a !== b){ ops.push([s, b ? 1 : -c[s]]); cost += 1; } });
+      if(!ops.length){ if(!ready || (!found.has(e.x.name) && found.has(ready.x.name))) ready = e; return; }
+      if(ops.length > 1 || cost > 2) return;
+      // 쉬운 쪽 먼저: 이미 담은 원소를 더 넣기 > 빼기 > 새 원소 넣기
+      const [s0, d0] = ops[0], sc = cost + (d0 < 0 ? .3 : 0) + (d0 > 0 && !c[s0] ? .5 : 0) - (found.has(e.x.name) ? 0 : .2);
+      if(!near || sc < near.sc) near = { e, ops, sc };
+    });
+    return { ready, near };
+  }
+  function paintHint(){
+    if(!tray) return;
+    const c = cur(), n = Object.keys(c).length;
+    if(hintOff || !n || ls.get('pt_mixhint_off', false)){ hint.classList.remove('on'); return; }
+    let r; try{ r = best(c); }catch(e){ return; }
+    const x = `<button class="x" type="button" aria-label="${P('힌트 끄기', 'Hide hints')}">✕</button>`;
+    if(r.ready){
+      const got = found.has(r.ready.x.name);
+      hint.className = 'on ready';
+      hint.innerHTML = (got ? P(`✓ 이대로 섞으면 <b>${r.ready.x.name}</b>`, `✓ Mix now for <b>${(typeof REC_EN !== 'undefined' && REC_EN[r.ready.x.name]) ? REC_EN[r.ready.x.name][0] : r.ready.x.name}</b>`) : P('✨ 이대로 섞으면 뭔가 나올 것 같아요!', '✨ Something might happen if you mix now!')) + x;
+    } else if(r.near){
+      const [s, d] = r.near.ops[0];
+      const op = d > 0 ? `<span class="op">＋${s}${d > 1 ? ' ×' + d : ''}</span>` : `<span class="op sub">－${s}${-d > 1 ? ' ×' + (-d) : ''}</span>`;
+      hint.className = 'on';
+      hint.innerHTML = P(`💡 ${op} 하면 뭔가 될 것 같아요`, `💡 Try ${op}`) + x;
+    } else { hint.classList.remove('on'); return; }
+    const xb = hint.querySelector('.x'); if(xb) xb.onclick = ev => { ev.stopPropagation(); hintOff = true; hint.classList.remove('on');
+      try{ rxToast(P('조합 힌트', 'Mix hints'), P('이번에는 끌게요', 'Off for now'), P('앱을 다시 켜면 다시 나와요', 'They come back next time')); }catch(e){} };
+  }
+  if(typeof renderChips === 'function'){
+    const _rc = renderChips;
+    renderChips = function(){ const r = _rc.apply(this, arguments); try{ paintHint(); }catch(e){} return r; };
+  }
+  const _rr = window.rxRender; if(typeof rxRender === 'function'){ rxRender = function(){ const r = _rr.apply(this, arguments); try{ hint.classList.remove('on'); }catch(e){} return r; }; }
+
+  /* ─────────── ③ 안 열어 본 기능 안내 ─────────── */
+  const SEEN = new Set(ls.get('pt_disc', []));
+  const see = id => { if(!SEEN.has(id)){ SEEN.add(id); ls.set('pt_disc', [...SEEN]); } };
+  const el = () => (typeof atomEl !== 'undefined' && atomEl) || (typeof byNum !== 'undefined' && typeof selected !== 'undefined' && byNum[selected]) || null;
+  const modeBtn = i => { const b = document.querySelectorAll('#mtabs button')[i]; if(b) b.click(); };
+  const F = [
+    { id: 'cloud', t: ['전자 구름', 'Electron cloud'], d: ['보어 모형 말고, 전자가 있을 확률을 안개처럼 보여 주는 진짜에 가까운 원자 모습이에요.', 'A more realistic atom: a fog showing where electrons are likely to be.'], need: el, go: () => { const b = [...document.querySelectorAll('#atomTabs button')].find(x => /구름|cloud/i.test(x.textContent)); if(b) b.click(); } },
+    { id: 'flame', t: ['불꽃 반응', 'Flame test'], d: ['원소를 불에 넣으면 무슨 색이 나는지 볼 수 있어요. 불꽃색 퀴즈도 있어요.', 'See what colour each element burns. There is a flame quiz too.'], need: el, go: () => rxFlOpen() },
+    { id: 'orb', t: ['오비탈 크게 보기', 'Orbital viewer'], d: ['s·p·d·f 오비탈을 3D로 돌려 보고, 전자를 하나씩 채워 볼 수 있어요.', 'Spin s/p/d/f orbitals in 3D and fill electrons one by one.'], need: el, go: () => rxOrbOpen() },
+    { id: 'nuc', t: ['원자핵 보기', 'Nucleus view'], d: ['양성자와 중성자가 뭉친 원자핵을 가까이서 보고, 동위원소도 살펴봐요.', 'Zoom into the nucleus and explore isotopes.'], need: el, go: () => rxNucOpen() },
+    { id: 'heat', t: ['히트맵', 'Heatmap'], d: ['주기율표를 전기음성도·원자 반지름 같은 값으로 색칠해서 규칙을 한눈에 봐요.', 'Colour the table by electronegativity, radius and more to see trends.'], go: () => modeBtn(1) },
+    { id: 'temp', t: ['온도 보기', 'Temperature view'], d: ['온도를 바꾸면 원소가 고체·액체·기체 중 무엇이 되는지 바로 보여요.', 'Slide the temperature and watch elements melt and boil.'], go: () => modeBtn(2) },
+    { id: 'hist', t: ['발견의 역사', 'History of discovery'], d: ['원소가 언제 발견됐는지 시간 순서대로 주기율표가 채워져요.', 'Watch the table fill up in the order elements were discovered.'], go: () => modeBtn(3) },
+    { id: 'isl', t: ['핵종 지도', 'Nuclide map'], d: ['모든 동위원소를 지도로 펼쳐 보고, "안정성의 섬"도 찾아가 봐요.', 'Every isotope on one map, including the "island of stability".'], go: () => { HUB = 'isl'; openHub(); } },
+    { id: 'ext', t: ['확장 주기율표', 'Extended table'], d: ['아직 아무도 못 만든 119~172번 원소와 g 오비탈을 미리 볼 수 있어요.', 'Peek at elements 119–172 and g orbitals nobody has made yet.'], go: () => rxExtOpen() },
+    { id: 'quiz', t: ['학습 퀴즈', 'Quiz'], d: ['원소 기호·족·성질을 퀴즈로 연습해요.', 'Practise symbols, groups and properties with quizzes.'], go: () => { const b = document.getElementById('quizBtn'); if(b) b.click(); } },
+    { id: 'dex', t: ['조합 도감', 'Compound dex'], d: ['지금까지 만든 물질이 모여 있어요. 못 찾은 물질의 힌트도 있어요.', 'Everything you have made, plus hints for what is left.'], go: () => { const b = document.getElementById('dexBtn'); if(b) b.click(); } },
+  ];
+  // 이미 쓴 기능은 표시 (함수 감싸기 · 버튼 누름 감지)
+  const wrapF = (name, id) => { const f = window[name]; if(typeof f !== 'function') return; window[name] = function(){ see(id); return f.apply(this, arguments); }; };
+  [['rxFlOpen', 'flame'], ['rxOrbOpen', 'orb'], ['rxNucOpen', 'nuc'], ['rxExtOpen', 'ext']].forEach(a => wrapF(...a));
+  if(typeof openHub === 'function'){ const _oh = openHub; openHub = function(){ try{ if(typeof HUB !== 'undefined'){ if(HUB === 'isl') see('isl'); if(HUB === 'quiz') see('quiz'); } }catch(e){} return _oh.apply(this, arguments); }; }
+  document.addEventListener('click', e => { const t = e.target; if(!t || !t.closest) return;
+    const mb = t.closest('#mtabs button'); if(mb){ const i = [...document.querySelectorAll('#mtabs button')].indexOf(mb); if(i === 1) see('heat'); if(i === 2) see('temp'); if(i === 3) see('hist'); }
+    if(t.closest('#quizBtn')) see('quiz'); if(t.closest('#dexBtn')) see('dex'); }, true);
+  setInterval(() => { try{ if(typeof ATOM_MODE !== 'undefined' && ATOM_MODE === 'cloud') see('cloud'); }catch(e){} }, 3000);
+
+  const tip = document.createElement('div'); tip.id = 'discTip'; tip.setAttribute('role', 'status'); document.body.appendChild(tip);
+  const T0 = Date.now(); let lastTip = 0, shown = 0, lastIn = Date.now();
+  ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { lastIn = Date.now(); }, true));
+  function closeTip(){ tip.classList.remove('on'); }
+  function maybeTip(force){
+    if(!force && (ls.get('pt_disc_off', false) || shown >= 3)) return;
+    if(tip.classList.contains('on')) return;
+    const now = Date.now();
+    if(!force){
+      if(now - T0 < 150000 || now - lastTip < 300000) return;                 // 켜고 2분 반 뒤부터, 5분에 한 번
+      if(now - lastIn > 60000 || now - lastIn < 4000) return;                 // 막 만지는 중이거나 자리 비웠으면 다음에
+    }
+    if(document.body.classList.contains('ovl') || document.querySelector('#tuWin.on,.tu-on,#tour.on,#achWin.on')) return;
+    try{ if(!ls.get('pt_seentut', false)) return; }catch(e){}
+    const f = F.find(x => !SEEN.has(x.id) && (!x.need || x.need())); if(!f) return;
+    lastTip = now; shown++;
+    tip.innerHTML = `<div class="k">💡 ${P('이것도 있어요!', 'DID YOU KNOW?')}</div><div class="t">${P(f.t[0], f.t[1])}</div><div class="d">${P(f.d[0], f.d[1])}</div>
+      <div class="b"><button type="button" class="go">${P('열어 보기', 'Show me')}</button><button type="button" class="later">${P('나중에', 'Later')}</button><button type="button" class="no">${P('그만 보기', 'Stop')}</button></div>`;
+    tip.querySelector('.go').onclick = () => { closeTip(); see(f.id); try{ f.go(); }catch(e){} };
+    tip.querySelector('.later').onclick = () => { closeTip(); };
+    tip.querySelector('.no').onclick = () => { closeTip(); ls.set('pt_disc_off', true); try{ rxToast(P('기능 안내', 'Tips'), P('이제 안 띄울게요', 'Turned off'), P('설정 › 기능 안내에서 다시 켤 수 있어요', 'Turn back on in Settings › Feature tips')); }catch(e){} };
+    tip.classList.add('on'); try{ SFX.pick(); }catch(e){}
+    clearTimeout(tip._t); tip._t = setTimeout(closeTip, 15000);
+  }
+  setInterval(() => maybeTip(false), 5000);
+  window.rxDisc = { list: F, seen: SEEN, show: () => maybeTip(true) };
+
+  /* ─────────── 설정: 셋 다 켜고 끄기 (튜토리얼 줄 아래) ─────────── */
+  try{
+    const _rs = renderSettings;
+    renderSettings = function(){
+      const r = _rs.apply(this, arguments);
+      try{
+        const tb = document.querySelector('#setBody [data-rxtut]'), row0 = tb && tb.closest('.srow');
+        if(row0 && !document.querySelector('#setBody [data-nb2]')){
+          const opt = (k, off) => `<div class="sseg" data-nb2="${k}"><button class="sopt${off ? '' : ' on'}" data-v="on">${P('켜기', 'On')}</button><button class="sopt${off ? ' on' : ''}" data-v="off">${P('끄기', 'Off')}</button></div>`;
+          row0.insertAdjacentHTML('afterend',
+            row(P('어려운 말 사전', 'Word helper'), opt('pt_gloss_off', ls.get('pt_gloss_off', false)), P('원소 정보에서 점선 밑줄 단어를 누르면 쉬운 설명이 떠요', 'Tap dotted words in the info panel for a simple explanation')) +
+            row(P('조합 힌트', 'Mix hints'), opt('pt_mixhint_off', ls.get('pt_mixhint_off', false)), P('원소를 담는 동안 "이거 더 넣어 볼까요?" 힌트가 떠요', 'While you add elements, a hint suggests what to add')) +
+            row(P('기능 안내', 'Feature tips'), opt('pt_disc_off', ls.get('pt_disc_off', false)), P('아직 안 써 본 기능을 가끔 알려 줘요', 'Now and then, points out features you have not tried')));
+          document.querySelectorAll('#setBody [data-nb2]').forEach(g => g.addEventListener('click', e => {
+            const b = e.target.closest('.sopt'); if(!b) return; e.stopPropagation();
+            g.querySelectorAll('.sopt').forEach(x => x.classList.toggle('on', x === b));
+            const off = b.dataset.v === 'off'; ls.set(g.dataset.nb2, off);
+            if(g.dataset.nb2 === 'pt_gloss_off'){ if(off) document.querySelectorAll('.gl-t').forEach(sp => sp.replaceWith(document.createTextNode(sp.textContent))); else queue(); }
+            if(g.dataset.nb2 === 'pt_mixhint_off'){ hintOff = false; paintHint(); }
+            if(g.dataset.nb2 === 'pt_disc_off' && !off) shown = 0;
+            try{ SFX.pick(); }catch(e){}
+          }));
+        }
+      }catch(e){}
+      return r;
+    };
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
