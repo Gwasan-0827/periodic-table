@@ -56560,16 +56560,21 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       // 전자 스프레이 (e⁻ Spray) — 손 없이 둥둥, 뿌릴 때 방아쇠가 딸깍딸깍
       const ROT = -16, rad = ROT * Math.PI / 180, SC2 = .74, fl = Math.sin(t * 2.4) * 3;
       const rp = (x, y) => [hx + (x * Math.cos(rad) - y * Math.sin(rad)) * SC2, hy + fl + (x * Math.sin(rad) + y * Math.cos(rad)) * SC2];
-      const sq = k === 6 && u(6) > .25 ? (Math.sin(t * 14) > 0 ? 1 : 0) : 0;
+      const sq = k === 6 && u(6) > .2 && u(6) < .36 ? 1 : 0;
       s += `<g transform="translate(${hx} ${hy + fl}) rotate(${ROT}) scale(${SC2})" opacity="${inn}">${espray(t, sq)}</g>`;
       const NZ = rp(-60, -23);
-      // 노즐에서 소금으로 날아가는 전자들
-      if(k === 6 && u(6) > .25){
-        const nx = NZ[0], ny = NZ[1];
-        for(let i = 0; i < 12; i++){
-          const p = ((t * 1.4 + i / 12) % 1), x = nx + (naX + 10 - nx) * p + Math.sin(i * 3 + t * 5) * 10, y = ny + (CY + 10 - ny) * p + Math.cos(i * 2) * 12 * p;
-          s += `<g opacity="${.9 - p * .4}"><circle cx="${x}" cy="${y}" r="7" fill="#74c0fc"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="8.5" font-weight="900" fill="#0b1020" font-family="system-ui">e⁻</text></g>`;
-        }
+      // 노즐에서 소금으로: 전자 딱 1개 (Na⁺ 하나에 전자 하나)
+      if(k === 6 && u(6) > .3){
+        const nx = NZ[0], ny = NZ[1], tx = naX + 8, ty = CY + 14;
+        const p = ease(clamp((u(6) - .3) / .55, 0, 1)), arc = Math.sin(p * Math.PI) * -34;
+        const x = nx + (tx - nx) * p, y = ny + (ty - ny) * p + arc;
+        if(p < 1){
+          for(let j = 1; j <= 6; j++){ const q = Math.max(0, p - j * .025), qx = nx + (tx - nx) * q, qy = ny + (ty - ny) * q + Math.sin(q * Math.PI) * -34;
+            s += `<circle cx="${qx}" cy="${qy}" r="${8 - j}" fill="#74c0fc" opacity="${.35 - j * .05}"/>`; }
+          s += `<circle cx="${x}" cy="${y}" r="13" fill="#74c0fc" opacity=".35" filter="url(#esGl2)"/>
+            <circle cx="${x}" cy="${y}" r="9" fill="#74c0fc" stroke="#d0ebff" stroke-width="1.5"/>
+            <text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#0b1020" font-family="system-ui">e⁻</text>`;
+        } else s += `<circle cx="${tx}" cy="${ty}" r="${10 + (u(6) - .85) * 300}" fill="none" stroke="#74c0fc" stroke-width="2" opacity="${clamp(1 - (u(6) - .85) * 7, 0, 1)}"/>`;
       }
     }
     // ── 나트륨 대사
