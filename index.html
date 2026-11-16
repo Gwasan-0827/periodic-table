@@ -54736,5 +54736,71 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
 })();
 </script>
 
+<style>
+  /* ═══ 개그: 권장 사양 안내 (글카 2070 이상!) ═══ */
+  .gpu-req{position:relative;margin:0 0 14px;padding:13px 14px 12px 50px;border-radius:12px;overflow:hidden;
+    border:1px solid rgba(118,185,0,.45);background:linear-gradient(100deg,rgba(118,185,0,.14),rgba(10,13,24,.6) 70%)}
+  .gpu-req::before{content:"";position:absolute;left:12px;top:13px;width:28px;height:28px;border-radius:7px;
+    background:linear-gradient(135deg,#76b900,#4a7a00);box-shadow:0 0 12px rgba(118,185,0,.5)}
+  .gpu-req::after{content:"⚙";position:absolute;left:12px;top:13px;width:28px;height:28px;display:grid;place-items:center;color:#fff;font-size:16px;animation:gpuSpin 3s linear infinite}
+  @keyframes gpuSpin{to{transform:rotate(360deg)}}
+  .gpu-req .k{font:800 9.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:#a4e04a}
+  .gpu-req p{margin:5px 0 0;font-size:13px;font-weight:750;line-height:1.5;word-break:keep-all;color:#eef6e0}
+  .gpu-req .me{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:11.5px;color:var(--dim)}
+  .gpu-req .me code{font:600 11px/1.3 ui-monospace,monospace;color:#dfe3ff;background:rgba(255,255,255,.06);padding:3px 6px;border-radius:5px;word-break:break-all}
+  .gpu-req .v{font-weight:800;padding:3px 8px;border-radius:999px;font-size:11px}
+  .gpu-req .v.ok{color:#0f1a05;background:#a4e04a}
+  .gpu-req .v.meh{color:#2a1a00;background:#ffd43b}
+  .gpu-req .v.ph{color:#fff;background:#7a5af8}
+  .gpu-req small{display:block;margin-top:6px;font-size:10.5px;color:rgba(223,227,255,.45)}
+</style>
+<script>
+(function(){
+  if(typeof renderSettings !== 'function') return;
+  const EN = () => LANG === 'en';
+  let GPU = null;
+  function detect(){
+    if(GPU !== null) return GPU;
+    GPU = '';
+    try{
+      const c = document.createElement('canvas'), gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+      if(gl){ const ext = gl.getExtension('WEBGL_debug_renderer_info'); GPU = (ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)) || ''; }
+    }catch(_){}
+    // "ANGLE (NVIDIA, NVIDIA GeForce RTX 2070 SUPER (0x...) Direct3D11 ...)" → 핵심만
+    const m = GPU.match(/(GeForce [^(,]+|Radeon [^(,]+|Intel[^(,]*Graphics[^(,]*|Apple [^(,]+|Adreno[^(,]*|Mali[^(,]*|PowerVR[^(,]*)/i);
+    if(m) GPU = m[1].replace(/\s+/g, ' ').trim();
+    return GPU;
+  }
+  function judge(g){
+    const s = g.toLowerCase();
+    if(!s) return ['meh', EN() ? 'Unknown GPU… mysterious' : '글카를 못 알아봤어요… 미스터리'];
+    if(/adreno|mali|powervr|apple a\d/.test(s)) return ['ph', EN() ? 'A phone? Runs fine anyway lol' : '폰이네요? 그래도 잘 돌아가요ㅋ'];
+    let m = s.match(/rtx\s*(\d{2})(\d{2})/);
+    if(m){ const gen = +m[1], tier = +m[2], sup = /super|ti/.test(s);
+      if(gen > 20 || (gen === 20 && (tier > 70 || (tier === 70)))) return ['ok', gen === 20 && tier === 70 && sup ? (EN() ? 'RTX 2070 SUPER… the developer\'s card! ✅' : 'RTX 2070 SUPER… 개발자랑 같은 글카! ✅') : (EN() ? 'Requirements met ✅' : '권장 사양 통과 ✅')];
+      return ['meh', EN() ? 'Below spec… but it still works (shh)' : '사양 미달… 이지만 사실 잘 돌아가요 (쉿)']; }
+    m = s.match(/rx\s*(\d{4})/); if(m && +m[1] >= 6600) return ['ok', EN() ? 'Requirements met ✅' : '권장 사양 통과 ✅'];
+    if(/apple m\d/.test(s)) return ['ok', EN() ? 'Apple Silicon, fancy ✅' : '애플 실리콘이라니 부럽다 ✅'];
+    return ['meh', EN() ? 'Below spec… but it still works (shh)' : '사양 미달… 이지만 사실 잘 돌아가요 (쉿)'];
+  }
+  const _rs = renderSettings;
+  renderSettings = function(){
+    const r = _rs.apply(this, arguments);
+    try{
+      const body = document.getElementById('setBody'); if(!body || body.querySelector('.gpu-req')) return r;
+      const g = detect(), [cls, txt] = judge(g);
+      const box = document.createElement('div'); box.className = 'gpu-req';
+      box.innerHTML = `<div class="k">${EN() ? 'SYSTEM REQUIREMENTS' : '권장 사양 안내'}</div>
+        <p>${EN() ? 'A graphics card of RTX 2070 or better is required for a smoother game(?) experience!!' : '최소 글카가 RTX 2070 이상이어야 더욱 원활한 게임(?) 플레이를 즐기실 수 있습니다!!'}</p>
+        <div class="me">${EN() ? 'Your GPU:' : '내 글카:'} <code>${g ? g.replace(/[<>&]/g, '') : '???'}</code><span class="v ${cls}">${txt}</span></div>
+        <small>${EN() ? '* It\'s a periodic table. It runs on a toaster.' : '* 주기율표예요. 사실 토스터에서도 돌아가요.'}</small>`;
+      box.dataset.tab = 'gen';
+      const h = body.querySelector('.stabh'); if(h) h.after(box); else body.prepend(box);
+    }catch(e){ console.warn('gpu', e); }
+    return r;
+  };
+})();
+</script>
+
 </body>
 </html>
