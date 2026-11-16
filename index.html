@@ -53408,6 +53408,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   const CRY = { nacl: ['Na', '소금(염화 나트륨)', 'Salt (NaCl)'], dia: ['C', '다이아몬드', 'Diamond'], gra: ['C', '흑연', 'Graphite'], dry: ['O', '드라이아이스', 'Dry ice'] };
   const orbName = k => P(`${k} 오비탈`, `${k} orbital`);
   function picHTML(pic){
+    if(window.rxQPic) return `<div class="qp-pic"><canvas class="qp-cv" data-k="${pic.k}" data-v="${pic.v}" data-c="${pic.k === 'flame' ? FLAME[pic.v] : ''}"></canvas></div>`;
     if(pic.k === 'flame') return `<div class="qp-pic">${flameSVG(FLAME[pic.v])}</div>`;
     if(pic.k === 'orb') return `<div class="qp-pic">${orbSVG(pic.v)}</div>`;
     return `<div class="qp-pic wide">${crySVG(pic.v)}</div>`;
@@ -53471,6 +53472,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
         let pr = qBodyEl.querySelector('.qprompt');
         if(!pr){ pr = document.createElement('div'); pr.className = 'qprompt'; (lab || qBodyEl.firstChild).after(pr); }
         pr.classList.remove('big'); pr.innerHTML = picHTML(q.pic);
+        pr.querySelectorAll('.qp-cv').forEach(c => { try{ window.rxQPic(c, c.dataset.k, c.dataset.v, c.dataset.c); }catch(e){ console.warn('qpic', e); } });
         const mt = qBodyEl.querySelector('.qz-card .mt'); if(mt) mt.lastChild.textContent = t('qm_pic');
       }
       if(QZ.mode === 'ta' && QZ.on){
@@ -54502,6 +54504,234 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     ticks(b, s + .85, .9, n);
     chime(b, s + 1.05);
     (res.unlocks || []).forEach((_, k) => fanfare(b, s + 1.75 + k * .2, k));
+  };
+})();
+</script>
+
+<style>
+  /* ═══ 퀴즈 그림 문제 고퀄 렌더러: 캔버스 불꽃 · 전자 구름 오비탈 · 3D 결정 ═══ */
+  .qp-pic{display:flex;justify-content:center;margin:4px 0 0}
+  .qp-cv{display:block;width:min(320px,80vw);height:210px;border-radius:14px}
+</style>
+<script>
+(function(){
+  const DPR = () => Math.min(2, devicePixelRatio || 1);
+  const hex2 = h => { const v = parseInt(h.slice(1), 16); return [v >> 16, v >> 8 & 255, v & 255]; };
+  // 둥근 빛 점 스프라이트
+  const SPR = {};
+  function sprite(col, soft){
+    const key = col + soft; if(SPR[key]) return SPR[key];
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), [r, g, b] = hex2(col);
+    const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(soft ? .25 : .45, `rgba(${r},${g},${b},${soft ? .55 : .8})`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return SPR[key] = c;
+  }
+
+  /* ── 불꽃 반응: 분젠 버너 + 입자 불꽃 + 백금선 ── */
+  function flame(ctx, W, H, col){
+    const cx = W * .5, by = H * .8, P = [], SP = [];
+    const sC = sprite(col, 1), sW = sprite('#fff6e0', 1), sB = sprite('#3f6bff', 1), sS = sprite('#ffffff', 0);
+    const [r, g, b] = hex2(col);
+    const bead = { x: cx + 9, y: by - 78 };
+    function burner(){
+      // 받침
+      let gr = ctx.createLinearGradient(cx - 46, 0, cx + 46, 0);
+      gr.addColorStop(0, '#2a3042'); gr.addColorStop(.35, '#7c869e'); gr.addColorStop(.5, '#c7cfde'); gr.addColorStop(.7, '#5d667c'); gr.addColorStop(1, '#232838');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(cx - 44, H - 6); ctx.lineTo(cx + 44, H - 6); ctx.lineTo(cx + 34, H - 18); ctx.lineTo(cx - 34, H - 18); ctx.closePath(); ctx.fill();
+      // 몸통 관
+      gr = ctx.createLinearGradient(cx - 12, 0, cx + 12, 0);
+      gr.addColorStop(0, '#3a4256'); gr.addColorStop(.3, '#aab3c7'); gr.addColorStop(.45, '#eef2f8'); gr.addColorStop(.7, '#6d768d'); gr.addColorStop(1, '#2e3446');
+      ctx.fillStyle = gr; ctx.fillRect(cx - 11, by, 22, H - 18 - by);
+      // 공기 조절 고리
+      gr = ctx.createLinearGradient(cx - 15, 0, cx + 15, 0);
+      gr.addColorStop(0, '#5a4a2a'); gr.addColorStop(.4, '#e8c98a'); gr.addColorStop(.55, '#fff0c8'); gr.addColorStop(1, '#4a3b20');
+      ctx.fillStyle = gr; ctx.fillRect(cx - 14, H - 46, 28, 12);
+      ctx.fillStyle = '#141824'; ctx.fillRect(cx - 4, H - 43, 8, 6);
+      // 입구 테두리
+      ctx.fillStyle = '#d7dde9'; ctx.fillRect(cx - 12, by - 2, 24, 4);
+      // 가스관
+      ctx.strokeStyle = '#ff9a6b'; ctx.globalAlpha = .55; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(cx - 34, H - 12); ctx.quadraticCurveTo(cx - 70, H - 10, cx - 90, H - 30); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    function wire(t){
+      // 손잡이 + 백금선 + 시료 구슬
+      const hx = W * .9, hy = H * .1;
+      ctx.strokeStyle = '#d9dde6'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(hx - 18, hy + 14); ctx.lineTo(bead.x, bead.y); ctx.stroke();
+      ctx.save(); ctx.translate(hx, hy); ctx.rotate(Math.atan2(bead.y - hy, bead.x - hx));
+      const gr = ctx.createLinearGradient(0, -5, 0, 5); gr.addColorStop(0, '#8b5a2b'); gr.addColorStop(.5, '#d9a066'); gr.addColorStop(1, '#5c3a18');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.roundRect(-36, -5, 44, 10, 4); ctx.fill(); ctx.restore();
+      ctx.globalCompositeOperation = 'lighter';
+      const fl = .8 + Math.sin(t * 23) * .1 + Math.sin(t * 37) * .1;
+      ctx.globalAlpha = .9 * fl; ctx.drawImage(sC, bead.x - 14, bead.y - 14, 28, 28);
+      ctx.globalAlpha = .9; ctx.drawImage(sS, bead.x - 4, bead.y - 4, 8, 8);
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+    return (dt, t) => {
+      ctx.clearRect(0, 0, W, H);
+      // 은은한 방 빛
+      const fl = .85 + Math.sin(t * 9) * .08 + Math.sin(t * 23) * .07;
+      let gr = ctx.createRadialGradient(cx, by - 75, 4, cx, by - 75, 170);
+      gr.addColorStop(0, `rgba(${r},${g},${b},${.32 * fl})`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+      burner();
+      // 입자 생성
+      for(let i = 0; i < 13; i++){
+        const inner = Math.random() < .3;
+        P.push({ x: cx + (Math.random() - .5) * (inner ? 12 : 22), y: by - 2, vx: (Math.random() - .5) * 20, vy: -(inner ? 80 : 140) - Math.random() * 90, life: 0, max: inner ? .2 + Math.random() * .12 : .6 + Math.random() * .5, s: inner ? 11 + Math.random() * 6 : 17 + Math.random() * 13, inner, ph: Math.random() * 6.28 });
+      }
+      if(Math.random() < .35) SP.push({ x: cx + (Math.random() - .5) * 10, y: by - 40 - Math.random() * 30, vx: (Math.random() - .5) * 30, vy: -120 - Math.random() * 80, life: 0, max: .5 + Math.random() * .5 });
+      ctx.globalCompositeOperation = 'lighter';
+      for(let i = P.length - 1; i >= 0; i--){
+        const p = P[i]; p.life += dt; if(p.life > p.max){ P.splice(i, 1); continue; }
+        const k = p.life / p.max;
+        p.vx += (cx - p.x) * 3.2 * dt + Math.sin(t * 8 + p.ph + p.y * .06) * 50 * dt;
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= 30 * dt;
+        const sz = p.s * (1 - k * .65);
+        if(p.inner){ ctx.globalAlpha = (1 - k) * .55; ctx.drawImage(sB, p.x - sz, p.y - sz, sz * 2, sz * 2); continue; }
+        ctx.globalAlpha = Math.pow(1 - k, 1.4) * .5; ctx.drawImage(sC, p.x - sz, p.y - sz, sz * 2, sz * 2);
+        if(k < .35){ ctx.globalAlpha = (.35 - k) * .7; ctx.drawImage(sW, p.x - sz * .55, p.y - sz * .55, sz * 1.1, sz * 1.1); }
+      }
+      for(let i = SP.length - 1; i >= 0; i--){
+        const s = SP[i]; s.life += dt; if(s.life > s.max){ SP.splice(i, 1); continue; }
+        s.x += s.vx * dt; s.y += s.vy * dt; const a = 1 - s.life / s.max;
+        ctx.globalAlpha = a; ctx.drawImage(sC, s.x - 3, s.y - 3, 6, 6); ctx.drawImage(sS, s.x - 1.2, s.y - 1.2, 2.4, 2.4);
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      wire(t);
+    };
+  }
+
+  /* ── 오비탈: 수소 원자 파동함수 확률 구름 (점 2400개) ── */
+  const ORB_CACHE = {};
+  function orbPts(v){
+    if(ORB_CACHE[v]) return ORB_CACHE[v];
+    const F = {
+      s: { L: 4.5, f: (x, y, z, r) => Math.exp(-r) },
+      p: { L: 11, f: (x, y, z, r) => z * Math.exp(-r / 2) },
+      d: { L: 19, f: (x, y, z, r) => x * z * Math.exp(-r / 3) },
+      f: { L: 28, f: (x, y, z, r) => x * y * z * Math.exp(-r / 4) },
+    }[v];
+    let mx = 0;
+    for(let i = 0; i < 30000; i++){ const x = (Math.random() * 2 - 1) * F.L, y = (Math.random() * 2 - 1) * F.L, z = (Math.random() * 2 - 1) * F.L, w = F.f(x, y, z, Math.hypot(x, y, z)); mx = Math.max(mx, w * w); }
+    const pts = [];
+    let guard = 0;
+    while(pts.length < 3400 && guard++ < 6e6){
+      const x = (Math.random() * 2 - 1) * F.L, y = (Math.random() * 2 - 1) * F.L, z = (Math.random() * 2 - 1) * F.L, w = F.f(x, y, z, Math.hypot(x, y, z));
+      if(Math.random() * mx < w * w) pts.push([x / F.L, y / F.L, z / F.L, w >= 0]);
+    }
+    return ORB_CACHE[v] = pts;
+  }
+  function orbital(ctx, W, H, v){
+    const pts = orbPts(v), sA = sprite('#5b95ff', 0), sB = sprite('#ff8a3d', 0), sN = sprite('#ffffff', 1);
+    const R = Math.min(W, H) * .6, cx = W / 2, cy = H / 2;
+    const proj = (x, y, z, a) => { const ca = Math.cos(a), sa = Math.sin(a), tl = .42, ct = Math.cos(tl), st = Math.sin(tl);
+      const x1 = x * ca + y * sa, y1 = -x * sa + y * ca;          // z축(세로) 둘레로 돌린다
+      const yv = y1 * ct - z * st, zv = y1 * st + z * ct;         // 살짝 내려다본다
+      const pz = 1 / (1 + yv * .35); return [cx + x1 * R * pz, cy - zv * R * pz, pz]; };
+    return (dt, t) => {
+      ctx.clearRect(0, 0, W, H);
+      const a = t * .45;
+      // 축
+      ctx.lineWidth = 1; ctx.setLineDash([3, 4]); ctx.font = '700 10px ui-monospace,monospace'; ctx.fillStyle = 'rgba(201,208,255,.55)';
+      [[1, 0, 0, 'x'], [0, 1, 0, 'y'], [0, 0, 1, 'z']].forEach(([x, y, z, l]) => {
+        const p0 = proj(-x * .95, -y * .95, -z * .95, a), p1 = proj(x * .95, y * .95, z * .95, a);
+        ctx.strokeStyle = 'rgba(201,208,255,.22)'; ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke();
+        ctx.fillText(l, p1[0] + 3, p1[1] - 3);
+      });
+      ctx.setLineDash([]);
+      ctx.globalCompositeOperation = 'lighter';
+      for(const [x, y, z, pos] of pts){
+        const [px, py, pz] = proj(x, y, z, a), s = 2.1 * pz;
+        ctx.globalAlpha = .3 * pz; ctx.drawImage(pos ? sA : sB, px - s, py - s, s * 2, s * 2);
+      }
+      ctx.globalAlpha = .9; ctx.drawImage(sN, cx - 7, cy - 7, 14, 14);
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    };
+  }
+
+  /* ── 결정 구조: 공-막대 3D ── */
+  function crystalData(v){
+    const A = [], B = [], E = [];
+    const add = (x, y, z, r, c) => (A.push({ p: [x, y, z], r, c }), A.length - 1);
+    if(v === 'nacl'){
+      for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++) for(let k = 0; k < 3; k++){ const cl = (i + j + k) % 2 === 0; add(i - 1, j - 1, k - 1, cl ? .3 : .19, cl ? '#5fd35f' : '#b07cff'); }
+      A.forEach((a, i) => A.forEach((b, j) => { if(j > i && Math.abs(Math.hypot(a.p[0] - b.p[0], a.p[1] - b.p[1], a.p[2] - b.p[2]) - 1) < .01) B.push([i, j, '#9aa3b8', .05]); }));
+    } else if(v === 'dia'){
+      const s = 2.2, fcc = [];
+      for(const x of [0, 1]) for(const y of [0, 1]) for(const z of [0, 1]) fcc.push([x, y, z]);
+      [[.5, .5, 0], [.5, .5, 1], [.5, 0, .5], [.5, 1, .5], [0, .5, .5], [1, .5, .5]].forEach(p => fcc.push(p));
+      const ins = [[.25, .25, .25], [.75, .75, .25], [.75, .25, .75], [.25, .75, .75]];
+      const fi = fcc.map(p => add((p[0] - .5) * s, (p[1] - .5) * s, (p[2] - .5) * s, .16, '#c3cbe0'));
+      const ii = ins.map(p => add((p[0] - .5) * s, (p[1] - .5) * s, (p[2] - .5) * s, .18, '#e6ebf7'));
+      ins.forEach((p, a) => fcc.forEach((q, b) => { if(Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) < .45) B.push([ii[a], fi[b], '#aab3c7', .055]); }));
+      const C = [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]].map(p => p.map(c => (c - .5) * s));
+      [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(([i, j]) => E.push([C[i], C[j]]));
+    } else if(v === 'gra'){
+      const bl = .62, pts = [];
+      for(let i = -3; i <= 3; i++) for(let j = -2; j <= 2; j++){
+        const hx = i * Math.sqrt(3) * bl + (j % 2) * Math.sqrt(3) / 2 * bl, hy = j * 1.5 * bl;
+        for(let v2 = 0; v2 < 6; v2++){ const an = (30 + v2 * 60) * Math.PI / 180, x = hx + Math.cos(an) * bl, y = hy + Math.sin(an) * bl;
+          if(Math.hypot(x, y) < 1.75 && !pts.some(p => Math.hypot(p[0] - x, p[1] - y) < .05)) pts.push([x, y]); }
+      }
+      [-1, 0, 1].forEach((L, li) => {
+        const off = li % 2 ? bl : 0, base = A.length;
+        pts.forEach(([x, y]) => add(x + off * .5, L * 1.05, y, .1, '#59617a'));
+        for(let i = base; i < A.length; i++) for(let j = i + 1; j < A.length; j++){ const a = A[i].p, b = A[j].p; if(Math.abs(Math.hypot(a[0] - b[0], a[2] - b[2]) - bl) < .03) B.push([i, j, '#8a93ab', .035]); }
+      });
+    } else {
+      const s = 2.4, P = [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]];
+      const D = [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]];
+      P.forEach(p => {
+        const sub = (Math.round(p[0] * 2) % 2) + 2 * (Math.round(p[1] * 2) % 2); const d = D[[0, 1, 2, 3][(sub + Math.round(p[2] * 2)) % 4]], n = Math.hypot(...d);
+        const c = p.map(v2 => (v2 - .5) * s), o = d.map(v2 => v2 / n * .36);
+        const ci = add(c[0], c[1], c[2], .14, '#4a4f5c'), o1 = add(c[0] + o[0], c[1] + o[1], c[2] + o[2], .15, '#ff5a5a'), o2 = add(c[0] - o[0], c[1] - o[1], c[2] - o[2], .15, '#ff5a5a');
+        B.push([ci, o1, '#c9ccd6', .05], [ci, o2, '#c9ccd6', .05]);
+      });
+      const C = [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]].map(p => p.map(c => (c - .5) * s));
+      [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(([i, j]) => E.push([C[i], C[j]]));
+    }
+    return { A, B, E };
+  }
+  const shade = (hex, k) => { const [r, g, b] = hex2(hex); const f = c => Math.round(k > 0 ? c + (255 - c) * k : c * (1 + k)); return `rgb(${f(r)},${f(g)},${f(b)})`; };
+  function crystal(ctx, W, H, v){
+    const { A, B, E } = crystalData(v);
+    let ext = 0; A.forEach(a => ext = Math.max(ext, Math.hypot(...a.p) + a.r));
+    const R = Math.min(W, H) * .47 / ext, cx = W / 2, cy = H / 2;
+    const proj = (p, a) => { const ca = Math.cos(a), sa = Math.sin(a), tl = .38, ct = Math.cos(tl), st = Math.sin(tl);
+      const x1 = p[0] * ca + p[2] * sa, z1 = -p[0] * sa + p[2] * ca;
+      const y2 = p[1] * ct - z1 * st, z2 = p[1] * st + z1 * ct;
+      const pz = 1 / (1 + z2 / ext * .3); return [cx + x1 * R * pz, cy - y2 * R * pz, z2, pz]; };
+    return (dt, t) => {
+      ctx.clearRect(0, 0, W, H);
+      const a = t * .4 + .5, P = A.map(at => proj(at.p, a));
+      ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(201,208,255,.28)';
+      E.forEach(([p, q]) => { const u = proj(p, a), w = proj(q, a); ctx.beginPath(); ctx.moveTo(u[0], u[1]); ctx.lineTo(w[0], w[1]); ctx.stroke(); });
+      ctx.setLineDash([]);
+      const items = [];
+      B.forEach(([i, j, c, w]) => items.push({ z: (P[i][2] + P[j][2]) / 2 + .001, d: () => {
+        const u = P[i], v2 = P[j], lw = w * R * (u[3] + v2[3]) / 2, fog = Math.max(.35, 1 - (u[2] + ext) / (ext * 2.4));
+        ctx.strokeStyle = c; ctx.globalAlpha = .55 + .45 * fog; ctx.lineWidth = lw; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(u[0], u[1]); ctx.lineTo(v2[0], v2[1]); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = lw * .3; ctx.beginPath(); ctx.moveTo(u[0] - lw * .15, u[1] - lw * .15); ctx.lineTo(v2[0] - lw * .15, v2[1] - lw * .15); ctx.stroke(); ctx.globalAlpha = 1; } }));
+      A.forEach((at, i) => items.push({ z: P[i][2], d: () => {
+        const [x, y, z, pz] = P[i], rr = at.r * R * pz, fog = Math.min(0, -(z + ext) / (ext * 2) * .55);
+        const g = ctx.createRadialGradient(x - rr * .35, y - rr * .4, rr * .05, x, y, rr);
+        g.addColorStop(0, shade(at.c, .75 + fog)); g.addColorStop(.35, shade(at.c, .1 + fog)); g.addColorStop(1, shade(at.c, -.55 + fog));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.283); ctx.fill(); } }));
+      items.sort((p, q) => q.z - p.z).forEach(it => it.d());
+    };
+  }
+
+  window.rxQPic = function(cv, k, v, col){
+    if(!cv || cv._on) return; cv._on = 1;
+    const ctx = cv.getContext('2d'), d = DPR();
+    const W = cv.clientWidth || 300, H = cv.clientHeight || 210;
+    cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    const scene = k === 'flame' ? flame(ctx, W, H, col) : k === 'orb' ? orbital(ctx, W, H, v) : crystal(ctx, W, H, v);
+    let last = performance.now();
+    const loop = now => { if(!cv.isConnected) return; const dt = Math.min(.05, (now - last) / 1000); last = now; scene(dt, now / 1000); requestAnimationFrame(loop); };
+    scene(.016, last / 1000); requestAnimationFrame(loop);
   };
 })();
 </script>
