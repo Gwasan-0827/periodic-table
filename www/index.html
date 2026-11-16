@@ -52461,6 +52461,10 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   #syWin .bar button{padding:9px 14px;border-radius:12px;border:1px solid rgba(170,180,255,.3);background:rgba(143,155,255,.12);color:#eef0ff;font:800 13px system-ui,sans-serif;cursor:pointer}
   #syWin .bar button.go{margin-left:auto;background:linear-gradient(135deg,#8f9bff,#c9a8ff);color:#141633;border:0}
   #syWin .bar button:disabled{opacity:.35;cursor:default}
+  #syWin .play{display:none;flex-wrap:wrap;align-items:center;gap:8px;padding:0 14px 14px}
+  #syWin .play button{padding:11px 16px;border-radius:12px;border:0;background:linear-gradient(135deg,#ffb86b,#ff7a8a);color:#1a0d10;font:900 13.5px system-ui,sans-serif;cursor:pointer}
+  #syWin .play button+button{background:rgba(255,184,107,.16);color:#ffd9b0;border:1px solid rgba(255,184,107,.4)}
+  #syWin .play .r{font:800 13px system-ui,sans-serif}
   @media (max-width:600px){ #syWin .w{height:96vh} #syWin .txt p{font-size:12.2px} }
 </style>
 <script>
@@ -52486,6 +52490,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     [118, 'Cf', 98, 249, 'Ca', 20, 48, 294, 3, 2002, '러시아 두브나 + 미국', 'Dubna, Russia + USA'],
   ];
   const sym = z => byNum[z] ? byNum[z].s : '?';
+  // 하루 가동해서 원자 하나가 생길 확률 (실제 실험 속도를 대충 맞춤)
+  const DAY = { 104: .9, 105: .7, 106: .3, 107: 1 / 4, 108: 1 / 6, 109: 1 / 10, 110: 1 / 12, 111: 1 / 20, 112: 1 / 25, 113: 1 / 1100, 114: 1 / 14, 115: 1 / 20, 116: 1 / 30, 117: 1 / 40, 118: 1 / 45 };
+  const PL = { on: false, days: 0, atoms: 0, best: {}, flash: 0 };
   const eun = w => { const ch = w.charCodeAt(w.length - 1); return (ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28) ? w + '은' : w + '는'; };
   const SUP = s => String(s).replace(/[0-9]/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
   let RX = R[R.length - 1], step = 0, t0 = 0, auto = false, raf = 0;
@@ -52541,7 +52548,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     const dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
     if(cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
     const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
-    const t = (now - t0) / 1000, r = T(), cx = W / 2, cy = H / 2, base = Math.min(W, H) * .17;
+    const r = T(), cx = W / 2, cy = H / 2, base = Math.min(W, H) * .17;
+    const step0 = step; let t = (now - t0) / 1000;
+    if(PL.on){ if(PL.flash && now - PL.flash < 2600){ step = 2; t = (now - PL.flash) / 1000; } else step = 1; }
     const rt = NR(r.ta, base), rb = NR(r.ba, base), rc = NR(r.C, base), ra = NR(r.A, base);
     if(step === 0){ // 사이클로트론: 나선을 그리며 바깥으로
       const Rm = Math.min(W, H) * .4;
@@ -52565,7 +52574,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
         if(ph > hitAt){ const k2 = (ph - hitAt) / (1 - hitAt), ang = (q % 2 ? 1 : -1) * (.6 + (q * 37 % 11) / 12); x = 20 + hitAt * (tx + Rw * .7 - 20) - Math.cos(ang) * k2 * 140; y = y0 + Math.sin(ang) * k2 * 140; }
         c.fillStyle = 'rgba(255,120,140,.9)'; c.beginPath(); c.arc(x, y, 3.5, 0, 6.283); c.fill(); }
       lab(c, P('튕김! 튕김! 튕김!', 'bounce! bounce! bounce!'), W * .3, cy - 30, '#ff9aa5');
-      const fired = Math.pow(10, Math.min(19, 9 + t * 2)); lab(c, P('쏜 횟수 ≈ 10', 'shots ≈ 10') + SUP(Math.round(Math.log10(fired))) + P(' · 붙은 것 0', ' · fused 0'), W * .3, cy + 10, '#c8cdf0');
+      if(!PL.on){ const fired = Math.pow(10, Math.min(19, 9 + t * 2)); lab(c, P('쏜 횟수 ≈ 10', 'shots ≈ 10') + SUP(Math.round(Math.log10(fired))) + P(' · 붙은 것 0', ' · fused 0'), W * .3, cy + 10, '#c8cdf0'); }
     }
     if(step === 2){ // 다가가다 맞닿아 합쳐짐
       const k = Math.min(1, t / 2.4), e = k < .7 ? k / .7 : 1, m = Math.max(0, (k - .7) / .3);
@@ -52610,6 +52619,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
           c.fillStyle = '#ffb86b'; c.font = '900 13px system-ui'; c.textAlign = 'center'; c.fillText('α', x - gap / 2, cy - 8); } }
       lab(c, P('붕괴 사슬 (예시) — 하나하나가 수 밀리초~수 초 만에 일어나요', 'Decay chain (example) — each step takes ms to seconds'), cx, H - 22, '#c8cdf0');
     }
+    if(PL.on){ step = step0;
+      if(!(PL.flash && now - PL.flash < 2600)){ c.clearRect(0, 0, W, H * .14); }
+      lab(c, P(`가동 ${PL.days.toLocaleString()}일 · 만든 원자 ${PL.atoms}개`, `${PL.days.toLocaleString()} days · ${PL.atoms} atom${PL.atoms === 1 ? '' : 's'}`), cx, 22, PL.atoms ? '#8dffb9' : '#c8cdf0'); }
   }
   function ui(){
     const d = el(), r = T();
@@ -52620,6 +52632,32 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     d.querySelector('[data-a=prev]').disabled = step === 0;
     d.querySelector('[data-a=next]').textContent = step === STEPS.length - 1 ? P('↺ 처음부터', '↺ Again') : P('다음 →', 'Next →');
     d.querySelector('[data-a=auto]').textContent = auto ? P('⏸ 멈춤', '⏸ Pause') : P('▶ 자동', '▶ Auto');
+    d.querySelector('[data-a=play]').textContent = PL.on ? P('← 설명으로', '← Back to steps') : P('🎲 직접 해 보기', '🎲 Try it yourself');
+    ['prev', 'auto', 'next'].forEach(k => d.querySelector(`[data-a=${k}]`).style.display = PL.on ? 'none' : '');
+    d.querySelector('.steps').style.visibility = PL.on ? 'hidden' : '';
+    playUI();
+  }
+  function playUI(){
+    const d = el(), box = d.querySelector('.play'), txt = d.querySelector('.txt'); box.style.display = PL.on ? 'flex' : 'none';
+    if(!PL.on) return;
+    const p = DAY[RX[0]], one = Math.round(1 / p), best = PL.best[RX[0]];
+    txt.innerHTML = `<b class="k">${P('🎲 내가 연구소장! — 빔을 쏴서 ' + byNum[RX[0]].ko + ' 만들기', '🎲 You run the lab — make ' + byNum[RX[0]].en)}</b><p>${P(
+      `빔은 1초에 수조 개, 하루에 약 <b>5×10¹⁷개</b>의 ${SUP(RX[6])}${RX[4]}을 쏴요. 그래도 ${sym(RX[0])} 원자가 하나 생길 확률은 <b>하루에 약 1/${one}</b>이에요. (실제 실험 속도를 대충 맞춘 값)` + (best ? ` · 최고 기록: <b>${best}일</b> 만에 첫 원자` : ''),
+      `The beam fires trillions per second — about <b>5×10¹⁷</b> ${SUP(RX[6])}${RX[4]} a day. Even so, the chance of one ${sym(RX[0])} atom is <b>about 1 in ${one} per day</b> (roughly matching real experiments).` + (best ? ` · Best: first atom on <b>day ${best}</b>` : ''))}</p>`;
+    box.innerHTML = `<button type="button" data-n="1">${P('⚡ 하루 가동', '⚡ Run 1 day')}</button><button type="button" data-n="30">${P('한 달', '1 month')}</button><button type="button" data-n="365">${P('1년', '1 year')}</button><span class="r"></span>`;
+    box.querySelectorAll('button').forEach(b => b.onclick = () => run(+b.dataset.n));
+  }
+  function run(n){
+    const p = DAY[RX[0]], d = el(), out = d.querySelector('.play .r'); let got = 0, first = 0;
+    for(let i = 0; i < n; i++){ PL.days++; if(Math.random() < p){ got++; if(!PL.atoms && !first) first = PL.days; } }
+    PL.atoms += got;
+    if(first && (!PL.best[RX[0]] || first < PL.best[RX[0]])) PL.best[RX[0]] = first;
+    if(got){ PL.flash = performance.now(); try{ SFX.boom ? SFX.pick() : 0; }catch(_){}
+      out.innerHTML = P(`🎉 <b>${got}개</b> 성공!` + (first ? ` 첫 원자는 ${first}일째` : ''), `🎉 <b>${got}</b> made!` + (first ? ` First on day ${first}` : ''));
+      out.style.color = '#8dffb9';
+      if(PL.atoms >= 1 && first) try{ rxToast('⚛', P(`${byNum[RX[0]].ko} 합성 성공!`, `${byNum[RX[0]].en} synthesised!`), P(`${first}일 만에 원자 1개`, `1 atom after ${first} days`)); }catch(_){}
+    } else { out.innerHTML = P(`${n === 1 ? '오늘도' : n + '일 동안'} 0개… 전부 튕겼어요`, `0 in ${n} day${n > 1 ? 's' : ''}… all bounced`); out.style.color = '#ff9aa5'; try{ SFX.pick(); }catch(_){} }
+    t0 = performance.now(); playUI(); d.querySelector('.play .r').innerHTML = out.innerHTML; d.querySelector('.play .r').style.color = out.style.color;
   }
   function go(i){ step = (i + STEPS.length) % STEPS.length; t0 = performance.now(); ui(); try{ SFX.pick(); }catch(_){} }
   let at = 0;
@@ -52628,16 +52666,18 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     d = document.createElement('div'); d.id = 'syWin'; d.setAttribute('role', 'dialog');
     d.innerHTML = `<div class="w"><header><h3></h3><select aria-label="element"></select><button type="button" class="x" aria-label="close">✕</button></header>
       <div class="steps">${STEPS.map(() => '<i></i>').join('')}</div><canvas></canvas><div class="txt"></div>
-      <div class="bar"><button type="button" data-a="prev">← ${P('이전', 'Back')}</button><button type="button" data-a="auto"></button><button type="button" class="go" data-a="next"></button></div></div>`;
+      <div class="bar"><button type="button" data-a="prev">← ${P('이전', 'Back')}</button><button type="button" data-a="auto"></button><button type="button" data-a="play"></button><button type="button" class="go" data-a="next"></button></div>
+      <div class="play"></div></div>`;
     document.body.appendChild(d);
     d.querySelector('.x').onclick = close; d.addEventListener('click', e => { if(e.target === d) close(); });
     addEventListener('keydown', e => { if(!d.classList.contains('on')) return; if(e.key === 'Escape') close(); if(e.key === 'ArrowRight') go(step + 1); if(e.key === 'ArrowLeft' && step) go(step - 1); });
+    d.querySelector('[data-a=play]').onclick = () => { PL.on = !PL.on; PL.days = 0; PL.atoms = 0; PL.flash = 0; t0 = performance.now(); ui(); try{ SFX.pick(); }catch(_){} };
     d.querySelector('[data-a=prev]').onclick = () => go(step - 1);
     d.querySelector('[data-a=next]').onclick = () => go(step + 1);
     d.querySelector('[data-a=auto]').onclick = () => { auto = !auto; clearInterval(at); if(auto) at = setInterval(() => go(step + 1), 5200); ui(); };
     const sel = d.querySelector('select');
     sel.innerHTML = R.map(q => `<option value="${q[0]}">${q[0]} ${sym(q[0])}</option>`).join('');
-    sel.onchange = () => { RX = R.find(q => q[0] === +sel.value) || RX; go(0); };
+    sel.onchange = () => { RX = R.find(q => q[0] === +sel.value) || RX; PL.days = 0; PL.atoms = 0; PL.flash = 0; if(PL.on){ t0 = performance.now(); ui(); } else go(0); };
     return d;
   }
   function open(z){
@@ -52645,7 +52685,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     const d = el(); d.querySelector('select').value = RX[0]; step = 0; t0 = performance.now(); ui();
     d.classList.add('on'); cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
   }
-  function close(){ const d = document.getElementById('syWin'); if(d) d.classList.remove('on'); cancelAnimationFrame(raf); auto = false; clearInterval(at); }
+  function close(){ PL.on = false; const d = document.getElementById('syWin'); if(d) d.classList.remove('on'); cancelAnimationFrame(raf); auto = false; clearInterval(at); }
   window.rxSynthOpen = open;
 
   // 원소 정보 칸 버튼 (104~118번)
