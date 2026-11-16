@@ -52443,5 +52443,234 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
 })();
 </script>
 
+<style>
+  /* ═══ 초중원소는 이렇게 만들어요: 가속 → 충돌 → 융합 → 식히기 → 분리 → 확인 ═══ */
+  .sy-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:10px 0 0;padding:11px 12px;border-radius:14px;cursor:pointer;
+    font:800 13.5px system-ui,sans-serif;color:#e3dcff;background:linear-gradient(135deg,rgba(150,120,255,.18),rgba(110,200,255,.08));border:1px solid rgba(170,150,255,.45)}
+  .sy-btn:hover{background:linear-gradient(135deg,rgba(150,120,255,.28),rgba(110,200,255,.14))}
+  #syWin{position:fixed;inset:0;z-index:2147482945;display:none;place-items:center;background:rgba(4,6,14,.74);backdrop-filter:blur(6px)}
+  #syWin.on{display:grid}
+  #syWin .w{position:relative;width:min(960px,97vw);height:min(720px,94vh);display:flex;flex-direction:column;border-radius:20px;overflow:hidden;
+    background:linear-gradient(160deg,#151832,#0b0d1c);border:1px solid rgba(170,180,255,.28);box-shadow:0 30px 80px rgba(0,0,0,.6);color:#eef0ff}
+  #syWin header{display:flex;align-items:center;gap:10px;padding:12px 14px 6px;flex-wrap:wrap}
+  #syWin h3{margin:0;font:900 16px system-ui,sans-serif}
+  #syWin h3 small{display:block;margin-top:2px;font:700 11.5px system-ui,sans-serif;color:#9aa0c8}
+  #syWin select{margin-left:auto;padding:7px 10px;border-radius:10px;border:1px solid rgba(170,180,255,.3);background:#1b1f3d;color:#eef0ff;font:800 12.5px system-ui,sans-serif}
+  #syWin .x{width:34px;height:34px;border-radius:50%;border:1px solid rgba(170,180,255,.3);background:rgba(255,255,255,.04);color:#cfd3ff;font-size:16px;cursor:pointer}
+  #syWin .steps{display:flex;gap:4px;padding:2px 14px 8px}
+  #syWin .steps i{flex:1;height:4px;border-radius:4px;background:rgba(170,180,255,.18);transition:background .3s}
+  #syWin .steps i.on{background:linear-gradient(90deg,#8f9bff,#c9a8ff)}
+  #syWin canvas{flex:1;width:100%;min-height:0;display:block}
+  #syWin .txt{padding:10px 16px 2px;min-height:86px}
+  #syWin .txt b.k{display:block;font:900 15px system-ui,sans-serif;color:#ffe9a8;margin-bottom:3px}
+  #syWin .txt p{margin:0;font:600 13px/1.6 system-ui,sans-serif;color:#c8cdf0}
+  #syWin .bar{display:flex;gap:8px;padding:8px 14px 14px}
+  #syWin .bar button{padding:9px 14px;border-radius:12px;border:1px solid rgba(170,180,255,.3);background:rgba(143,155,255,.12);color:#eef0ff;font:800 13px system-ui,sans-serif;cursor:pointer}
+  #syWin .bar button.go{margin-left:auto;background:linear-gradient(135deg,#8f9bff,#c9a8ff);color:#141633;border:0}
+  #syWin .bar button:disabled{opacity:.35;cursor:default}
+  @media (max-width:600px){ #syWin .w{height:96vh} #syWin .txt p{font-size:12.2px} }
+</style>
+<script>
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  // [Z, 과녁 기호, 과녁 Z, 과녁 A, 빔 기호, 빔 Z, 빔 A, 나온 A, 중성자 수, 연도, 연구소(한/영)]
+  const R = [
+    [104, 'Cf', 98, 249, 'C', 6, 12, 257, 4, 1969, '미국 버클리', 'Berkeley, USA'],
+    [105, 'Cf', 98, 249, 'N', 7, 15, 260, 4, 1970, '미국 버클리', 'Berkeley, USA'],
+    [106, 'Cf', 98, 249, 'O', 8, 18, 263, 4, 1974, '미국 버클리', 'Berkeley, USA'],
+    [107, 'Bi', 83, 209, 'Cr', 24, 54, 262, 1, 1981, '독일 GSI', 'GSI, Germany'],
+    [108, 'Pb', 82, 208, 'Fe', 26, 58, 265, 1, 1984, '독일 GSI', 'GSI, Germany'],
+    [109, 'Bi', 83, 209, 'Fe', 26, 58, 266, 1, 1982, '독일 GSI', 'GSI, Germany'],
+    [110, 'Pb', 82, 208, 'Ni', 28, 62, 269, 1, 1994, '독일 GSI', 'GSI, Germany'],
+    [111, 'Bi', 83, 209, 'Ni', 28, 64, 272, 1, 1994, '독일 GSI', 'GSI, Germany'],
+    [112, 'Pb', 82, 208, 'Zn', 30, 70, 277, 1, 1996, '독일 GSI', 'GSI, Germany'],
+    [113, 'Bi', 83, 209, 'Zn', 30, 70, 278, 1, 2004, '일본 리켄 (9년 동안 원자 3개!)', 'RIKEN, Japan (3 atoms in 9 years!)'],
+    [114, 'Pu', 94, 244, 'Ca', 20, 48, 289, 3, 1999, '러시아 두브나', 'Dubna, Russia'],
+    [115, 'Am', 95, 243, 'Ca', 20, 48, 288, 3, 2003, '러시아 두브나 + 미국', 'Dubna, Russia + USA'],
+    [116, 'Cm', 96, 248, 'Ca', 20, 48, 292, 4, 2000, '러시아 두브나 + 미국', 'Dubna, Russia + USA'],
+    [117, 'Bk', 97, 249, 'Ca', 20, 48, 294, 3, 2010, '러시아 두브나 + 미국', 'Dubna, Russia + USA'],
+    [118, 'Cf', 98, 249, 'Ca', 20, 48, 294, 3, 2002, '러시아 두브나 + 미국', 'Dubna, Russia + USA'],
+  ];
+  const sym = z => byNum[z] ? byNum[z].s : '?';
+  const eun = w => { const ch = w.charCodeAt(w.length - 1); return (ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28) ? w + '은' : w + '는'; };
+  const SUP = s => String(s).replace(/[0-9]/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  let RX = R[R.length - 1], step = 0, t0 = 0, auto = false, raf = 0;
+
+  /* 핵 그림 (양성자 빨강·중성자 파랑 구슬 뭉치) */
+  const SPC = {};
+  function sprite(n, seed){
+    const k = n + ':' + seed; if(SPC[k]) return SPC[k];
+    const size = 160, c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
+    let s = seed * 7919 + n; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    const Rr = Math.cbrt(n) * .62, B = [];
+    while(B.length < n){ const a = rnd() * 2 - 1, b = rnd() * 2 - 1, d = rnd() * 2 - 1; if(a * a + b * b + d * d <= 1) B.push([a * Rr, b * Rr, d * Rr, rnd() < .42]); }
+    for(let it = 0; it < 18; it++) for(let i = 0; i < n; i++){ const a = B[i];
+      for(let j = i + 1; j < n; j++){ const q = B[j], dx = a[0] - q[0], dy = a[1] - q[1], dz = a[2] - q[2], d2 = dx * dx + dy * dy + dz * dz;
+        if(d2 < .9 && d2 > 1e-6){ const d = Math.sqrt(d2), f = (.95 - d) / d * .5; a[0] += dx * f; a[1] += dy * f; a[2] += dz * f; q[0] -= dx * f; q[1] -= dy * f; q[2] -= dz * f; } }
+      const r = Math.hypot(a[0], a[1], a[2]); if(r > Rr){ a[0] *= Rr / r; a[1] *= Rr / r; a[2] *= Rr / r; } }
+    B.sort((p, q) => p[2] - q[2]);
+    const sc = size / 2 / (Rr + .55), br = .52 * sc;
+    B.forEach(([X, Y, Z, pr]) => { const px = size / 2 + X * sc, py = size / 2 + Y * sc, dd = .6 + .4 * (Z / Rr + 1) / 2, col = pr ? [226, 52, 62] : [40, 70, 140];
+      const g = x.createRadialGradient(px - br * .35, py - br * .4, br * .1, px, py, br);
+      g.addColorStop(0, `rgba(255,255,255,${.85 * dd})`); g.addColorStop(.3, `rgb(${col.map(v => Math.round(v * dd + 20)).join(',')})`); g.addColorStop(1, `rgb(${col.map(v => Math.round(v * dd * .45)).join(',')})`);
+      x.fillStyle = g; x.beginPath(); x.arc(px, py, br, 0, 6.283); x.fill(); });
+    return SPC[k] = c;
+  }
+  const NR = (A, base) => base * Math.cbrt(A / 250);
+  function nuc(c, A, x, y, r, seed, glow){
+    if(glow){ const g = c.createRadialGradient(x, y, r * .5, x, y, r * 2.2); g.addColorStop(0, `rgba(255,200,120,${glow * .55})`); g.addColorStop(1, 'rgba(255,200,120,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y, r * 2.2, 0, 6.283); c.fill(); }
+    c.drawImage(sprite(Math.min(A, 120), seed), x - r, y - r, r * 2, r * 2);
+  }
+  function lab(c, s, x, y, col){ c.font = '800 13px system-ui,sans-serif'; c.textAlign = 'center'; const w = c.measureText(s).width + 12;
+    c.fillStyle = 'rgba(8,10,24,.78)'; c.beginPath(); c.roundRect ? c.roundRect(x - w / 2, y - 11, w, 22, 8) : c.rect(x - w / 2, y - 11, w, 22); c.fill(); c.fillStyle = col || '#ffe9a8'; c.textBaseline = 'middle'; c.fillText(s, x, y); c.textBaseline = 'alphabetic'; }
+  const neu = (c, x, y) => { const g = c.createRadialGradient(x - 2, y - 2, .5, x, y, 6); g.addColorStop(0, '#fff'); g.addColorStop(.35, '#3f6ad0'); g.addColorStop(1, '#16244f'); c.fillStyle = g; c.beginPath(); c.arc(x, y, 6, 0, 6.283); c.fill(); };
+
+  const T = () => { const [Z, ts, tz, ta, bs, bz, ba, A, nn] = RX; return { Z, ts, tz, ta, bs, bz, ba, A, nn, C: ta + ba }; };
+  const STEPS = [
+    { k: ['① 가속', '① Accelerate'], d: () => { const r = T(); return P(`가속기 안에서 ${SUP(r.ba)}${r.bs} 원자핵을 빙글빙글 돌리며 점점 빠르게 만들어요. 빛 속도의 약 10%까지 올려야 해요. 원자핵끼리는 둘 다 (+)라서 서로 밀어내는데, 이 반발을 뚫고 맞닿게 하려면 엄청 빨라야 하거든요.`,
+      `Inside the accelerator, ${SUP(r.ba)}${r.bs} nuclei are whirled round and round, faster and faster — up to about 10% of light speed. Both nuclei are (+) and push each other away, so they must be very fast to touch at all.`); } },
+    { k: ['② 과녁에 쏘기', '② Hit the target'], d: () => { const r = T(); return P(`빠른 ${r.bs} 빔을 ${SUP(r.ta)}${r.ts} 원자로 만든 얇은 과녁에 쏴요. 과녁은 열에 녹지 않게 빙글빙글 돌아요. 그런데 거의 다 (+)끼리 밀어내서 <b>튕겨 나가요</b>. 1초에 수조 개를 쏘는데도 몇 주, 몇 달 동안 하나도 안 붙는 게 보통이에요.`,
+      `The fast ${r.bs} beam hits a thin, spinning target of ${SUP(r.ta)}${r.ts}. Almost every nucleus is <b>pushed away</b> by the (+)/(+) repulsion. Trillions are fired every second, yet weeks or months can pass without a single hit.`); } },
+    { k: ['③ 융합', '③ Fuse'], d: () => { const r = T(); return P(`아주 드물게 두 핵이 딱 맞닿으면 하나로 합쳐져요. 양성자 ${r.tz} + ${r.bz} = <b>${r.Z}개</b> → ${r.Z}번 원소 ${sym(r.Z)}! 막 합쳐진 핵(${SUP(r.C)}${sym(r.Z)}*)은 너무 뜨거워서 부들부들 떨려요.`,
+      `Very rarely the two nuclei touch and merge. ${r.tz} + ${r.bz} protons = <b>${r.Z}</b> → element ${r.Z}, ${sym(r.Z)}! The fresh nucleus (${SUP(r.C)}${sym(r.Z)}*) is so hot that it quivers.`); } },
+    { k: ['④ 식히기', '④ Cool down'], d: () => { const r = T(); return P(`뜨거운 핵이 중성자 <b>${r.nn}개</b>를 툭툭 내보내며 식어요. 그러면 ${SUP(r.A)}${sym(r.Z)}가 남아요. 사실 대부분은 이 단계를 못 버티고 반으로 쪼개져(핵분열) 사라져요. 살아남는 건 아주 운이 좋은 소수예요.`,
+      `The hot nucleus cools by spitting out <b>${r.nn}</b> neutron${r.nn > 1 ? 's' : ''}, leaving ${SUP(r.A)}${sym(r.Z)}. Most never survive this — they split in two (fission) and vanish. Only the lucky few remain.`); } },
+    { k: ['⑤ 골라내기', '⑤ Separate'], d: () => P('새 원자는 빔과 같이 날아가니까, 자석으로 길을 휘어서 골라내요. 무게와 전하가 달라서 휘는 정도가 달라요. 빔 수조 개 사이에서 원자 단 하나를 찾아 검출기로 보내는 거예요.',
+      'The new atom flies along with the beam, so magnets bend the paths apart. Different mass and charge bend differently, steering one single atom out of trillions into the detector.') },
+    { k: ['⑥ 확인하기', '⑥ Confirm'], d: () => { const r = T(); return P(`검출기에 박힌 원자는 금방 알파 붕괴를 이어 가요. 알파 입자가 나올 때마다 원자번호가 2씩 줄어드는데, 이 <b>붕괴 사슬의 에너지와 시간</b>이 이미 아는 원소와 딱 맞아떨어지면 "새 원소 발견!"이 인정돼요.`,
+      `Lodged in the detector, the atom soon alpha-decays again and again, dropping 2 in atomic number each time. When the <b>energies and timings of this chain</b> match known nuclei, the new element is confirmed.`); } },
+  ];
+
+  function draw(now){
+    raf = requestAnimationFrame(draw);
+    const d = document.getElementById('syWin'), cv = d && d.querySelector('canvas'); if(!cv) return;
+    const dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if(cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+    const t = (now - t0) / 1000, r = T(), cx = W / 2, cy = H / 2, base = Math.min(W, H) * .17;
+    const rt = NR(r.ta, base), rb = NR(r.ba, base), rc = NR(r.C, base), ra = NR(r.A, base);
+    if(step === 0){ // 사이클로트론: 나선을 그리며 바깥으로
+      const Rm = Math.min(W, H) * .4;
+      c.strokeStyle = 'rgba(143,155,255,.25)'; c.lineWidth = 2; c.beginPath(); c.arc(cx, cy, Rm, 0, 6.283); c.stroke();
+      c.fillStyle = 'rgba(143,155,255,.08)'; [[-1], [1]].forEach(([s]) => { c.beginPath(); c.arc(cx, cy, Rm, s > 0 ? -Math.PI / 2 : Math.PI / 2, s > 0 ? Math.PI / 2 : Math.PI * 1.5); c.lineTo(cx, cy); c.fill(); });
+      c.strokeStyle = 'rgba(255,233,168,.35)'; c.setLineDash([3, 4]); c.beginPath(); c.moveTo(cx, cy - Rm); c.lineTo(cx, cy + Rm); c.stroke(); c.setLineDash([]);
+      const k = (t % 4) / 4, turns = 5, a = k * turns * 6.283, rr = 10 + k * (Rm - 18);
+      c.strokeStyle = 'rgba(255,150,170,.45)'; c.lineWidth = 2; c.beginPath();
+      for(let q = 0; q <= 120; q++){ const kk = k * q / 120, aa = kk * turns * 6.283, r2 = 10 + kk * (Rm - 18); q ? c.lineTo(cx + Math.cos(aa) * r2, cy + Math.sin(aa) * r2) : c.moveTo(cx + Math.cos(aa) * r2, cy + Math.sin(aa) * r2); } c.stroke();
+      nuc(c, r.ba, cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, Math.max(9, rb * .5), 2);
+      lab(c, SUP(r.ba) + r.bs, cx + Math.cos(a) * rr, cy + Math.sin(a) * rr - Math.max(9, rb * .5) - 14);
+      lab(c, P('속도 ', 'speed ') + Math.round(k * 10) + '% c', cx, cy + Rm + 22, '#9fe0ff');
+    }
+    if(step === 1){ // 과녁 바퀴 + 빔: 대부분 튕김
+      const tx = W * .66, Rw = Math.min(H * .36, W * .2);
+      c.save(); c.translate(tx, cy); c.rotate(t * 1.2); c.strokeStyle = 'rgba(200,206,255,.4)'; c.lineWidth = 6; c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.stroke();
+      for(let q = 0; q < 8; q++){ c.rotate(Math.PI / 4); c.fillStyle = 'rgba(200,170,120,.35)'; c.fillRect(Rw * .45, -8, Rw * .5, 16); } c.restore();
+      lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts, tx, cy + Rw + 22);
+      for(let q = 0; q < 14; q++){ const ph = ((t * 1.3 + q / 14) % 1), y0 = cy + Rw * .75 + Math.sin(q * 7.3) * 6;
+        let x = 20 + ph * (tx + Rw * .7 - 20), y = y0; const hitAt = .78;
+        if(ph > hitAt){ const k2 = (ph - hitAt) / (1 - hitAt), ang = (q % 2 ? 1 : -1) * (.6 + (q * 37 % 11) / 12); x = 20 + hitAt * (tx + Rw * .7 - 20) - Math.cos(ang) * k2 * 140; y = y0 + Math.sin(ang) * k2 * 140; }
+        c.fillStyle = 'rgba(255,120,140,.9)'; c.beginPath(); c.arc(x, y, 3.5, 0, 6.283); c.fill(); }
+      lab(c, P('튕김! 튕김! 튕김!', 'bounce! bounce! bounce!'), W * .3, cy - 30, '#ff9aa5');
+      const fired = Math.pow(10, Math.min(19, 9 + t * 2)); lab(c, P('쏜 횟수 ≈ 10', 'shots ≈ 10') + SUP(Math.round(Math.log10(fired))) + P(' · 붙은 것 0', ' · fused 0'), W * .3, cy + 10, '#c8cdf0');
+    }
+    if(step === 2){ // 다가가다 맞닿아 합쳐짐
+      const k = Math.min(1, t / 2.4), e = k < .7 ? k / .7 : 1, m = Math.max(0, (k - .7) / .3);
+      const xb = cx - W * .32 + e * (W * .32 - rt * .9), wob = m > 0 ? Math.sin(t * 30) * 3 * (1 - m * .5) : 0;
+      if(m < 1){ c.globalAlpha = 1 - m; nuc(c, r.ta, cx + 20 * (1 - m), cy, rt, 3); nuc(c, r.ba, xb + 20 * m, cy, rb, 2); c.globalAlpha = 1; }
+      if(m > 0){ c.globalAlpha = m; nuc(c, r.C, cx + wob, cy, rc * (1 + .05 * Math.sin(t * 25)), 5, 1); c.globalAlpha = 1; }
+      if(m < .2){ lab(c, SUP(r.ta) + r.ts + ` (Z ${r.tz})`, cx + 20, cy - rt - 18); lab(c, SUP(r.ba) + r.bs + ` (Z ${r.bz})`, xb, cy - rb - 18, '#ffb4c0'); }
+      else lab(c, SUP(r.C) + sym(r.Z) + '*  ' + P('뜨거움!', 'hot!'), cx, cy - rc - 22);
+      if(k < .7){ c.strokeStyle = 'rgba(255,233,168,.6)'; c.lineWidth = 2; c.beginPath(); c.moveTo(xb - rb - 30, cy); c.lineTo(xb - rb - 6, cy); c.stroke(); }
+    }
+    if(step === 3){ // 중성자 증발
+      const per = 1, done = Math.min(r.nn, Math.floor(t / per)), heat = Math.max(0, 1 - t / (per * r.nn + .4));
+      const A = r.C - done, rr = NR(A, base);
+      nuc(c, A, cx + (heat > .05 ? Math.sin(t * 30) * 2 * heat : 0), cy, rr, 5, heat);
+      for(let q = 0; q < r.nn; q++){ const tq = t - q * per; if(tq < 0) continue; const a = -Math.PI / 2 + (q - (r.nn - 1) / 2) * .8, dd = rr + 10 + tq * 160;
+        if(dd < Math.max(W, H)) { neu(c, cx + Math.cos(a) * dd, cy + Math.sin(a) * dd); if(tq < 1.4) lab(c, 'n', cx + Math.cos(a) * dd, cy + Math.sin(a) * dd - 18, '#cfe0ff'); } }
+      lab(c, SUP(A) + sym(r.Z) + (heat > .05 ? '*' : ''), cx, cy + rr + 22);
+      if(done >= r.nn) lab(c, P(`완성: ${SUP(r.A)}${sym(r.Z)} (${byNum[r.Z].ko})`, `Done: ${SUP(r.A)}${sym(r.Z)} (${byNum[r.Z].en})`), cx, cy - rr - 28, '#8dffb9');
+    }
+    if(step === 4){ // 자석으로 휘기
+      const mx = W * .45, my = cy, mw = W * .18, mh = H * .44;
+      c.fillStyle = 'rgba(255,90,110,.18)'; c.fillRect(mx - mw / 2, my - mh / 2 - 26, mw, 22); c.fillStyle = 'rgba(90,150,255,.18)'; c.fillRect(mx - mw / 2, my + mh / 2 + 4, mw, 22);
+      c.fillStyle = '#ff9aa5'; c.font = '900 13px system-ui'; c.textAlign = 'center'; c.fillText('N', mx, my - mh / 2 - 10); c.fillStyle = '#9fc4ff'; c.fillText('S', mx, my + mh / 2 + 20);
+      const path = (bend, k) => { const x = 20 + k * (W - 40); const off = x < mx - mw / 2 ? 0 : bend * Math.pow(Math.max(0, x - (mx - mw / 2)) / (W - mx), 1.5) * H * .5; return [x, cy + off]; };
+      [[.08, 'rgba(255,120,140,.8)'], [.6, '#ffe08a']].forEach(([bend, colr], i) => { c.strokeStyle = colr; c.globalAlpha = .35; c.lineWidth = 2; c.beginPath();
+        for(let q = 0; q <= 60; q++){ const p = path(bend, q / 60); q ? c.lineTo(...p) : c.moveTo(...p); } c.stroke(); c.globalAlpha = 1; });
+      for(let q = 0; q < 10; q++){ const p = path(.08, (t * .5 + q / 10) % 1); c.fillStyle = 'rgba(255,120,140,.9)'; c.beginPath(); c.arc(p[0], p[1], 3, 0, 6.283); c.fill(); }
+      const kk = (t * .3) % 1, pa = path(.6, kk); nuc(c, r.A, pa[0], pa[1], Math.max(10, ra * .35), 7, .6);
+      const pe = path(.6, 1), pb = path(.08, 1);
+      c.fillStyle = 'rgba(141,255,185,.25)'; c.fillRect(pe[0] - 16, pe[1] - 30, 22, 60); lab(c, P('검출기', 'detector'), pe[0] - 30, pe[1] - 42, '#8dffb9');
+      lab(c, P('빔은 거의 곧게', 'beam: nearly straight'), pb[0] - 70, pb[1] - 22, '#ff9aa5'); lab(c, SUP(r.A) + sym(r.Z), pa[0], pa[1] - Math.max(10, ra * .35) - 16);
+    }
+    if(step === 5){ // 알파 붕괴 사슬 (예)
+      const steps = Math.min(4, Math.max(3, Math.round((r.Z - 104) / 4) + 2)), per = 1.1, shown = Math.min(steps + 1, Math.floor(t / per) + 1);
+      const gap = Math.min(150, (W - 80) / (steps + 1)), x0 = cx - gap * steps / 2;
+      for(let q = 0; q < shown && q <= steps; q++){ const Z = r.Z - 2 * q, A = r.A - 4 * q, x = x0 + q * gap, rr = Math.max(14, NR(A, base) * .45);
+        if(q === steps && shown > steps){ // 마지막: 핵분열
+          c.fillStyle = 'rgba(255,226,140,.5)'; c.beginPath(); for(let k = 0; k < 20; k++){ const rq = k % 2 ? rr * .5 : rr * 1.3, aq = k / 20 * 6.283; c.lineTo(x + Math.cos(aq) * rq, cy + Math.sin(aq) * rq); } c.fill();
+          lab(c, P('💥 핵분열', '💥 fission'), x, cy + rr + 26, '#ffb27a'); continue; }
+        nuc(c, A, x, cy, rr, 10 + q); lab(c, SUP(A) + sym(Z), x, cy - rr - 16);
+        if(q > 0){ c.strokeStyle = 'rgba(255,184,107,.8)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x - gap + rr + 6, cy); c.lineTo(x - rr - 8, cy); c.stroke();
+          c.fillStyle = '#ffb86b'; c.font = '900 13px system-ui'; c.textAlign = 'center'; c.fillText('α', x - gap / 2, cy - 8); } }
+      lab(c, P('붕괴 사슬 (예시) — 하나하나가 수 밀리초~수 초 만에 일어나요', 'Decay chain (example) — each step takes ms to seconds'), cx, H - 22, '#c8cdf0');
+    }
+  }
+  function ui(){
+    const d = el(), r = T();
+    d.querySelector('h3').innerHTML = P(`⚛ ${r.Z}번 ${eun(byNum[r.Z].ko)} 이렇게 만들었어요`, `⚛ How element ${r.Z} (${byNum[r.Z].en}) was made`) +
+      `<small>${SUP(r.ta)}${r.ts} + ${SUP(r.ba)}${r.bs} → ${SUP(r.A)}${sym(r.Z)} + ${r.nn}n · ${RX[9]} · ${P(RX[10], RX[11])}</small>`;
+    d.querySelectorAll('.steps i').forEach((e, i) => e.classList.toggle('on', i <= step));
+    const s = STEPS[step]; d.querySelector('.txt').innerHTML = `<b class="k">${P(s.k[0], s.k[1])}</b><p>${s.d()}</p>`;
+    d.querySelector('[data-a=prev]').disabled = step === 0;
+    d.querySelector('[data-a=next]').textContent = step === STEPS.length - 1 ? P('↺ 처음부터', '↺ Again') : P('다음 →', 'Next →');
+    d.querySelector('[data-a=auto]').textContent = auto ? P('⏸ 멈춤', '⏸ Pause') : P('▶ 자동', '▶ Auto');
+  }
+  function go(i){ step = (i + STEPS.length) % STEPS.length; t0 = performance.now(); ui(); try{ SFX.pick(); }catch(_){} }
+  let at = 0;
+  function el(){
+    let d = document.getElementById('syWin'); if(d) return d;
+    d = document.createElement('div'); d.id = 'syWin'; d.setAttribute('role', 'dialog');
+    d.innerHTML = `<div class="w"><header><h3></h3><select aria-label="element"></select><button type="button" class="x" aria-label="close">✕</button></header>
+      <div class="steps">${STEPS.map(() => '<i></i>').join('')}</div><canvas></canvas><div class="txt"></div>
+      <div class="bar"><button type="button" data-a="prev">← ${P('이전', 'Back')}</button><button type="button" data-a="auto"></button><button type="button" class="go" data-a="next"></button></div></div>`;
+    document.body.appendChild(d);
+    d.querySelector('.x').onclick = close; d.addEventListener('click', e => { if(e.target === d) close(); });
+    addEventListener('keydown', e => { if(!d.classList.contains('on')) return; if(e.key === 'Escape') close(); if(e.key === 'ArrowRight') go(step + 1); if(e.key === 'ArrowLeft' && step) go(step - 1); });
+    d.querySelector('[data-a=prev]').onclick = () => go(step - 1);
+    d.querySelector('[data-a=next]').onclick = () => go(step + 1);
+    d.querySelector('[data-a=auto]').onclick = () => { auto = !auto; clearInterval(at); if(auto) at = setInterval(() => go(step + 1), 5200); ui(); };
+    const sel = d.querySelector('select');
+    sel.innerHTML = R.map(q => `<option value="${q[0]}">${q[0]} ${sym(q[0])}</option>`).join('');
+    sel.onchange = () => { RX = R.find(q => q[0] === +sel.value) || RX; go(0); };
+    return d;
+  }
+  function open(z){
+    RX = R.find(q => q[0] === z) || R[R.length - 1];
+    const d = el(); d.querySelector('select').value = RX[0]; step = 0; t0 = performance.now(); ui();
+    d.classList.add('on'); cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
+  }
+  function close(){ const d = document.getElementById('syWin'); if(d) d.classList.remove('on'); cancelAnimationFrame(raf); auto = false; clearInterval(at); }
+  window.rxSynthOpen = open;
+
+  // 원소 정보 칸 버튼 (104~118번)
+  function place(){
+    const io = document.getElementById('info'); if(!io) return;
+    const e = (typeof atomEl !== 'undefined' && atomEl) || (typeof byNum !== 'undefined' && typeof selected !== 'undefined' && byNum[selected]);
+    let b = document.getElementById('syBtn');
+    if(!e || e.n < 104 || e.n > 118){ if(b) b.remove(); return; }
+    if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'syBtn'; b.className = 'sy-btn'; b.addEventListener('click', ev => { ev.stopPropagation(); const e2 = (typeof atomEl !== 'undefined' && atomEl) || byNum[selected]; open(e2 && e2.n); }); }
+    b.textContent = P(`⚛ ${eun(e.ko)} 어떻게 만들었을까?`, `⚛ How was ${e.en} made?`);
+    const anchor = io.querySelector('#chBtn') || io.querySelector('#ogFgBtn') || io.querySelector('.decay-box');
+    if(anchor){ if(b.previousElementSibling !== anchor) anchor.after(b); } else if(b.parentNode !== io) io.appendChild(b);
+  }
+  { const io = document.getElementById('info'); if(io) new MutationObserver(() => { try{ const b = document.getElementById('syBtn'); if(!b || !io.contains(b)) place(); }catch(e){} }).observe(io, { childList: true }); }
+  if(typeof startAtom === 'function'){ const _s = startAtom; startAtom = function(){ const r = _s.apply(this, arguments); try{ setTimeout(place, 0); }catch(e){} return r; }; }
+  setTimeout(place, 900);
+})();
+</script>
+
 </body>
 </html>
