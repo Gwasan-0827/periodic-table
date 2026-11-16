@@ -52172,5 +52172,260 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   html.april ::-webkit-scrollbar-track{background:#fff}
   html.april ::-webkit-scrollbar-thumb{background:#000;border-radius:0}
 </style>
+<style>
+  /* ═══ 주기율표의 종류: 32열 · 멘델레예프 1871 · 재닛(왼쪽 계단) · 벤피 나선 · 원형 · 3D 원통 · 모즐리 ═══ */
+  #ptkBtn{flex:none;margin-left:8px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:12px;cursor:pointer;
+    font:800 12.5px system-ui,sans-serif;color:#dfe3ff;background:rgba(143,155,255,.12);border:1px solid rgba(170,180,255,.32)}
+  #ptkBtn:hover{background:rgba(143,155,255,.22)}
+  #ptkWin{position:fixed;inset:0;z-index:2147482940;display:none;place-items:center;background:rgba(4,6,14,.74);backdrop-filter:blur(6px)}
+  #ptkWin.on{display:grid}
+  #ptkWin .w{position:relative;width:min(1180px,97vw);height:min(760px,94vh);display:flex;flex-direction:column;border-radius:20px;overflow:hidden;
+    background:linear-gradient(160deg,#151832,#0b0d1c);border:1px solid rgba(170,180,255,.28);box-shadow:0 30px 80px rgba(0,0,0,.6);color:#eef0ff}
+  #ptkWin header{display:flex;align-items:center;gap:10px;padding:12px 14px 6px}
+  #ptkWin h3{margin:0;font:900 16px system-ui,sans-serif;white-space:nowrap}
+  #ptkWin .x{margin-left:auto;flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(170,180,255,.3);background:rgba(255,255,255,.04);color:#cfd3ff;font-size:16px;cursor:pointer}
+  #ptkWin .tabs{display:flex;gap:6px;padding:4px 14px 8px;overflow-x:auto;scrollbar-width:none}
+  #ptkWin .tabs::-webkit-scrollbar{display:none}
+  #ptkWin .tabs button{flex:none;padding:7px 12px;border-radius:999px;border:1px solid rgba(170,180,255,.28);background:rgba(143,155,255,.08);color:#cfd3ff;font:800 12.5px system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+  #ptkWin .tabs button.on{background:linear-gradient(135deg,#8f9bff,#c9a8ff);color:#141633;border-color:transparent}
+  #ptkWin .stage{position:relative;flex:1;min-height:0}
+  #ptkWin canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
+  #ptkWin .cap{padding:10px 16px 4px;font:600 13px/1.55 system-ui,sans-serif;color:#c8cdf0;border-top:1px solid rgba(170,180,255,.12);max-height:96px;overflow:auto}
+  #ptkWin .cap b{color:#ffe9a8}
+  #ptkWin .sel{display:flex;align-items:center;gap:10px;padding:6px 16px 12px;min-height:40px;font:800 13px system-ui,sans-serif}
+  #ptkWin .sel button{margin-left:auto;padding:8px 13px;border-radius:11px;border:0;background:linear-gradient(135deg,#8f9bff,#c9a8ff);color:#141633;font:900 12.5px system-ui,sans-serif;cursor:pointer}
+  #ptkWin .sel .note{font-weight:600;color:#ffcf9a}
+  @media (max-width:700px){ #ptkBtn span{display:none} #ptkWin .w{height:96vh} #ptkWin .cap{font-size:12px;max-height:84px} }
+  html.april #ptkWin .w{background:#fff;color:#000;border:3px solid #000;border-radius:0}
+  html.april #ptkWin .cap,html.april #ptkWin .sel{color:#000}
+</style>
+<script>
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  const col = n => { const e = byNum[n]; try{ return cssv(CAT[e.c].v) || '#8f9bff'; }catch(_){ return '#8f9bff'; } };
+  const name = n => EN() ? byNum[n].en : byNum[n].ko;
+  const blk = n => { const e = byNum[n]; if(e.c === 'lanthanide' && n !== 71) return 'f'; if(e.c === 'actinide' && n !== 103) return 'f'; if(e.g === 1 || e.g === 2 || n === 2) return 's'; if(e.g >= 13) return 'p'; return 'd'; };
+  // 32열 위치: 1·2족 → 1·2열, f 블록(La–Yb, Ac–No) → 3~16열, 3~18족 → 17~32열
+  const col32 = n => { const e = byNum[n]; if(e.g) return e.g <= 2 ? e.g : e.g + 14; if(n === 71 || n === 103) return 17; return 3 + (n >= 89 ? n - 89 : n - 57); };
+
+  const V = {
+    long: { t: ['32열 긴 주기율표', '32-column table'],
+      cap: ['란타넘족·악티늄족을 아래로 떼어 놓지 않고 <b>표 안에 그대로 끼워 넣은</b> 모양이에요. 원래는 이게 진짜 모양인데, 너무 가로로 길어서 교과서는 f 블록을 잘라 아래에 붙여요.',
+            'The lanthanides and actinides are <b>slotted straight into the table</b> instead of being cut out below. This is the "true" shape; textbooks only cut the f-block off because it is so wide.'] },
+    mend: { t: ['멘델레예프 (1871)', 'Mendeleev (1871)'],
+      cap: ['멘델레예프는 원자량 순으로 줄을 세우고 성질이 비슷한 것끼리 8개 족으로 묶었어요. 맞는 원소가 없으면 <b>"?" 빈칸</b>으로 남기고 성질까지 예측했는데, 뒤에 스칸듐·갈륨·저마늄이 정말 발견됐어요. 비활성 기체는 아직 몰라서 자리가 없어요. <b>분홍 빈칸을 눌러 보세요.</b>',
+            'Mendeleev lined elements up by atomic weight and grouped look-alikes into 8 groups. Where nothing fitted he left a <b>"?" gap</b> and predicted its properties — and scandium, gallium and germanium were later found. Noble gases were still unknown, so they have no place. <b>Tap a pink gap.</b>'] },
+    janet: { t: ['재닛 (왼쪽 계단)', 'Janet (left-step)'],
+      cap: ['1928년 샤를 재닛이 만든 표예요. 전자가 오비탈을 채우는 순서 그대로 <b>f → d → p → s</b> 블록을 왼쪽부터 놓아서 계단 모양이 돼요. 헬륨이 비활성 기체가 아니라 <b>베릴륨 위(s 블록)</b>에 가는 게 특징이에요.',
+            'Charles Janet\'s 1928 table. Blocks go <b>f → d → p → s</b> from the left, in the order electrons fill orbitals, giving a staircase. Helium sits <b>above beryllium in the s-block</b>, not with the noble gases.'] },
+    spiral: { t: ['벤피 나선', 'Benfey spiral'],
+      cap: ['1964년 오토 벤피가 만든 달팽이 모양 표예요. 수소에서 시작해 한 바퀴가 한 주기예요. 끊김 없이 이어져서 <b>비활성 기체 다음에 바로 알칼리 금속</b>이 와요. 전이 금속과 란타넘족·악티늄족은 바깥으로 불룩 튀어나와요.',
+            'Otto Benfey\'s 1964 snail. It starts at hydrogen and each turn is one period, so there is no break: <b>alkali metals follow right after noble gases</b>. Transition metals and the f-block bulge outward.'] },
+    ring: { t: ['원형', 'Circular'],
+      cap: ['주기마다 동그란 고리 하나예요. 안쪽이 1주기, 바깥이 7주기예요. 같은 족은 <b>같은 방향의 반지름 선</b> 위에 놓여서, 족이 방사형으로 뻗어 나가요.',
+            'One ring per period, period 1 in the middle and 7 outside. Members of a group sit on <b>the same spoke</b>, so groups radiate outward.'] },
+    cyl: { t: ['3D 원통', '3D cylinder'],
+      cap: ['32열 표를 <b>원통에 말아</b> 붙였어요. 맨 오른쪽 비활성 기체가 맨 왼쪽 알칼리 금속과 맞닿아서, 주기율표가 사실 끝없이 이어지는 띠라는 걸 보여 줘요. <b>끌어서 돌려 보세요.</b>',
+            'The 32-column table <b>rolled into a cylinder</b>. The noble gases on the far right now touch the alkali metals on the far left, showing the table is really an endless band. <b>Drag to spin it.</b>'] },
+    mose: { t: ['모즐리 (1913)', 'Moseley (1913)'],
+      cap: ['헨리 모즐리는 원소에 전자를 쏘아 나오는 X선 진동수를 쟀어요. 진동수의 제곱근이 <b>원자번호에 딱 비례하는 직선</b>(√f ∝ Z − 1)이 나와서, 원소의 진짜 순서는 무게가 아니라 <b>원자핵의 양성자 수</b>라는 걸 밝혔어요. 직선에 빈 자리 43·61·72·75는 아직 못 찾은 원소였고, 코발트·니켈처럼 무게 순서가 뒤집힌 쌍도 바로잡았어요. 모즐리는 2년 뒤 1차 세계대전에서 27살로 전사했어요.',
+            'Henry Moseley fired electrons at elements and measured the X-rays that came out. The square root of the frequency fell on <b>a straight line with atomic number</b> (√f ∝ Z − 1), proving that order comes from <b>the number of protons</b>, not weight. Gaps at 43, 61, 72 and 75 were elements not yet found, and pairs like cobalt–nickel whose weights are "backwards" were put right. He was killed in WWI two years later, aged 27.'] },
+  };
+  const ORDER = ['long', 'mend', 'janet', 'spiral', 'ring', 'cyl', 'mose'];
+
+  // 멘델레예프 1871 (원자량은 그 당시 값): [줄, 족(1~8), 기호, 무게, 원자번호 또는 null, 메모]
+  const MEND = [
+    [1,1,'H',1,1],
+    [2,1,'Li',7,3],[2,2,'Be',9.4,4],[2,3,'B',11,5],[2,4,'C',12,6],[2,5,'N',14,7],[2,6,'O',16,8],[2,7,'F',19,9],
+    [3,1,'Na',23,11],[3,2,'Mg',24,12],[3,3,'Al',27.3,13],[3,4,'Si',28,14],[3,5,'P',31,15],[3,6,'S',32,16],[3,7,'Cl',35.5,17],
+    [4,1,'K',39,19],[4,2,'Ca',40,20],[4,3,'?',44,null,'sc'],[4,4,'Ti',48,22],[4,5,'V',51,23],[4,6,'Cr',52,24],[4,7,'Mn',55,25],[4,8,'Fe',56,26],[4,8.33,'Co',59,27],[4,8.66,'Ni',59,28],
+    [5,1,'Cu',63,29],[5,2,'Zn',65,30],[5,3,'?',68,null,'ga'],[5,4,'?',72,null,'ge'],[5,5,'As',75,33],[5,6,'Se',78,34],[5,7,'Br',80,35],
+    [6,1,'Rb',85,37],[6,2,'Sr',87,38],[6,3,'?Yt',88,39],[6,4,'Zr',90,40],[6,5,'Nb',94,41],[6,6,'Mo',96,42],[6,7,'?',100,null,'tc'],[6,8,'Ru',104,44],[6,8.33,'Rh',104,45],[6,8.66,'Pd',106,46],
+    [7,1,'Ag',108,47],[7,2,'Cd',112,48],[7,3,'In',113,49],[7,4,'Sn',118,50],[7,5,'Sb',122,51],[7,6,'Te',125,52],[7,7,'I',127,53],
+    [8,1,'Cs',133,55],[8,2,'Ba',137,56],[8,3,'?Di',138,null,'di'],[8,4,'?Ce',140,58],
+    [10,3,'?Er',178,68],[10,4,'?La',180,57],[10,5,'Ta',182,73],[10,6,'W',184,74],[10,8,'Os',195,76],[10,8.33,'Ir',197,77],[10,8.66,'Pt',198,78],
+    [11,1,'Au',199,79],[11,2,'Hg',200,80],[11,3,'Tl',204,81],[11,4,'Pb',207,82],[11,5,'Bi',208,83],
+    [12,4,'Th',231,90],[12,6,'U',240,92],
+  ];
+  const MNOTE = {
+    sc: ['에카붕소(무게 44 예측) → 1879년 스칸듐(44.96)으로 발견!', 'eka-boron (predicted 44) → found as scandium (44.96) in 1879!', 21],
+    ga: ['에카알루미늄(68 예측) → 1875년 갈륨(69.7)으로 발견! 밀도까지 거의 맞혔어요', 'eka-aluminium (predicted 68) → gallium (69.7), 1875 — even the density matched', 31],
+    ge: ['에카규소(72 예측) → 1886년 저마늄(72.6)으로 발견! 예측이 제일 정확했던 원소', 'eka-silicon (predicted 72) → germanium (72.6), 1886 — his most accurate prediction', 32],
+    tc: ['에카망가니즈(100 예측) → 1937년 처음으로 사람이 만든 원소 테크네튬', 'eka-manganese (predicted 100) → technetium, 1937, the first man-made element', 43],
+    di: ['디디뮴: 원소인 줄 알았는데 1885년 프라세오디뮴+네오디뮴 두 개가 섞인 걸로 밝혀졌어요', 'Didymium: thought to be an element, shown in 1885 to be praseodymium + neodymium mixed', 59],
+  };
+
+  const S = { v: 'long', hit: [], sel: null, yaw: 0, drag: null, auto: true, t0: 0 };
+  function cell(x, c, X, Y, w, h, n, opt){
+    opt = opt || {};
+    const cc = opt.col || col(n), sel = S.sel === n;
+    c.save(); c.globalAlpha = opt.a == null ? 1 : opt.a;
+    c.fillStyle = cc + (opt.dim ? '22' : '38'); c.strokeStyle = sel ? '#fff' : cc + 'aa'; c.lineWidth = sel ? 2.4 : 1;
+    const r = Math.min(w, h) * .18; c.beginPath(); c.roundRect ? c.roundRect(X, Y, w, h, r) : c.rect(X, Y, w, h); c.fill(); c.stroke();
+    if(Math.min(w, h) >= 11){ c.fillStyle = '#fff'; c.font = `800 ${Math.max(7, Math.min(w, h) * .42) | 0}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(opt.lab || byNum[n].s, X + w / 2, Y + h / 2 + (h > 26 ? 3 : 0));
+      if(h > 26 && w > 22 && !opt.lab){ c.font = `700 ${Math.max(6, h * .2) | 0}px system-ui,sans-serif`; c.fillStyle = 'rgba(230,234,255,.7)'; c.fillText(n, X + w / 2, Y + h * .2); } }
+    c.restore();
+    if(!opt.nohit) S.hit.push({ n: opt.id || n, x: X, y: Y, w, h });
+  }
+  function dot(c, x, y, r, n, opt){
+    opt = opt || {}; const cc = col(n), sel = S.sel === n;
+    c.save(); c.globalAlpha = opt.a == null ? 1 : opt.a;
+    c.fillStyle = cc + '55'; c.strokeStyle = sel ? '#fff' : cc; c.lineWidth = sel ? 2.4 : 1.2; c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill(); c.stroke();
+    if(r >= 6){ c.fillStyle = '#fff'; c.font = `800 ${Math.max(7, r * .95) | 0}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(byNum[n].s, x, y + 1); }
+    c.restore(); S.hit.push({ n, x: x - r, y: y - r, w: r * 2, h: r * 2 });
+  }
+
+  const DRAW = {
+    long(c, W, H){
+      const cw = Math.min((W - 30) / 32, (H - 40) / 7.6), ox = (W - cw * 32) / 2, oy = (H - cw * 7) / 2;
+      for(let n = 1; n <= 118; n++){ const e = byNum[n]; cell(null, c, ox + (col32(n) - 1) * cw + 1, oy + (e.p - 1) * cw + 1, cw - 2, cw - 2, n, { dim: blk(n) !== 'f' }); }
+      c.fillStyle = 'rgba(255,233,168,.85)'; c.font = '800 11px system-ui,sans-serif'; c.textAlign = 'center';
+      c.fillText(P('f 블록 (원래 아래에 떼어 두던 줄)', 'f-block (usually cut out below)'), ox + 9.5 * cw, oy - 8);
+    },
+    janet(c, W, H){
+      // 행 = n+l (1~8), 열: f 1–14 · d 15–24 · p 25–30 · s 31–32
+      const rows = [[], ['1s'], ['2s'], ['2p', '3s'], ['3p', '4s'], ['3d', '4p', '5s'], ['4d', '5p', '6s'], ['4f', '5d', '6p', '7s'], ['5f', '6d', '7p', '8s']];
+      const LEN = { s: 2, p: 6, d: 10, f: 14 }, OFF = { f: 0, d: 14, p: 24, s: 30 };
+      const cw = Math.min((W - 30) / 32, (H - 50) / 8.4), ox = (W - cw * 32) / 2, oy = (H - cw * 8) / 2 + 8;
+      let z = 1;
+      for(let r = 1; r <= 8; r++) rows[r].forEach(sh => { const b = sh[1];
+        for(let i = 0; i < LEN[b]; i++){ const X = ox + (OFF[b] + i) * cw + 1, Y = oy + (r - 1) * cw + 1;
+          if(z <= 118) cell(null, c, X, Y, cw - 2, cw - 2, z, { dim: true });
+          else { c.strokeStyle = 'rgba(170,180,255,.25)'; c.setLineDash([3, 3]); c.strokeRect(X, Y, cw - 2, cw - 2); c.setLineDash([]); }
+          z++; } });
+      c.font = '900 12px system-ui,sans-serif'; c.textAlign = 'center'; c.fillStyle = 'rgba(220,226,255,.75)';
+      [['f', 7], ['d', 19], ['p', 27], ['s', 31]].forEach(([b, x]) => c.fillText(b + P(' 블록', '-block'), ox + x * cw, oy - 10));
+    },
+    mend(c, W, H){
+      const cw = Math.min((W - 80) / 8, 160), ch = Math.min((H - 50) / 12.6, cw * .55), ox = (W - cw * 8) / 2 + 20, oy = (H - ch * 12) / 2 + 10;
+      c.font = '900 12px system-ui,sans-serif'; c.textAlign = 'center'; c.fillStyle = 'rgba(220,226,255,.8)';
+      ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].forEach((g, i) => c.fillText(g, ox + (i + .5) * cw, oy - 8));
+      for(let r = 1; r <= 12; r++){ c.fillStyle = 'rgba(200,206,255,.45)'; c.textAlign = 'right'; c.font = '700 10px system-ui,sans-serif'; c.fillText(r, ox - 8, oy + (r - .5) * ch + 3); }
+      MEND.forEach(([r, g, s, m, z, k]) => {
+        const tri = g % 1 !== 0 || (g === 8), sub = g === 8 ? 0 : g > 8 ? Math.round((g - 8) * 3) : -1;
+        const w = tri ? cw / 3 : cw, X = ox + (tri ? 7 * cw + sub * cw / 3 : (g - 1) * cw) + 1, Y = oy + (r - 1) * ch + 1;
+        if(z){ cell(null, c, X, Y, w - 2, ch - 2, z, { lab: s.replace('?', '') + (w > 70 ? ' ' + m : ''), dim: true });
+          if(s[0] === '?'){ c.fillStyle = '#ff9ad5'; c.font = '900 10px system-ui,sans-serif'; c.textAlign = 'left'; c.fillText('?', X + 3, Y + 10); } }
+        else { c.fillStyle = 'rgba(255,154,213,.18)'; c.strokeStyle = '#ff9ad5'; c.lineWidth = 1.5; c.setLineDash([4, 3]); c.beginPath(); c.roundRect ? c.roundRect(X, Y, w - 2, ch - 2, 6) : c.rect(X, Y, w - 2, ch - 2); c.fill(); c.stroke(); c.setLineDash([]);
+          c.fillStyle = '#ffd0ec'; c.font = `900 ${Math.max(9, ch * .38) | 0}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('? = ' + m, X + w / 2 - 1, Y + ch / 2); c.textBaseline = 'alphabetic';
+          S.hit.push({ n: 'm:' + k, x: X, y: Y, w: w - 2, h: ch - 2 }); }
+      });
+    },
+    spiral(c, W, H, t){
+      const per = [[1, 2], [3, 10], [11, 18], [19, 36], [37, 54], [55, 86], [87, 118]], cx = W / 2, cy = H / 2, R = Math.min(W, H) * .47;
+      const dr = R / 8.4, rot = -Math.PI / 2;
+      // 나선 길 먼저
+      c.strokeStyle = 'rgba(170,180,255,.18)'; c.lineWidth = 1; c.beginPath();
+      for(let q = 0; q <= 700; q++){ const k = q / 100, a = rot + k * 6.283, rr = dr * (.6 + k); q ? c.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : c.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } c.stroke();
+      per.forEach(([a0, a1], p) => { const L = a1 - a0 + 1;
+        for(let n = a0; n <= a1; n++){ const f = (n - a0 + .5) / L, b = blk(n), bump = b === 'd' ? .42 : b === 'f' ? .85 : 0;
+          const a = rot + (p + f) * 6.283, rr = dr * (.6 + p + f + bump * Math.sin(Math.PI * Math.min(1, b === 'f' ? (n - (a0 + 2)) / 14 : b === 'd' ? .5 : 0)));
+          const rad = Math.max(4, Math.min(dr * .42, 6.283 * rr / L * .42));
+          dot(c, cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, rad, n); } });
+    },
+    ring(c, W, H){
+      const cx = W / 2, cy = H / 2, R = Math.min(W, H) * .47, dr = R / 7.6;
+      { const rr = dr * 1.3; }
+      for(let p = 1; p <= 7; p++){ c.strokeStyle = 'rgba(170,180,255,.12)'; c.beginPath(); c.arc(cx, cy, dr * (p * .86 + 1.25), 0, 6.283); c.stroke(); }
+      for(let n = 1; n <= 118; n++){ const e = byNum[n], a = -Math.PI / 2 + (col32(n) - .5) / 32 * 6.283, rr = dr * (e.p * .86 + 1.25);
+        dot(c, cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, Math.max(5.5, Math.min(dr * .42, 6.283 * rr / 32 * .45)), n); }
+      c.fillStyle = 'rgba(220,226,255,.6)'; c.font = '800 10px system-ui,sans-serif'; c.textAlign = 'center';
+      [[1, P('1족', 'G1')], [18, P('2족', 'G2')], [32, P('18족', 'G18')]].forEach(([k, l]) => { const a = -Math.PI / 2 + (k - .5) / 32 * 6.283; c.fillText(l, cx + Math.cos(a) * dr * 8.05, cy + Math.sin(a) * dr * 8.05 + 3); });
+    },
+    cyl(c, W, H, t){
+      if(S.auto && !S.drag) S.yaw += .004;
+      const cx = W / 2, R = Math.min(W * .36, H * .5), rowH = Math.min((H - 60) / 7.4, R * 6.283 / 32 * 1.05), oy = (H - rowH * 7) / 2;
+      const items = [];
+      for(let n = 1; n <= 118; n++){ const e = byNum[n], a = (col32(n) - .5) / 32 * 6.283 + S.yaw, z = Math.cos(a);
+        items.push({ n, x: cx + Math.sin(a) * R, y: oy + (e.p - 1) * rowH, z, w: Math.max(2, R * 6.283 / 32 * Math.abs(Math.cos(a)) * .9) }); }
+      items.sort((p, q) => p.z - q.z).forEach(it => { const a = it.z < 0 ? .22 : .45 + .55 * it.z;
+        cell(null, c, it.x - it.w / 2, it.y + 1, it.w, rowH - 2, it.n, { a, dim: it.z < 0, nohit: it.z < 0 }); });
+      c.strokeStyle = 'rgba(170,180,255,.2)'; c.beginPath(); c.ellipse(cx, oy - 4, R, R * .12, 0, 0, 6.283); c.stroke(); c.beginPath(); c.ellipse(cx, oy + rowH * 7 + 4, R, R * .12, 0, 0, 6.283); c.stroke();
+    },
+    mose(c, W, H){
+      const ox = 56, oy = 24, pw = W - ox - 24, ph = H - oy - 48, Z0 = 10, Z1 = 82;
+      const X = z => ox + (z - Z0) / (Z1 - Z0) * pw, Y = v => oy + ph - v / (Z1 - 1) * ph;
+      c.strokeStyle = 'rgba(170,180,255,.3)'; c.lineWidth = 1; c.beginPath(); c.moveTo(ox, oy); c.lineTo(ox, oy + ph); c.lineTo(ox + pw, oy + ph); c.stroke();
+      c.fillStyle = 'rgba(200,206,255,.7)'; c.font = '700 11px system-ui,sans-serif'; c.textAlign = 'center';
+      for(let z = 10; z <= 80; z += 10){ c.fillText(z, X(z), oy + ph + 15); }
+      c.fillText(P('원자번호 Z (양성자 수) →', 'atomic number Z (protons) →'), ox + pw / 2, oy + ph + 32);
+      c.save(); c.translate(16, oy + ph / 2); c.rotate(-Math.PI / 2); c.fillText(P('√(X선 진동수) →', '√(X-ray frequency) →'), 0, 0); c.restore();
+      c.strokeStyle = 'rgba(255,233,168,.55)'; c.setLineDash([6, 4]); c.beginPath(); c.moveTo(X(Z0), Y(Z0 - 1)); c.lineTo(X(Z1), Y(Z1 - 1)); c.stroke(); c.setLineDash([]);
+      const GAP = { 43: 1937, 61: 1945, 72: 1923, 75: 1925 };
+      for(let z = 13; z <= 79; z++){ const x = X(z), y = Y(z - 1);
+        if(GAP[z]){ c.strokeStyle = '#ff7a8a'; c.lineWidth = 2; c.beginPath(); c.arc(x, y, 7, 0, 6.283); c.stroke(); c.fillStyle = '#ff9aa5'; c.font = '900 11px system-ui,sans-serif'; c.textAlign = 'center';
+          c.fillText('?' + z, x, y - 12); c.font = '700 9px system-ui,sans-serif'; c.fillText(byNum[z].s + ' ' + GAP[z], x, y + 20); S.hit.push({ n: z, x: x - 9, y: y - 9, w: 18, h: 18 }); continue; }
+        dot(c, x, y, 4.2, z); }
+      // 무게 순서가 뒤집힌 쌍
+      c.font = '800 10.5px system-ui,sans-serif'; c.textAlign = 'left';
+      [[27, 28], [52, 53], [18, 19]].forEach(([a, b], i) => { const x = X(b) + 10, y = Y(b - 1) + 4;
+        c.fillStyle = '#9fe0ff'; c.fillText(`${byNum[a].s} ${byNum[a].m.toFixed(1)} > ${byNum[b].s} ${byNum[b].m.toFixed(1)} ` + P('(무게는 거꾸로!)', '(weights backwards!)'), x, y); });
+    },
+  };
+
+  let raf = 0;
+  function frame(t){
+    raf = requestAnimationFrame(frame);
+    const d = document.getElementById('ptkWin'), cv = d && d.querySelector('canvas'); if(!cv) return;
+    const dpr = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if(cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+    S.hit = []; DRAW[S.v](c, W, H, t);
+    if(S.v !== 'cyl' && !S.dirty){ cancelAnimationFrame(raf); raf = 0; }
+    S.dirty = false;
+  }
+  const redraw = () => { S.dirty = true; if(!raf) raf = requestAnimationFrame(frame); };
+  function info(){
+    const d = document.getElementById('ptkWin'), b = d.querySelector('.sel');
+    if(S.sel == null){ b.innerHTML = `<span style="color:#9aa0c8">${P('원소를 눌러 보세요', 'Tap an element')}</span>`; return; }
+    if(typeof S.sel === 'string'){ const k = MNOTE[S.sel.slice(2)]; b.innerHTML = `<span class="note">${EN() ? k[1] : k[0]}</span><button type="button">${byNum[k[2]].s} ${P('보기', 'view')} →</button>`;
+      b.querySelector('button').onclick = () => go(k[2]); return; }
+    const e = byNum[S.sel];
+    b.innerHTML = `<span style="font-size:18px">${e.s}</span><span>${name(S.sel)} · ${S.sel}</span><button type="button">${P('이 원소 보기', 'View element')} →</button>`;
+    b.querySelector('button').onclick = () => go(S.sel);
+  }
+  function go(n){ close(); try{ select(n); }catch(e){} }
+  function el(){
+    let d = document.getElementById('ptkWin'); if(d) return d;
+    d = document.createElement('div'); d.id = 'ptkWin'; d.setAttribute('role', 'dialog');
+    d.innerHTML = `<div class="w"><header><h3></h3><button type="button" class="x" aria-label="close">✕</button></header><div class="tabs"></div>
+      <div class="stage"><canvas></canvas></div><div class="cap"></div><div class="sel"></div></div>`;
+    document.body.appendChild(d);
+    d.querySelector('.x').onclick = close; d.addEventListener('click', e => { if(e.target === d) close(); });
+    addEventListener('keydown', e => { if(e.key === 'Escape' && d.classList.contains('on')) close(); });
+    const cv = d.querySelector('canvas');
+    cv.addEventListener('pointerdown', e => { S.drag = { x: e.clientX, y0: S.yaw, moved: false }; S.auto = false; cv.setPointerCapture && cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', e => { if(!S.drag) return; const dx = e.clientX - S.drag.x; if(Math.abs(dx) > 4) S.drag.moved = true; if(S.v === 'cyl'){ S.yaw = S.drag.y0 + dx / 140; redraw(); } });
+    cv.addEventListener('pointerup', e => { const dr = S.drag; S.drag = null; if(dr && dr.moved) return;
+      const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      const h = S.hit.slice().reverse().find(q => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
+      S.sel = h ? h.n : null; info(); redraw(); try{ SFX.pick(); }catch(_){} });
+    addEventListener('resize', () => { if(d.classList.contains('on')) redraw(); });
+    return d;
+  }
+  function tabs(){
+    const d = el(); d.querySelector('h3').textContent = P('▦ 주기율표의 종류', '▦ Kinds of periodic table');
+    d.querySelector('.tabs').innerHTML = ORDER.map(k => `<button type="button" data-v="${k}" class="${k === S.v ? 'on' : ''}">${P(V[k].t[0], V[k].t[1])}</button>`).join('');
+    d.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.v = b.dataset.v; S.sel = null; S.auto = true; tabs(); info(); redraw(); try{ SFX.pick(); }catch(_){} });
+    d.querySelector('.cap').innerHTML = P(V[S.v].cap[0], V[S.v].cap[1]);
+  }
+  function open(v){ if(v && V[v]) S.v = v; const d = el(); tabs(); info(); d.classList.add('on'); cancelAnimationFrame(raf); raf = 0; redraw(); }
+  function close(){ const d = document.getElementById('ptkWin'); if(d) d.classList.remove('on'); cancelAnimationFrame(raf); raf = 0; }
+  window.rxPtkOpen = open;
+
+  // 보기 탭 줄 옆 버튼
+  function place(){
+    const mb = document.getElementById('modebar'), mt = document.getElementById('mtabs'); if(!mb || !mt) return;
+    let b = document.getElementById('ptkBtn');
+    if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'ptkBtn'; b.onclick = () => open(); }
+    b.innerHTML = `▦ <span>${P('표 모양', 'Table shapes')}</span>`; b.title = P('주기율표의 종류', 'Kinds of periodic table');
+    if(b.previousElementSibling !== mt) mt.after(b);
+  }
+  place(); setInterval(() => { try{ place(); }catch(e){} }, 2000);
+})();
+</script>
+
 </body>
 </html>
