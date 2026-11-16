@@ -54808,6 +54808,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     background:linear-gradient(180deg,#f6d79a,#d9a050);border:2px solid #7a4515;box-shadow:0 4px 0 #7a4515,0 0 30px rgba(255,140,40,.55);animation:tbIn .5s steps(4) both}
   #toastBadge b{color:#c0300a}
   #toastBadge i{font-style:normal;display:inline-block;animation:tbWob .5s steps(2) infinite}
+  #toastBadge .tbi{width:17px;height:17px;display:block;fill:#f6d79a;stroke:#7a4515;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .toastPop .tpi{width:110px;height:110px;display:block;fill:#e8a95a;stroke:#6b3b12;stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
   @keyframes tbIn{from{transform:translate(-50%,-80px)}}
   @keyframes tbWob{50%{transform:translateY(-2px) rotate(-6deg)}}
   #toastHeat{position:fixed;inset:auto 0 0 0;height:22vh;z-index:2147483199;pointer-events:none;
@@ -54857,7 +54859,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
       b.addEventListener('click', tap);
       const h = document.createElement('div'); h.id = 'toastHeat'; document.documentElement.appendChild(h);
     }
-    b.innerHTML = `<i>🍞</i> ${EN() ? 'Running on a toaster…' : '토스터에서 실행 중…'} <b>${temp}°C</b>`;
+    b.innerHTML = `<i><svg class="tbi" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10.5A4 4 0 0 1 4 4.5C5 3 7.5 3 9 3h6c1.5 0 4 0 5 1.5a4 4 0 0 1-1 6V20z"/><path d="M9 12v.1M14 15v.1M11 17v.1"/></svg></i> ${EN() ? 'Running on a toaster…' : '토스터에서 실행 중…'} <b>${temp}°C</b>`;
   }
   function on(){
     ON = true; temp = 160; document.documentElement.classList.add('toaster'); snd('on'); badge();
@@ -54867,7 +54869,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     ON = false; clearInterval(heatT); document.documentElement.classList.remove('toaster');
     document.getElementById('toastBadge')?.remove(); document.getElementById('toastHeat')?.remove();
     snd('off');
-    const p = document.createElement('div'); p.className = 'toastPop'; p.textContent = '🍞'; document.documentElement.appendChild(p); setTimeout(() => p.remove(), 1700);
+    const p = document.createElement('div'); p.className = 'toastPop'; p.innerHTML = '<svg class="tpi" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10.5A4 4 0 0 1 4 4.5C5 3 7.5 3 9 3h6c1.5 0 4 0 5 1.5a4 4 0 0 1-1 6V20z"/><path d="M9 12v.1M14 15v.1M11 17v.1"/></svg>'; document.documentElement.appendChild(p); setTimeout(() => p.remove(), 1700);
     const d = document.createElement('div'); d.className = 'toastDing'; d.textContent = EN() ? 'DING!' : '띵!'; document.documentElement.appendChild(d); setTimeout(() => d.remove(), 1300);
   }
   function tap(){
@@ -54892,7 +54894,8 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   #bakeCard .hd{display:flex;align-items:center;gap:12px}
   #bakeCard .sl{flex:none;width:58px;height:58px;border-radius:14px 14px 10px 10px;display:grid;place-items:center;font:900 24px/1 Kanit,system-ui,sans-serif;position:relative;
     color:var(--ink);background:var(--bread);box-shadow:inset 0 0 0 3px var(--crust),inset 0 -8px 12px rgba(0,0,0,.25)}
-  #bakeCard .sl em{position:absolute;right:-8px;top:-10px;font-style:normal;font-size:22px}
+  #bakeCard .sl em{position:absolute;right:-10px;top:-10px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:2.5px solid #fbe2ad;box-shadow:0 2px 0 #7a4515}
+  #bakeCard .sl em svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   #bakeCard .k{font:800 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:#8a4a12}
   #bakeCard b.r{display:block;margin-top:4px;font-size:16px;font-weight:900;line-height:1.3;word-break:keep-all}
   #bakeCard p{margin:9px 0 0;font-size:12.5px;line-height:1.5;font-weight:600;word-break:keep-all}
@@ -54944,6 +54947,29 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     if(k > .4) return { r: ['🥖', P('따끈따끈', 'Nice and warm'), P(`녹으려면 ${mp}°C까지 가야 해요. 지금은 따뜻한 정도예요.`, `Needs ${mp}°C to melt. Just warm for now.`)], mp, bp };
     return { r: ['🧊', P('아무 일도 없음', 'Nothing happened'), P(`녹는점이 ${mp.toLocaleString()}°C예요. 토스터로는 어림도 없어요.`, `Melts at ${mp.toLocaleString()}°C. A toaster has no chance.`)], mp, bp };
   }
+  const ICO = {
+    '💨': ['#7fb2ff', '<path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h15a3 3 0 1 1-3 3"/><path d="M3 16h7"/>'],
+    '🎈': ['#ff8fb3', '<ellipse cx="12" cy="9" rx="5.5" ry="6.5"/><path d="M12 15.5l-1 2h2l-1-2M12 17.5c0 2-2 2.5-2 4.5"/>'],
+    '🫠': ['#ff9a3d', '<path d="M12 3c3.2 4.2 6 7.4 6 11a6 6 0 0 1-12 0c0-3.6 2.8-6.8 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>'],
+    '⚠️': ['#e8590c', '<path d="M12 3 2.5 20h19z"/><path d="M12 9v5M12 17.2v.1"/>'],
+    '⬛': ['#3a3a3a', '<path d="M5 15l2-7 6-3 6 4 1 6-5 4H9z"/><path d="M9 11l3 2 4-2"/>'],
+    '😎': ['#5c7cfa', '<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'],
+    '💰': ['#f2b705', '<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>'],
+    '🧪': ['#2fb380', '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/>'],
+    '🔥': ['#e8590c', '<path d="M12 21a6 6 0 0 0 6-6c0-4-3-6-4-10-1 2-2 3-4 4 0-2-1-3-1-3-2 2-3 5-3 9a6 6 0 0 0 6 6z"/><path d="M12 21a2.5 2.5 0 0 1-2.5-2.5c0-1.6 1.2-2.6 2.5-4 1.3 1.4 2.5 2.4 2.5 4A2.5 2.5 0 0 1 12 21z"/>'],
+    '😷': ['#b5a300', '<path d="M4 8c2-2 4 2 6 0s4 2 6 0 2-1 4 0"/><path d="M4 13c2-2 4 2 6 0s4 2 6 0 2-1 4 0"/><path d="M4 18c2-2 4 2 6 0s4 2 6 0"/>'],
+    '🟤': ['#9c4a1a', '<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17 18z"/><path d="M9 21h6"/>'],
+    '🟣': ['#8f5bd8', '<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17 18z"/><path d="M9 21h6"/>'],
+    '⚛️': ['#7048e8', '<circle cx="12" cy="12" r="1.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(-60 12 12)"/>'],
+    '☢️': ['#c9a400', '<circle cx="12" cy="12" r="2"/><path d="M12 10 9 4.8a8 8 0 0 0-5 8.7h6M14 12h6a8 8 0 0 0-5-8.7L12 10M11 13.7l-3 5.2a8 8 0 0 0 8 0l-3-5.2"/>'],
+    '💧': ['#339af0', '<path d="M12 3c3.2 4.2 6 7.4 6 11a6 6 0 0 1-12 0c0-3.6 2.8-6.8 6-11z"/>'],
+    '♨️': ['#f76707', '<path d="M8 10c-1.5-2 1.5-3 0-5M12 10c-1.5-2 1.5-3 0-5M16 10c-1.5-2 1.5-3 0-5"/><path d="M4 13h16a8 8 0 0 1-16 0z"/>'],
+    '🍞': ['#c47a2c', '<path d="M5 20V10.5A4 4 0 0 1 4 4.5C5 3 7.5 3 9 3h6c1.5 0 4 0 5 1.5a4 4 0 0 1-1 6V20z"/><path d="M9 12v.1M14 15v.1M11 17v.1"/>'],
+    '🥖': ['#d9a050', '<path d="M14 4a2 2 0 1 1 4 0v10.5a4 4 0 1 1-4 0z"/><path d="M16 9v6.5"/>'],
+    '🧊': ['#4dabf7', '<path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5"/>'],
+    '🤔': ['#868e96', '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7v.5M12 17v.1"/>'],
+  };
+  const icon = k => { const v = ICO[k] || ICO['🤔']; return `<em style="background:${v[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${v[1]}</svg></em>`; };
   const BREAD = { '🧊': ['#f6e7c4', '#d8b98a'], '🥖': ['#f3cf8a', '#c98a3e'], '🍞': ['#e8a95a', '#9c5d22'], '🫠': ['#e8a95a', '#7a3d10'], '⬛': ['#2a2a2a', '#000'], '🔥': ['#7a3d10', '#2a1203'] };
   let hideT = 0;
   function show(n){
@@ -54954,7 +54980,7 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     document.getElementById('bakeCard')?.remove();
     const lo = -50, hi = 600, pos = v => Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
     const c = document.createElement('div'); c.id = 'bakeCard';
-    c.innerHTML = `<div class="hd"><div class="sl" style="--bread:${bread};--crust:${crust};--ink:${r[0] === '⬛' || r[0] === '🔥' ? '#f6d79a' : '#3a1d06'}">${e.s}<em>${r[0]}</em></div>
+    c.innerHTML = `<div class="hd"><div class="sl" style="--bread:${bread};--crust:${crust};--ink:${r[0] === '⬛' || r[0] === '🔥' ? '#f6d79a' : '#3a1d06'}">${e.s}${icon(r[0])}</div>
       <div><div class="k">${P(`원소 굽기 · ${t}°C`, `TOASTING · ${t}°C`)}</div><b class="r">${EN() ? e.en : e.ko}: ${r[1]}</b></div></div>
       <p>${r[2]}</p>
       <div class="th"><i class="t" style="left:${pos(t)}%"></i>${mp != null ? `<i style="left:${pos(mp)}%"></i>` : ''}${bp != null && bp <= hi ? `<i style="left:${pos(bp)}%;opacity:.5"></i>` : ''}</div>
