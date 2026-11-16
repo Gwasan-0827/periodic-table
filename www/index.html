@@ -54795,5 +54795,89 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
 })();
 </script>
 
+<style>
+  /* ═══ 이스터에그: 🍞 토스터 모드 (권장 사양 카드의 토스터 문구 5번 연속 탭) ═══ */
+  .gpu-req small{cursor:pointer;user-select:none;-webkit-user-select:none}
+  html.toaster{filter:url(#rxPxF) sepia(.3) saturate(1.25) contrast(1.05)}
+  html.toaster *{animation-timing-function:steps(3,end)!important;transition-timing-function:steps(2,end)!important}
+  html.toaster .cell{background:radial-gradient(120% 90% at 50% 30%,#f3cf8a,#d79a4e 60%,#9c5d22)!important;border-color:#6b3b12!important;
+    box-shadow:inset 0 0 0 2px rgba(110,60,18,.65),inset 0 -6px 10px rgba(90,40,10,.45)!important;color:#3a1d06!important}
+  html.toaster .cell *{color:#3a1d06!important;text-shadow:none!important}
+  #toastBadge{position:fixed;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483200;display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:999px;font:800 13px/1 ui-monospace,monospace;color:#3a1d06;cursor:pointer;user-select:none;-webkit-user-select:none;
+    background:linear-gradient(180deg,#f6d79a,#d9a050);border:2px solid #7a4515;box-shadow:0 4px 0 #7a4515,0 0 30px rgba(255,140,40,.55);animation:tbIn .5s steps(4) both}
+  #toastBadge b{color:#c0300a}
+  #toastBadge i{font-style:normal;display:inline-block;animation:tbWob .5s steps(2) infinite}
+  @keyframes tbIn{from{transform:translate(-50%,-80px)}}
+  @keyframes tbWob{50%{transform:translateY(-2px) rotate(-6deg)}}
+  #toastHeat{position:fixed;inset:auto 0 0 0;height:22vh;z-index:2147483199;pointer-events:none;
+    background:linear-gradient(0deg,rgba(255,80,0,.28),rgba(255,140,40,.1) 40%,transparent);mix-blend-mode:screen;animation:thFl 1.2s steps(3) infinite alternate}
+  @keyframes thFl{to{opacity:.6}}
+  .toastPop{position:fixed;left:50%;bottom:-120px;z-index:2147483300;font-size:96px;pointer-events:none;filter:drop-shadow(0 10px 20px rgba(0,0,0,.5));animation:tpUp 1.6s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes tpUp{0%{transform:translate(-50%,0) rotate(0)}45%{transform:translate(-50%,-62vh) rotate(380deg)}100%{transform:translate(-50%,10vh) rotate(720deg);opacity:0}}
+  .toastDing{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:2147483300;pointer-events:none;font:900 64px/1 system-ui,sans-serif;color:#fff;
+    text-shadow:0 0 30px #ffb347,0 4px 0 #b8601a;animation:tdIn 1.2s cubic-bezier(.2,1.6,.4,1) forwards}
+  @keyframes tdIn{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}25%{transform:translate(-50%,-50%) scale(1.15);opacity:1}80%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="rxPxF" x="0" y="0" width="100%" height="100%">
+    <feFlood x="1" y="1" width="1" height="1" result="d"/>
+    <feComposite in="d" width="3" height="3" result="c"/>
+    <feTile in="c" result="t"/>
+    <feComposite in="SourceGraphic" in2="t" operator="in" result="s"/>
+    <feMorphology in="s" operator="dilate" radius="1.5"/>
+  </filter></defs></svg>
+<script>
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  let ON = false, taps = [], heatT = 0, temp = 160;
+  const rAF = window.requestAnimationFrame.bind(window);
+  // 토스터니까 프레임도 뚝뚝 (초당 8번만 그린다)
+  window.requestAnimationFrame = function(cb){
+    if(!ON) return rAF(cb);
+    return -setTimeout(() => rAF(cb), 110);
+  };
+  const cAF = window.cancelAnimationFrame.bind(window);
+  window.cancelAnimationFrame = id => id < 0 ? clearTimeout(-id) : cAF(id);
+  function snd(kind){
+    try{
+      if(typeof sndOn !== 'undefined' && !sndOn) return;
+      const a = ac(); if(!a) return; const t = a.currentTime;
+      const tone = (f, d, v, ty, dl) => { const o = a.createOscillator(), g = a.createGain(); o.type = ty || 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t + (dl || 0)); g.gain.linearRampToValueAtTime(v, t + (dl || 0) + .005); g.gain.exponentialRampToValueAtTime(.0001, t + (dl || 0) + d);
+        o.connect(g); g.connect(a.destination); o.start(t + (dl || 0)); o.stop(t + (dl || 0) + d + .05); };
+      if(kind === 'on'){ tone(180, .06, .25, 'square'); tone(120, .1, .2, 'square', .05); tone(60, 1.2, .05, 'sawtooth', .15); }   // 레버 철컥 + 웅
+      else { tone(1760, 1.4, .18); tone(2637, 1, .07, 'sine', .005); tone(220, .08, .2, 'square', .35); }                         // 띵! + 튀어 오름
+    }catch(_){}
+  }
+  function badge(){
+    let b = document.getElementById('toastBadge');
+    if(!b){
+      b = document.createElement('div'); b.id = 'toastBadge'; document.body.appendChild(b);
+      b.addEventListener('click', tap);
+      const h = document.createElement('div'); h.id = 'toastHeat'; document.body.appendChild(h);
+    }
+    b.innerHTML = `<i>🍞</i> ${EN() ? 'Running on a toaster…' : '토스터에서 실행 중…'} <b>${temp}°C</b>`;
+  }
+  function on(){
+    ON = true; temp = 160; document.documentElement.classList.add('toaster'); snd('on'); badge();
+    clearInterval(heatT); heatT = setInterval(() => { temp = Math.min(230, temp + 1 + (Math.random() * 2 | 0)); badge(); }, 900);
+  }
+  function off(){
+    ON = false; clearInterval(heatT); document.documentElement.classList.remove('toaster');
+    document.getElementById('toastBadge')?.remove(); document.getElementById('toastHeat')?.remove();
+    snd('off');
+    const p = document.createElement('div'); p.className = 'toastPop'; p.textContent = '🍞'; document.body.appendChild(p); setTimeout(() => p.remove(), 1700);
+    const d = document.createElement('div'); d.className = 'toastDing'; d.textContent = EN() ? 'DING!' : '띵!'; document.body.appendChild(d); setTimeout(() => d.remove(), 1300);
+  }
+  function tap(){
+    const now = Date.now(); taps = taps.filter(x => now - x < 2200); taps.push(now);
+    if(taps.length >= 5){ taps = []; ON ? off() : on(); }
+  }
+  document.addEventListener('click', e => { if(e.target.closest && e.target.closest('.gpu-req small')) tap(); });
+  window.rxToaster = () => ON ? off() : on();
+})();
+</script>
+
 </body>
 </html>
