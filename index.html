@@ -51959,6 +51959,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   /* ── 시뮬레이션 ── */
   const S = { nuc: [], neu: [], frag: [], fx: [], fis: 0, mev: 0, rods: false, run: false, W: 0, H: 0, tip: 1 };
   function seed(){
+    S.gen = (S.gen || 0) + 1;
     S.nuc = []; S.neu = []; S.frag = []; S.fx = []; S.fis = 0; S.mev = 0;
     const W = S.W, H = S.H, r = Math.max(16, Math.min(30, Math.min(W, H) / 12)), gap = r * 2.55;
     for(let y = gap * .8; y < H - r; y += gap * .87) for(let x = gap * .6 + ((Math.round(y / gap) % 2) ? gap / 2 : 0); x < W - r; x += gap){
@@ -51968,8 +51969,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
   function fireN(x, y, ang, sp){ S.neu.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 0 }); }
   function split(n, now){
     n.st = 2; n.t = now; S.fis++; S.mev += 200;
-    const a = Math.random() * 6.283;
+    const a = Math.random() * 6.283, g = S.gen;
     setTimeout(() => {
+      if(g !== S.gen) return;   // 그 사이 '다시'를 눌렀으면 무시
       const sp = .09;
       S.frag.push({ x: n.x, y: n.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, r: n.r * .78, k: 'A', t0: performance.now(), lab: F.ft[2] + F.ft[0] });
       S.frag.push({ x: n.x, y: n.y, vx: -Math.cos(a) * sp, vy: -Math.sin(a) * sp, r: n.r * .86, k: 'B', t0: performance.now(), lab: F.fb[2] + F.fb[0] });
@@ -51999,7 +52001,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       // 제어봉: 가끔 붙잡아서 연쇄를 늦춘다
       if(S.rods && Math.random() < dt * .0016){ S.fx.push({ x: n.x, y: n.y, t0: now, r: 6, absorb: 1 }); S.neu.splice(i, 1); continue; }
       const hit = S.nuc.find(u => u.st === 0 && (u.x - n.x) ** 2 + (u.y - n.y) ** 2 < (u.r * .9) ** 2);
-      if(hit){ S.neu.splice(i, 1); hit.st = 1; hit.t = now; setTimeout(() => split(hit, performance.now()), 260); }
+      if(hit){ S.neu.splice(i, 1); hit.st = 1; hit.t = now; const g = S.gen; setTimeout(() => { if(g === S.gen) split(hit, performance.now()); }, 260); }
     }
     // 연료 핵
     S.nuc.forEach(u => {
@@ -52068,7 +52070,10 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       fireN(sx, sy, ang, .38); try{ SFX.pick(); }catch(_){} });
     d.querySelector('[data-a=shoot]').onclick = () => { const t = S.nuc.filter(u => u.st === 0)[Math.floor(Math.random() * S.nuc.filter(u => u.st === 0).length)]; if(t) fireN(0, t.y, Math.atan2(0, 1), .38); };
     d.querySelector('[data-a=rods]').onclick = e => { S.rods = !S.rods; e.currentTarget.classList.toggle('on', S.rods); };
-    d.querySelector('[data-a=reset]').onclick = () => seed();
+    const rs = d.querySelector('[data-a=reset]');
+    const doReset = e => { if(e){ e.preventDefault(); e.stopPropagation(); } if(rs._t && performance.now() - rs._t < 350) return; rs._t = performance.now();
+      seed(); try{ SFX.pick(); }catch(_){} const cv2 = d.querySelector('canvas'); cv2.animate && cv2.animate([{ opacity: .3 }, { opacity: 1 }], { duration: 300 }); };
+    rs.addEventListener('pointerup', doReset); rs.addEventListener('click', doReset);
     addEventListener('keydown', e => { if(e.key === 'Escape' && d.classList.contains('on')) close(); });
     return d;
   }
