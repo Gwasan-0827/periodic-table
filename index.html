@@ -54883,6 +54883,96 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
   }
   document.addEventListener('click', e => { if(e.target.closest && e.target.closest('.gpu-req small')) tap(); });
   window.rxToaster = () => ON ? off() : on();
+  window.rxToastState = () => ({ on: ON, temp });
+})();
+</script>
+
+<style>
+  /* ═══ 토스터 모드 확장: 원소 굽기 (실제 녹는점·끓는점으로 판정) ═══ */
+  #bakeCard{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483250;width:min(400px,calc(100vw - 24px));
+    padding:14px 16px 13px;border-radius:16px;color:#3a1d06;font-family:system-ui,sans-serif;
+    background:linear-gradient(180deg,#fbe2ad,#e9b46a);border:3px solid #7a4515;box-shadow:0 6px 0 #7a4515,0 18px 40px rgba(0,0,0,.5),0 0 40px rgba(255,140,40,.35);
+    animation:bkIn .45s cubic-bezier(.2,1.5,.4,1) both}
+  #bakeCard.out{animation:bkOut .3s ease-in forwards}
+  @keyframes bkIn{from{transform:translate(-50%,140%) rotate(-4deg)}}
+  @keyframes bkOut{to{transform:translate(-50%,140%);opacity:0}}
+  #bakeCard .hd{display:flex;align-items:center;gap:12px}
+  #bakeCard .sl{flex:none;width:58px;height:58px;border-radius:14px 14px 10px 10px;display:grid;place-items:center;font:900 24px/1 Kanit,system-ui,sans-serif;position:relative;
+    color:var(--ink);background:var(--bread);box-shadow:inset 0 0 0 3px var(--crust),inset 0 -8px 12px rgba(0,0,0,.25)}
+  #bakeCard .sl em{position:absolute;right:-8px;top:-10px;font-style:normal;font-size:22px}
+  #bakeCard .k{font:800 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:#8a4a12}
+  #bakeCard b.r{display:block;margin-top:4px;font-size:16px;font-weight:900;line-height:1.3;word-break:keep-all}
+  #bakeCard p{margin:9px 0 0;font-size:12.5px;line-height:1.5;font-weight:600;word-break:keep-all}
+  #bakeCard .th{position:relative;margin-top:10px;height:10px;border-radius:6px;background:linear-gradient(90deg,#5aa7ff,#ffe08a 45%,#ff7a2a 75%,#c0300a);border:2px solid #7a4515}
+  #bakeCard .th i{position:absolute;top:-6px;width:4px;height:18px;margin-left:-2px;border-radius:2px;background:#3a1d06}
+  #bakeCard .th i.t{background:#fff;box-shadow:0 0 0 2px #c0300a}
+  #bakeCard .lg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font:700 10.5px/1.3 ui-monospace,monospace;color:#6b3a10}
+  #bakeCard .lg span::before{content:"";display:inline-block;width:8px;height:8px;margin-right:4px;border-radius:2px;background:#3a1d06;vertical-align:-1px}
+  #bakeCard .lg span.t::before{background:#fff;box-shadow:0 0 0 1.5px #c0300a}
+</style>
+<script>
+(function(){
+  if(typeof select !== 'function' || typeof PROPS === 'undefined') return;
+  const EN = () => LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  const C = k => k == null ? null : Math.round(k - 273.15);
+  const RADIO = n => n > 83 || n === 43 || n === 61;
+  // 원소별 특별 대사 (온도 t 는 섭씨)
+  const SP = {
+    H:  t => ['💨', P('구울 게 없어요', 'Nothing to toast'), P('수소는 이미 기체예요. 토스터 문 열자마자 날아갔어요.', 'Already a gas. Gone the moment the door opened.')],
+    He: t => ['🎈', P('풍선처럼 날아감', 'Floated away'), P('헬륨은 너무 가벼워서 토스터 위로 둥실 떠올랐어요.', 'Too light. It drifted right out of the toaster.')],
+    Ga: t => ['🫠', P('넣기도 전에 녹음', 'Melted before baking'), P('갈륨은 녹는점이 약 30°C라서 손에 쥐는 순간 이미 녹았어요.', 'Melts at about 30°C. It melted in your hand on the way.')],
+    Hg: t => ['⚠️', P('절대 데우면 안 돼요', 'Do NOT heat this'), P('수은은 원래 액체고, 데우면 해로운 수은 증기가 나와요. 토스터 즉시 폐기!', 'Already liquid, and heating it makes toxic vapour. Toaster: retired.')],
+    C:  t => ['⬛', P('바삭… 이 아니라 숯', 'Crispy… no, charcoal'), P('탄소는 3,500°C가 넘어야 변해요. 그냥 원래부터 숯이었어요.', 'Carbon needs 3,500°C+. It was charcoal all along.')],
+    W:  t => ['😎', P('간지럽지도 않음', 'Not even ticklish'), P(`텅스텐 녹는점은 3,422°C. ${t}°C는 미지근한 수준이에요.`, `Tungsten melts at 3,422°C. ${t}°C is lukewarm.`)],
+    Au: t => ['💰', P('그냥 비싼 토스트', 'Just a pricey toast'), P('금은 1,064°C에서 녹아요. 반짝반짝 그대로예요.', 'Gold melts at 1,064°C. Still shiny.')],
+    F:  t => ['🧪', P('토스터가 부식됐어요', 'The toaster corroded'), P('플루오린은 기체인 데다 거의 모든 걸 공격해요. 토스터 안쪽이 먼저 당했어요.', 'A gas that attacks almost everything, starting with the toaster.')],
+    P:  t => ['🔥', P('불붙음 (백린이면)', 'On fire (white P)'), P('백린은 공기 중에서 30°C 근처면 저절로 불이 붙어요. 적린은 괜찮지만요.', 'White phosphorus self-ignites in air around 30°C. Red phosphorus is calmer.')],
+    S:  t => t >= 115 ? ['😷', P('노란 액체 + 냄새', 'Yellow goo + smell'), P('황은 115°C에서 녹아 노란 액체가 돼요. 그리고 냄새가… 좀 나요.', 'Sulfur melts at 115°C into yellow liquid. Also: the smell.')] : null,
+    Sn: t => t >= 232 ? ['🫠', P('녹았어요!', 'Melted!'), P('주석 녹는점 232°C 돌파! 토스터 온도가 드디어 이겼어요.', 'Past tin\'s 232°C. The toaster finally won.')] : ['🔥', P('조금만 더…!', 'Almost…!'), P(`주석은 232°C에서 녹아요. 지금 ${t}°C, ${232 - t}°C만 더!`, `Tin melts at 232°C. ${232 - t}°C to go!`)],
+    In: t => t >= 157 ? ['🫠', P('살짝 녹음', 'Just melted'), P('인듐 녹는점은 157°C. 토스터 온도에 딱 걸렸어요.', 'Indium melts at 157°C. Right at toaster heat.')] : null,
+    Br: t => ['🟤', P('끓어서 날아감', 'Boiled off'), P('브로민은 59°C에서 끓어요. 적갈색 증기가 토스터 밖으로 새어 나와요.', 'Boils at 59°C. Red-brown fumes are leaking out.')],
+    I:  t => t >= 184 ? ['🟣', P('보라색 증기 뿜뿜', 'Purple fumes'), P('아이오딘이 184°C를 넘겨서 끓어요. 보라색 연기가 가득!', 'Iodine passed 184°C and is boiling. Purple everywhere!')] : ['🟣', P('보라색 증기 피어오름', 'Purple vapour rising'), P('아이오딘은 녹기 전에 바로 기체가 되는 승화를 잘해요. 보라색 증기가 슬슬 나와요.', 'Iodine sublimes easily. Purple vapour is creeping out.')],
+  };
+  ['Li', 'Na', 'K', 'Rb', 'Cs'].forEach(s => SP[s] = t => ['🔥', P('녹더니 불붙음', 'Melted, then caught fire'), P(`${({ Li: '리튬', Na: '나트륨', K: '칼륨', Rb: '루비듐', Cs: '세슘' })[s]}은 공기·수분이랑 격하게 반응해요. 토스터 안에서 녹으면서 불꽃이 튀었어요.`, 'Alkali metals react violently with air and moisture. It melted and burst into flames.')]);
+
+  function judge(e, t){
+    const pr = PROPS[e.s] || {}, mp = C(pr.mp), bp = C(pr.bp);
+    if(SP[e.s]){ const r = SP[e.s](t); if(r) return { r, mp, bp }; }
+    if(e.n >= 100) return { r: ['⚛️', P('굽기 전에 붕괴함', 'Decayed before baking'), P('원자가 몇 개밖에 안 만들어졌고, 넣자마자 붕괴해 사라졌어요.', 'Only a few atoms were ever made, and they decayed instantly.')], mp, bp };
+    if(RADIO(e.n)) return { r: ['☢️', P('토스터 방사능 오염', 'Radioactive toaster'), P('방사성 원소예요. 굽는 건 둘째 치고 토스터를 격리해야 해요.', 'It\'s radioactive. Forget toasting, quarantine the toaster.')], mp, bp };
+    if(bp != null && bp < 25) return { r: ['💨', P('이미 기체예요', 'Already a gas'), P('상온에서 기체라 토스터에 담을 수가 없어요. 문 열자마자 흩어졌어요.', 'A gas at room temperature. It drifted away.')], mp, bp };
+    if(bp != null && bp <= t) return { r: ['♨️', P('끓어서 증발', 'Boiled away'), P(`끓는점(${bp}°C)을 넘어서 기체로 날아갔어요.`, `Past its boiling point (${bp}°C). Evaporated.`)], mp, bp };
+    if(mp != null && mp < 25) return { r: ['💧', P('원래 액체예요', 'Already liquid'), P('상온에서 액체라 토스터 바닥에 흘러내렸어요.', 'Liquid at room temperature. It dripped through.')], mp, bp };
+    if(mp != null && mp <= t) return { r: ['🫠', P('녹아내림', 'Melted'), P(`녹는점(${mp}°C)을 넘어서 토스터 바닥에 흘렀어요.`, `Past its melting point (${mp}°C). It's a puddle now.`)], mp, bp };
+    if(mp == null) return { r: ['🤔', P('결과 미상', 'Unknown'), P('녹는점 자료가 없어서 어떻게 될지 아무도 몰라요.', 'No melting point on record. Nobody knows.')], mp, bp };
+    const k = (t + 273) / (mp + 273);
+    if(k > .75) return { r: ['🍞', P('노릇노릇', 'Golden brown'), P(`녹는점(${mp}°C)에 꽤 가까워요. 겉이 말랑해지기 시작했어요.`, `Getting close to its melting point (${mp}°C). Softening up.`)], mp, bp };
+    if(k > .4) return { r: ['🥖', P('따끈따끈', 'Nice and warm'), P(`녹으려면 ${mp}°C까지 가야 해요. 지금은 따뜻한 정도예요.`, `Needs ${mp}°C to melt. Just warm for now.`)], mp, bp };
+    return { r: ['🧊', P('아무 일도 없음', 'Nothing happened'), P(`녹는점이 ${mp.toLocaleString()}°C예요. 토스터로는 어림도 없어요.`, `Melts at ${mp.toLocaleString()}°C. A toaster has no chance.`)], mp, bp };
+  }
+  const BREAD = { '🧊': ['#f6e7c4', '#d8b98a'], '🥖': ['#f3cf8a', '#c98a3e'], '🍞': ['#e8a95a', '#9c5d22'], '🫠': ['#e8a95a', '#7a3d10'], '⬛': ['#2a2a2a', '#000'], '🔥': ['#7a3d10', '#2a1203'] };
+  let hideT = 0;
+  function show(n){
+    const st = window.rxToastState && rxToastState(); if(!st || !st.on) return;
+    const e = EL.find(x => x.n === n); if(!e) return;
+    const t = st.temp, { r, mp, bp } = judge(e, t);
+    const [bread, crust] = BREAD[r[0]] || ['#f3cf8a', '#a8642a'];
+    document.getElementById('bakeCard')?.remove();
+    const lo = -50, hi = 600, pos = v => Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
+    const c = document.createElement('div'); c.id = 'bakeCard';
+    c.innerHTML = `<div class="hd"><div class="sl" style="--bread:${bread};--crust:${crust};--ink:${r[0] === '⬛' || r[0] === '🔥' ? '#f6d79a' : '#3a1d06'}">${e.s}<em>${r[0]}</em></div>
+      <div><div class="k">${P(`원소 굽기 · ${t}°C`, `TOASTING · ${t}°C`)}</div><b class="r">${EN() ? e.en : e.ko}: ${r[1]}</b></div></div>
+      <p>${r[2]}</p>
+      <div class="th"><i class="t" style="left:${pos(t)}%"></i>${mp != null ? `<i style="left:${pos(mp)}%"></i>` : ''}${bp != null && bp <= hi ? `<i style="left:${pos(bp)}%;opacity:.5"></i>` : ''}</div>
+      <div class="lg"><span class="t">${P('토스터', 'Toaster')} ${t}°C</span>${mp != null ? `<span>${P('녹는점', 'Melts')} ${mp.toLocaleString()}°C</span>` : ''}${bp != null ? `<span style="opacity:.7">${P('끓는점', 'Boils')} ${bp.toLocaleString()}°C</span>` : ''}</div>`;
+    document.documentElement.appendChild(c);
+    try{ const a = ac(); if(a && (typeof sndOn === 'undefined' || sndOn)){ const o = a.createOscillator(), g = a.createGain(), tt = a.currentTime; o.type = 'triangle'; o.frequency.setValueAtTime(r[0] === '🔥' || r[0] === '♨️' ? 180 : 520, tt); o.frequency.exponentialRampToValueAtTime(r[0] === '🧊' ? 400 : 900, tt + .15); g.gain.setValueAtTime(.1, tt); g.gain.exponentialRampToValueAtTime(.0001, tt + .3); o.connect(g); g.connect(a.destination); o.start(tt); o.stop(tt + .35); } }catch(_){}
+    clearTimeout(hideT); hideT = setTimeout(() => { c.classList.add('out'); setTimeout(() => c.remove(), 320); }, 5200);
+    c.addEventListener('click', () => { c.classList.add('out'); setTimeout(() => c.remove(), 320); });
+  }
+  const _sel = select;
+  select = function(n){ const r = _sel.apply(this, arguments); try{ show(+n); }catch(err){ console.warn('bake', err); } return r; };
 })();
 </script>
 
