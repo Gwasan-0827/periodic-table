@@ -56448,6 +56448,49 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     return s;
   }
 
+  // 전자 스프레이 (e⁻ Spray) SVG — 로컬 좌표: 노즐이 왼쪽, 병은 세로. 원점 = 헤드 목 부분
+  function espray(t, squeeze){
+    const g = .55 + .45 * Math.sin(t * 5), sq = squeeze || 0;
+    const bub = [0, 1, 2, 3, 4].map(i => { const p = (t * .35 + i / 5) % 1; return `<circle cx="${-9 + (i % 3) * 6 + Math.sin(t * 2 + i) * 1.5}" cy="${118 - p * 40}" r="${1.2 + (i % 2) * 1}" fill="#fff" opacity="${.9 * (1 - p)}"/>`; }).join('');
+    return `<defs>
+      <linearGradient id="esB" x1="0" x2="1"><stop offset="0" stop-color="#c9d4ec"/><stop offset=".22" stop-color="#ffffff"/><stop offset=".5" stop-color="#f3f6fc"/><stop offset=".85" stop-color="#d3dcf0"/><stop offset="1" stop-color="#aebbdc"/></linearGradient>
+      <linearGradient id="esH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#eef2fa"/><stop offset="1" stop-color="#c3cde6"/></linearGradient>
+      <linearGradient id="esBl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa8ff"/><stop offset="1" stop-color="#2f6be0"/></linearGradient>
+      <linearGradient id="esCol" x1="0" x2="1"><stop offset="0" stop-color="#9aa6c0"/><stop offset=".35" stop-color="#eef1f7"/><stop offset="1" stop-color="#8d98b3"/></linearGradient>
+      <linearGradient id="esLiq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7f0ff" stop-opacity=".9"/><stop offset="1" stop-color="#5cc0ff" stop-opacity=".95"/></linearGradient>
+      <filter id="esGl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+      <filter id="esGl2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter>
+    </defs>
+    <rect x="-26" y="-34" width="56" height="168" rx="22" fill="#74c0fc" opacity="${.25 + g * .2}" filter="url(#esGl)"/>
+    <g stroke="#7d8fbf" stroke-width="1.6" fill="none">${[0, 1, 2, 3, 4].map(i => `<ellipse cx="${33 + i * 3 + Math.sin(t * 4) * i * .5}" cy="${12 + i * 4}" rx="2.2" ry="3.2" transform="rotate(-30 ${33 + i * 3} ${12 + i * 4})"/>`).join('')}</g>
+    <path d="M-20 -32 L-48 -29 Q-52 -28 -52 -25 L-52 -20 Q-52 -17 -48 -17 L-20 -16 Z" fill="url(#esH)" stroke="#9fb0d8" stroke-width="1.2"/>
+    <rect x="-58" y="-30.5" width="9" height="15" rx="4" fill="url(#esBl)" stroke="#2457c4" stroke-width="1"/>
+    <ellipse cx="-58" cy="-23" rx="1.8" ry="3.6" fill="#0e2a6b"/>
+    <g transform="rotate(${sq * 14} -16 -14)"><path d="M-16 -14 Q-22 4 -32 20 Q-36 25 -31 27 Q-26 27 -22 20 Q-12 4 -8 -10 Z" fill="url(#esBl)" stroke="#2457c4" stroke-width="1.1"/>
+      <path d="M-17 -6 Q-22 6 -29 17" stroke="#a9ccff" stroke-width="1.6" fill="none" opacity=".8"/></g>
+    <path d="M-24 -28 Q-24 -36 -15 -37 L20 -40 Q30 -40 31 -31 L33 -2 Q33 4 27 4 L-8 4 Q-14 4 -15 -2 L-18 -12 Q-24 -14 -24 -20 Z" fill="url(#esH)" stroke="#9fb0d8" stroke-width="1.3"/>
+    <rect x="-2" y="-46" width="26" height="9" rx="4" fill="url(#esBl)" stroke="#2457c4" stroke-width="1"/>
+    <rect x="1" y="-44.5" width="12" height="2.2" rx="1" fill="#cfe3ff" opacity=".9"/>
+    <path d="M-19 -33 L26 -36" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+    <rect x="-12" y="4" width="40" height="11" rx="2.5" fill="url(#esCol)" stroke="#7d8aa8" stroke-width="1"/>
+    ${[0, 1, 2, 3, 4, 5, 6].map(i => `<line x1="${-8 + i * 5.3}" y1="5.5" x2="${-8 + i * 5.3}" y2="13.5" stroke="#7d8aa8" stroke-width=".7" opacity=".6"/>`).join('')}
+    <circle cx="29" cy="9" r="3" fill="none" stroke="#7d8fbf" stroke-width="1.6"/>
+    <rect x="-16" y="15" width="48" height="112" rx="14" fill="url(#esB)" stroke="#8fa3d6" stroke-width="1.4"/>
+    <rect x="-10" y="22" width="5" height="96" rx="2.5" fill="#fff" opacity=".85"/>
+    <ellipse cx="9" cy="52" rx="20" ry="8" fill="none" stroke="#2f6be0" stroke-width="2.4" transform="rotate(-16 9 52)"/>
+    <text x="8" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26" font-weight="900" fill="#2457c4">e</text>
+    <text x="21" y="46" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="900" fill="#2457c4">−</text>
+    <g transform="translate(19 82)" stroke="#2f6be0" stroke-width="1" fill="none" opacity=".85"><ellipse rx="7" ry="2.6"/><ellipse rx="7" ry="2.6" transform="rotate(60)"/><ellipse rx="7" ry="2.6" transform="rotate(-60)"/><circle r="1.4" fill="#2f6be0"/></g>
+    <path d="M-12 92 L-1 92 L2 98 L2 122 Q2 124 0 124 L-10 124 Q-12 124 -12 122 Z" fill="url(#esLiq)" stroke="#8fc4ef" stroke-width="1"/>
+    ${bub}
+    <rect x="8" y="95" width="16" height="27" rx="3.5" fill="#15204a" stroke="#3a4f8e" stroke-width="1"/>
+    ${[0, 1, 2, 3].map(i => `<rect x="10.5" y="${97.5 + i * 6}" width="11" height="4" rx="1.2" fill="#74d4ff" opacity="${.55 + g * .45}"/>`).join('')}
+    <rect x="-14" y="122" width="44" height="7" rx="3.5" fill="#74c0fc" opacity="${.5 + g * .5}" filter="url(#esGl2)"/>
+    <rect x="-12" y="123.5" width="40" height="4" rx="2" fill="#bfe6ff"/>
+    <g transform="translate(${50 + Math.sin(t * 4) * 2} 40) rotate(${Math.sin(t * 4) * 12})">
+      <path d="M0 -11 L3 -4 L10 -3 L5 2 L7 10 L0 6 L-7 10 L-5 2 L-10 -3 L-3 -4 Z" fill="#f4f6fb" stroke="#2f6be0" stroke-width="1.3" stroke-linejoin="round"/>
+      <text y="4" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" font-weight="900" fill="#2457c4">e</text></g>`;
+  }
   function draw(){
     const svg = document.getElementById('mkPer'); if(!svg || !svg.isConnected) return false;
     const CH = window.RX_IONCH || {}, t = ST.t, k = sc(t);
@@ -56513,36 +56556,13 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     // ── 창조주의 손 + 전자 스프레이 (후일담)
     if(k >= 6){
       const inn = k === 6 ? ease(clamp(u(6) * 3, 0, 1)) : 1 - ease(clamp((u(7) - .55) * 3, 0, 1));
-      const hx = 330 + (1 - inn) * 200, hy = 52 - (1 - inn) * 80;
-      // 전자 스프레이 (e⁻ Spray): 흰 트리거 분무기 + 파란 e⁻ 로고 + 투명 창 + 잔량 표시 + 원자 키링
-      const ROT = -24, rad = ROT * Math.PI / 180, SC2 = 1.05;
-      const rp = (x, y) => [hx + (x * Math.cos(rad) - y * Math.sin(rad)) * SC2, hy + (x * Math.sin(rad) + y * Math.cos(rad)) * SC2];
-      const glow = .55 + .45 * Math.sin(t * 6);
-      s += `<g transform="translate(${hx} ${hy}) rotate(${ROT}) scale(${SC2})" opacity="${inn}">
-        <rect x="44" y="18" width="56" height="34" rx="14" fill="#2b2f4a" stroke="#c4c8ff" stroke-width="1.5"/>
-        <path d="M-2 -8 h-26 a5 5 0 0 0 -5 5 v8 a5 5 0 0 0 5 5 h26z" fill="#e9ecf5" stroke="#9fb4e6" stroke-width="1.5"/>
-        <rect x="-37" y="-6" width="9" height="12" rx="3" fill="#3d7bf0"/>
-        <path d="M-4 -16 h40 a8 8 0 0 1 8 8 v14 h-48 a6 6 0 0 1 -6 -6 v-10 a6 6 0 0 1 6 -6z" fill="#f4f6fb" stroke="#9fb4e6" stroke-width="1.5"/>
-        <rect x="14" y="-21" width="20" height="7" rx="3" fill="#3d7bf0"/>
-        <path d="M2 6 q-6 10 -18 22 q-4 4 0 6 q10 -6 22 -22z" fill="#5b8def" stroke="#2f5fc4" stroke-width="1.2"/>
-        <rect x="6" y="6" width="28" height="9" rx="2" fill="#c9d3e6" stroke="#9fb4e6"/>
-        <rect x="2" y="15" width="36" height="78" rx="11" fill="#f4f6fb" stroke="#9fb4e6" stroke-width="1.6"/>
-        <ellipse cx="20" cy="42" rx="15" ry="6.5" fill="none" stroke="#3d7bf0" stroke-width="2" transform="rotate(-18 20 42)"/>
-        <text x="20" y="48" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="#2f5fc4">e<tspan font-size="10" dy="-7">−</tspan></text>
-        <rect x="7" y="62" width="11" height="24" rx="3" fill="#bfe3ff" opacity=".85"/>
-        <circle cx="11" cy="80" r="2" fill="#fff" opacity=".9"/><circle cx="14" cy="72" r="1.4" fill="#fff" opacity=".8"/>
-        <rect x="22" y="63" width="11" height="22" rx="2.5" fill="#1d2b5a"/>
-        ${[0, 1, 2, 3].map(i => `<rect x="24" y="${65 + i * 5}" width="7" height="3.2" rx="1" fill="#74c0fc" opacity="${.5 + glow * .5}"/>`).join('')}
-        <rect x="4" y="88" width="32" height="6" rx="3" fill="#74c0fc" opacity="${.5 + glow * .5}"/>
-        <path d="M38 4 q8 6 6 16 q-2 8 2 14" stroke="#9fb4e6" stroke-width="2" fill="none" stroke-dasharray="3 2"/>
-        <g transform="translate(47 42) rotate(${Math.sin(t * 5) * 10})">
-          <circle r="8" fill="#f4f6fb" stroke="#3d7bf0" stroke-width="1.5"/>
-          <ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1"/><ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1" transform="rotate(60)"/><ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1" transform="rotate(-60)"/>
-          <text y="3.4" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" font-weight="900" fill="#2f5fc4">e</text></g>
-        <ellipse cx="40" cy="34" rx="15" ry="12" fill="#ffd8c2" stroke="#e8a98a" stroke-width="1.5"/>
-        <path d="M30 28 q-6 3 -3 8 M30 37 q-6 3 -3 8" stroke="#e8a98a" stroke-width="1.3" fill="none"/></g>
-        <text x="${hx + 118}" y="${hy + 36}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="800" fill="#c4c8ff" opacity="${inn}">${tt('creator')}</text>`;
-      const NZ = rp(-37, 0);
+      const hx = 360 + (1 - inn) * 200, hy = 70 - (1 - inn) * 90;
+      // 전자 스프레이 (e⁻ Spray) — 손 없이 둥둥, 뿌릴 때 방아쇠가 딸깍딸깍
+      const ROT = -16, rad = ROT * Math.PI / 180, SC2 = .74, fl = Math.sin(t * 2.4) * 3;
+      const rp = (x, y) => [hx + (x * Math.cos(rad) - y * Math.sin(rad)) * SC2, hy + fl + (x * Math.sin(rad) + y * Math.cos(rad)) * SC2];
+      const sq = k === 6 && u(6) > .25 ? (Math.sin(t * 14) > 0 ? 1 : 0) : 0;
+      s += `<g transform="translate(${hx} ${hy + fl}) rotate(${ROT}) scale(${SC2})" opacity="${inn}">${espray(t, sq)}</g>`;
+      const NZ = rp(-60, -23);
       // 노즐에서 소금으로 날아가는 전자들
       if(k === 6 && u(6) > .25){
         const nx = NZ[0], ny = NZ[1];
