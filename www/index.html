@@ -52101,5 +52101,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
 })();
 </script>
 
+<style>/* 원자 커서는 항상 맨 앞 (창·팝업보다 위) */ #rxCur{z-index:2147483647!important}</style>
+<script>(function(){ const up = () => { const c = document.getElementById('rxCur'); if(c && c.nextElementSibling) document.body.appendChild(c); }; setInterval(up, 1500); })();</script>
 </body>
 </html>
