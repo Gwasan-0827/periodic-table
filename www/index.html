@@ -56470,7 +56470,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       if(back > 0) s += `<g opacity="${back}">${img(na0, naX, CY - 4, 128 * (v < .6 ? pop(clamp((v - .15) * 3, 0, 1)) : 1), 242 / 240)}</g>`;
       for(let i = 0; i < 7; i++){ const a = i / 7 * Math.PI * 2 + t, r = 70 + Math.sin(t * 4 + i) * 8, o = back * (.6 + .4 * Math.sin(t * 6 + i));
         s += `<path d="M${naX + Math.cos(a) * r} ${CY + Math.sin(a) * r * .7 - 6} m0 -6 l2 4 l4 2 l-4 2 l-2 4 l-2 -4 l-4 -2 l4 -2z" fill="#ffd43b" opacity="${o}"/>`; }
-      s += bub(naX + 96, 50, tt('yay') + ' <tspan fill="#ff6b9d">♥</tspan>', { fs: 16, k: clamp((v - .35) * 6, 0, 1), tx: -18 });
+      s += bub(naX + 96, 50, tt('yay'), { fs: 16, k: clamp((v - .35) * 6, 0, 1), tx: -18 });
     } else {
       const v = u(4), fade = 1 - clamp(v * 2.2, 0, 1);
       if(fade > 0) s += `<g opacity="${fade}">${img(na1, naX, CY, 150, 292 / 240)}</g>`;
@@ -56514,18 +56514,38 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     if(k >= 6){
       const inn = k === 6 ? ease(clamp(u(6) * 3, 0, 1)) : 1 - ease(clamp((u(7) - .55) * 3, 0, 1));
       const hx = 330 + (1 - inn) * 200, hy = 52 - (1 - inn) * 80;
-      s += `<g transform="translate(${hx} ${hy}) rotate(28)">
-        <rect x="18" y="-60" width="44" height="70" rx="12" fill="#2b2f4a" stroke="#c4c8ff" stroke-width="1.5"/>
-        <rect x="14" y="2" width="52" height="12" rx="6" fill="#c4c8ff"/>
-        <rect x="-22" y="12" width="30" height="58" rx="7" fill="#4dabf7" stroke="#1c7ed6" stroke-width="2"/>
-        <rect x="-18" y="2" width="22" height="12" rx="3" fill="#dee2e6"/><rect x="-26" y="4" width="9" height="6" rx="2" fill="#adb5bd"/>
-        <text x="-7" y="47" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="900" fill="#fff">e⁻</text>
-        <ellipse cx="22" cy="30" rx="26" ry="20" fill="#ffd8c2" stroke="#e8a98a" stroke-width="1.5"/>
-        <path d="M2 18 q-8 6 -4 14 M2 30 q-8 6 -4 14" stroke="#e8a98a" stroke-width="1.5" fill="none"/></g>
-        <text x="${hx - 60}" y="${hy + 4}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="800" fill="#c4c8ff" opacity="${inn}">${tt('creator')}</text>`;
+      // 전자 스프레이 (e⁻ Spray): 흰 트리거 분무기 + 파란 e⁻ 로고 + 투명 창 + 잔량 표시 + 원자 키링
+      const ROT = -24, rad = ROT * Math.PI / 180, SC2 = 1.05;
+      const rp = (x, y) => [hx + (x * Math.cos(rad) - y * Math.sin(rad)) * SC2, hy + (x * Math.sin(rad) + y * Math.cos(rad)) * SC2];
+      const glow = .55 + .45 * Math.sin(t * 6);
+      s += `<g transform="translate(${hx} ${hy}) rotate(${ROT}) scale(${SC2})" opacity="${inn}">
+        <rect x="44" y="18" width="56" height="34" rx="14" fill="#2b2f4a" stroke="#c4c8ff" stroke-width="1.5"/>
+        <path d="M-2 -8 h-26 a5 5 0 0 0 -5 5 v8 a5 5 0 0 0 5 5 h26z" fill="#e9ecf5" stroke="#9fb4e6" stroke-width="1.5"/>
+        <rect x="-37" y="-6" width="9" height="12" rx="3" fill="#3d7bf0"/>
+        <path d="M-4 -16 h40 a8 8 0 0 1 8 8 v14 h-48 a6 6 0 0 1 -6 -6 v-10 a6 6 0 0 1 6 -6z" fill="#f4f6fb" stroke="#9fb4e6" stroke-width="1.5"/>
+        <rect x="14" y="-21" width="20" height="7" rx="3" fill="#3d7bf0"/>
+        <path d="M2 6 q-6 10 -18 22 q-4 4 0 6 q10 -6 22 -22z" fill="#5b8def" stroke="#2f5fc4" stroke-width="1.2"/>
+        <rect x="6" y="6" width="28" height="9" rx="2" fill="#c9d3e6" stroke="#9fb4e6"/>
+        <rect x="2" y="15" width="36" height="78" rx="11" fill="#f4f6fb" stroke="#9fb4e6" stroke-width="1.6"/>
+        <ellipse cx="20" cy="42" rx="15" ry="6.5" fill="none" stroke="#3d7bf0" stroke-width="2" transform="rotate(-18 20 42)"/>
+        <text x="20" y="48" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="#2f5fc4">e<tspan font-size="10" dy="-7">−</tspan></text>
+        <rect x="7" y="62" width="11" height="24" rx="3" fill="#bfe3ff" opacity=".85"/>
+        <circle cx="11" cy="80" r="2" fill="#fff" opacity=".9"/><circle cx="14" cy="72" r="1.4" fill="#fff" opacity=".8"/>
+        <rect x="22" y="63" width="11" height="22" rx="2.5" fill="#1d2b5a"/>
+        ${[0, 1, 2, 3].map(i => `<rect x="24" y="${65 + i * 5}" width="7" height="3.2" rx="1" fill="#74c0fc" opacity="${.5 + glow * .5}"/>`).join('')}
+        <rect x="4" y="88" width="32" height="6" rx="3" fill="#74c0fc" opacity="${.5 + glow * .5}"/>
+        <path d="M38 4 q8 6 6 16 q-2 8 2 14" stroke="#9fb4e6" stroke-width="2" fill="none" stroke-dasharray="3 2"/>
+        <g transform="translate(47 42) rotate(${Math.sin(t * 5) * 10})">
+          <circle r="8" fill="#f4f6fb" stroke="#3d7bf0" stroke-width="1.5"/>
+          <ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1"/><ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1" transform="rotate(60)"/><ellipse rx="10" ry="3.6" fill="none" stroke="#3d7bf0" stroke-width="1" transform="rotate(-60)"/>
+          <text y="3.4" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" font-weight="900" fill="#2f5fc4">e</text></g>
+        <ellipse cx="40" cy="34" rx="15" ry="12" fill="#ffd8c2" stroke="#e8a98a" stroke-width="1.5"/>
+        <path d="M30 28 q-6 3 -3 8 M30 37 q-6 3 -3 8" stroke="#e8a98a" stroke-width="1.3" fill="none"/></g>
+        <text x="${hx + 118}" y="${hy + 36}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="800" fill="#c4c8ff" opacity="${inn}">${tt('creator')}</text>`;
+      const NZ = rp(-37, 0);
       // 노즐에서 소금으로 날아가는 전자들
       if(k === 6 && u(6) > .25){
-        const nx = hx - 22, ny = hy + 6;
+        const nx = NZ[0], ny = NZ[1];
         for(let i = 0; i < 12; i++){
           const p = ((t * 1.4 + i / 12) % 1), x = nx + (naX + 10 - nx) * p + Math.sin(i * 3 + t * 5) * 10, y = ny + (CY + 10 - ny) * p + Math.cos(i * 2) * 12 * p;
           s += `<g opacity="${.9 - p * .4}"><circle cx="${x}" cy="${y}" r="7" fill="#74c0fc"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="8.5" font-weight="900" fill="#0b1020" font-family="system-ui">e⁻</text></g>`;
