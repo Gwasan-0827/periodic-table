@@ -55002,5 +55002,366 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
 })();
 </script>
 
+<style>
+  /* ═══ 출석 도장 카드 저장·공유 + 나의 화학 리포트 ═══ */
+  #rxCardPv{z-index:2147483150!important}
+  .at-share{display:block;width:100%;margin-top:6px;padding:7px;border-radius:9px;cursor:pointer;font:inherit;font-size:11.5px;font-weight:700;color:#ffe29a;border:1px solid rgba(255,212,59,.35);background:rgba(255,212,59,.07)}
+  .at-share:hover{border-color:#ffd43b;color:#fff}
+  #atFx .afcard{position:absolute;right:16px;top:max(14px,env(safe-area-inset-top));z-index:5;font:700 12px/1 system-ui,sans-serif;padding:9px 13px;border-radius:999px;cursor:pointer;
+    color:#141833;background:linear-gradient(90deg,#fff,#ffe29a);border:0;box-shadow:0 0 20px rgba(255,212,59,.45);opacity:0;animation:afUp .5s calc(var(--d0) + 2.2s) forwards}
+  .rp-card{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border-radius:14px;cursor:pointer;font:inherit;color:#eef0ff;text-align:left;
+    border:1px solid rgba(140,233,154,.38);background:linear-gradient(90deg,rgba(140,233,154,.13),rgba(154,168,255,.05));transition:transform .15s,border-color .15s;position:relative;overflow:hidden}
+  .rp-card:hover{transform:translateY(-1px);border-color:#8ce99a}
+  .rp-card .ic{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(140,233,154,.16)}
+  .rp-card .ic svg{width:22px;height:22px;fill:none;stroke:#b2f2bb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .rp-card b{display:block;font-size:13.5px}
+  .rp-card small{display:block;margin-top:2px;font-size:11.5px;color:var(--dim)}
+  .rp-card .ar{margin-left:auto;color:#b2f2bb;font-size:18px}
+
+  #rpFx{position:fixed;inset:0;z-index:2147483050;overflow:hidden;color:#fff;font-family:system-ui,sans-serif;--a:#9aa8ff;--b:#ff9ad5;background:#05060d;animation:rpIn .4s both;user-select:none;-webkit-user-select:none}
+  @keyframes rpIn{from{opacity:0}}
+  #rpFx.out{animation:rpOut .35s ease-in forwards}
+  @keyframes rpOut{to{opacity:0;transform:scale(1.03)}}
+  #rpFx .blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(70px);opacity:.55;transition:background 1s,transform 1.4s cubic-bezier(.2,.8,.2,1)}
+  #rpFx .blob.b1{left:-25vmax;top:-30vmax;background:var(--a);animation:rpDr1 14s ease-in-out infinite alternate}
+  #rpFx .blob.b2{right:-30vmax;bottom:-35vmax;background:var(--b);animation:rpDr2 17s ease-in-out infinite alternate}
+  @keyframes rpDr1{to{transform:translate(12vmax,10vmax) scale(1.15)}}
+  @keyframes rpDr2{to{transform:translate(-10vmax,-12vmax) scale(1.1)}}
+  #rpFx .grain{position:absolute;inset:-50%;opacity:.08;pointer-events:none;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  #rpFx .bars{position:absolute;left:14px;right:14px;top:max(12px,env(safe-area-inset-top));display:flex;gap:5px;z-index:3}
+  #rpFx .bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden}
+  #rpFx .bars i b{display:block;height:100%;width:0;background:#fff}
+  #rpFx .bars i.done b{width:100%}
+  #rpFx .bars i.cur b{animation:rpBar var(--dur) linear forwards}
+  #rpFx.paused .bars i.cur b{animation-play-state:paused}
+  @keyframes rpBar{to{width:100%}}
+  #rpFx .top{position:absolute;left:16px;right:16px;top:calc(max(12px,env(safe-area-inset-top)) + 14px);display:flex;align-items:center;gap:10px;z-index:3;font:800 11px/1 ui-monospace,monospace;letter-spacing:.2em;color:rgba(255,255,255,.75)}
+  #rpFx .top button{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.25);color:#fff;font-size:15px;cursor:pointer}
+  #rpFx .tapL,#rpFx .tapR{position:absolute;top:0;bottom:0;z-index:2;cursor:pointer}
+  #rpFx .tapL{left:0;width:30%}#rpFx .tapR{right:0;width:70%}
+  #rpFx .sl{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 26px 60px;z-index:1;pointer-events:none}
+  #rpFx .sl.on{display:flex}
+  #rpFx .sl.on .a1{animation:rpUp .8s .05s cubic-bezier(.16,1,.3,1) both}
+  #rpFx .sl.on .a2{animation:rpUp .8s .3s cubic-bezier(.16,1,.3,1) both}
+  #rpFx .sl.on .a3{animation:rpUp .8s .6s cubic-bezier(.16,1,.3,1) both}
+  #rpFx .sl.on .a4{animation:rpUp .8s .95s cubic-bezier(.16,1,.3,1) both}
+  #rpFx .sl.on .a5{animation:rpUp .8s 1.3s cubic-bezier(.16,1,.3,1) both}
+  @keyframes rpUp{from{opacity:0;transform:translateY(34px);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+  #rpFx .k{font:800 clamp(11px,1.6vmin,14px)/1 ui-monospace,monospace;letter-spacing:.32em;color:rgba(255,255,255,.7)}
+  #rpFx h2{margin:14px 0 0;font:900 clamp(26px,5.6vmin,56px)/1.15 system-ui,sans-serif;letter-spacing:-.01em;word-break:keep-all;max-width:820px}
+  #rpFx h2 em{font-style:normal;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #rpFx .big{margin-top:14px;font:900 clamp(72px,19vmin,190px)/.9 Kanit,system-ui,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+    background:linear-gradient(180deg,#fff 30%,var(--a));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 3vmin color-mix(in srgb,var(--a) 55%,transparent))}
+  #rpFx .big small{font-size:.32em;letter-spacing:0;margin-left:.15em;-webkit-text-fill-color:rgba(255,255,255,.65)}
+  #rpFx p{margin:14px 0 0;max-width:560px;font-size:clamp(14px,2.2vmin,18px);line-height:1.6;color:rgba(255,255,255,.82);word-break:keep-all}
+  #rpFx p b{color:#fff}
+  #rpFx .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+  #rpFx .chip{min-width:110px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px)}
+  #rpFx .chip b{display:block;font:900 clamp(22px,3.6vmin,32px)/1 Kanit,system-ui,sans-serif}
+  #rpFx .chip span{display:block;margin-top:5px;font-size:12px;color:rgba(255,255,255,.65)}
+  #rpFx .stamps{display:flex;gap:8px;margin-top:24px}
+  #rpFx .stamps i{width:clamp(34px,6vmin,52px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:800 clamp(11px,1.8vmin,15px)/1 Kanit,system-ui,sans-serif;font-style:normal;
+    border:2px dashed rgba(255,255,255,.25);color:rgba(255,255,255,.4)}
+  #rpFx .sl.on .stamps i.on{border:3px solid var(--sc);background:color-mix(in srgb,var(--sc) 30%,transparent);color:#fff;transform:rotate(-10deg);animation:rpStamp .45s calc(.7s + var(--k) * .12s) cubic-bezier(.5,0,.75,0) both}
+  @keyframes rpStamp{from{transform:scale(2.4) rotate(-30deg);opacity:0}to{transform:rotate(-10deg);opacity:1}}
+  #rpFx .bar{width:min(520px,80vw);height:14px;margin-top:20px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}
+  #rpFx .bar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--a),var(--b));box-shadow:0 0 18px var(--a)}
+  #rpFx .sl.on .bar i{animation:rpFill 1.6s .8s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes rpFill{to{width:var(--w)}}
+  #rpFx .els{display:flex;gap:14px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  #rpFx .el{width:clamp(96px,15vmin,140px);padding:12px 8px 10px;border-radius:16px;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 30%,transparent),rgba(0,0,0,.25))}
+  #rpFx .el .s{font:900 clamp(30px,5.4vmin,48px)/1 Kanit,system-ui,sans-serif}
+  #rpFx .el .n{margin-top:4px;font-size:12.5px;font-weight:700}
+  #rpFx .el .t{margin-top:6px;font:800 10px/1 ui-monospace,monospace;letter-spacing:.12em;color:var(--c)}
+  #rpFx .el .v{margin-top:4px;font-size:11.5px;color:rgba(255,255,255,.65)}
+  #rpFx .type{margin-top:16px;padding:16px 22px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)}
+  #rpFx .type .ti{font:900 clamp(28px,5vmin,46px)/1.15 system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a) 60%,var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #rpFx .btns{display:flex;gap:10px;margin-top:22px;pointer-events:auto;position:relative;z-index:4}
+  #rpFx .btns button{font:inherit;font-size:14px;font-weight:800;padding:12px 22px;border-radius:999px;cursor:pointer;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff}
+  #rpFx .btns button.pri{border:0;color:#141833;background:linear-gradient(90deg,#fff,var(--a))}
+  #rpFx .hint{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;z-index:3;font:700 10.5px/1 ui-monospace,monospace;letter-spacing:.3em;color:rgba(255,255,255,.4)}
+  @media (prefers-reduced-motion:reduce){ #rpFx *{animation-duration:.01s!important;animation-delay:0s!important} }
+</style>
+<script>
+(function(){
+  if(typeof renderToday !== 'function') return;
+  const EN = () => LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parse = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d, 12); };
+  const add = (k, n) => { const d = parse(k); d.setDate(d.getDate() + n); return ymd(d); };
+  const TODAY = () => ymd(rxDayDate());
+  const elCol = s => { const e = EL.find(x => x.s === s); try{ return e ? cssv(CAT[e.c].v) : '#9aa8ff'; }catch(_){ return '#9aa8ff'; } };
+  const elOf = s => EL.find(x => x.s === s);
+  const RWN = { d1: ['새내기 연구원', 'Rookie Researcher'], d3: ['꾸준한 수소', 'Steady Hydrogen'], s7: ['불꽃 반응', 'Flame Test'], d14: ['반응 촉매', 'Catalyst'], sh1: ['보호막 생존자', 'Shield Survivor'], d30: ['비활성 기체급 끈기', 'Noble Persistence'], s30: ['연쇄 반응', 'Chain Reaction'], d50: ['반감기 무시', 'Half-life Immune'], d100: ['주기율표 지박령', 'Periodic Poltergeist'], s100: ['안정 동위원소', 'Stable Isotope'], d118: ['118 정복자', 'All 118'], d365: ['공전 1회 완료', 'One Full Orbit'] };
+
+  function att(){
+    let a = null; try{ a = JSON.parse(localStorage.getItem('pt_att') || 'null'); }catch(_){}
+    a = a || {}; a.d = a.d || {}; a.p = a.p || {}; a.got = a.got || []; a.sh = a.sh == null ? 1 : a.sh;
+    const has = k => !!(a.d[k] || a.p[k]), t = TODAY();
+    let k = has(t) ? t : add(t, -1), streak = 0; while(has(k)){ streak++; k = add(k, -1); }
+    const all = [...new Set([...Object.keys(a.d), ...Object.keys(a.p)])].sort();
+    let best = 0, run = 0, prev = null; all.forEach(x => { run = prev && Math.round((parse(x) - parse(prev)) / 864e5) === 1 ? run + 1 : 1; best = Math.max(best, run); prev = x; });
+    return { a, streak, best: Math.max(best, streak), total: Object.keys(a.d).length };
+  }
+
+  /* ── 캔버스 공용 ── */
+  function rr(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function arcText(c, str, cx, cy, r, start){
+    c.save(); c.translate(cx, cy);
+    let a = start; for(const ch of str){ const w = c.measureText(ch).width; c.save(); c.rotate(a + w / 2 / r); c.translate(0, -r); c.fillText(ch, 0, 0); c.restore(); a += w / r; }
+    c.restore();
+  }
+  function stampCanvas(c, cx, cy, R, e, col, dayN){
+    c.save(); c.translate(cx, cy); c.rotate(-.21);
+    let g = c.createRadialGradient(0, -R * .15, R * .1, 0, 0, R);
+    g.addColorStop(0, col + 'aa'); g.addColorStop(.7, col + '33'); g.addColorStop(1, 'rgba(10,12,24,.95)');
+    c.fillStyle = '#0b0d18'; c.beginPath(); c.arc(0, 0, R, 0, 7); c.fill();
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, R, 0, 7); c.fill();
+    g = c.createLinearGradient(-R, -R, R, R); g.addColorStop(0, '#fff'); g.addColorStop(.35, col); g.addColorStop(.7, '#000'); g.addColorStop(1, col);
+    c.lineWidth = R * .08; c.strokeStyle = g; c.beginPath(); c.arc(0, 0, R * .96, 0, 7); c.stroke();
+    for(let i = 0; i < 72; i++){ const a = i / 72 * 6.283, r1 = i % 6 ? R * .87 : R * .84; c.strokeStyle = `rgba(255,255,255,${i % 6 ? .35 : .8})`; c.lineWidth = i % 6 ? 1.2 : 2.4; c.beginPath(); c.moveTo(Math.cos(a) * r1, Math.sin(a) * r1); c.lineTo(Math.cos(a) * R * .9, Math.sin(a) * R * .9); c.stroke(); }
+    c.strokeStyle = col; c.lineWidth = 2.4; c.beginPath(); c.arc(0, 0, R * .82, 0, 7); c.stroke();
+    c.lineWidth = R * .025; c.strokeStyle = g; c.beginPath(); c.arc(0, 0, R * .62, 0, 7); c.stroke();
+    c.fillStyle = '#fff'; c.font = `800 ${R * .095}px Kanit,system-ui,sans-serif`; c.textBaseline = 'middle'; c.textAlign = 'center';
+    arcText(c, P(`PERIODIC // TABLE ✦ 출석 도장 ✦ ${TODAY().replace(/-/g, '.')} ✦ DAY ${dayN} ✦`, `PERIODIC // TABLE ✦ CHECK-IN ✦ ${TODAY().replace(/-/g, '.')} ✦ DAY ${dayN} ✦`), 0, 0, R * .72, -1.6);
+    c.font = `700 ${R * .085}px ui-monospace,monospace`; c.fillStyle = 'rgba(255,255,255,.75)'; c.fillText('No.' + e.n, 0, -R * .2);
+    g = c.createLinearGradient(0, -R * .2, 0, R * .3); g.addColorStop(0, '#fff'); g.addColorStop(1, col);
+    c.font = `900 ${R * (e.s.length > 1 ? .52 : .6)}px Kanit,system-ui,sans-serif`; c.fillStyle = g; c.shadowColor = col; c.shadowBlur = R * .15; c.fillText(e.s, 0, R * .12); c.shadowBlur = 0;
+    c.font = `800 ${R * .08}px system-ui,sans-serif`; c.fillStyle = 'rgba(255,255,255,.85)'; c.fillText(EN() ? e.en.toUpperCase() : e.ko, 0, R * .42);
+    c.restore();
+  }
+  function bgCanvas(c, W, H, col, col2){
+    const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b0d1c'); g.addColorStop(1, '#05060d'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+    let r = c.createRadialGradient(W * .2, H * .1, 0, W * .2, H * .1, W * .9); r.addColorStop(0, col + '66'); r.addColorStop(1, col + '00'); c.fillStyle = r; c.fillRect(0, 0, W, H);
+    r = c.createRadialGradient(W * .9, H * .95, 0, W * .9, H * .95, W * .8); r.addColorStop(0, (col2 || col) + '44'); r.addColorStop(1, (col2 || col) + '00'); c.fillStyle = r; c.fillRect(0, 0, W, H);
+    c.strokeStyle = 'rgba(201,208,255,.06)'; c.lineWidth = 1; for(let x = 0; x < W; x += 54){ c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); } for(let y = 0; y < H; y += 54){ c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  }
+  const hexOf = col => { const c = document.createElement('canvas').getContext('2d'); c.fillStyle = col; return c.fillStyle.length === 7 ? c.fillStyle : '#9aa8ff'; };
+  async function deliver(cv, file, name){
+    const blob = await new Promise(r => cv.toBlob(r, 'image/png')); if(!blob) return;
+    if(typeof rxCardPreview === 'function') rxCardPreview(blob, file, name, null, false);
+    else if(typeof rxCardDeliver === 'function') rxCardDeliver(blob, file, name, false);
+  }
+
+  /* ── 출석 도장 카드 ── */
+  async function stampCard(){
+    const S = att(), sym = S.a.d[TODAY()] || Object.values(S.a.d).slice(-1)[0];
+    if(!sym) return;
+    const e = elOf(sym), col = hexOf(elCol(sym)), W = 1080, H = 1350;
+    try{ await document.fonts.ready; }catch(_){}
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+    bgCanvas(c, W, H, col, '#ff9ad5');
+    // 빛줄기
+    c.save(); c.translate(W / 2, 470); c.globalCompositeOperation = 'lighter';
+    for(let i = 0; i < 18; i++){ const a = i / 18 * 6.283, w = .05 + (i % 3) * .02, gr = c.createRadialGradient(0, 0, 120, 0, 0, 900); gr.addColorStop(0, col + '44'); gr.addColorStop(1, col + '00'); c.fillStyle = gr; c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, 900, a - w, a + w); c.fill(); }
+    c.restore();
+    c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+    c.font = '800 30px Kanit,system-ui,sans-serif'; c.fillStyle = '#c9d0ff'; c.fillText(EN() ? 'PERIODIC//TABLE' : '페리오딕//테이블', 80, 110);
+    c.textAlign = 'right'; c.font = '700 26px ui-monospace,monospace'; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(TODAY().replace(/-/g, '.'), W - 80, 110);
+    c.textAlign = 'left'; c.font = '700 22px ui-monospace,monospace'; c.fillStyle = col; c.fillText(P('DAILY CHECK-IN · 출석 도장', 'DAILY CHECK-IN'), 80, 150);
+    stampCanvas(c, W / 2, 470, 250, e, col, String(S.total).padStart(2, '0'));
+    c.textAlign = 'center';
+    c.font = '700 34px ui-monospace,monospace'; c.fillStyle = 'rgba(255,255,255,.65)'; c.fillText('DAY', W / 2 - 150, 860);
+    let g = c.createLinearGradient(0, 760, 0, 880); g.addColorStop(0, '#fff'); g.addColorStop(1, col);
+    c.font = '900 150px Kanit,system-ui,sans-serif'; c.fillStyle = g; c.shadowColor = col; c.shadowBlur = 40; c.fillText(String(S.total).padStart(2, '0'), W / 2 + 40, 880); c.shadowBlur = 0;
+    // 숫자 칩
+    const chips = [[S.streak, P('연속', 'Streak')], [S.best, P('최고 연속', 'Best')], [S.total, P('총 출석', 'Total')], [S.a.sh + '/3', P('보호막', 'Shields')]];
+    chips.forEach(([v, l], i) => { const x = 80 + i * 235, y = 930; rr(c, x, y, 215, 120, 22); c.fillStyle = 'rgba(255,255,255,.07)'; c.fill(); c.strokeStyle = 'rgba(255,255,255,.15)'; c.lineWidth = 2; c.stroke();
+      c.fillStyle = '#fff'; c.font = '900 52px Kanit,system-ui,sans-serif'; c.fillText(String(v), x + 107, y + 66); c.font = '600 22px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(l, x + 107, y + 100); });
+    // 최근 7일 도장
+    const t = TODAY(), DW = EN() ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['일', '월', '화', '수', '목', '금', '토'];
+    for(let i = 6; i >= 0; i--){
+      const k = add(t, -i), x = 80 + (6 - i) * 141 + 60, y = 1150, s = S.a.d[k];
+      c.font = '700 22px system-ui,sans-serif'; c.fillStyle = i ? 'rgba(255,255,255,.5)' : col; c.fillText(DW[parse(k).getDay()], x, y - 52);
+      if(s){ const sc = hexOf(elCol(s)); c.save(); c.translate(x, y); c.rotate(-.18); c.beginPath(); c.arc(0, 0, 42, 0, 7); c.fillStyle = sc + '44'; c.fill(); c.lineWidth = 5; c.strokeStyle = sc; c.stroke();
+        c.fillStyle = '#fff'; c.font = '800 30px Kanit,system-ui,sans-serif'; c.textBaseline = 'middle'; c.fillText(s, 0, 2); c.textBaseline = 'alphabetic'; c.restore(); }
+      else if(S.a.p[k]){ c.beginPath(); c.arc(x, y, 42, 0, 7); c.fillStyle = 'rgba(120,180,255,.15)'; c.fill(); c.lineWidth = 3; c.strokeStyle = 'rgba(120,180,255,.7)'; c.stroke(); c.fillStyle = '#9ec5ff'; c.font = '800 20px system-ui'; c.textBaseline = 'middle'; c.fillText(P('보호', 'SHLD'), x, y); c.textBaseline = 'alphabetic'; }
+      else { c.setLineDash([6, 6]); c.beginPath(); c.arc(x, y, 42, 0, 7); c.lineWidth = 2; c.strokeStyle = 'rgba(255,255,255,.25)'; c.stroke(); c.setLineDash([]); }
+    }
+    // 칭호
+    const tt = S.a.title && RWN[S.a.title];
+    c.textAlign = 'left'; c.font = '600 24px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.55)';
+    c.fillText(tt ? P(`칭호 · ${tt[0]}`, `Title · ${tt[1]}`) : P('매일 한 칸씩, 주기율표 정복 중', 'One cell a day'), 80, H - 70);
+    c.textAlign = 'right'; c.font = '800 24px Kanit,system-ui,sans-serif'; c.fillStyle = '#c9d0ff'; c.fillText(EN() ? e.en : e.ko, W - 80, H - 70);
+    return deliver(cv, `checkin_${t}.png`, P('출석 도장 카드', 'Check-in card'));
+  }
+  window.rxStampCard = stampCard;
+
+  /* ── 나의 화학 리포트: 자료 모으기 ── */
+  function gather(){
+    const S = att(), t = TODAY();
+    const week = []; for(let i = 6; i >= 0; i--){ const k = add(t, -i); week.push({ k, s: S.a.d[k], p: !!S.a.p[k] }); }
+    let st = {}; try{ st = JSON.parse(localStorage.getItem('pt_stat') || '{}'); }catch(_){}
+    let hit = 0, miss = 0; const per = [];
+    for(const s in st){ const [h, m] = st[s]; hit += h; miss += m; per.push({ s, h, m, n: h + m, acc: h / Math.max(1, h + m) }); }
+    const best = per.filter(x => x.n >= 2).sort((a, b) => b.h - a.h || b.acc - a.acc)[0];
+    const weak = per.filter(x => x.m >= 1).sort((a, b) => b.m - a.m || a.acc - b.acc)[0];
+    let note = []; try{ note = JSON.parse(localStorage.getItem('pt_qnote') || '[]'); }catch(_){}
+    let dexN = 0, dexT = 600, spN = 0, spT = 0, ionN = 0, ionT = 100;
+    try{ const all = allEntries(); dexT = all.length; dexN = all.filter(x => found.has(x.name)).length; }catch(_){}
+    try{ const sp = specialList(); spT = sp.length; spN = sp.filter(x => found.has(x.name)).length; }catch(_){}
+    try{ ionN = ionFound().size; ionT = CATIONS.length * ANIONS.length; }catch(_){}
+    let log = {}; try{ log = JSON.parse(localStorage.getItem('pt_log') || '{}'); }catch(_){}
+    const wk = Date.now() - 7 * 864e5, rows = Object.values(log);
+    const wRows = rows.filter(r => r.t >= wk), wOk = wRows.filter(r => r.r);
+    const use = {}; rows.forEach(r => (r.o || []).forEach(([n, k]) => { use[n] = (use[n] || 0) + (r.n || 1); }));
+    const fav = Object.entries(use).sort((a, b) => b[1] - a[1])[0];
+    const recent = rows.filter(r => r.r).sort((a, b) => b.t - a.t).slice(0, 3).map(r => r.r);
+    const tries = rows.reduce((a, r) => a + (r.n || 1), 0);
+    return { S, week, hit, miss, best, weak, note: note.length, dexN, dexT, spN, spT, ionN, ionT, wTry: wRows.reduce((a, r) => a + (r.n || 1), 0), wOk: wOk.length, tries, fav: fav ? byNum[fav[0]] : null, favN: fav ? fav[1] : 0, recent };
+  }
+  function chemType(D){
+    const acc = D.hit / Math.max(1, D.hit + D.miss);
+    const T = [
+      [D.tries >= 60, ['실험실 폭주족', 'Lab Speedrunner'], ['일단 섞고 보는 타입. 도감이 그 증거예요.', 'Mix first, ask later. Your index proves it.']],
+      [D.hit + D.miss >= 40 && acc >= .8, ['걸어 다니는 주기율표', 'Walking Periodic Table'], ['퀴즈 정답률이 무시무시해요.', 'Your quiz accuracy is scary.']],
+      [D.S.streak >= 7, ['성실한 비활성 기체', 'Steady Noble Gas'], ['흔들림 없이 매일 출석했어요.', 'Unshakeable daily check-ins.']],
+      [D.dexN >= 100, ['수집왕 촉매', 'Collector Catalyst'], ['찾아낸 물질이 엄청 많아요.', 'You have found a ton of substances.']],
+      [D.hit + D.miss >= 15, ['떠오르는 동위원소', 'Rising Isotope'], ['퀴즈로 실력을 쌓는 중이에요.', 'Leveling up through quizzes.']],
+      [true, ['호기심 많은 수소', 'Curious Hydrogen'], ['가볍게, 하지만 어디든 끼어드는 타입!', 'Light, but gets into everything!']],
+    ];
+    const r = T.find(x => x[0]); return { t: P(r[1][0], r[1][1]), d: P(r[2][0], r[2][1]) };
+  }
+
+  /* ── 나의 화학 리포트: 슬라이드 ── */
+  let RT = 0;
+  function report(){
+    document.getElementById('rpFx')?.remove();
+    const D = gather(), en = EN(), ty = chemType(D);
+    const acc = Math.round(D.hit / Math.max(1, D.hit + D.miss) * 100);
+    const tileEl = (sym, tag, val) => { const e = elOf(sym); if(!e) return ''; return `<div class="el" style="--c:${elCol(sym)}"><div class="s">${e.s}</div><div class="n">${en ? e.en : e.ko}</div><div class="t">${tag}</div><div class="v">${val}</div></div>`; };
+    const wAtt = D.week.filter(w => w.s).length;
+    const COLS = [['#9aa8ff', '#ff9ad5'], ['#ffd43b', '#ff8a3d'], ['#8ce99a', '#38d9a9'], ['#74c0fc', '#9775fa'], ['#ff8787', '#ffa94d'], ['#e599f7', '#74c0fc'], ['#ffffff', '#9aa8ff']];
+    const slides = [
+      `<div class="k a1">PERIODIC // TABLE · ${P('나의 화학 리포트', 'MY CHEMISTRY REPORT')}</div>
+       <h2 class="a2">${P('지금까지의 <em>화학 기록</em>을<br>한번 돌아볼까요?', 'Let\'s look back at your <em>chemistry so far</em>')}</h2>
+       <p class="a3">${P(`${add(TODAY(), -6).slice(5).replace('-', '.')} – ${TODAY().slice(5).replace('-', '.')} 이번 주 기록과, 그동안 쌓은 것들이에요.`, 'This week, and everything you built up so far.')}</p>`,
+      `<div class="k a1">${P('출석', 'CHECK-IN')}</div>
+       <h2 class="a2">${P(`이번 주 <em>${wAtt}일</em> 출석했어요`, `You checked in <em>${wAtt} days</em> this week`)}</h2>
+       <div class="stamps a3">${D.week.map((w, i) => `<i class="${w.s ? 'on' : ''}" style="--k:${i};--sc:${w.s ? elCol(w.s) : '#fff'}">${w.s || (w.p ? '·' : '')}</i>`).join('')}</div>
+       <div class="row a4"><div class="chip"><b>${D.S.streak}</b><span>${P('연속', 'Streak')}</span></div><div class="chip"><b>${D.S.best}</b><span>${P('최고 연속', 'Best')}</span></div><div class="chip"><b>${D.S.total}</b><span>${P('총 출석', 'Total')}</span></div></div>`,
+      `<div class="k a1">${P('원소 퀴즈', 'QUIZ')}</div>
+       <h2 class="a2">${D.hit + D.miss ? P(`지금까지 <em>${D.hit + D.miss}문제</em>를 풀었어요`, `You answered <em>${D.hit + D.miss}</em> questions`) : P('아직 퀴즈를 안 풀었어요', 'No quizzes yet')}</h2>
+       <div class="big a3" data-n="${acc}">0<small>%</small></div>
+       <p class="a3">${P('정답률', 'accuracy')}${D.note ? P(` · 오답 노트 <b>${D.note}</b>개`, ` · <b>${D.note}</b> notes to review`) : ''}</p>
+       <div class="els a4">${D.best ? tileEl(D.best.s, P('제일 잘 아는 원소', 'YOUR BEST'), P(`${D.best.h}번 맞힘`, `${D.best.h} correct`)) : ''}${D.weak ? tileEl(D.weak.s, P('자주 헷갈린 원소', 'TRICKY ONE'), P(`${D.weak.m}번 틀림`, `${D.weak.m} missed`)) : ''}</div>`,
+      `<div class="k a1">${P('조합 도감', 'COMBINATION INDEX')}</div>
+       <h2 class="a2">${P('찾아낸 물질', 'Substances found')}</h2>
+       <div class="big a3" data-n="${D.dexN}">0<small>/ ${D.dexT}</small></div>
+       <div class="bar a3"><i style="--w:${(D.dexN / Math.max(1, D.dexT) * 100).toFixed(1)}%"></i></div>
+       <div class="row a4"><div class="chip"><b>${D.spN}/${D.spT}</b><span>${P('특수 발견', 'Special finds')}</span></div><div class="chip"><b>${D.ionN}/${D.ionT}</b><span>${P('이온 결합', 'Ionic pairs')}</span></div></div>`,
+      `<div class="k a1">${P('실험 노트', 'LAB NOTES')}</div>
+       <h2 class="a2">${P(`이번 주 <em>${D.wTry}번</em> 섞어 봤어요`, `You mixed <em>${D.wTry} times</em> this week`)}</h2>
+       <p class="a3">${P(`그중 <b>${D.wOk}</b>가지가 무언가가 됐어요. 지금까지 전부 합치면 <b>${D.tries}</b>번이에요.`, `<b>${D.wOk}</b> became something. <b>${D.tries}</b> mixes in total.`)}</p>
+       <div class="els a4">${D.fav ? tileEl(D.fav.s, P('제일 많이 넣은 원소', 'MOST USED'), P(`${D.favN}번`, `${D.favN} times`)) : ''}</div>
+       ${D.recent.length ? `<p class="a5">${P('최근에 찾은 것', 'Recent finds')}: <b>${D.recent.map(n => { try{ return rxLocName(n); }catch(_){ return n; } }).join(' · ')}</b></p>` : ''}`,
+      `<div class="k a1">${P('칭호 · 뱃지', 'TITLES')}</div>
+       <h2 class="a2">${P(`칭호 <em>${D.S.a.got.length}개</em>를 모았어요`, `<em>${D.S.a.got.length}</em> titles collected`)}</h2>
+       <div class="row a3">${D.S.a.got.slice(-6).map(id => RWN[id] ? `<div class="chip"><b style="font-size:16px;font-family:system-ui">${P(RWN[id][0], RWN[id][1])}</b></div>` : '').join('') || `<p>${P('출석 체크로 첫 칭호를 받아 보세요!', 'Check in to earn your first title!')}</p>`}</div>`,
+      `<div class="k a1">${P('당신의 화학자 유형은', 'YOUR CHEMIST TYPE')}</div>
+       <div class="type a2"><div class="ti">${ty.t}</div></div>
+       <p class="a3">${ty.d}</p>
+       <div class="row a4"><div class="chip"><b>${D.S.total}</b><span>${P('출석', 'Check-ins')}</span></div><div class="chip"><b>${acc}%</b><span>${P('퀴즈 정답률', 'Quiz')}</span></div><div class="chip"><b>${D.dexN}</b><span>${P('찾은 물질', 'Found')}</span></div></div>
+       <div class="btns a5"><button type="button" class="pri" data-k="save">${P('리포트 카드 저장', 'Save report card')}</button><button type="button" data-k="again">${P('처음부터', 'Replay')}</button></div>`,
+    ];
+    const ov = document.createElement('div'); ov.id = 'rpFx';
+    ov.innerHTML = `<div class="blob b1"></div><div class="blob b2"></div><div class="grain"></div>
+      <div class="bars">${slides.map(() => '<i><b></b></i>').join('')}</div>
+      <div class="top"><span>${P('나의 화학 리포트', 'MY CHEM REPORT')}</span><button type="button" data-k="x" aria-label="close">✕</button></div>
+      ${slides.map(h => `<div class="sl">${h}</div>`).join('')}
+      <div class="tapL"></div><div class="tapR"></div>
+      <div class="hint">${P('누르면 다음 · 꾹 누르면 멈춤', 'TAP NEXT · HOLD TO PAUSE')}</div>`;
+    document.body.appendChild(ov);
+    const SL = [...ov.querySelectorAll('.sl')], BR = [...ov.querySelectorAll('.bars i')], DUR = 5200;
+    let i = -1;
+    const count = el => { const n = +el.dataset.n, sm = el.querySelector('small'), smH = sm ? sm.outerHTML : '', t0 = performance.now() + 500;
+      const st = now => { if(!el.isConnected) return; const p = Math.min(1, Math.max(0, (now - t0) / 1300)), v = Math.round(n * (1 - Math.pow(1 - p, 3))); el.innerHTML = v + smH; if(p < 1) requestAnimationFrame(st); }; requestAnimationFrame(st); };
+    function go(k){
+      if(k < 0) k = 0;
+      if(k >= SL.length){ return; }
+      i = k; clearTimeout(RT);
+      SL.forEach((s, j) => s.classList.toggle('on', j === i));
+      BR.forEach((b, j) => { b.className = j < i ? 'done' : j === i ? 'cur' : ''; b.style.setProperty('--dur', DUR + 'ms'); const bb = b.querySelector('b'); bb.style.animation = 'none'; void bb.offsetWidth; bb.style.animation = ''; });
+      ov.style.setProperty('--a', COLS[i][0]); ov.style.setProperty('--b', COLS[i][1]);
+      SL[i].querySelectorAll('.big[data-n]').forEach(count);
+      try{ SFX.tick(); }catch(_){}
+      if(i < SL.length - 1) RT = setTimeout(() => { if(!ov.classList.contains('paused')) go(i + 1); }, DUR);
+      else BR[i].className = 'done';
+    }
+    const close = () => { clearTimeout(RT); ov.classList.add('out'); setTimeout(() => ov.remove(), 360); };
+    ov.querySelector('.tapR').addEventListener('click', () => go(i + 1));
+    ov.querySelector('.tapL').addEventListener('click', () => go(i - 1));
+    let hold = 0;
+    ov.addEventListener('pointerdown', e => { if(e.target.closest('button')) return; hold = setTimeout(() => { ov.classList.add('paused'); clearTimeout(RT); }, 260); });
+    ov.addEventListener('pointerup', () => { clearTimeout(hold); if(ov.classList.contains('paused')){ ov.classList.remove('paused'); if(i < SL.length - 1) RT = setTimeout(() => go(i + 1), 1800); } });
+    ov.addEventListener('click', e => {
+      const b = e.target.closest('button'); if(!b) return; e.stopPropagation();
+      if(b.dataset.k === 'x') close();
+      if(b.dataset.k === 'again') go(0);
+      if(b.dataset.k === 'save') reportCard(D, ty, acc);
+    });
+    addEventListener('keydown', function k(e){ if(!ov.isConnected){ removeEventListener('keydown', k); return; } if(e.key === 'Escape') close(); if(e.key === 'ArrowRight' || e.key === ' ') go(i + 1); if(e.key === 'ArrowLeft') go(i - 1); });
+    // 마지막 장 버튼은 탭 영역보다 위에 있어야 눌린다
+    SL[SL.length - 1].style.zIndex = 3;
+    go(0);
+  }
+  window.rxReport = report;
+
+  async function reportCard(D, ty, acc){
+    const W = 1080, H = 1350, col = '#9aa8ff';
+    try{ await document.fonts.ready; }catch(_){}
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+    bgCanvas(c, W, H, col, '#ff9ad5');
+    c.textAlign = 'left'; c.font = '800 30px Kanit,system-ui,sans-serif'; c.fillStyle = '#c9d0ff'; c.fillText(EN() ? 'PERIODIC//TABLE' : '페리오딕//테이블', 80, 110);
+    c.textAlign = 'right'; c.font = '700 26px ui-monospace,monospace'; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(TODAY().replace(/-/g, '.'), W - 80, 110);
+    c.textAlign = 'left'; c.font = '700 24px ui-monospace,monospace'; c.fillStyle = '#ff9ad5'; c.fillText(P('MY CHEMISTRY REPORT · 나의 화학 리포트', 'MY CHEMISTRY REPORT'), 80, 160);
+    c.font = '700 30px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText(P('나의 화학자 유형', 'My chemist type'), 80, 270);
+    let g = c.createLinearGradient(80, 0, W - 80, 0); g.addColorStop(0, '#fff'); g.addColorStop(.6, '#9aa8ff'); g.addColorStop(1, '#ff9ad5');
+    c.font = '900 92px system-ui,sans-serif'; c.fillStyle = g; c.fillText(ty.t, 80, 380);
+    c.font = '600 32px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.8)'; c.fillText(ty.d, 80, 440);
+    const box = [[D.S.total, P('출석', 'Check-ins'), '#ffd43b'], [D.S.streak, P('연속 출석', 'Streak'), '#ff8a3d'], [acc + '%', P('퀴즈 정답률', 'Quiz accuracy'), '#8ce99a'], [D.hit + D.miss, P('푼 문제', 'Answered'), '#38d9a9'],
+      [D.dexN + '/' + D.dexT, P('찾은 물질', 'Found'), '#74c0fc'], [D.spN + '/' + D.spT, P('특수 발견', 'Specials'), '#9775fa'], [D.tries, P('총 실험', 'Mixes'), '#ff8787'], [D.S.a.got.length, P('칭호', 'Titles'), '#e599f7']];
+    box.forEach(([v, l, cc], k) => { const x = 80 + (k % 2) * 470, y = 500 + Math.floor(k / 2) * 148; rr(c, x, y, 450, 128, 26); c.fillStyle = 'rgba(255,255,255,.06)'; c.fill(); c.strokeStyle = cc + '66'; c.lineWidth = 2; c.stroke();
+      c.fillStyle = cc; c.fillRect(x + 26, y + 26, 6, 76); c.textAlign = 'left'; c.fillStyle = '#fff'; c.font = '900 60px Kanit,system-ui,sans-serif'; c.fillText(String(v), x + 56, y + 78); c.font = '600 23px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(l, x + 56, y + 110); });
+    const els = [D.best && [D.best.s, P('제일 잘 아는', 'Best')], D.weak && [D.weak.s, P('헷갈리는', 'Tricky')], D.fav && [D.fav.s, P('자주 쓰는', 'Most used')]].filter(Boolean);
+    els.forEach(([s, l], k) => { const e = elOf(s), cc = hexOf(elCol(s)), x = 80 + k * 315, y = 1170; rr(c, x, y - 70, 295, 120, 22); c.fillStyle = cc + '2a'; c.fill(); c.strokeStyle = cc; c.lineWidth = 3; c.stroke();
+      c.textAlign = 'left'; c.fillStyle = '#fff'; c.font = '900 64px Kanit,system-ui,sans-serif'; c.fillText(e.s, x + 24, y + 22); c.font = '700 22px system-ui,sans-serif'; c.fillStyle = cc; c.fillText(l, x + 24 + c.measureText(e.s).width * 0 + 130, y - 18); c.fillStyle = 'rgba(255,255,255,.85)'; c.font = '700 26px system-ui,sans-serif'; c.fillText(EN() ? e.en : e.ko, x + 154, y + 20); });
+    c.textAlign = 'center'; c.font = '600 22px system-ui,sans-serif'; c.fillStyle = 'rgba(255,255,255,.45)'; c.fillText(P('주기율표 한 칸씩, 매일 조금씩', 'One cell at a time'), W / 2, H - 50);
+    return deliver(cv, `chem_report_${TODAY()}.png`, P('나의 화학 리포트', 'My chemistry report'));
+  }
+
+  /* ── 붙이기: 오늘의 원소 화면 · 출석 칸 · 출석 연출 ── */
+  const ICON = '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>';
+  const _rt = renderToday;
+  renderToday = function(){
+    _rt.apply(this, arguments);
+    try{
+      const box = qBodyEl.querySelector('.td2'); if(!box) return;
+      const at = box.querySelector('.at-box');
+      if(at && !at.querySelector('.at-share') && att().a.d[TODAY()]){
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'at-share'; b.textContent = P('🖼 출석 도장 카드 저장·공유', '🖼 Save / share check-in card');
+        b.addEventListener('click', () => { try{ SFX.pick(); }catch(_){} stampCard(); });
+        (at.querySelector('#atRe') || at.querySelector('#atGo')).after(b);
+      }
+      if(!box.querySelector('.rp-card')){
+        const r = document.createElement('button'); r.type = 'button'; r.className = 'rp-card';
+        r.innerHTML = `<span class="ic">${ICON}</span><span><b>${P('나의 화학 리포트', 'My chemistry report')}</b><small>${P('출석·퀴즈·도감 기록을 한 번에 돌아보기', 'Your check-ins, quizzes and finds at a glance')}</small></span><span class="ar">→</span>`;
+        r.addEventListener('click', () => { try{ SFX.pick(); }catch(_){} report(); });
+        const after = box.querySelector('.bd-card') || box.querySelector('.td3-row') || box.querySelector('.td2-fort');
+        if(after) after.after(r); else box.appendChild(r);
+      }
+    }catch(err){ console.warn('report', err); }
+  };
+  // 출석 연출 화면에 "카드 저장" 버튼
+  new MutationObserver(ms => { for(const m of ms) for(const n of m.addedNodes){ if(n.id === 'atFx' && !n.querySelector('.afcard')){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'afcard'; b.textContent = P('🖼 카드로 저장', '🖼 Save as card');
+    b.addEventListener('click', e => { e.stopPropagation(); n.classList.add('out'); setTimeout(() => n.remove(), 400); stampCard(); });
+    n.appendChild(b);
+  } } }).observe(document.body, { childList: true });
+})();
+</script>
+
 </body>
 </html>
