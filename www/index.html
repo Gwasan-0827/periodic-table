@@ -55840,6 +55840,7 @@ Object.assign(RX_SMILES_PRE, {"CCC1=C(C2=NC1=CC3=C(C4=C([N-]3)C(=C5C(=C(C(=N5)C=
     let pk = 0; atoms.forEach(a => { pk = Math.max(pk, a.Z * .9 + Math.sqrt(a.Z) * 2.2); });
     return { atoms, bonds: [], dens: true, noLabel: true, pk, padK: ball.padK, real3d: ball.real3d, maxScale: ball.maxScale, yaw0: ball.yaw0, tilt: ball.tilt };
   }
+  window.rxDensModel = densModel;
   const _mv = rxMolViews;
   rxMolViews = function(){
     const v = _mv.apply(this, arguments);
@@ -55944,9 +55945,94 @@ Object.assign(RX_SMILES_PRE, {"DNA·poly(dA)·poly(dT)·10bp":{"a":[["P",-16.9,-
   const _sm = rxSmilesModel;
   rxSmilesModel = function(sm){
     const m = _sm.apply(this, arguments);
-    if(sm === RX_SMILES[ko] && m){ m.yaw0 = 0.4; m.tilt = 0; m.padK = 1.55; }
+    if(sm === RX_SMILES[ko] && m){ m.yaw0 = 0.4; m.tilt = 0; m.padK = 1.55; m.isDNA = true; }
     return m;
   };
+})();
+</script>
+
+<style>
+  /* ═══ DNA 렉 감지 → 원자 수 줄이기 제안 ═══ */
+  .lag-ask{position:absolute;left:50%;top:56px;transform:translateX(-50%);z-index:6;width:min(330px,calc(100% - 24px));padding:12px 14px;border-radius:14px;text-align:center;
+    background:rgba(14,16,34,.94);border:1px solid rgba(204,204,255,.45);box-shadow:0 12px 32px rgba(0,0,0,.5),0 0 24px rgba(154,168,255,.25);animation:lagIn .4s cubic-bezier(.16,1.4,.3,1) both}
+  @keyframes lagIn{from{opacity:0;transform:translate(-50%,-12px) scale(.95)}}
+  .lag-ask b{display:block;font-size:13.5px;color:#fff}
+  .lag-ask small{display:block;margin-top:4px;font-size:11.5px;color:rgba(214,218,255,.65);word-break:keep-all}
+  .lag-ask .bt{display:flex;gap:8px;margin-top:10px}
+  .lag-ask button{flex:1;font:inherit;font-size:12.5px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer;border:1px solid rgba(204,204,255,.4);background:rgba(204,204,255,.08);color:#e6e8ff}
+  .lag-ask button.y{border:0;color:#1c1d58;background:linear-gradient(180deg,#fff,#c4c8ff)}
+  .lag-chip{position:absolute;right:12px;top:52px;z-index:5;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 9px;border-radius:999px;font:700 10.5px/1 system-ui,sans-serif;color:#dfe3ff;
+    background:rgba(6,8,20,.65);border:1px solid rgba(154,168,255,.3)}
+  .lag-chip button{font:inherit;font-size:10.5px;padding:3px 7px;border-radius:999px;cursor:pointer;border:1px solid rgba(204,204,255,.4);background:none;color:#fff}
+</style>
+<script>
+(function(){
+  if(typeof rxSmilesModel !== 'function') return;
+  const LS = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(_){} } };
+  const EN = () => LANG === 'en';
+  function stripH(m){
+    const keep = [], map = new Map();
+    m.atoms.forEach((a, i) => { if(a.s !== 'H'){ map.set(i, keep.length); keep.push(a); } });
+    const bonds = (m.bonds || []).filter(b => map.has(b[0]) && map.has(b[1])).map(b => [map.get(b[0]), map.get(b[1]), b[2]]);
+    return { ...m, atoms: keep, bonds, dnaLite: true };
+  }
+  const _sm = rxSmilesModel;
+  rxSmilesModel = function(){
+    const m = _sm.apply(this, arguments);
+    return m && m.isDNA && LS.get('pt_dna_lite') === '1' ? stripH(m) : m;
+  };
+  const isDNA = () => typeof RX !== 'undefined' && RX && RX.views && RX.views.ball && RX.views.ball.isDNA && (() => { const st = document.getElementById('mStage'); return !!(st && st.getClientRects().length); })();
+  const stage = () => document.getElementById('mStage');
+  function rebuild(){
+    const v = RX.views, b0 = v.ball, nb = LS.get('pt_dna_lite') === '1' ? stripH(b0) : null;
+    if(!nb) return;
+    v.ball = nb;
+    try{ if(v.fill && typeof rxSpaceFill === 'function') v.fill = rxSpaceFill(nb) || v.fill; }catch(_){}
+    try{ if(v.stick && typeof rxStickModel === 'function') v.stick = rxStickModel(nb) || v.stick; }catch(_){}
+    try{ if(v.dens && window.rxDensModel) v.dens = rxDensModel(nb) || v.dens; }catch(_){}
+    const cur = RX_VIEW; rxMount(v[cur] || v.ball); try{ rxStart(); }catch(_){}
+    chip();
+  }
+  function chip(){
+    const st = stage(); if(!st) return;
+    st.querySelector('.lag-chip')?.remove();
+    if(!isDNA() || !RX.views.ball.dnaLite) return;
+    const c = document.createElement('div'); c.className = 'lag-chip';
+    c.innerHTML = `${EN() ? 'Lite · H hidden' : '가벼운 모드 · 수소 숨김'}<button type="button">${EN() ? 'Undo' : '되돌리기'}</button>`;
+    c.querySelector('button').addEventListener('click', e => { e.stopPropagation(); LS.set('pt_dna_lite', null); c.remove(); try{ toast(EN() ? 'Close and reopen to see all atoms again' : '다시 열면 모든 원자가 보여요'); }catch(_){} });
+    st.appendChild(c);
+  }
+  function toast(m){ try{ rxToast('', m); }catch(_){} }
+  function ask(){
+    const st = stage(); if(!st || st.querySelector('.lag-ask')) return;
+    const n = RX.views.ball.atoms.length, nh = RX.views.ball.atoms.filter(a => a.s !== 'H').length;
+    const d = document.createElement('div'); d.className = 'lag-ask';
+    d.innerHTML = `<b>${EN() ? 'Looks like it\'s lagging. Reduce the atom count?' : '렉이 걸리신 것 같네요. 원자 수를 줄일까요?'}</b>
+      <small>${EN() ? `Hiding hydrogens: ${n} → ${nh} atoms. The helix stays the same.` : `수소를 숨기면 원자 ${n}개 → ${nh}개. 나선 모양은 그대로예요.`}</small>
+      <div class="bt"><button type="button" class="y">${EN() ? 'Reduce' : '줄이기'}</button><button type="button" class="n">${EN() ? 'It\'s fine' : '괜찮아요'}</button></div>`;
+    d.addEventListener('pointerdown', e => e.stopPropagation());
+    d.querySelector('.y').addEventListener('click', e => { e.stopPropagation(); LS.set('pt_dna_lite', '1'); d.remove(); try{ SFX.pick(); }catch(_){} rebuild(); });
+    d.querySelector('.n').addEventListener('click', e => { e.stopPropagation(); d.remove(); });
+    st.appendChild(d);
+  }
+  // 프레임 간격을 재서 렉 판정 (DNA 결과가 열려 있을 때만)
+  let last = 0, acc = [], seenAt = 0, asked = false, was = false;
+  function loop(now){
+    const on = isDNA();
+    if(on && !was){ seenAt = now; acc = []; chip(); }
+    was = on;
+    if(on && !asked && !RX.views.ball.dnaLite && document.visibilityState === 'visible'){
+      if(last && now - seenAt > 1200){ acc.push(now - last); if(acc.length > 90) acc.shift(); }
+      if(acc.length >= 60){
+        const avg = acc.reduce((p, q) => p + q, 0) / acc.length;
+        if(avg > 42){ asked = true; ask(); }
+      }
+    }
+    last = now;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.rxDnaLagAsk = () => { if(isDNA()) ask(); };
 })();
 </script>
 
