@@ -52043,8 +52043,8 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       x.globalAlpha = 1; }
     // 중성자
     S.neu.forEach(n => { const sp = Math.hypot(n.vx, n.vy) || 1;
-      x.strokeStyle = 'rgba(255,140,140,.35)'; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(n.x, n.y); x.lineTo(n.x - n.vx / sp * 16, n.y - n.vy / sp * 16); x.stroke();
-      const g = x.createRadialGradient(n.x - 2, n.y - 2, .5, n.x, n.y, 6); g.addColorStop(0, '#fff'); g.addColorStop(.35, '#e5414b'); g.addColorStop(1, '#6a1016');
+      x.strokeStyle = 'rgba(120,160,255,.4)'; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(n.x, n.y); x.lineTo(n.x - n.vx / sp * 16, n.y - n.vy / sp * 16); x.stroke();
+      const g = x.createRadialGradient(n.x - 2, n.y - 2, .5, n.x, n.y, 6); g.addColorStop(0, '#fff'); g.addColorStop(.35, '#3f6ad0'); g.addColorStop(1, '#16244f');
       x.fillStyle = g; x.beginPath(); x.arc(n.x, n.y, 5.5, 0, 6.283); x.fill(); });
     if(now % 300 < dt) stat();
     // 다 터졌거나 중성자가 없으면 안내
