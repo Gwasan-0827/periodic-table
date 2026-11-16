@@ -51965,9 +51965,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     const a = Math.random() * 6.283, g = S.gen;
     setTimeout(() => {
       if(g !== S.gen) return;   // 그 사이 '다시'를 눌렀으면 무시
-      const sp = .09;
-      S.frag.push({ x: n.x, y: n.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, r: n.r * .78, k: 'A', t0: performance.now(), lab: F.ft[2] + F.ft[0] });
-      S.frag.push({ x: n.x, y: n.y, vx: -Math.cos(a) * sp, vy: -Math.sin(a) * sp, r: n.r * .86, k: 'B', t0: performance.now(), lab: F.fb[2] + F.fb[0] });
+      const sp = .06;
+      S.frag.push({ x: n.x, y: n.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, r: n.r * .78, k: 'A', t0: performance.now(), lab: F.ft[2] + F.ft[0], cl: S.fis <= 2 });
+      S.frag.push({ x: n.x, y: n.y, vx: -Math.cos(a) * sp, vy: -Math.sin(a) * sp, r: n.r * .86, k: 'B', t0: performance.now(), lab: F.fb[2] + F.fb[0], cl: S.fis <= 2 });
       S.fx.push({ x: n.x, y: n.y, t0: performance.now(), r: n.r });
       for(let i = 0; i < F.n; i++) fireN(n.x, n.y, a + Math.PI / 2 + (i - 1) * .9 + (Math.random() - .5) * .5 + (Math.random() < .5 ? Math.PI : 0), .32 + Math.random() * .1);
       n.st = 3; stat();
@@ -51978,6 +51978,20 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     d.querySelector('[data-s=f]').textContent = S.fis;
     d.querySelector('[data-s=n]').textContent = S.neu.length;
     d.querySelector('[data-s=e]').textContent = S.mev >= 1000 ? (S.mev / 1000).toFixed(1) + ' GeV' : S.mev + ' MeV'; }
+  // 그림 설명 표시: 대상에 동그라미 → 꺾인 선 → 이름 (화면 밖으로 안 나가게 방향을 고름)
+  function callout(x, ctx, tx, ty, rr, lab, al, col, vdir){
+    const W = S.W, H = S.H, right = tx < W - 150, up = vdir ? (vdir < 0 ? ty > 70 : ty > H - 70) : ty > 70, sx = right ? 1 : -1, sy = up ? -1 : 1;
+    const a0 = Math.atan2(sy, sx * 1.1), ex = tx + Math.cos(a0) * rr, ey = ty + Math.sin(a0) * rr;
+    const kx = ex + sx * 34, ky = ey + sy * 30, lx = kx + sx * 40;
+    ctx.save(); ctx.globalAlpha = al; ctx.strokeStyle = col || '#fff'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 4;
+    ctx.beginPath(); ctx.arc(tx, ty, rr, 0, 6.283); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(kx, ky); ctx.lineTo(lx, ky); ctx.stroke();
+    ctx.shadowBlur = 0; ctx.font = '800 14px system-ui,sans-serif'; ctx.textAlign = right ? 'left' : 'right'; ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(lab).width, bx = right ? lx + 2 : lx - tw - 10; ctx.fillStyle = 'rgba(8,10,24,.78)'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx, ky - 11, tw + 8, 22, 7) : ctx.rect(bx, ky - 11, tw + 8, 22); ctx.fill();
+    ctx.fillStyle = col || '#fff'; ctx.fillText(lab, lx + sx * 6, ky); ctx.restore();
+  }
+  const SUP = s => String(s).replace(/[0-9]/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
   let last = 0, raf = 0;
   function step(now){
     raf = requestAnimationFrame(step);
@@ -52015,8 +52029,9 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       x.restore();
     });
     // 이름표 (처음 몇 개만, 너무 많으면 지저분)
-    if(S.fis === 0){ x.font = '800 10px system-ui,sans-serif'; x.textAlign = 'center'; x.fillStyle = 'rgba(220,226,255,.75)';
-      S.nuc.slice(0, 3).forEach(u => { if(u.st === 0) x.fillText(F.A + byNum[Zf].s, u.x, u.y + u.r + 12); }); }
+    if(S.fis === 0){ const u = S.nuc[Math.min(S.nuc.length - 1, 1)]; if(u && u.st === 0) callout(null, x, u.x, u.y, u.r * 1.25, SUP(F.A) + byNum[Zf].s + P(' 원자핵', ' nucleus'), .9); }
+    // 터지기 직전 땅콩 모양 핵 (처음 두 번만)
+    if(S.fis <= 2) S.nuc.forEach(u => { if(u.st === 1 || u.st === 2) callout(null, x, u.x, u.y, u.r * 1.6, SUP(F.A + 1) + byNum[Zf].s + P(' (불안정)', ' (unstable)'), .95, '#ffe08a'); });
     // 에너지 별
     S.fx = S.fx.filter(f => now - f.t0 < (f.absorb ? 500 : 900));
     S.fx.forEach(f => { const k = (now - f.t0) / (f.absorb ? 500 : 900), al = 1 - k;
@@ -52032,13 +52047,15 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       f.x += f.vx * dt; f.y += f.vy * dt; f.vx *= .985; f.vy *= .985;
       const al = Math.max(0, 1 - Math.max(0, age - 1600) / 800); if(al <= 0){ S.frag.splice(i, 1); continue; }
       x.globalAlpha = al; x.drawImage(SPR[f.k], f.x - f.r, f.y - f.r, f.r * 2, f.r * 2);
-      if(S.fis <= 3){ x.font = '900 11px system-ui,sans-serif'; x.textAlign = 'center'; x.fillStyle = '#ffe9a8'; x.fillText(f.lab, f.x, f.y - f.r - 4); }
+      if(f.cl && age > 380){ const m = f.lab.match(/^(\d+)(\D+)$/); callout(null, x, f.x, f.y, f.r * 1.25, m ? SUP(m[1]) + m[2] : f.lab, al * .95 * Math.min(1, (age - 380) / 200), '#ffe9a8', f.k === 'A' ? -1 : 1); }
       x.globalAlpha = 1; }
     // 중성자
     S.neu.forEach(n => { const sp = Math.hypot(n.vx, n.vy) || 1;
       x.strokeStyle = 'rgba(120,160,255,.4)'; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(n.x, n.y); x.lineTo(n.x - n.vx / sp * 16, n.y - n.vy / sp * 16); x.stroke();
       const g = x.createRadialGradient(n.x - 2, n.y - 2, .5, n.x, n.y, 6); g.addColorStop(0, '#fff'); g.addColorStop(.35, '#3f6ad0'); g.addColorStop(1, '#16244f');
       x.fillStyle = g; x.beginPath(); x.arc(n.x, n.y, 5.5, 0, 6.283); x.fill(); });
+    // 중성자 표시: 처음 쏜 중성자, 첫 핵분열에서 나온 중성자 하나
+    if(S.fis === 0 && S.neu.length){ const n = S.neu[S.neu.length - 1]; if(n.x > 8 && n.x < S.W - 8) callout(null, x, n.x, n.y, 13, P('n 중성자', 'n neutron'), .95, '#cfe0ff'); }
     if(now % 300 < dt) stat();
     // 다 터졌거나 중성자가 없으면 안내
     const tip = d.querySelector('.tip'), left = S.nuc.filter(u => u.st === 0).length;
