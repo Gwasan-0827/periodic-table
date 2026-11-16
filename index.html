@@ -54390,6 +54390,16 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     fx(e, elCol(sym), { shield: L.shield || 0, newShield: !!L.newShield, broke: !!L.broke, unlocks: (L.un || []).map(id => RW.find(r => r.id === id)).filter(Boolean), stats: stats(a), a });
   }
   window.rxAttendReplay = replay;
+  // 바깥(출석 알림 창 등)에서 도장 찍기
+  window.rxAttendDo = function(){
+    if(load().d[TODAY()]) return false;
+    let e; try{ e = todayElement().el; }catch(_){ e = EL[0]; }
+    const res = checkIn(e.s); if(!res) return false;
+    fx(e, elCol(e.s), res);
+    try{ if(HUB === 'today' && quizEl.classList.contains('on')) renderToday(); }catch(_){}
+    return true;
+  };
+  window.rxAttInfo = function(){ const a = load(), s = stats(a); return { done: !!a.d[TODAY()], day: TODAY(), streak: s.streak, total: s.total, sh: a.sh, pd: pending(a), title: a.title }; };
   window.rxAttendBook = book;
 
   const _rt = renderToday;
@@ -55576,6 +55586,108 @@ Object.assign(RX_SMILES_PRE, {"C12C3C4C5C1C6C2C3C4C56":{"a":[["C",23.6,-28.1,-21
     try{ rxPanelSpin(() => items.filter(Boolean)); }catch(_){}
     try{ rxEvt('compare'); }catch(_){}
   };
+})();
+</script>
+
+<style>
+  /* ═══ 아침 9시가 지나면 출석 알림 창 ═══ */
+  #apFx{position:fixed;inset:0;z-index:2147482900;display:grid;place-items:center;font-family:system-ui,sans-serif;color:#fff;--c:#9aa8ff}
+  #apFx .bg{position:absolute;inset:0;background:rgba(5,7,16,.55);backdrop-filter:blur(14px) brightness(.6);-webkit-backdrop-filter:blur(14px) brightness(.6);animation:apIn .4s both}
+  #apFx .card{position:relative;width:min(380px,calc(100vw - 32px));padding:26px 22px 20px;border-radius:24px;text-align:center;overflow:hidden;
+    background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--c) 28%,transparent),transparent 60%),linear-gradient(180deg,#141830,#0b0d1a);
+    border:1px solid color-mix(in srgb,var(--c) 45%,transparent);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px color-mix(in srgb,var(--c) 25%,transparent);
+    animation:apPop .6s .1s cubic-bezier(.16,1.3,.3,1) both}
+  #apFx .card::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(255,255,255,.025) 14px 15px)}
+  #apFx .sun{position:absolute;left:50%;top:-120px;width:240px;height:240px;margin-left:-120px;border-radius:50%;pointer-events:none;
+    background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--c) 30%,transparent) 0 6deg,transparent 6deg 18deg);
+    -webkit-mask:radial-gradient(closest-side,transparent 30%,#000 45%,transparent 100%);mask:radial-gradient(closest-side,transparent 30%,#000 45%,transparent 100%);animation:apSpin 22s linear infinite,apIn 1s .3s both}
+  @keyframes apSpin{to{rotate:360deg}}
+  #apFx .gm{position:relative;font:800 11px/1 ui-monospace,monospace;letter-spacing:.42em;color:color-mix(in srgb,var(--c) 70%,#fff);animation:apUp .6s .35s both}
+  #apFx .tile{position:relative;width:96px;height:104px;margin:16px auto 0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--c) 60%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 70%,#000));color:#0b0d18;
+    box-shadow:0 12px 30px color-mix(in srgb,var(--c) 45%,transparent),inset 0 2px 0 rgba(255,255,255,.5);animation:apTile .9s .45s cubic-bezier(.16,1.4,.3,1) both}
+  #apFx .tile em{position:absolute;left:9px;top:7px;font:700 11px/1 ui-monospace,monospace;font-style:normal;opacity:.7}
+  #apFx .tile b{font:900 46px/1 Kanit,system-ui,sans-serif}
+  #apFx .tile span{margin-top:2px;font-size:11px;font-weight:800}
+  @keyframes apTile{0%{transform:perspective(500px) rotateY(-180deg) scale(.5);opacity:0}100%{transform:none;opacity:1}}
+  #apFx h3{position:relative;margin:16px 0 0;font:900 22px/1.3 system-ui,sans-serif;word-break:keep-all;animation:apUp .6s .7s both}
+  #apFx h3 em{font-style:normal;color:color-mix(in srgb,var(--c) 70%,#fff)}
+  #apFx p{position:relative;margin:8px 0 0;font-size:13px;line-height:1.55;color:rgba(255,255,255,.72);word-break:keep-all;animation:apUp .6s .85s both}
+  #apFx p.w{color:#9ec5ff}#apFx p.bad{color:#ffa8b8}
+  #apFx .row{position:relative;display:flex;justify-content:center;gap:8px;margin-top:14px;animation:apUp .6s .95s both}
+  #apFx .row div{padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+  #apFx .row b{display:block;font:900 20px/1 Kanit,system-ui,sans-serif}
+  #apFx .row span{display:block;margin-top:3px;font-size:10.5px;color:rgba(255,255,255,.55)}
+  #apFx .go{position:relative;display:block;width:100%;margin-top:18px;padding:13px;border-radius:14px;border:0;cursor:pointer;overflow:hidden;font:inherit;font-size:15px;font-weight:900;color:#141833;
+    background:linear-gradient(90deg,#fff,color-mix(in srgb,var(--c) 70%,#ffe29a));box-shadow:0 0 26px color-mix(in srgb,var(--c) 50%,transparent);animation:apUp .6s 1.05s both,apPulse 1.6s 1.8s ease-in-out infinite}
+  #apFx .go::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);animation:apShine 2.2s 1.6s ease-in-out infinite}
+  @keyframes apShine{0%,40%{left:-50%}100%{left:130%}}
+  @keyframes apPulse{50%{box-shadow:0 0 40px color-mix(in srgb,var(--c) 75%,transparent)}}
+  #apFx .later{position:relative;margin-top:10px;font:inherit;font-size:12px;color:rgba(255,255,255,.55);background:none;border:0;cursor:pointer;animation:apUp .6s 1.15s both}
+  @keyframes apIn{from{opacity:0}}
+  @keyframes apPop{from{opacity:0;transform:translateY(30px) scale(.92)}}
+  @keyframes apUp{from{opacity:0;transform:translateY(12px)}}
+  #apFx.out{animation:apOut .35s ease-in forwards}
+  @keyframes apOut{to{opacity:0}}
+  @media (prefers-reduced-motion:reduce){ #apFx *{animation-duration:.01s!important;animation-delay:0s!important} }
+</style>
+<script>
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  const KEY = 'pt_att_prompt';
+  const seen = d => { try{ return localStorage.getItem(KEY) === d; }catch(_){ return true; } };
+  const mark = d => { try{ localStorage.setItem(KEY, d); }catch(_){} };
+  // 다른 큰 창(튜토리얼·안내·연출)이 떠 있으면 기다린다
+  function blocked(){
+    if(document.getElementById('apFx') || document.getElementById('atFx')) return true;
+    const W = innerWidth, H = innerHeight;
+    for(const el of document.body.children){
+      if(el.id === 'apFx') continue;
+      const cs = getComputedStyle(el); if(cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .1 || cs.pointerEvents === 'none') continue;
+      if((+cs.zIndex || 0) < 500) continue;
+      const r = el.getBoundingClientRect(); if(r.width * r.height > W * H * .45) return true;
+    }
+    return false;
+  }
+  function show(info){
+    let e; try{ e = todayElement().el; }catch(_){ return; }
+    let col = '#9aa8ff'; try{ col = cssv(CAT[e.c].v); }catch(_){}
+    const ov = document.createElement('div'); ov.id = 'apFx'; ov.style.setProperty('--c', col);
+    const h = new Date().getHours();
+    const hi = h < 12 ? P('GOOD MORNING', 'GOOD MORNING') : h < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
+    const note = info.pd > 0 ? `<p class="w">${P(`어제 빠진 ${info.pd}일은 보호막이 막아 줄 거예요 🛡`, `A shield will cover the ${info.pd} missed day${info.pd > 1 ? 's' : ''} 🛡`)}</p>`
+      : info.pd < 0 ? `<p class="bad">${P('보호막이 모자라서 연속 기록은 새로 시작돼요. 오늘부터 다시!', 'Not enough shields: the streak restarts today.')}</p>`
+      : info.streak ? `<p>${P(`지금 <b>${info.streak}일</b> 연속이에요. 오늘 찍으면 ${info.streak + 1}일!`, `You're on a <b>${info.streak}</b>-day streak. Stamp to make it ${info.streak + 1}!`)}</p>`
+      : `<p>${P('오늘의 도장을 찍고 연속 기록을 시작해 봐요.', 'Stamp today to start a streak.')}</p>`;
+    ov.innerHTML = `<div class="bg"></div><div class="card"><div class="sun"></div>
+      <div class="gm">${hi}</div>
+      <div class="tile"><em>${e.n}</em><b>${e.s}</b><span>${EN() ? e.en : e.ko}</span></div>
+      <h3>${P(`새로운 하루가 열렸어요!<br>오늘의 원소는 <em>${e.ko}</em>`, `A new day is here!<br>Today's element: <em>${e.en}</em>`)}</h3>
+      ${note}
+      <div class="row"><div><b>${info.streak}</b><span>${P('연속', 'Streak')}</span></div><div><b>${info.total}</b><span>${P('총 출석', 'Total')}</span></div><div><b>${info.sh}/3</b><span>${P('보호막', 'Shields')}</span></div></div>
+      <button type="button" class="go">🖋 ${P('출석 도장 찍기', 'Stamp today')}</button>
+      <button type="button" class="later">${P('나중에 할게요', 'Maybe later')}</button></div>`;
+    document.body.appendChild(ov);
+    mark(info.day);
+    try{ SFX.pick(); }catch(_){}
+    const close = () => { ov.classList.add('out'); setTimeout(() => ov.remove(), 360); };
+    ov.querySelector('.later').addEventListener('click', close);
+    ov.querySelector('.bg').addEventListener('click', close);
+    ov.querySelector('.go').addEventListener('click', () => { ov.remove(); try{ window.rxAttendDo && rxAttendDo(); }catch(err){ console.warn('attprompt', err); } });
+  }
+  function check(){
+    try{
+      if(!window.rxAttInfo || document.visibilityState === 'hidden') return;
+      const info = rxAttInfo(); if(info.done || seen(info.day)) return;
+      if(blocked()) return;
+      show(info);
+    }catch(err){ console.warn('attprompt', err); }
+  }
+  setTimeout(check, 4000);
+  setInterval(check, 30000);
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setTimeout(check, 1500); });
+  window.rxAttPrompt = () => { try{ localStorage.removeItem(KEY); }catch(_){} check(); };
 })();
 </script>
 
