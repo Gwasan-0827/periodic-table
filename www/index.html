@@ -56384,23 +56384,25 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
   const L = () => { try{ return LANG === 'en'; }catch(_){ return false; } };
   const T = {
     ko: { real: '실제', per: '페리니아식',
-      s: ['클로린이 나트륨 옆으로 슬쩍…', '치이익— 염소 스프레이 살포!!', '나트륨: 야!!!!', '(이미 줄행랑 친 클로린;;;)', '(나트륨은 이미 소금 된 지 오래)', '클로린: 어머ㅋ'],
+      s: ['클로린이 나트륨 옆으로 슬쩍…', '치이익— 염소 스프레이 살포!!', '나트륨: 야!!!!', '(이미 줄행랑 친 클로린;;;)', '(나트륨은 이미 소금 된 지 오래)', '클로린: 어머ㅋ', '(후일담) 창조주의 전자 스프레이, 칙칙—', '나트륨: 창조주~ (부활!)'],
+      creator: '창조주', yay: '창조주~',
       bya: '야!!!!', run: ';;;', omg: '어머ㅋ', sneak: '슬쩍…', salt: '소금',
-      note: '<b>진짜로는</b> 나트륨을 노란 염소 기체 속에 넣으면 밝은 노란 불꽃을 내며 타서 하얀 <b>염화 나트륨(소금)</b>이 돼요. 2Na + Cl₂ → 2NaCl',
+      note: '<b>진짜로는</b> 나트륨을 노란 염소 기체 속에 넣으면 밝은 노란 불꽃을 내며 타서 하얀 <b>염화 나트륨(소금)</b>이 돼요. 2Na + Cl₂ → 2NaCl<br><b>후일담도 진짜예요.</b> 소금을 녹여서 전기를 흘려 주면(전자를 넣어 주면) 다시 나트륨과 염소로 갈라져요. 이걸 <b>전기 분해</b>라고 해요. 2NaCl → 2Na + Cl₂',
       tap: '화면을 누르면 다음 장면' },
     en: { real: 'Real', per: 'Perinia style',
-      s: ['Chlorine sneaks up on Sodium…', 'Psssht— chlorine spray attack!!', 'Sodium: HEY!!!!', '(Chlorine already ran off;;;)', '(Sodium turned into salt long ago)', 'Chlorine: Oops lol'],
+      s: ['Chlorine sneaks up on Sodium…', 'Psssht— chlorine spray attack!!', 'Sodium: HEY!!!!', '(Chlorine already ran off;;;)', '(Sodium turned into salt long ago)', 'Chlorine: Oops lol', '(Epilogue) The Creator\'s electron spray, pssht—', 'Sodium: Creator~ (revived!)'],
+      creator: 'The Creator', yay: 'Creator~',
       bya: 'HEY!!!!', run: ';;;', omg: 'Oops lol', sneak: 'tiptoe…', salt: 'Salt',
-      note: '<b>For real:</b> drop sodium into yellow-green chlorine gas and it burns with a bright yellow flame, leaving white <b>sodium chloride (table salt)</b>. 2Na + Cl₂ → 2NaCl',
+      note: '<b>For real:</b> drop sodium into yellow-green chlorine gas and it burns with a bright yellow flame, leaving white <b>sodium chloride (table salt)</b>. 2Na + Cl₂ → 2NaCl<br><b>The epilogue is real too:</b> melt the salt and push electricity (electrons) through it, and it splits back into sodium and chlorine. That is <b>electrolysis</b>. 2NaCl → 2Na + Cl₂',
       tap: 'Tap for the next scene' } };
   const tt = k => T[L() ? 'en' : 'ko'][k];
-  const SC = [0, 1.8, 3.6, 5.2, 6.8, 8.9, 11.2];      // 장면 경계 (초)
+  const SC = [0, 1.8, 3.6, 5.2, 6.8, 8.9, 11.2, 13.6, 16];      // 장면 경계 (초)
   const W = 480, H = 270, CY = 140;
   const ST = { on: false, t: 0, play: true, raf: 0, last: 0, said: -1 };
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const ease = u => { u = clamp(u, 0, 1); return u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; };
   const pop = u => { u = clamp(u, 0, 1); return u < 1 ? 1 + Math.sin(u * Math.PI) * .18 : 1; };
-  const sc = t => Math.min(5, Math.max(0, SC.findIndex((v, i) => t >= v && t < (SC[i + 1] ?? 1e9))));
+  const sc = t => Math.min(7, Math.max(0, SC.findIndex((v, i) => t >= v && t < (SC[i + 1] ?? 1e9))));
 
   // 효과음 (작게)
   function hiss(){ try{ if(!sndOn) return; const a = ac(), n = a.sampleRate * .9, b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
@@ -56415,7 +56417,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     g.gain.setValueAtTime(.035, a.currentTime); g.gain.exponentialRampToValueAtTime(.0005, a.currentTime + .2); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + .22); }catch(_){} }
 
   const bub = (x, y, txt, opt) => {
-    opt = opt || {}; const fs = opt.fs || 15, w = Math.max(54, [...txt].length * fs * .78 + 22), h = fs + 16, k = opt.k == null ? 1 : opt.k;
+    opt = opt || {}; const fs = opt.fs || 15, w = Math.max(54, [...txt.replace(/<[^>]+>/g, '')].length * fs * .78 + 22), h = fs + 16, k = opt.k == null ? 1 : opt.k;
     const tail = opt.down === false ? '' : `<path d="M${x - 6} ${y + h / 2 - 1} L${x + (opt.tx || -4)} ${y + h / 2 + 10} L${x + 6} ${y + h / 2 - 1}Z" fill="${opt.bg || '#f4f6fb'}"/>`;
     return `<g transform="translate(${x} ${y}) scale(${k}) translate(${-x} ${-y})">${tail}<rect x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="${opt.bg || '#f4f6fb'}" ${opt.spike ? 'stroke="#ff6b6b" stroke-width="2.5"' : ''}/>
       <text x="${x}" y="${y + fs * .36}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="${fs}" font-weight="900" fill="${opt.fg || '#151a24'}">${txt}</text></g>`;
@@ -56460,13 +56462,22 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       const shake = k === 2 ? Math.sin(t * 60) * 3 * (1 - u(2)) : 0;
       const pic = k >= 2 ? na1 : na0, ar = k >= 2 ? 292 / 240 : 242 / 240, h = k >= 2 ? 150 : 128;
       s += img(pic, naX + shake, CY, h * (k === 2 ? pop(u(2) * 3) : 1), ar);
+    } else if(k === 7){
+      // 부활: 소금이 줄어들고 나트륨이 뿅
+      const v = u(7), back = ease(clamp((v - .15) * 2.2, 0, 1));
+      s += salt(naX, CY + 28, clamp(1 - v * 1.8, 0, 1));
+      if(v < .4) s += `<circle cx="${naX}" cy="${CY}" r="${30 + v * 220}" fill="#74c0fc" opacity="${(.4 - v) * 1.3}"/>`;
+      if(back > 0) s += `<g opacity="${back}">${img(na0, naX, CY - 4, 128 * (v < .6 ? pop(clamp((v - .15) * 3, 0, 1)) : 1), 242 / 240)}</g>`;
+      for(let i = 0; i < 7; i++){ const a = i / 7 * Math.PI * 2 + t, r = 70 + Math.sin(t * 4 + i) * 8, o = back * (.6 + .4 * Math.sin(t * 6 + i));
+        s += `<path d="M${naX + Math.cos(a) * r} ${CY + Math.sin(a) * r * .7 - 6} m0 -6 l2 4 l4 2 l-4 2 l-2 4 l-2 -4 l-4 -2 l4 -2z" fill="#ffd43b" opacity="${o}"/>`; }
+      s += bub(naX + 96, 50, tt('yay') + ' <tspan fill="#ff6b9d">♥</tspan>', { fs: 16, k: clamp((v - .35) * 6, 0, 1), tx: -18 });
     } else {
       const v = u(4), fade = 1 - clamp(v * 2.2, 0, 1);
       if(fade > 0) s += `<g opacity="${fade}">${img(na1, naX, CY, 150, 292 / 240)}</g>`;
       // 하얀 번쩍 + 노란 불꽃 (진짜 반응도 노란 불꽃)
       if(k === 4 && v < .45) s += `<circle cx="${naX}" cy="${CY}" r="${40 + v * 160}" fill="#ffd43b" opacity="${(.45 - v) * 1.4}"/>`;
-      const sv = k === 4 ? clamp(v * 1.4 - .15, 0, 1) : 1;
-      s += salt(naX, CY + 28, sv);
+      const sv = k === 4 ? clamp(v * 1.4 - .15, 0, 1) : 1, jig = k === 6 && u(6) > .3 ? Math.sin(t * 50) * 1.6 : 0;
+      s += salt(naX + jig, CY + 28, sv);
       // 소금 위에 남은 나트륨의 노란 고리 바보털 (흔적)
       if(sv > .5) s += `<g opacity="${(sv - .5) * 2}"><ellipse cx="${naX + 2}" cy="${CY - 26 + Math.sin(t * 3) * 2}" rx="17" ry="7" fill="none" stroke="#ffd43b" stroke-width="4"/></g>
         <text x="${naX}" y="${CY + 78}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" font-weight="900" fill="#e7ecf4" opacity="${sv}">NaCl</text>
@@ -56494,10 +56505,32 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       s += `<g opacity="${clamp(u(3) * 3, 0, 1)}"><path d="M336 ${CY + 40} q14 -10 28 0" stroke="#8e99ad" stroke-width="2" fill="none"/><path d="M326 ${CY + 52} q24 -14 48 0" stroke="#8e99ad" stroke-width="2" fill="none" opacity=".5"/></g>`;
     } else if(k === 4){
       s += gas(290, naX + 10, CY - 6, 1, 3).replace(/opacity="([\d.]+)"/g, (m, o) => `opacity="${o * clamp(.4 - u(4), 0, .4)}"`);
-    } else if(k >= 5){
+    } else if(k === 5){
       const v = ease(u(5) * 2), x = W + 30 - v * 95;
       s += `<g transform="rotate(-14 ${x} ${CY})">${img(cl, x, CY + 6, clH, clAr)}</g>`;
       s += bub(x - 60, CY - 66, tt('omg'), { fs: 15, k: clamp((u(5) - .25) * 5, 0, 1), tx: 14 });
+    }
+    // ── 창조주의 손 + 전자 스프레이 (후일담)
+    if(k >= 6){
+      const inn = k === 6 ? ease(clamp(u(6) * 3, 0, 1)) : 1 - ease(clamp((u(7) - .55) * 3, 0, 1));
+      const hx = 330 + (1 - inn) * 200, hy = 52 - (1 - inn) * 80;
+      s += `<g transform="translate(${hx} ${hy}) rotate(28)">
+        <rect x="18" y="-60" width="44" height="70" rx="12" fill="#2b2f4a" stroke="#c4c8ff" stroke-width="1.5"/>
+        <rect x="14" y="2" width="52" height="12" rx="6" fill="#c4c8ff"/>
+        <rect x="-22" y="12" width="30" height="58" rx="7" fill="#4dabf7" stroke="#1c7ed6" stroke-width="2"/>
+        <rect x="-18" y="2" width="22" height="12" rx="3" fill="#dee2e6"/><rect x="-26" y="4" width="9" height="6" rx="2" fill="#adb5bd"/>
+        <text x="-7" y="47" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="900" fill="#fff">e⁻</text>
+        <ellipse cx="22" cy="30" rx="26" ry="20" fill="#ffd8c2" stroke="#e8a98a" stroke-width="1.5"/>
+        <path d="M2 18 q-8 6 -4 14 M2 30 q-8 6 -4 14" stroke="#e8a98a" stroke-width="1.5" fill="none"/></g>
+        <text x="${hx - 60}" y="${hy + 4}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="800" fill="#c4c8ff" opacity="${inn}">${tt('creator')}</text>`;
+      // 노즐에서 소금으로 날아가는 전자들
+      if(k === 6 && u(6) > .25){
+        const nx = hx - 22, ny = hy + 6;
+        for(let i = 0; i < 12; i++){
+          const p = ((t * 1.4 + i / 12) % 1), x = nx + (naX + 10 - nx) * p + Math.sin(i * 3 + t * 5) * 10, y = ny + (CY + 10 - ny) * p + Math.cos(i * 2) * 12 * p;
+          s += `<g opacity="${.9 - p * .4}"><circle cx="${x}" cy="${y}" r="7" fill="#74c0fc"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="8.5" font-weight="900" fill="#0b1020" font-family="system-ui">e⁻</text></g>`;
+        }
+      }
     }
     // ── 나트륨 대사
     if(k === 2) s += bub(naX + 150, 62, tt('bya'), { fs: 20, k: pop(u(2) * 3) * clamp(u(2) * 6, 0, 1), spike: true, fg: '#c92a2a', tx: -14 });
@@ -56507,6 +56540,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       ST.said = k;
       if(k === 1) hiss(); if(k === 2) bonk(); if(k === 3) zip();
       if(k === 4) try{ SFX.ok(); }catch(_){}
+      if(k === 6) hiss(); if(k === 7) try{ rxBell(880, .3, .05, 0); rxBell(1320, .4, .05, .12); }catch(_){}
       document.querySelectorAll('.mk-steps li').forEach((li, i) => li.classList.toggle('on', i === k));
       document.getElementById('mkEq')?.classList.toggle('on', k >= 4);
     }
