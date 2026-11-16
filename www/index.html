@@ -47674,7 +47674,7 @@ void main(){
     [57, 89].forEach(st => { mt += '<i class="gap"></i><i class="gap"></i>'; for(let n = st; n < st + 15; n++) mt += cell(byNum[n]); mt += '<i class="gap"></i>'; });
     box.innerHTML = `
       <div class="elp-hero"><div style="flex:1"><h3>${EN() ? 'ELEMENT PERSONA INDEX' : '원소 의인화 도감'}</h3>
-        <p>${EN() ? 'Elements, as people. Characters from "Periodic // Table City" by the director.' : '원소가 사람이 된다면? 디렉터의 만화 「페리오딕 // 테이블 시티」 친구들이에요.'}</p></div>
+        <p>${EN() ? 'Elements, as people. Friends from the director\'s world, "Perinia //".' : '원소가 사람이 된다면? 디렉터의 세계관 「페리니아//」 친구들이에요.'}</p></div>
         <div class="elp-big">${P.filter(p => !p.wip).length}<small> / 118</small></div></div>
       <div class="elp-mt">${mt}</div>
       ${fltHTML()}<div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card${p.wip ? ' wip' : ''}" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">${thumb(p)}
