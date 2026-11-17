@@ -53173,43 +53173,79 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     c.fillStyle = '#9aa0c8'; c.font = '700 10px system-ui,sans-serif'; c.fillText(P('빛의 속도', 'of light speed'), gx, gy + 16); c.textBaseline = 'alphabetic';
   };
   SCN[1] = (c, W, H, t, r, base) => { // 과녁 바퀴
-    const tx = W * .68, cy = H * .5, Rw = Math.min(H * .34, W * .2), ty = cy + Rw * .78;
+    const nar = W < 520, tx = W * (nar ? .6 : .68), cy = H * .46, Rw = Math.min(H * .44, W * (nar ? .34 : .24)), ty = cy + Rw * .78 * .56;
     // 빔관
     const tg = c.createLinearGradient(0, ty - 14, 0, ty + 14); tg.addColorStop(0, '#3a4066'); tg.addColorStop(.5, '#1a1e38'); tg.addColorStop(1, '#3a4066');
     c.fillStyle = tg; c.fillRect(0, ty - 12, tx - Rw * .1, 24); c.strokeStyle = 'rgba(170,180,255,.3)'; c.strokeRect(-1, ty - 12, tx - Rw * .1, 24);
-    // 바퀴 (실물 사진 기준: 통짜 금속 원판 4등분, 가장자리에 바나나 모양 창 4개 = 얇은 박막에 표적 물질을 입힌 부분, 가운데 허브엔 구멍 8개)
-    c.save(); c.translate(tx, cy); c.rotate(t * 1.6);
-    const ri = Rw * .66, ro = Rw * .9, gapA = .2, rc = (ro - ri) / 2;
-    c.fillStyle = metal(c, -Rw, -Rw, Rw, Rw, '#8c93a8', '#d9dde8'); c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.fill();
-    c.strokeStyle = 'rgba(40,44,60,.55)'; c.lineWidth = 1.5; c.stroke();
+    // 바퀴 2.5D (실물 사진 기준: 통짜 금속 원판 4등분, 가장자리 바나나 창 4개에 표적 박막, 허브 구멍 8개)
+    const KT = .56, TH = Math.max(6, Rw * .07), th = t * 1.6;
+    const ri = Rw * .66, ro = Rw * .9, gapA = .2, rc = (ro - ri) / 2, rm = (ri + ro) / 2;
+    // 그림자
+    { const sg = c.createRadialGradient(tx, cy + TH + Rw * KT * .9, 0, tx, cy + TH + Rw * KT * .9, Rw * 1.1); sg.addColorStop(0, 'rgba(0,0,0,.45)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+      c.fillStyle = sg; c.beginPath(); c.ellipse(tx, cy + TH + Rw * KT * .55, Rw * 1.05, Rw * KT * .7, 0, 0, 6.283); c.fill(); }
+    // 옆면 (두께)
+    { const sg = c.createLinearGradient(tx - Rw, 0, tx + Rw, 0); sg.addColorStop(0, '#4a5066'); sg.addColorStop(.35, '#a3aabd'); sg.addColorStop(.6, '#6d7489'); sg.addColorStop(1, '#3a3f52');
+      c.fillStyle = sg; c.beginPath(); c.ellipse(tx, cy + TH, Rw, Rw * KT, 0, 0, Math.PI); c.lineTo(tx - Rw, cy); c.ellipse(tx, cy, Rw, Rw * KT, 0, Math.PI, 0, true); c.closePath(); c.fill(); }
+    c.save(); c.translate(tx, cy); c.scale(1, KT); c.rotate(th);
+    const P2 = (a, rr) => [Math.cos(a) * rr, Math.sin(a) * rr];
+    // 윗면 금속
+    c.fillStyle = metal(c, -Rw, -Rw, Rw, Rw, '#868da2', '#dde1ea'); c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.fill();
+    // 선반 가공 결 (동심원)
+    c.lineWidth = .7; for(let k = 0; k < 26; k++){ const rr = Rw * (.52 + .47 * k / 26); c.strokeStyle = k % 2 ? 'rgba(255,255,255,.07)' : 'rgba(40,44,60,.07)'; c.beginPath(); c.arc(0, 0, rr, 0, 6.283); c.stroke(); }
+    c.strokeStyle = 'rgba(30,34,48,.6)'; c.lineWidth = 1.5; c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.stroke();
     // 4등분 이음매
-    c.strokeStyle = 'rgba(50,55,75,.45)'; c.lineWidth = 1;
-    for(let q = 0; q < 4; q++){ const a = q * Math.PI / 2; c.beginPath(); c.moveTo(Math.cos(a) * Rw * .5, Math.sin(a) * Rw * .5); c.lineTo(Math.cos(a) * Rw, Math.sin(a) * Rw); c.stroke(); }
+    c.strokeStyle = 'rgba(40,44,62,.5)'; c.lineWidth = 1.2;
+    for(let q = 0; q < 4; q++){ const a = q * Math.PI / 2; c.beginPath(); c.moveTo(...P2(a, Rw * .5)); c.lineTo(...P2(a, Rw)); c.stroke(); }
+    const winPath = q => { const a0 = q * Math.PI / 2 + gapA, a1 = (q + 1) * Math.PI / 2 - gapA; c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(...P2(a1, rm), rc, a1, a1 + Math.PI); c.arc(0, 0, ri, a1, a0, true); c.arc(...P2(a0, rm), rc, a0 + Math.PI, a0); c.closePath(); return [a0, a1]; };
     for(let q = 0; q < 4; q++){
-      const a0 = q * Math.PI / 2 + gapA, a1 = (q + 1) * Math.PI / 2 - gapA, rm = (ri + ro) / 2;
-      const path = () => { c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(Math.cos(a1) * rm, Math.sin(a1) * rm, rc, a1, a1 + Math.PI); c.arc(0, 0, ri, a1, a0, true); c.arc(Math.cos(a0) * rm, Math.sin(a0) * rm, rc, a0 + Math.PI, a0); c.closePath(); };
-      // 창 테두리 (살짝 파인 홈)
-      path(); c.strokeStyle = 'rgba(70,74,92,.7)'; c.lineWidth = 3; c.stroke();
-      // 표적 박막: 올리브빛 금색 (실물 사진처럼), 얇아서 결이 보임
-      path(); const fg = c.createRadialGradient(0, 0, ri, 0, 0, ro); fg.addColorStop(0, '#6f6630'); fg.addColorStop(.5, '#b7a55a'); fg.addColorStop(1, '#7a6f36'); c.fillStyle = fg; c.fill();
-      c.save(); path(); c.clip(); c.globalAlpha = .25; c.strokeStyle = '#e8dc9a'; c.lineWidth = .8;
-      for(let k = 0; k < 7; k++){ const rr = ri + (ro - ri) * (k + .5) / 7; c.beginPath(); c.arc(0, 0, rr, a0, a1); c.stroke(); } c.restore();
+      // 창 홈 (파인 테두리)
+      winPath(q); c.strokeStyle = 'rgba(25,28,40,.55)'; c.lineWidth = 5; c.stroke();
+      winPath(q); c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1; c.stroke();
+      // 박막 (올리브 금색) + 결
+      const [a0, a1] = winPath(q); const fg = c.createRadialGradient(0, 0, ri, 0, 0, ro); fg.addColorStop(0, '#5f5728'); fg.addColorStop(.5, '#b4a256'); fg.addColorStop(1, '#6c6230'); c.fillStyle = fg; c.fill();
+      c.save(); winPath(q); c.clip();
+      c.globalAlpha = .22; c.strokeStyle = '#efe3a2'; c.lineWidth = .8; for(let k = 0; k < 7; k++){ c.beginPath(); c.arc(0, 0, ri + (ro - ri) * (k + .5) / 7, a0, a1); c.stroke(); }
+      c.globalAlpha = 1;
+      // 안쪽 그림자 (창이 원판보다 살짝 낮음)
+      c.lineWidth = 7; c.strokeStyle = 'rgba(20,18,8,.35)'; winPath(q); c.stroke();
+      c.restore();
     }
-    // 가운데 허브: 단차 + 구멍 8개 + 너트
-    c.fillStyle = metal(c, -Rw * .5, -Rw * .5, Rw * .5, Rw * .5, '#a9afc0', '#eef1f7'); c.beginPath(); c.arc(0, 0, Rw * .5, 0, 6.283); c.fill();
-    c.strokeStyle = 'rgba(60,64,82,.35)'; c.lineWidth = 1; c.stroke();
-    for(let q = 0; q < 8; q++){ const a = q * Math.PI / 4 + Math.PI / 8, hx = Math.cos(a) * Rw * .34, hy = Math.sin(a) * Rw * .34;
-      const hg = c.createRadialGradient(hx - 2, hy - 2, 1, hx, hy, Rw * .1); hg.addColorStop(0, '#f4f6fb'); hg.addColorStop(1, '#8f96aa');
-      c.fillStyle = hg; c.beginPath(); c.arc(hx, hy, Rw * .095, 0, 6.283); c.fill(); c.strokeStyle = 'rgba(60,64,82,.5)'; c.stroke(); }
-    c.fillStyle = metal(c, -12, -12, 12, 12, '#7d8396', '#e3e6ef'); c.beginPath();
-    for(let q = 0; q < 6; q++){ const a = q * Math.PI / 3; c[q ? 'lineTo' : 'moveTo'](Math.cos(a) * Rw * .13, Math.sin(a) * Rw * .13); } c.closePath(); c.fill();
-    c.fillStyle = '#c9cdd9'; c.beginPath(); c.arc(0, 0, Rw * .07, 0, 6.283); c.fill();
+    // 손글씨 라벨 + 파란 클립 + 철사 고리 + 나사
+    for(let q = 0; q < 4; q++){
+      const a = q * Math.PI / 2 + Math.PI / 4;
+      c.save(); c.rotate(a); c.translate(Rw * .58, 0); c.rotate(Math.PI / 2);
+      c.fillStyle = 'rgba(25,25,35,.78)'; c.font = `italic 700 ${Math.max(7, Rw * .085)}px "Segoe Print","Comic Sans MS",cursive`; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(`${r.ta}${r.ts}-${q + 1}`, 0, 0); c.restore();
+      const [cxq, cyq] = P2(a - .28, Rw * .5);
+      c.fillStyle = '#2f5bd8'; c.beginPath(); c.ellipse(cxq, cyq, Rw * .045, Rw * .025, a, 0, 6.283); c.fill();
+      c.strokeStyle = 'rgba(210,214,226,.85)'; c.lineWidth = 1; c.beginPath(); c.ellipse(...P2(a - .12, Rw * .56), Rw * .07, Rw * .025, a + Math.PI / 2, 0, 6.283); c.stroke();
+      for(const sa of [a - .5, a + .5]){ const [sx, sy] = P2(sa, Rw * .55); c.fillStyle = '#c5cad6'; c.beginPath(); c.arc(sx, sy, Rw * .02, 0, 6.283); c.fill(); c.strokeStyle = 'rgba(40,44,60,.6)'; c.lineWidth = .8; c.beginPath(); c.moveTo(sx - Rw * .015, sy); c.lineTo(sx + Rw * .015, sy); c.stroke(); }
+    }
+    // 허브 (한 단 높음) + 구멍 8개 + 너트
+    c.fillStyle = 'rgba(30,34,48,.35)'; c.beginPath(); c.arc(0, 0, Rw * .51, 0, 6.283); c.fill();
+    c.fillStyle = metal(c, -Rw * .5, -Rw * .5, Rw * .5, Rw * .5, '#a3a9bb', '#f0f2f8'); c.beginPath(); c.arc(0, 0, Rw * .49, 0, 6.283); c.fill();
+    c.lineWidth = .6; for(let k = 0; k < 12; k++){ c.strokeStyle = k % 2 ? 'rgba(255,255,255,.12)' : 'rgba(40,44,60,.1)'; c.beginPath(); c.arc(0, 0, Rw * (.18 + .3 * k / 12), 0, 6.283); c.stroke(); }
+    for(let q = 0; q < 8; q++){ const [hx, hy] = P2(q * Math.PI / 4 + Math.PI / 8, Rw * .34);
+      const hg = c.createRadialGradient(hx + Rw * .03, hy + Rw * .03, 1, hx, hy, Rw * .1); hg.addColorStop(0, '#ffffff'); hg.addColorStop(.6, '#b9bfcd'); hg.addColorStop(1, '#5d6378');
+      c.fillStyle = hg; c.beginPath(); c.arc(hx, hy, Rw * .095, 0, 6.283); c.fill(); c.strokeStyle = 'rgba(40,44,60,.55)'; c.lineWidth = 1; c.stroke(); }
+    c.fillStyle = metal(c, -12, -12, 12, 12, '#6f758a', '#e8ebf2'); c.beginPath();
+    for(let q = 0; q < 6; q++){ const a = q * Math.PI / 3; c[q ? 'lineTo' : 'moveTo'](...P2(a, Rw * .13)); } c.closePath(); c.fill(); c.strokeStyle = 'rgba(40,44,60,.5)'; c.stroke();
+    c.fillStyle = '#d3d7e2'; c.beginPath(); c.arc(0, 0, Rw * .065, 0, 6.283); c.fill();
     c.restore();
-    // 빔이 닿는 한 점 (바퀴는 돌아도 이 자리는 그대로, 뜨거워서 빛남)
-    { const hx = tx - Rw * .05, hy = ty, fl = .7 + .3 * Math.sin(t * 23);
-      glow(c, hx, hy, Rw * .2, '255,170,120', .55 * fl); c.fillStyle = `rgba(255,236,200,${.85 * fl})`; c.beginPath(); c.arc(hx, hy, 3.5, 0, 6.283); c.fill(); }
-    lab(c, P('빔이 맞는 자리', 'beam spot'), tx - Rw * .05, ty + 20, '#ffcfa0', 10);
-    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' · 지름 약 10cm 바퀴, 바나나 창 4개', ' · ~10 cm wheel, 4 banana-shaped windows'), tx, cy + Rw + 26, '#ffe2a0', 12);
+    // 헤어라인 금속 하이라이트: 빛은 고정이라 바퀴가 돌아도 그대로 (선반 결 특유의 나비 모양 반사)
+    if(c.createConicGradient){ c.save(); c.translate(tx, cy); c.scale(1, KT); c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.clip();
+      const cg = c.createConicGradient(-Math.PI * .75, 0, 0); [[0, 0], [.05, .22], [.1, 0], [.5, 0], [.55, .14], [.6, 0], [1, 0]].forEach(([o, al]) => cg.addColorStop(o, `rgba(255,255,255,${al})`));
+      c.globalCompositeOperation = 'lighter'; c.fillStyle = cg; c.fillRect(-Rw, -Rw, Rw * 2, Rw * 2); c.restore(); }
+    // 빔 맞는 자리: 창이 지나갈 때만 박막이 달아오름, 금속이 지나갈 땐 작은 불꽃
+    { const hx = tx - Rw * .05, hy = ty, lx = -Rw * .05, ly = (ty - cy) / KT, ang = ((Math.atan2(ly, lx) - th) % 6.283 + 6.283) % 6.283;
+      const qa = ang % (Math.PI / 2), onWin = qa > gapA && qa < Math.PI / 2 - gapA, fl = .7 + .3 * Math.sin(t * 23);
+      if(onWin){ glow(c, hx, hy, Rw * .32, '255,140,60', .6 * fl); glow(c, hx, hy, Rw * .12, '255,220,150', .9 * fl);
+        c.save(); c.translate(tx, cy); c.scale(1, KT); c.globalCompositeOperation = 'lighter'; c.strokeStyle = 'rgba(255,150,70,.35)'; c.lineWidth = Rw * .06; c.lineCap = 'round';
+        const a0 = Math.atan2(ly, lx); c.beginPath(); c.arc(0, 0, Math.hypot(lx, ly), a0 - .35, a0); c.stroke(); c.restore(); }
+      else { glow(c, hx, hy, Rw * .12, '220,230,255', .5 * fl); }
+      c.fillStyle = `rgba(255,240,215,${.9 * fl})`; c.beginPath(); c.arc(hx, hy, 3, 0, 6.283); c.fill();
+      lab(c, onWin ? P('빔이 맞는 자리 · 박막이 달아오름', 'beam spot · film heating up') : P('빔이 맞는 자리', 'beam spot'), hx, hy + 22, onWin ? '#ffb27a' : '#c8d0ee', 10); }
+    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' · 지름 약 10cm 바퀴, 바나나 창 4개', ' · ~10 cm wheel, 4 banana-shaped windows'), tx, cy + Rw * .56 + Math.max(6, Rw * .07) + 30, '#ffe2a0', 12);
     // 이온: 대부분 튕김
     for(let q = 0; q < 18; q++){ const ph = ((t * 1.1 + q / 18) % 1), hitX = tx - Rw * .05, y0 = ty + Math.sin(q * 7.3) * 5;
       if(ph < .72){ const x = ph / .72 * hitX; ion(c, x, y0, 1, 0, 34, '255,120,150', 2.4); }
