@@ -56821,5 +56821,35 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 })();
 </script>
 
+<script>
+/* ── 도감 꼬리표 정리: 꼬리표 없던 83종 채우기 + 새 꼬리표 (라디칼 · 생활·소재 · 우주) ── */
+(function(){
+  try{
+    const T = RX_TAGSET;
+    ['rad', 'mat', 'space', 'min', 'alloy'].forEach(k => { if(!T[k]) T[k] = new Set(); });
+    Object.assign(RX_HAZ_T.ko.tags, { rad: '라디칼', mat: '생활·소재', space: '우주' });
+    Object.assign(RX_HAZ_T.en.tags, { rad: 'Radical', mat: 'Everyday & materials', space: 'Space' });
+    const put = (k, s) => s.split('|').forEach(n => T[k].add(n.trim()));
+    // 홀전자를 가진 라디칼 (산소 기체는 홀전자 2개짜리 이중 라디칼)
+    put('rad', '사이아노 라디칼|유기 조각|하이드록시 라디칼|일산화질소|이산화질소|이산화염소|산소 기체');
+    put('space', '사이아노 라디칼|유기 조각|화성 대기|핵융합');
+    put('body', '산소 기체|하이드록시 라디칼|물|이산화탄소');
+    put('food', '물|생수|글리세린|아질산|아황산|아황산칼륨|에틸렌|이산화탄소|염화칼륨');
+    put('med', '산화아연|하이드로퀴논|에틸렌 옥사이드|염화칼륨|황산마그네슘');
+    put('smell', '3,4-다이메틸싸이오펜|베타 사이클로덱스트린');
+    put('color', '백반|산화구리|산화은|산화철(II)|수산화철|염화은|이산화타이타늄|자개|황화은|황화철');
+    '사이클로헵타인,삼플루오린화 아이오딘,아르곤 플루오로수소화물,육중결합,HKrCCH'.split(',').forEach(n => { try{ RX_WEIRD.add(n); }catch(e){} });
+    put('min', '알루미나|파얄라이트');
+    put('alloy', '형상기억합금');
+    put('mat', '1,3,5-트라이클로로벤젠|나일론|리튬인산철|리튬코발트산화물|브로민화은|산화세륨|삼황화사인|셀룰로스|스테아르산|에테인|에틸벤젠|염화루비듐|염화칼슘|유리|육플루오린화황|이트륨바륨구리산화물|인산트라이메틸|제올라이트 A|중수|질산나트륨|질산마그네슘|질화갈륨|질화붕소|탄산나트륨|탄산리튬|탄산마그네슘|탄화규소|텅스텐 카바이드|테레프탈산|테플론|파라핀|페난트렌|폴리염화비닐|폴리젖산|퓨라잔|프레온|프로필렌|황산나트륨|황산알루미늄|황산암모늄|황산칼륨|TAED');
+    // 위험 꼬리표
+    Object.assign(RX_HAZ, { '1,3,5-트라이나이트로벤젠': 'x3', '에틸렌 옥사이드': 'b2', '뭔가 위험한 것': 'x1' });
+    // min·alloy는 원래 종류로 판정하는데, 위에서 집합으로도 넣었으니 두 번 세지 않게
+    const _t = rxDexTagsOf;
+    rxDexTagsOf = function(){ return [...new Set(_t.apply(this, arguments))]; };
+  }catch(e){ console.warn('tags2', e); }
+})();
+</script>
+
 </body>
 </html>
