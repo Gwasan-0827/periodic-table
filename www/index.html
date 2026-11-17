@@ -58146,6 +58146,7 @@ if(typeof ACH !== 'undefined'){
   #mTabs.shi-tabs > button:not(.shi-t){display:none!important}
   #mTabs .shi-t.sx:not(.on){color:#d0bfff}
   #mStage .shi-cv{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  #shiCat{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--cc);color:var(--cc);background:color-mix(in srgb,var(--cc) 12%,transparent);margin-top:6px}
   #mStage .shi-cv.res{pointer-events:auto;cursor:grab;touch-action:none}
   #card.shi-on .rx-gauge,#card.shi-on #mMoreBtn,#card.shi-on #rxFailHint{display:none!important}
   #shiSide{margin:8px 0 4px;font-size:13px;line-height:1.6;opacity:0;transition:opacity .4s}
@@ -58204,6 +58205,16 @@ function rxShiPos(z){
   if(z === 120) return en ? 'Period 8, group 2 (below radium)' : '8주기 2족 (라듐 바로 아래)';
   return en ? `Period 7, group ${z - 100}` : `7주기 ${z - 100}족`;
 }
+const RX_SHI_CAT = { 113:'post', 114:'post', 116:'post', 117:'metalloid', 118:'noble', 119:'alkali', 120:'alkaline' };
+function rxShiCatChip(z){
+  let el = document.getElementById('shiCat');
+  if(!el){ el = document.createElement('div'); el.id = 'shiCat'; const row = document.getElementById('mKinds'); (row || document.getElementById('mName')).after(el); }
+  const k = RX_SHI_CAT[z], en = LANG === 'en';
+  const nm = en ? ((typeof CAT_EN !== 'undefined' && CAT_EN[k]) || k) : CAT[k].ko;
+  el.style.setProperty('--cc', cssv(CAT[k].v));
+  el.textContent = en ? `${nm} (predicted)` : `${nm} (예상)`;
+  el.title = en ? 'Too few atoms have ever existed to test its chemistry, so this is a prediction' : '원자가 너무 적고 금방 사라져서 화학적 성질을 실제로 확인하지 못했어요. 그래서 예상이에요';
+}
 function rxShiStart(r){
   const order = [], c = {};
   mix.forEach(n => { if(c[n] === undefined){ order.push(n); c[n] = 0; } c[n]++; });
@@ -58236,6 +58247,7 @@ function rxShiTab(r){
   document.getElementById('mState').after(side);
   side.dataset.eq = `${r[0]}-${r[1]} + ${r[2]}-${r[3]}  ·  ${zb} + ${zt} = ${r[4]}`;
   document.getElementById('mSub').textContent = '';
+  rxShiCatChip(r[4]);
 }
 function rxShiMode(m){
   const F = RX_SHI_FX, r = F.r, en = LANG === 'en';
@@ -58390,6 +58402,7 @@ function rxShiTick(now){
     card.classList.remove('shi-on'); st.classList.remove('shi'); tabs.classList.remove('shi-tabs');
     tabs.querySelectorAll('.shi-t').forEach(b => b.remove());
     const s = document.getElementById('shiSide'); if(s) s.remove();
+    const sc = document.getElementById('shiCat'); if(sc) sc.remove();
     cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0; RX_SHI_FX.mode = ''; if(RX_SHI_FX.cv){ RX_SHI_FX.cv.remove(); RX_SHI_FX.cv = null; }
     return _rr.apply(this, arguments);
   };
