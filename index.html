@@ -58604,7 +58604,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   #grid .note.lnx .la{position:absolute;bottom:2px;right:4px;font-size:.55em;opacity:.7;animation:lnBob 1.6s ease-in-out infinite}
   #grid .note.lnx::after{content:"";position:absolute;left:14%;right:14%;bottom:3px;height:2px;border-radius:2px;background:var(--lc);opacity:.7}
   #grid .note.lnx:hover{background:color-mix(in srgb,var(--lc) 22%,transparent)!important;transform:translateY(-1px)}
-  #grid .cell.ln-hl{outline:2px solid var(--lc);outline-offset:1px;z-index:2}
+  #grid .cell .lnring{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;background:none!important;border-radius:inherit;border:2px solid var(--lc);pointer-events:none;z-index:3!important;
+    box-shadow:inset 0 0 12px color-mix(in srgb,var(--lc) 40%,transparent);opacity:0;transform:scale(1.08);
+    transition:opacity .22s ease,transform .22s ease;transition-delay:0s}
+  #grid .cell.ln-hl .lnring{opacity:1;transform:none;transition:opacity .3s ease,transform .4s cubic-bezier(.2,.9,.3,1.2);transition-delay:calc(var(--li) * 20ms)}
+  @media (prefers-reduced-motion:reduce){ #grid .cell .lnring,#grid .cell.ln-hl .lnring{transition:opacity .2s;transition-delay:0s;transform:none} }
   @keyframes lnBob{50%{transform:translateY(2px)}}
   @media (max-width:700px){ #grid .note.lnx{border-radius:6px;gap:0} #grid .note.lnx .ln,#grid .note.lnx .la,#grid .note.lnx .lr{display:none} #grid .note.lnx .ls{font-size:7.5px;letter-spacing:-.02em;white-space:nowrap} #grid .note.lnx::after{bottom:2px;height:1.5px} }
   @media (prefers-reduced-motion:reduce){ #grid .note.lnx .la{animation:none} }
@@ -58625,7 +58629,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
       n.title = en ? (six ? 'Lanthanoids (57–71): the row below' : 'Actinoids (89–103): the row below') : (six ? '란타노이드 (57~71번): 아래 줄로 빠져 있어요' : '악티노이드 (89~103번): 아래 줄로 빠져 있어요');
       if(n.dataset.lnh) return; n.dataset.lnh = 1;
       const cells = () => [...document.querySelectorAll('#grid .cell')].filter(c => +c.dataset.n >= +a && +c.dataset.n <= a + 14);
-      n.addEventListener('mouseenter', () => cells().forEach(c => { c.style.setProperty('--lc', n.style.getPropertyValue('--lc')); c.classList.add('ln-hl'); }));
+      n.addEventListener('mouseenter', () => cells().forEach(c => {
+        c.style.setProperty('--lc', n.style.getPropertyValue('--lc')); c.style.setProperty('--li', +c.dataset.n - a);
+        if(!c.querySelector('.lnring')){ c.appendChild(Object.assign(document.createElement('span'), { className: 'lnring' })); void c.offsetWidth; }
+        requestAnimationFrame(() => c.classList.add('ln-hl'));
+      }));
       n.addEventListener('mouseleave', () => cells().forEach(c => c.classList.remove('ln-hl')));
     });
   }
