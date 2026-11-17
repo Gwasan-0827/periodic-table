@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 604종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 605종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 604종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 605종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -56794,6 +56794,20 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
   }, 5000);
   window.rxHFly = () => fly(true);
   window.rxHFlyState = load;
+})();
+</script>
+
+<script>
+/* ── 히스티딘 (과산 요청) ── */
+(function(){
+  const key = 'C6+H9+N3+O2', ko = '히스티딘';
+  if(EXACT[key]) (RX_ISOMERS[key] = RX_ISOMERS[key] || []).push(['C₆H₉N₃O₂', ko, '이미다졸 고리를 단 아미노산']);
+  else EXACT[key] = ['C₆H₉N₃O₂', ko, '이미다졸 고리를 단 아미노산'];
+  REC_EN[ko] = ['Histidine', 'The amino acid with an imidazole ring'];
+  RX_SMILES[ko] = 'N[C@@H](Cc1c[nH]cn1)C(=O)O';
+  RX_TMI[ko] = '헤모글로빈에서 철을 아래에서 받쳐 주는 게 바로 히스티딘이에요(근위 히스티딘). 곁가지인 이미다졸 고리가 수소 이온을 잡았다 놓았다 해서 효소의 손으로도 자주 쓰여요. 몸이 스스로 만들지 못해 음식으로 먹어야 하는 필수 아미노산이고, 몸속에서 히스타민의 재료가 돼요.';
+  try{ RX_TMI_EN[ko] = 'Histidine is the "proximal histidine" holding iron from below in hemoglobin. Its imidazole side chain grabs and releases H⁺, so enzymes often use it as a helping hand. It is an essential amino acid and the raw material for histamine.'; }catch(e){}
+  try{ RX_TAGSET.body && RX_TAGSET.body.add(ko); }catch(e){}
 })();
 </script>
 
