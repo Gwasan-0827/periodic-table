@@ -4248,7 +4248,7 @@ const mixBtn   = document.getElementById('mixBtn');
 const clearBtn = document.getElementById('clearBtn');
 const modal    = document.getElementById('modal');
 
-const MIX_MAX = 300;
+const MIX_MAX = 310;
 
 function renderChips(){
   if(!mix.length){
@@ -58168,6 +58168,7 @@ const RX_SHI = [
   // [빔, 빔 질량수, 표적, 표적 질량수, 결과 번호, 상태, 기록 ko, en]
   ['Ti', 50, 'Cf', 249, 120, 'now', '미국 버클리 연구소가 지금 실제로 하고 있는 실험이에요. 2024년에 같은 타이타늄-50 빔으로 리버모륨 원자 2개를 만드는 데 성공해서, 다음 목표가 바로 120번이에요.', 'This is the actual experiment Berkeley Lab is running now. In 2024 the same titanium-50 beam made two atoms of livermorium, so element 120 is next.'],
   ['V', 51, 'Cm', 248, 119, 'now', '일본 리켄 연구소가 2018년부터 하고 있는 실험이에요. 몇 년째 쏘고 있지만 아직 한 개도 안 나왔어요.', 'RIKEN in Japan has been running this since 2018. Years of firing, not a single atom yet.'],
+  ['Cu', 65, 'U', 238, 121, 'fail', '1977년 독일 GSI에서 실제로 해 본 조합이에요. 지금까지 121번을 만들려고 한 시도는 이게 유일하고, 결과는 0개였어요. 121번부터는 표에서 초악티늄족(g 구역) 자리가 시작돼요.', 'GSI in Germany actually tried this in 1977. It is still the only attempt ever made at element 121, and it produced nothing. From 121 on, the table enters the superactinide (g-block) region.'],
   ['Fe', 58, 'Pu', 244, 120, 'fail', '2007년 러시아 두브나에서 실제로 해 본 조합이에요. 결과는 0개였어요.', 'Dubna in Russia actually tried this in 2007. The result was zero atoms.'],
   ['Ca', 48, 'Cf', 249, 118, 'done', '2002~2005년 러시아 두브나에서 오가네손을 만든 조합이에요. 몇 년 동안 쏴서 겨우 몇 개였어요.', 'The combination Dubna used to make oganesson in 2002–2005. Years of firing for a handful of atoms.'],
   ['Ca', 48, 'Bk', 249, 117, 'done', '2010년 두브나에서 테네신을 만든 조합이에요. 처음에 6개가 나왔어요. 버클륨 표적은 미국에서 만들어서 비행기로 실어 보냈어요.', 'The combination Dubna used to make tennessine in 2010: six atoms at first. The berkelium target was made in the US and flown over.'],
@@ -58183,8 +58184,8 @@ const RX_SHI_T = {
         ok:(nm, n) => `Success! ${n} atom${n > 1 ? 's' : ''} of ${nm}`, decay:s => `…and it decayed in ${s}`, none:'Nothing came out', noneSub:'Which is exactly where the real labs are right now. This is how elements get made',
         wow:n => `!!!! One atom of element ${n} detected…?!`, wowSub:'…and it is gone. No way to confirm it. If this happened for real it would be Nobel material', pre:'You added atoms equal to the mass numbers: a real beam and target' },
 };
-const RX_SHI_LIFE = { 113:'0.0014초', 114:'2초', 116:'0.001초', 117:'0.05초', 118:'0.0007초', 119:'0.00001초', 120:'0.00001초' };
-const RX_SHI_LIFE_EN = { 113:'0.0014 seconds', 114:'2 seconds', 116:'0.001 seconds', 117:'0.05 seconds', 118:'0.0007 seconds', 119:'0.00001 seconds', 120:'0.00001 seconds' };
+const RX_SHI_LIFE = { 113:'0.0014초', 114:'2초', 116:'0.001초', 117:'0.05초', 118:'0.0007초', 119:'0.00001초', 120:'0.00001초', 121:'알 수 없음 (아주 짧을 듯)' };
+const RX_SHI_LIFE_EN = { 113:'0.0014 seconds', 114:'2 seconds', 116:'0.001 seconds', 117:'0.05 seconds', 118:'0.0007 seconds', 119:'0.00001 seconds', 120:'0.00001 seconds', 121:'unknown (probably very short)' };
 const RX_SHI_FX = { raf:0, t0:0, r:null, out:null, cnt:0, cv:null, done:false };
 function rxShiMatch(){
   if(typeof mix === 'undefined' || !mix.length) return null;
@@ -58194,24 +58195,25 @@ function rxShiMatch(){
 }
 function rxShiName(z){
   if(z <= 118) return elName(byNum[z]);
-  const en = LANG === 'en'; return z === 119 ? (en ? 'Ununennium' : '우누넨늄') : (en ? 'Unbinilium' : '운비닐륨');
+  const en = LANG === 'en'; return z === 119 ? (en ? 'Ununennium' : '우누넨늄') : z === 120 ? (en ? 'Unbinilium' : '운비닐륨') : (en ? 'Unbiunium' : '운비우늄');
 }
-function rxShiSym(z){ return z <= 118 ? byNum[z].s : (z === 119 ? 'Uue' : 'Ubn'); }
+function rxShiSym(z){ return z <= 118 ? byNum[z].s : ({ 119:'Uue', 120:'Ubn', 121:'Ubu' })[z]; }
 const rxShiT = () => RX_SHI_T[LANG === 'en' ? 'en' : 'ko'];
 function rxShiShells(z){ return z <= 118 ? [2, 8, 18, 32, 32, 18, z - 110] : [2, 8, 18, 32, 32, 18, 8, z - 118]; }
 function rxShiPos(z){
   const en = LANG === 'en';
   if(z === 119) return en ? 'Period 8, group 1 (below francium)' : '8주기 1족 (프랑슘 바로 아래)';
   if(z === 120) return en ? 'Period 8, group 2 (below radium)' : '8주기 2족 (라듐 바로 아래)';
+  if(z === 121) return en ? 'Period 8, group 3 (where the superactinides begin)' : '8주기 3족 (초악티늄족이 시작되는 자리)';
   return en ? `Period 7, group ${z - 100}` : `7주기 ${z - 100}족`;
 }
-const RX_SHI_CAT = { 113:'post', 114:'post', 116:'post', 117:'metalloid', 118:'noble', 119:'alkali', 120:'alkaline' };
+const RX_SHI_CAT = { 113:'post', 114:'post', 116:'post', 117:'metalloid', 118:'noble', 119:'alkali', 120:'alkaline', 121:'super' };
 function rxShiCatChip(z){
   let el = document.getElementById('shiCat');
   if(!el){ el = document.createElement('div'); el.id = 'shiCat'; const row = document.getElementById('mKinds'); (row || document.getElementById('mName')).after(el); }
   const k = RX_SHI_CAT[z], en = LANG === 'en';
-  const nm = en ? ((typeof CAT_EN !== 'undefined' && CAT_EN[k]) || k) : CAT[k].ko;
-  el.style.setProperty('--cc', cssv(CAT[k].v));
+  const nm = k === 'super' ? (en ? 'Superactinide' : '초악티늄족') : en ? ((typeof CAT_EN !== 'undefined' && CAT_EN[k]) || k) : CAT[k].ko;
+  el.style.setProperty('--cc', k === 'super' ? '#b197fc' : cssv(CAT[k].v));
   el.textContent = en ? `${nm} (predicted)` : `${nm} (예상)`;
   el.title = en ? 'Too few atoms have ever existed to test its chemistry, so this is a prediction' : '원자가 너무 적고 금방 사라져서 화학적 성질을 실제로 확인하지 못했어요. 그래서 예상이에요';
 }
@@ -58273,7 +58275,7 @@ function rxShiMode(m){
   side.innerHTML = `<span class="eqz">${side.dataset.eq}</span>` +
     `<b class="big ${real ? 'ok' : 'wow'}">${r[4]} ${nm}</b>` +
     `${en ? 'Place' : '자리'}: ${rxShiPos(r[4])}<br>${en ? 'Electron configuration' : '전자 배치'}: ${sh}<br>` +
-    `${en ? (real ? 'Half-life' : 'Expected lifetime') : (real ? '반감기' : '예상 수명')}: ${real ? '' : '~'}${life}` +
+    `${en ? (real ? 'Half-life' : 'Expected lifetime') : (real ? '반감기' : '예상 수명')}: ${real || r[4] === 121 ? '' : '~'}${life}` +
     `<span class="hist">${en ? r[7] : r[6]}</span>` +
     `<span class="hist" style="border-style:dashed">${en ? 'Fire the beam yourself in the ⚛ Synthesis tab. Not added to the codex.' : '⚛ 합성 실험 탭에서 직접 쏴 볼 수 있어요. 도감에는 안 올라가요.'}</span>`;
   side.classList.add('on');
@@ -58286,7 +58288,8 @@ function rxShiCloud(z){
   const F = RX_SHI_FX;
   if(F.cloudZ === z && F.cloud) return F.cloud;
   let subs = rxCfgFull(z <= 118 ? byNum[z].s : 'Og').map(x => ({ n: x.n, l: x.l, e: x.e }));
-  if(z > 118) subs.push({ n: 8, l: 's', e: z - 118 });
+  if(z > 118) subs.push({ n: 8, l: 's', e: Math.min(2, z - 118) });
+  if(z > 120) subs.push({ n: 8, l: 'p', e: z - 120 });
   const total = innerWidth <= 760 ? 1300 : 1900, rnd = rxRand('shi:' + z + ':' + total);
   const per = Math.max(5, Math.min(260, Math.round(total / z))), maxN = Math.max(...subs.map(x => x.n)), pts = [];
   let idx = 0;
@@ -58301,7 +58304,7 @@ function rxShiCloud(z){
   return pts;
 }
 function rxShiCfg(z){
-  if(z === 119) return '[Og] 8s¹'; if(z === 120) return '[Og] 8s²';
+  if(z === 119) return '[Og] 8s¹'; if(z === 120) return '[Og] 8s²'; if(z === 121) return '[Og] 8s² 8p¹';
   try{ return (PROPS[byNum[z].s].cfg || '').replace(/<[^>]+>/g, ''); }catch(e){ return ''; }
 }
 const RX_SHI_VIEW = { yaw: 0.4, pitch: -0.35, zoom: 1, idle: 0 };
