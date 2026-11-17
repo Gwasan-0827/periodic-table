@@ -53215,7 +53215,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       const a = q * Math.PI / 2 + Math.PI / 4;
       c.save(); c.rotate(a); c.translate(Rw * .58, 0); c.rotate(Math.PI / 2);
       c.fillStyle = 'rgba(25,25,35,.78)'; c.font = `italic 700 ${Math.max(7, Rw * .085)}px "Segoe Print","Comic Sans MS",cursive`; c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.fillText(`${r.ta}${r.ts}-${q + 1}`, 0, 0); c.restore();
+      c.fillText(`${r.ta}${r.ts}-${[3, 4, 5, 2][q]}`, 0, 0);   // 실물 사진처럼 2~5번 (시계 방향, 오른쪽 위가 2) c.restore();
       const [cxq, cyq] = P2(a - .28, Rw * .5);
       c.fillStyle = '#2f5bd8'; c.beginPath(); c.ellipse(cxq, cyq, Rw * .045, Rw * .025, a, 0, 6.283); c.fill();
       c.strokeStyle = 'rgba(210,214,226,.85)'; c.lineWidth = 1; c.beginPath(); c.ellipse(...P2(a - .12, Rw * .56), Rw * .07, Rw * .025, a + Math.PI / 2, 0, 6.283); c.stroke();
