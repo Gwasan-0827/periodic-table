@@ -56661,5 +56661,133 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 })();
 </script>
 
+<style>
+  /* ═══ 이스터에그: 둥실 날아다니는 수소 (웹 전용) ═══ */
+  #hFly{position:fixed;left:0;top:0;z-index:2147482000;width:96px;height:96px;cursor:pointer;touch-action:manipulation;will-change:transform;-webkit-tap-highlight-color:transparent}
+  #hFly img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(140,150,255,.45));pointer-events:none;user-select:none;-webkit-user-drag:none}
+  #hFly .bb{position:absolute;border-radius:50%;border:1.5px solid rgba(200,210,255,.85);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(190,200,255,.15) 60%);pointer-events:none}
+  #hFly.got{pointer-events:none}
+  .hf-pop{position:fixed;z-index:2147482001;pointer-events:none;transform:translate(-50%,-100%);animation:hfPop 2.6s cubic-bezier(.2,1.3,.4,1) forwards}
+  @keyframes hfPop{0%{opacity:0;transform:translate(-50%,-80%) scale(.6)}12%{opacity:1;transform:translate(-50%,-100%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-130%) scale(1)}}
+  .hf-pop b{display:block;padding:7px 14px;border-radius:999px;background:#f4f6fb;color:#151a24;font:900 14px/1.2 system-ui,sans-serif;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  #hfCard{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147482002;width:min(380px,calc(100vw - 28px));transform:translateX(-50%);padding:14px 16px 13px 76px;border-radius:18px;
+    background:linear-gradient(160deg,#20243f,#141729);border:1px solid rgba(185,184,255,.45);box-shadow:0 18px 50px rgba(0,0,0,.5),0 0 30px rgba(185,184,255,.2);color:#e7ecf4;font-family:system-ui,sans-serif;animation:hfIn .5s cubic-bezier(.16,1.3,.3,1) both}
+  #hfCard.out{animation:hfOut .35s ease-in forwards}
+  @keyframes hfIn{from{opacity:0;transform:translate(-50%,30px) scale(.95)}}
+  @keyframes hfOut{to{opacity:0;transform:translate(-50%,20px)}}
+  #hfCard img{position:absolute;left:8px;top:50%;width:62px;height:62px;object-fit:contain;transform:translateY(-50%) rotate(-8deg)}
+  #hfCard .t{font:800 10.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:#b9b8ff}
+  #hfCard .t em{font-style:normal;color:#fff;margin-left:6px}
+  #hfCard p{margin:7px 0 0;font-size:13px;line-height:1.55;word-break:keep-all}
+  #hfCard .ttl{margin-top:9px;padding:7px 10px;border-radius:10px;background:linear-gradient(90deg,rgba(255,212,59,.18),rgba(185,184,255,.12));border:1px solid rgba(255,212,59,.45);font-size:12.5px;font-weight:800;color:#ffe08a}
+  #hfCard .x{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:8px;border:0;background:rgba(255,255,255,.06);color:#cfd6e6;cursor:pointer;font-size:12px}
+</style>
+<script>
+(function(){
+  if(window.RX_APP_NO_ELP) return;                    // 앱 빌드: 의인화 없음
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const KEY = 'pt_hfly';
+  const load = () => { try{ return Object.assign({ n: 0, title: false }, JSON.parse(localStorage.getItem(KEY) || '{}')); }catch(_){ return { n: 0, title: false }; } };
+  const save = v => { try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(_){} };
+  const pic = () => { const P = window.RX_ELP_DATA || []; const h = P.find(p => p.s === 'H'); return h && (h.stk || h.art) || ''; };
+  const TMI = {
+    ko: ['우주에 있는 원자의 약 90%가 수소예요.', '원소 중에 제일 가벼워요. 그래서 옛날엔 수소로 비행선을 띄웠어요. 힌덴부르크호 폭발 사고 뒤로는 헬륨을 써요.',
+      '전기를 흘리면 분홍빛 보라색으로 빛나요. 그래서 전기만 닿으면 머리가 분홍색이 돼요.', '태양은 1초마다 수소 약 6억 톤을 헬륨으로 바꾸면서 빛나요.',
+      '가장 흔한 수소는 양성자 1개, 전자 1개가 전부예요. 중성자도 없어요.', '물 분자 하나에 수소가 2개 들어 있어요. 산소랑 물 만들기를 좋아하는 이유예요.',
+      '빅뱅 직후에 처음 생긴 원소예요. 다른 원소는 거의 다 별 속에서 수소로부터 만들어졌어요.'],
+    en: ['About 90% of the atoms in the universe are hydrogen.', 'The lightest element, so airships once floated on it. After the Hindenburg disaster they switched to helium.',
+      'It glows pinkish purple when electricity runs through it, which is why his hair turns pink.', 'Every second, the Sun turns about 600 million tonnes of hydrogen into helium.',
+      'The most common hydrogen is just one proton and one electron. No neutron at all.', 'Every water molecule has two hydrogens. That is why he loves making water with Oxygen.',
+      'It formed right after the Big Bang. Almost every other element was later forged from hydrogen inside stars.'] };
+  const CAUGHT = { ko: ['…잡혔다', '…놓아줘', '날고 싶은데…', '…졸려'], en: ['…caught', '…let me go', 'I wanna fly…', '…sleepy'] };
+  const TITLE_AT = 10;
+
+  // 다른 큰 창이 떠 있으면 나오지 않음
+  function blocked(){
+    if(document.visibilityState === 'hidden' || document.getElementById('hFly') || document.getElementById('hfCard')) return true;
+    const W = innerWidth, H = innerHeight;
+    for(const el of document.body.children){
+      const cs = getComputedStyle(el); if(cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .1 || cs.pointerEvents === 'none') continue;
+      if((+cs.zIndex || 0) < 500) continue;
+      const r = el.getBoundingClientRect(); if(r.width * r.height > W * H * .45) return true;
+    }
+    return false;
+  }
+
+  function fly(force){
+    if(!force && blocked()) return false;
+    const src = pic(); if(!src) return false;
+    document.getElementById('hFly')?.remove();
+    const el = document.createElement('div'); el.id = 'hFly'; el.setAttribute('role', 'button'); el.setAttribute('aria-label', EN() ? 'Catch Hydrogen' : '수소 잡기');
+    el.innerHTML = `<img src="${src}" alt="">`;
+    document.documentElement.appendChild(el);
+    const W = innerWidth, H = innerHeight, S = Math.max(72, Math.min(110, W * .2));
+    el.style.width = el.style.height = S + 'px';
+    const ltr = Math.random() < .5, y0 = H * (.18 + Math.random() * .5), dur = 10500 + Math.random() * 4000, amp = 26 + Math.random() * 30, fq = 1.4 + Math.random();
+    const x0 = ltr ? -S - 20 : W + 20, x1 = ltr ? W + 20 : -S - 20;
+    const bubbles = []; let t0 = 0, raf = 0, done = false;
+    const flip = ltr ? -1 : 1;                       // 그림은 왼쪽 위로 날아가는 모습
+    function step(now){
+      if(!t0) t0 = now; const u = (now - t0) / dur;
+      if(done || !el.isConnected){ cancelAnimationFrame(raf); return; }
+      if(u >= 1){ el.remove(); return; }
+      const x = x0 + (x1 - x0) * u, y = y0 + Math.sin(u * Math.PI * 2 * fq) * amp + Math.sin(now / 900) * 6;
+      const rot = Math.cos(u * Math.PI * 2 * fq) * 8;
+      el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scaleX(${flip})`;
+      // 뒤로 남는 거품
+      if(Math.random() < .06){
+        const b = document.createElement('i'); b.className = 'bb'; const r = 5 + Math.random() * 7;
+        Object.assign(b.style, { width: r + 'px', height: r + 'px', left: (S * .5 - flip * S * .35) + 'px', top: (S * .55) + 'px', transition: 'transform 1.6s ease-out, opacity 1.6s' });
+        el.appendChild(b); bubbles.push(b);
+        requestAnimationFrame(() => { b.style.transform = `translate(${-flip * (20 + Math.random() * 30)}px,${-20 - Math.random() * 30}px)`; b.style.opacity = '0'; });
+        setTimeout(() => b.remove(), 1700);
+      }
+      raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
+    el.addEventListener('click', e => {
+      e.stopPropagation(); if(done) return; done = true; el.classList.add('got');
+      const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top;
+      el.animate([{ transform: el.style.transform, opacity: 1 }, { transform: el.style.transform + ' scale(1.25)', opacity: 1, offset: .25 }, { transform: el.style.transform + ' scale(.2)', opacity: 0 }], { duration: 650, easing: 'cubic-bezier(.5,0,.6,1)' }).onfinish = () => el.remove();
+      const pop = document.createElement('div'); pop.className = 'hf-pop'; pop.style.left = cx + 'px'; pop.style.top = cy + 'px';
+      const L = EN() ? 'en' : 'ko', line = CAUGHT[L][Math.floor(Math.random() * CAUGHT[L].length)];
+      pop.innerHTML = `<b>${line}</b>`; document.documentElement.appendChild(pop); setTimeout(() => pop.remove(), 2700);
+      try{ rxBell(1320, .25, .05, 0); rxBell(1760, .3, .04, .08); }catch(_){ try{ SFX.ok(); }catch(__){} }
+      caught(src);
+    });
+    return true;
+  }
+
+  function caught(src){
+    const st = load(); st.n++; let newTitle = false;
+    if(st.n >= TITLE_AT && !st.title){ st.title = true; newTitle = true; }
+    save(st);
+    document.getElementById('hfCard')?.remove();
+    const L = EN() ? 'en' : 'ko', tmi = TMI[L][(st.n - 1) % TMI[L].length];
+    const c = document.createElement('div'); c.id = 'hfCard';
+    c.innerHTML = `<img src="${src}" alt=""><button type="button" class="x" aria-label="close">✕</button>
+      <div class="t">${EN() ? 'HYDROGEN CAUGHT' : '수소 포획'}<em>×${st.n}</em></div>
+      <p>${tmi}</p>
+      ${newTitle ? `<div class="ttl">🏅 ${EN() ? 'Title unlocked: Hydrogen Catcher' : '칭호 획득: 수소 포획꾼'} <span style="opacity:.7;font-weight:600">(${TITLE_AT}${EN() ? ' caught' : '마리'})</span></div>`
+        : st.n < TITLE_AT ? `<div style="margin-top:6px;font-size:11px;color:#8e99ad">${EN() ? `${TITLE_AT - st.n} more for a title` : `칭호까지 ${TITLE_AT - st.n}마리`}</div>` : ''}`;
+    document.documentElement.appendChild(c);
+    const close = () => { c.classList.add('out'); setTimeout(() => c.remove(), 360); };
+    c.querySelector('.x').addEventListener('click', close);
+    setTimeout(() => { if(c.isConnected) close(); }, newTitle ? 9000 : 6500);
+    if(newTitle) try{ SFX.ok(); }catch(_){}
+  }
+
+  // 출몰: 처음엔 1~2분 뒤, 그다음엔 3~6분마다 (확률)
+  let next = Date.now() + 60000 + Math.random() * 60000;
+  setInterval(() => {
+    if(Date.now() < next) return;
+    const ok = Math.random() < .55 && fly(false);
+    next = Date.now() + (ok ? 180000 + Math.random() * 180000 : 40000 + Math.random() * 40000);
+  }, 5000);
+  window.rxHFly = () => fly(true);
+  window.rxHFlyState = load;
+})();
+</script>
+
 </body>
 </html>
