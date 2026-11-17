@@ -56730,7 +56730,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     function step(now){
       if(!t0) t0 = now; const u = (now - t0) / dur;
       if(done || !el.isConnected){ cancelAnimationFrame(raf); return; }
-      if(u >= 1){ el.remove(); return; }
+      if(u >= 1){ el.remove(); missed(); return; }
       const x = x0 + (x1 - x0) * u, y = y0 + Math.sin(u * Math.PI * 2 * fq) * amp + Math.sin(now / 900) * 6;
       const rot = Math.cos(u * Math.PI * 2 * fq) * 8;
       el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scaleX(${flip})`;
@@ -56758,6 +56758,14 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     return true;
   }
 
+  // 못 잡고 지나가 버렸을 때
+  function missed(){
+    document.querySelector('.hf-miss')?.remove();
+    const m = document.createElement('div'); m.className = 'hf-pop hf-miss';
+    m.style.left = '50%'; m.style.top = Math.round(innerHeight * .2) + 'px';
+    m.innerHTML = `<b>${EN() ? 'Wait… what just flew by?' : '뭐여 방금 뭐가 지나간겨;'}</b>`;
+    document.documentElement.appendChild(m); setTimeout(() => m.remove(), 2700);
+  }
   function caught(src){
     const st = load(); st.n++; let newTitle = false;
     if(st.n >= TITLE_AT && !st.title){ st.title = true; newTitle = true; }
