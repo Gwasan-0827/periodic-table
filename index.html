@@ -58724,5 +58724,163 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
 })();
 </script>
 
+<style>
+  /* ═══ 형석 실물 3D (과산 블렌더 표본: 정팔면체 결정 3개 + 조각 6개) ═══ */
+  #flrFx{position:fixed;inset:0;z-index:2147482950;background:radial-gradient(80% 70% at 50% 38%,#3a4256,#1a1f2c 70%,#10131b);color:#eef1f7;font-family:system-ui,sans-serif;animation:flIn .4s both;user-select:none;-webkit-user-select:none;touch-action:none}
+  #flrFx.out{animation:flOut .3s ease-in forwards}
+  #flrFx canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+  #flrFx canvas:active{cursor:grabbing}
+  #flrFx .hd{position:absolute;left:clamp(16px,4vw,48px);top:max(18px,env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 8px #10131b}
+  #flrFx .hd h2{margin:0;font:600 clamp(24px,4.4vw,42px)/1 'Kanit',system-ui,sans-serif;letter-spacing:.06em}
+  #flrFx .hd small{display:block;margin-top:8px;font:700 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:rgba(225,230,245,.72)}
+  #flrFx .hd p{margin:10px 0 0;max-width:400px;font-size:12.5px;line-height:1.55;color:rgba(225,230,245,.75);word-break:keep-all}
+  #flrFx .ft{position:absolute;left:clamp(16px,4vw,48px);bottom:max(84px,calc(env(safe-area-inset-bottom) + 84px));font:700 10px/1 system-ui,sans-serif;letter-spacing:.12em;color:rgba(225,230,245,.45);pointer-events:none}
+  #flrFx .x{position:absolute;right:16px;top:max(16px,env(safe-area-inset-top));width:42px;height:42px;border-radius:12px;border:1px solid rgba(220,228,240,.3);background:rgba(10,14,22,.6);color:#fff;font-size:17px;cursor:pointer;z-index:2}
+  #flrFx .fb{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;padding:10px;border-radius:16px;background:rgba(10,14,22,.62);border:1px solid rgba(220,228,240,.16)}
+  #flrFx .fb button{font:inherit;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer;color:#eef1f7;border:1px solid rgba(220,228,240,.28);background:rgba(255,255,255,.04);white-space:nowrap}
+  #flrFx .fb button.on{color:#1a1430;background:linear-gradient(180deg,#fff,#d6cdf3);border-color:#fff}
+  #flrFx.uv{background:radial-gradient(80% 70% at 50% 38%,#140a2a,#07040f 70%,#030208)}
+  @media (max-width:640px){ #flrFx .hd p{display:none} #flrFx .fb button{padding:9px 10px;font-size:12px} }
+  #mTabFlr{background:linear-gradient(90deg,rgba(177,151,252,.25),rgba(140,233,190,.12))!important}
+</style>
+<script>
+(function(){
+  const D = [{"n":"Fluorite_Chip_01","m":"lav","t":[-5.7,0.01,43.75,-0.054,-11.68,0.02,41.4,-0.92,-8.26,2.95,40.82,-0.235,-11.68,0.02,41.4,-0.92,-11.68,3.03,42.23,-0.191,-8.26,2.95,40.82,-0.235,-11.68,3.03,42.23,-0.191,-9.4,4.97,43.42,0.563,-8.26,2.95,40.82,-0.235,-9.4,4.97,43.42,0.563,-8.69,4.51,43.78,0.597,-8.26,2.95,40.82,-0.235,-8.69,4.51,43.78,0.597,-5.7,0.01,43.75,-0.054,-8.26,2.95,40.82,-0.235,-8.69,4.51,43.78,0.597,-7.21,0.54,45.84,0.338,-5.7,0.01,43.75,-0.054,-7.21,0.54,45.84,0.338,-12.37,0.02,45.09,-0.265,-5.7,0.01,43.75,-0.054,-12.37,0.02,45.09,-0.265,-11.68,0.02,41.4,-0.92,-5.7,0.01,43.75,-0.054,-12.21,2.46,44.8,0.155,-11.68,3.03,42.23,-0.191,-11.68,0.02,41.4,-0.92,-12.37,0.02,45.09,-0.265,-12.21,2.46,44.8,0.155,-11.68,0.02,41.4,-0.92,-12.21,2.46,44.8,0.155,-9.4,4.97,43.42,0.563,-11.68,3.03,42.23,-0.191,-12.21,2.46,44.8,0.155,-11.05,2.26,45.77,0.383,-9.4,4.97,43.42,0.563,-11.05,2.26,45.77,0.383,-8.69,4.51,43.78,0.597,-9.4,4.97,43.42,0.563,-11.05,2.26,45.77,0.383,-7.21,0.54,45.84,0.338,-8.69,4.51,43.78,0.597,-11.05,2.26,45.77,0.383,-12.37,0.02,45.09,-0.265,-7.21,0.54,45.84,0.338,-11.05,2.26,45.77,0.383,-12.21,2.46,44.8,0.155,-12.37,0.02,45.09,-0.265]},{"n":"Fluorite_Chip_02","m":"mint","t":[15.03,2.54,43.51,-0.637,17.66,2.37,42.02,-0.422,13.73,1.73,42.21,0.034,17.66,2.37,42.02,-0.422,13.41,0.58,41.2,0.575,13.73,1.73,42.21,0.034,13.41,0.58,41.2,0.575,13.36,0.02,42.5,0.284,13.73,1.73,42.21,0.034,13.36,0.02,42.5,0.284,13.89,0.48,43.14,-0.045,13.73,1.73,42.21,0.034,13.89,0.48,43.14,-0.045,15.03,2.54,43.51,-0.637,13.73,1.73,42.21,0.034,13.89,0.48,43.14,-0.045,15.31,0.24,44.03,-0.419,15.03,2.54,43.51,-0.637,15.31,0.24,44.03,-0.419,18.24,0.57,43.87,-0.728,15.03,2.54,43.51,-0.637,18.24,0.57,43.87,-0.728,17.66,2.37,42.02,-0.422,15.03,2.54,43.51,-0.637,18.24,0.57,43.87,-0.728,18.8,0.04,42.83,-0.374,17.66,2.37,42.02,-0.422,18.8,0.04,42.83,-0.374,17.99,0.54,41.04,0.163,17.66,2.37,42.02,-0.422,17.99,0.54,41.04,0.163,17.28,0.02,40.16,0.597,17.66,2.37,42.02,-0.422,17.28,0.02,40.16,0.597,13.41,0.58,41.2,0.575,17.66,2.37,42.02,-0.422,17.28,0.02,40.16,0.597,13.36,0.02,42.5,0.284,13.41,0.58,41.2,0.575,17.28,0.02,40.16,0.597,17.15,0.02,43.78,-0.49,13.36,0.02,42.5,0.284,17.15,0.02,43.78,-0.49,15.31,0.24,44.03,-0.419,13.36,0.02,42.5,0.284,15.31,0.24,44.03,-0.419,13.89,0.48,43.14,-0.045,13.36,0.02,42.5,0.284,17.15,0.02,43.78,-0.49,18.24,0.57,43.87,-0.728,15.31,0.24,44.03,-0.419,17.15,0.02,43.78,-0.49,18.8,0.04,42.83,-0.374,18.24,0.57,43.87,-0.728,17.15,0.02,43.78,-0.49,17.28,0.02,40.16,0.597,18.8,0.04,42.83,-0.374,17.28,0.02,40.16,0.597,17.99,0.54,41.04,0.163,18.8,0.04,42.83,-0.374]},{"n":"Fluorite_Chip_03","m":"lav","t":[39.74,3.22,-27.45,-0.557,36.47,0.01,-29.02,-0.023,41.62,0.27,-27.82,0.259,36.47,0.01,-29.02,-0.023,43.31,0.02,-28.68,0.446,41.62,0.27,-27.82,0.259,43.31,0.02,-28.68,0.446,39.74,3.22,-27.45,-0.557,41.62,0.27,-27.82,0.259,36.98,2.2,-30.82,-0.474,36.47,0.01,-29.02,-0.023,39.74,3.22,-27.45,-0.557,43.31,0.02,-28.68,0.446,41.4,3.14,-28.57,-0.413,39.74,3.22,-27.45,-0.557,41.4,3.14,-28.57,-0.413,42.3,3.32,-30.92,-0.364,39.74,3.22,-27.45,-0.557,42.3,3.32,-30.92,-0.364,39.49,3.68,-31.78,-0.632,39.74,3.22,-27.45,-0.557,39.49,3.68,-31.78,-0.632,36.98,2.2,-30.82,-0.474,39.74,3.22,-27.45,-0.557,37.07,0.53,-30.9,-0.078,39.55,0.02,-33.8,0.244,36.47,0.01,-29.02,-0.023,39.55,0.02,-33.8,0.244,43.31,0.02,-28.68,0.446,36.47,0.01,-29.02,-0.023,36.98,2.2,-30.82,-0.474,37.07,0.53,-30.9,-0.078,36.47,0.01,-29.02,-0.023,42.94,2.41,-31.98,-0.098,42.3,3.32,-30.92,-0.364,43.31,0.02,-28.68,0.446,42.3,3.32,-30.92,-0.364,41.4,3.14,-28.57,-0.413,43.31,0.02,-28.68,0.446,39.55,0.02,-33.8,0.244,42.94,2.41,-31.98,-0.098,43.31,0.02,-28.68,0.446,39.49,3.68,-31.78,-0.632,39.71,1.54,-34.64,-0.088,36.98,2.2,-30.82,-0.474,39.71,1.54,-34.64,-0.088,37.07,0.53,-30.9,-0.078,36.98,2.2,-30.82,-0.474,42.94,2.41,-31.98,-0.098,39.49,3.68,-31.78,-0.632,42.3,3.32,-30.92,-0.364,42.94,2.41,-31.98,-0.098,39.71,1.54,-34.64,-0.088,39.49,3.68,-31.78,-0.632,39.71,1.54,-34.64,-0.088,39.55,0.02,-33.8,0.244,37.07,0.53,-30.9,-0.078,39.71,1.54,-34.64,-0.088,42.94,2.41,-31.98,-0.098,39.55,0.02,-33.8,0.244]},{"n":"Fluorite_Chip_04","m":"mint","t":[-56.71,2.96,-14.03,0.154,-58.06,0.87,-12.8,-0.399,-57.28,0.27,-11.68,-0.941,-58.06,0.87,-12.8,-0.399,-58.49,0.02,-12.76,-0.458,-57.28,0.27,-11.68,-0.941,-58.49,0.02,-12.76,-0.458,-54.7,0.02,-14.18,-0.22,-57.28,0.27,-11.68,-0.941,-54.7,0.02,-14.18,-0.22,-55.26,0.54,-12.83,-0.638,-57.28,0.27,-11.68,-0.941,-55.26,0.54,-12.83,-0.638,-56.71,2.96,-14.03,0.154,-57.28,0.27,-11.68,-0.941,-58.9,1.73,-15.09,0.616,-58.06,0.87,-12.8,-0.399,-56.71,2.96,-14.03,0.154,-55.26,0.54,-12.83,-0.638,-54.73,0.63,-13.68,-0.35,-56.71,2.96,-14.03,0.154,-54.73,0.63,-13.68,-0.35,-56.34,1.29,-15.72,0.612,-56.71,2.96,-14.03,0.154,-56.34,1.29,-15.72,0.612,-58.9,1.73,-15.09,0.616,-56.71,2.96,-14.03,0.154,-58.9,1.73,-15.09,0.616,-58.49,0.02,-12.76,-0.458,-58.06,0.87,-12.8,-0.399,-58.9,1.73,-15.09,0.616,-58.58,0.02,-15.52,0.598,-58.49,0.02,-12.76,-0.458,-58.58,0.02,-15.52,0.598,-54.7,0.02,-14.18,-0.22,-58.49,0.02,-12.76,-0.458,-56.3,0.34,-15.14,0.302,-56.34,1.29,-15.72,0.612,-54.7,0.02,-14.18,-0.22,-56.34,1.29,-15.72,0.612,-54.73,0.63,-13.68,-0.35,-54.7,0.02,-14.18,-0.22,-54.73,0.63,-13.68,-0.35,-55.26,0.54,-12.83,-0.638,-54.7,0.02,-14.18,-0.22,-58.58,0.02,-15.52,0.598,-56.3,0.34,-15.14,0.302,-54.7,0.02,-14.18,-0.22,-56.34,1.29,-15.72,0.612,-58.58,0.02,-15.52,0.598,-58.9,1.73,-15.09,0.616,-56.3,0.34,-15.14,0.302,-58.58,0.02,-15.52,0.598,-56.34,1.29,-15.72,0.612]},{"n":"Fluorite_Chip_05","m":"lav","t":[63.81,1.83,48.48,-0.079,61.74,1.7,48.98,0.396,62.0,0.64,49.37,-0.009,61.74,1.7,48.98,0.396,60.13,0.02,46.71,0.21,62.0,0.64,49.37,-0.009,60.13,0.02,46.71,0.21,62.34,0.02,48.79,-0.307,62.0,0.64,49.37,-0.009,62.34,0.02,48.79,-0.307,63.81,1.83,48.48,-0.079,62.0,0.64,49.37,-0.009,63.1,3.02,47.93,0.48,61.74,1.7,48.98,0.396,63.81,1.83,48.48,-0.079,62.34,0.02,48.79,-0.307,63.34,0.01,45.48,-0.602,63.81,1.83,48.48,-0.079,63.34,0.01,45.48,-0.602,62.6,1.29,44.9,-0.008,63.81,1.83,48.48,-0.079,62.6,1.29,44.9,-0.008,63.1,3.02,47.93,0.48,63.81,1.83,48.48,-0.079,63.1,3.02,47.93,0.48,62.25,2.55,48.32,0.542,61.74,1.7,48.98,0.396,62.25,2.55,48.32,0.542,60.13,0.02,46.71,0.21,61.74,1.7,48.98,0.396,61.94,1.48,44.9,0.217,63.34,0.01,45.48,-0.602,60.13,0.02,46.71,0.21,63.34,0.01,45.48,-0.602,62.34,0.02,48.79,-0.307,60.13,0.02,46.71,0.21,62.25,2.55,48.32,0.542,61.86,1.68,45.54,0.311,60.13,0.02,46.71,0.21,61.86,1.68,45.54,0.311,61.94,1.48,44.9,0.217,60.13,0.02,46.71,0.21,62.6,1.29,44.9,-0.008,61.94,1.48,44.9,0.217,63.1,3.02,47.93,0.48,61.94,1.48,44.9,0.217,61.86,1.68,45.54,0.311,63.1,3.02,47.93,0.48,61.86,1.68,45.54,0.311,62.25,2.55,48.32,0.542,63.1,3.02,47.93,0.48,61.94,1.48,44.9,0.217,62.6,1.29,44.9,-0.008,63.34,0.01,45.48,-0.602]},{"n":"Fluorite_Chip_06","m":"mint","t":[-27.77,0.64,54.05,0.598,-28.05,2.17,53.47,-0.332,-29.63,2.34,53.7,-0.49,-28.05,2.17,53.47,-0.332,-28.49,0.79,51.65,-0.502,-29.63,2.34,53.7,-0.49,-28.49,0.79,51.65,-0.502,-29.37,0.82,51.73,-0.58,-29.63,2.34,53.7,-0.49,-29.37,0.82,51.73,-0.58,-29.9,0.55,51.86,-0.465,-29.63,2.34,53.7,-0.49,-29.9,0.55,51.86,-0.465,-30.19,1.15,53.5,-0.109,-29.63,2.34,53.7,-0.49,-30.19,1.15,53.5,-0.109,-30.55,0.01,54.13,0.599,-29.63,2.34,53.7,-0.49,-30.55,0.01,54.13,0.599,-27.77,0.64,54.05,0.598,-29.63,2.34,53.7,-0.49,-27.57,0.53,52.1,-0.109,-28.05,2.17,53.47,-0.332,-27.77,0.64,54.05,0.598,-30.55,0.01,54.13,0.599,-27.85,0.02,53.13,0.495,-27.77,0.64,54.05,0.598,-27.85,0.02,53.13,0.495,-27.57,0.53,52.1,-0.109,-27.77,0.64,54.05,0.598,-27.57,0.53,52.1,-0.109,-28.49,0.79,51.65,-0.502,-28.05,2.17,53.47,-0.332,-27.57,0.53,52.1,-0.109,-29.98,0.02,51.59,-0.349,-28.49,0.79,51.65,-0.502,-29.98,0.02,51.59,-0.349,-29.37,0.82,51.73,-0.58,-28.49,0.79,51.65,-0.502,-29.98,0.02,51.59,-0.349,-29.9,0.55,51.86,-0.465,-29.37,0.82,51.73,-0.58,-29.98,0.02,51.59,-0.349,-30.19,1.15,53.5,-0.109,-29.9,0.55,51.86,-0.465,-29.98,0.02,51.59,-0.349,-30.55,0.01,54.13,0.599,-30.19,1.15,53.5,-0.109,-29.98,0.02,51.59,-0.349,-27.85,0.02,53.13,0.495,-30.55,0.01,54.13,0.599,-27.85,0.02,53.13,0.495,-29.98,0.02,51.59,-0.349,-27.57,0.53,52.1,-0.109]},{"n":"Fluorite_Lavender_Regular_Octahedron","m":"lav","t":[-37.89,16.18,40.67,1.0,-38.33,0.01,52.09,0.0,-47.56,0.02,34.58,0.0,-37.89,16.18,40.67,1.0,-47.56,0.02,34.58,0.0,-57.67,16.18,39.91,0.0,-37.89,16.18,40.67,1.0,-57.67,16.18,39.91,0.0,-48.44,16.18,57.42,0.0,-37.89,16.18,40.67,1.0,-48.44,16.18,57.42,0.0,-38.33,0.01,52.09,0.0,-58.11,0.02,51.33,-1.0,-47.56,0.02,34.58,0.0,-38.33,0.01,52.09,0.0,-58.11,0.02,51.33,-1.0,-57.67,16.18,39.91,0.0,-47.56,0.02,34.58,0.0,-58.11,0.02,51.33,-1.0,-48.44,16.18,57.42,0.0,-57.67,16.18,39.91,0.0,-58.11,0.02,51.33,-1.0,-38.33,0.01,52.09,0.0,-48.44,16.18,57.42,0.0]},{"n":"Internal_Cleavage_Patch_01","m":"cleave","t":[-28.16,19.28,-11.51,0,-24.26,12.32,-12.99,0,-18.3,10.69,-9.16,0,-18.3,10.69,-9.16,0,-17.74,16.31,-4.89,0,-22.91,22.37,-5.06,0,-18.3,10.69,-9.16,0,-22.91,22.37,-5.06,0,-28.16,19.28,-11.51,0]},{"n":"Internal_Cleavage_Patch_02","m":"cleave","t":[-24.16,26.69,-20.63,0,-19.72,17.01,-23.51,0,-10.48,14.16,-17.78,0,-10.48,14.16,-17.78,0,-9.5,23.05,-10.95,0,-17.33,29.69,-12.94,0,-10.48,14.16,-17.78,0,-17.33,29.69,-12.94,0,-24.16,26.69,-20.63,0]},{"n":"Internal_Cleavage_Patch_03","m":"cleave","t":[-15.58,29.14,-24.95,0,-13.77,24.44,-26.63,0,-9.05,23.0,-23.7,0,-9.05,23.0,-23.7,0,-8.74,27.51,-20.38,0,-12.59,31.21,-21.06,0,-9.05,23.0,-23.7,0,-12.59,31.21,-21.06,0,-15.58,29.14,-24.95,0]},{"n":"Fluorite_Main_Regular_Octahedron","m":"zone","t":[-0.49,43.53,-40.15,0.538,-33.88,-0.36,-40.85,-0.587,-49.94,46.11,-15.85,0.605,-0.49,43.53,-40.15,0.538,-49.94,46.11,-15.85,0.605,-4.12,45.42,14.85,0.587,-0.49,43.53,-40.15,0.538,-4.12,45.42,14.85,0.587,11.94,-1.05,-10.15,-0.605,-0.49,43.53,-40.15,0.538,11.94,-1.05,-10.15,-0.605,-33.88,-0.36,-40.85,-0.587,-37.51,1.53,14.15,-0.538,-49.94,46.11,-15.85,0.605,-33.88,-0.36,-40.85,-0.587,-37.51,1.53,14.15,-0.538,-4.12,45.42,14.85,0.587,-49.94,46.11,-15.85,0.605,-37.51,1.53,14.15,-0.538,11.94,-1.05,-10.15,-0.605,-4.12,45.42,14.85,0.587,-37.51,1.53,14.15,-0.538,-33.88,-0.36,-40.85,-0.587,11.94,-1.05,-10.15,-0.605]},{"n":"Fluorite_Mint_Regular_Octahedron","m":"mint","t":[49.92,26.57,0.47,1.0,67.51,0.01,7.07,0.0,35.42,0.01,12.4,0.0,49.92,26.57,0.47,1.0,35.42,0.01,12.4,0.0,38.49,26.57,30.93,0.0,49.92,26.57,0.47,1.0,38.49,26.57,30.93,0.0,70.58,26.57,25.6,0.0,49.92,26.57,0.47,1.0,70.58,26.57,25.6,0.0,67.51,0.01,7.07,0.0,56.08,0.02,37.53,-1.0,35.42,0.01,12.4,0.0,67.51,0.01,7.07,0.0,56.08,0.02,37.53,-1.0,38.49,26.57,30.93,0.0,35.42,0.01,12.4,0.0,56.08,0.02,37.53,-1.0,70.58,26.57,25.6,0.0,38.49,26.57,30.93,0.0,56.08,0.02,37.53,-1.0,67.51,0.01,7.07,0.0,70.58,26.57,25.6,0.0]}];
+  const NAMES = ['형석', 'Fluorite'];
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  // 재질 색: 라벤더 · 민트 · 주결정(보라→투명→청회색 색띠) · 내부 벽개면
+  const COL = { lav: [.6, .46, 1], mint: [.4, .9, .68], zone: [1, 1, 1], cleave: [.9, .95, 1] };
+  const OBJ = D.map(o => {
+    const t = new Float32Array(o.t), n = t.length / 4; let cx = 0, cy = 0, cz = 0;
+    for(let i = 0; i < n; i++){ cx += t[i * 4]; cy += t[i * 4 + 1]; cz += t[i * 4 + 2]; }
+    // 모서리 선 (삼각형 변 중 중복 없이)
+    const key = i => [t[i * 4], t[i * 4 + 1], t[i * 4 + 2]].map(v => v.toFixed(1)).join(','), seen = new Set(), E = [];
+    for(let f = 0; f < n; f += 3) for(const [a, b] of [[f, f + 1], [f + 1, f + 2], [f + 2, f]]){ const k1 = key(a), k2 = key(b), k = k1 < k2 ? k1 + '|' + k2 : k2 + '|' + k1; if(seen.has(k)) continue; seen.add(k); for(const v of [a, b]) E.push(t[v * 4], t[v * 4 + 1], t[v * 4 + 2], t[v * 4 + 3]); }
+    return { m: o.m, t, n, e: new Float32Array(E), c: [cx / n, cy / n - 15, cz / n] };
+  });
+  const M4 = {
+    persp(f, a, n, fr){ const t = 1 / Math.tan(f / 2); return [t / a, 0, 0, 0, 0, t, 0, 0, 0, 0, (fr + n) / (n - fr), -1, 0, 0, 2 * fr * n / (n - fr), 0]; },
+    mul(a, b){ const o = new Array(16); for(let i = 0; i < 4; i++) for(let j = 0; j < 4; j++){ let s = 0; for(let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; },
+    rotY(t){ const c = Math.cos(t), s = Math.sin(t); return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]; },
+    rotX(t){ const c = Math.cos(t), s = Math.sin(t); return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]; },
+    tr(x, y, z){ return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]; },
+  };
+  const VS = `attribute vec4 p;uniform mat4 M,PM;varying vec3 vp,wp;varying float zn;void main(){vec4 w=M*vec4(p.xyz-vec3(0.,15.,0.),1.);vp=w.xyz;wp=p.xyz;zn=p.w;gl_Position=PM*w;}`;
+  const FS = `#extension GL_OES_standard_derivatives : enable
+    precision mediump float;varying vec3 vp,wp;varying float zn;uniform mat3 R;uniform vec3 base;uniform float kind,back,uv,floorY;
+    vec3 env(vec3 r){float y=r.y;vec3 c=mix(vec3(.16,.18,.24),vec3(.85,.88,.95),smoothstep(-.3,.9,y));
+      c+=vec3(1.)*smoothstep(.82,.97,dot(r,normalize(vec3(-.4,.85,.35))))*2.6;
+      c+=vec3(.9,.94,1.)*smoothstep(.05,.0,abs(r.x-.6))*smoothstep(.0,.35,y)*1.3;return c;}
+    void main(){
+      if(kind>3.5){ gl_FragColor=vec4(mix(vec3(1.),vec3(.55,.75,1.),uv),.55);return; }
+      if(kind>2.5){ float d=length(wp.xz)/150.; float sh=0.; 
+        gl_FragColor=vec4(mix(vec3(.62,.65,.74),vec3(.24,.27,.35),smoothstep(.0,1.,d))*(1.-uv*.85),(1.-smoothstep(.55,1.,d))*.95);return; }
+      vec3 N=normalize(cross(dFdx(vp),dFdy(vp)));vec3 V=normalize(-vp);if(dot(N,V)<0.)N=-N;
+      vec3 Nw=R*N;float ndv=max(dot(N,V),0.);float f=.04+.96*pow(1.-ndv,5.);
+      vec3 tint=base;
+      if(kind>1.5){ tint=mix(vec3(.9,.94,1.),vec3(.55,.4,1.),smoothstep(0.,.35,zn)); tint=mix(tint,vec3(.22,.32,.62),smoothstep(-.25,-.55,zn)); }
+      vec3 r=R*reflect(-V,N);
+      float dif=max(dot(Nw,normalize(vec3(-.3,1.,.45))),0.)*.55+.45;
+      vec3 body=tint*dif*(back>.5?.75:1.);
+      vec3 col=body*.95+env(r)*(.05+f*.8)*(1.-uv*.8);
+      float a=back>.5?.45:(.42+f*.5);
+      if(kind>0.5&&kind<1.5) a*=.35;
+      // 자외선: 형석은 파랗게 형광 (fluorescence의 어원)
+      vec3 glow=vec3(.35,.45,1.)*(.55+.45*smoothstep(.0,.8,1.-ndv))*(kind>1.5?1.:.8);
+      col=mix(col,glow*1.25+env(r)*f*.15,uv); a=mix(a,.62+f*.3,uv);
+      col=col/(1.+col*.35);gl_FragColor=vec4(col,a);}`;
+  function open(){
+    document.getElementById('flrFx')?.remove();
+    const ov = document.createElement('div'); ov.id = 'flrFx';
+    ov.innerHTML = `<canvas></canvas>
+      <div class="hd"><h2>FLUORITE</h2><small>CaF₂ · ${P('정팔면체 결정', 'octahedral form')}</small>
+        <p>${P('형석은 정팔면체로 쪼개지는 결정이에요. 자라는 동안 섞여 든 미량 원소 때문에 보라·초록·파랑 색띠가 생기고, 자외선을 비추면 파랗게 빛나요. "형광(fluorescence)"이라는 말이 바로 형석(fluorite)에서 나왔어요.', 'Fluorite cleaves into octahedra. Trace elements trapped as it grows leave purple, green and blue colour bands, and under UV light it glows blue. The word "fluorescence" comes from fluorite.')}</p></div>
+      <div class="ft">8 TRIANGULAR FACES / 6 VERTICES / 12 EDGES</div>
+      <div class="fb"><button type="button" data-k="spin" class="on">${P('자동 회전', 'Auto-spin')}</button><button type="button" data-k="uv">${P('🔦 자외선', '🔦 UV light')}</button><button type="button" data-k="top">${P('위에서', 'Top')}</button><button type="button" data-k="side">${P('옆에서', 'Side')}</button></div>
+      <button type="button" class="x" aria-label="close">✕</button>`;
+    document.body.appendChild(ov);
+    const cv = ov.querySelector('canvas');
+    const gl = cv.getContext('webgl', { antialias: true, alpha: false, premultipliedAlpha: false }) || cv.getContext('experimental-webgl');
+    if(!gl || !gl.getExtension('OES_standard_derivatives')){ ov.remove(); try{ rxToast('', P('이 기기에선 3D를 볼 수 없어요', '3D is not available on this device')); }catch(_){} return; }
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
+    const L = {}; ['M', 'PM', 'R', 'base', 'kind', 'back', 'uv'].forEach(k => L[k] = gl.getUniformLocation(pr, k)); L.p = gl.getAttribLocation(pr, 'p');
+    OBJ.forEach(o => { o.b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, o.b); gl.bufferData(gl.ARRAY_BUFFER, o.t, gl.STATIC_DRAW); });
+    const fy = -1.2, FQ = new Float32Array([-200, fy, -200, 0, 200, fy, -200, 0, 200, fy, 200, 0, -200, fy, -200, 0, 200, fy, 200, 0, -200, fy, 200, 0]);
+    const fb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, fb); gl.bufferData(gl.ARRAY_BUFFER, FQ, gl.STATIC_DRAW);
+    let yaw = .5, pitch = .48, pT = .48, dist = 330, spin = true, lastInt = 0, raf = 0, uv = 0, uvT = 0;
+    const fit = () => { const d = Math.min(2, devicePixelRatio || 1); cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; gl.viewport(0, 0, cv.width, cv.height); };
+    fit(); addEventListener('resize', fit);
+    gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.enable(gl.CULL_FACE);
+    const KIND = { lav: 0, cleave: 1, zone: 2, mint: 0 };
+    function frame(now){
+      if(!ov.isConnected){ removeEventListener('resize', fit); return; }
+      if(spin && now - lastInt > 1500) yaw += .003;
+      pitch += (pT - pitch) * .1; uv += (uvT - uv) * .08;
+      const bg = [.1 - .07 * uv, .12 - .1 * uv, .17 - .12 * uv];
+      gl.clearColor(bg[0], bg[1], bg[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      const asp = cv.width / Math.max(1, cv.height), PM = M4.persp(asp < 1 ? .92 : .55, asp, 5, 1600);
+      const MV = M4.mul(M4.tr(0, 0, -dist), M4.mul(M4.rotX(pitch), M4.rotY(yaw)));
+      gl.uniformMatrix4fv(L.PM, false, PM); gl.uniformMatrix4fv(L.M, false, MV);
+      gl.uniformMatrix3fv(L.R, false, new Float32Array([MV[0], MV[4], MV[8], MV[1], MV[5], MV[9], MV[2], MV[6], MV[10]]));
+      gl.uniform1f(L.uv, uv);
+      // 바닥 (깊이 안 씀)
+      gl.depthMask(false); gl.disable(gl.CULL_FACE);
+      gl.uniform1f(L.kind, 3); gl.uniform1f(L.back, 0); gl.bindBuffer(gl.ARRAY_BUFFER, fb); gl.enableVertexAttribArray(L.p); gl.vertexAttribPointer(L.p, 4, gl.FLOAT, false, 0, 0); gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl.enable(gl.CULL_FACE);
+      // 투명 결정: 뒤에 있는 것부터, 각자 뒷면 → 앞면
+      const dz = o => MV[2] * o.c[0] + MV[6] * o.c[1] + MV[10] * o.c[2];
+      OBJ.slice().sort((a, b) => dz(a) - dz(b)).forEach(o => {
+        const c = COL[o.m]; gl.uniform3f(L.base, c[0], c[1], c[2]); gl.uniform1f(L.kind, KIND[o.m]);
+        gl.bindBuffer(gl.ARRAY_BUFFER, o.b); gl.vertexAttribPointer(L.p, 4, gl.FLOAT, false, 0, 0);
+        if(o.m === 'cleave'){ gl.disable(gl.CULL_FACE); gl.uniform1f(L.back, 0); gl.drawArrays(gl.TRIANGLES, 0, o.n); gl.enable(gl.CULL_FACE); return; }
+        gl.cullFace(gl.FRONT); gl.uniform1f(L.back, 1); gl.drawArrays(gl.TRIANGLES, 0, o.n);
+        gl.cullFace(gl.BACK); gl.uniform1f(L.back, 0); gl.drawArrays(gl.TRIANGLES, 0, o.n);
+        o.eb = o.eb || (b => (gl.bindBuffer(gl.ARRAY_BUFFER, b), gl.bufferData(gl.ARRAY_BUFFER, o.e, gl.STATIC_DRAW), b))(gl.createBuffer());
+        gl.bindBuffer(gl.ARRAY_BUFFER, o.eb); gl.vertexAttribPointer(L.p, 4, gl.FLOAT, false, 0, 0); gl.uniform1f(L.kind, 4); gl.drawArrays(gl.LINES, 0, o.e.length / 4);
+      });
+      gl.depthMask(true);
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    const pts = new Map(); let p0 = 0, d0 = dist;
+    cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); lastInt = performance.now(); if(pts.size === 2){ const [a, b] = [...pts.values()]; p0 = Math.hypot(a[0] - b[0], a[1] - b[1]); d0 = dist; } });
+    cv.addEventListener('pointermove', e => {
+      if(!pts.has(e.pointerId)) return; const q = pts.get(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); lastInt = performance.now();
+      if(pts.size === 1){ yaw += (e.clientX - q[0]) * .008; pT = pitch = Math.max(-.1, Math.min(1.5, pitch + (e.clientY - q[1]) * .008)); }
+      else if(pts.size === 2 && p0){ const [a, b] = [...pts.values()]; dist = Math.max(110, Math.min(560, d0 * p0 / Math.hypot(a[0] - b[0], a[1] - b[1]))); }
+    });
+    const up = e => { pts.delete(e.pointerId); if(pts.size < 2) p0 = 0; };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('wheel', e => { e.preventDefault(); dist = Math.max(110, Math.min(560, dist * (1 + Math.sign(e.deltaY) * .08))); lastInt = performance.now(); }, { passive: false });
+    ov.querySelectorAll('.fb button').forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.k;
+      if(k === 'spin'){ spin = !spin; b.classList.toggle('on', spin); }
+      if(k === 'uv'){ uvT = uvT ? 0 : 1; b.classList.toggle('on', !!uvT); ov.classList.toggle('uv', !!uvT); try{ if(uvT) rxEvt('flruv'); }catch(_){} }
+      if(k === 'top') pT = 1.45; if(k === 'side') pT = .1;
+      try{ SFX.tick(); }catch(_){}
+    }));
+    const close = () => { ov.classList.add('out'); setTimeout(() => { cancelAnimationFrame(raf); ov.remove(); }, 320); };
+    ov.querySelector('.x').addEventListener('click', close);
+    addEventListener('keydown', function kd(e){ if(!ov.isConnected){ removeEventListener('keydown', kd); return; } if(e.key === 'Escape'){ e.stopPropagation(); close(); } }, true);
+    try{ SFX.pick(); }catch(_){}
+  }
+  window.rxFluor3D = open;
+  const _render = rxRender;
+  rxRender = function(){
+    const r = _render.apply(this, arguments);
+    try{
+      const tabs = document.getElementById('mTabs'); if(!tabs) return r;
+      let b = document.getElementById('mTabFlr');
+      const nm = ((document.getElementById('mName') || {}).textContent || '').trim(), on = NAMES.includes(nm);
+      if(on && !b){ b = document.createElement('button'); b.type = 'button'; b.id = 'mTabFlr'; b.addEventListener('click', e => { e.stopPropagation(); open(); }); tabs.appendChild(b); }
+      if(b){ b.hidden = !on; b.textContent = EN() ? '✨ Real 3D' : '✨ 실물 3D'; if(on) tabs.hidden = false; }
+    }catch(e){}
+    return r;
+  };
+})();
+</script>
+
 </body>
 </html>
