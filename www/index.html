@@ -34098,6 +34098,7 @@ Object.assign(RX_SMILES_PRE, {"CCOP(=S)(OCC)Oc1ccc(cc1)[N+](=O)[O-]":{"a":[["C",
     const b = document.getElementById('hxPlay'); if(b) b.textContent = '❚❚';
     H.timer = setInterval(() => {
       if(H.y >= Y1 || VIEW !== 'hist'){ stop(); return; }
+      if(H.hold && Date.now() < H.hold) return;
       setY(H.y + 2);
     }, 110);
   }
@@ -57143,6 +57144,174 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     }catch(e){}
     return r;
   };
+})();
+</script>
+
+<style>
+  /* ═══ 발견의 역사 리워크: 발견 순간 카드 + 시대 하이라이트 ═══ */
+  #tableWrap{position:relative}
+  .hxc{position:absolute;z-index:4;pointer-events:none;box-sizing:border-box;max-height:none;
+    padding:14px 18px 15px;border-radius:16px;background:linear-gradient(160deg,rgba(28,32,52,.94),rgba(14,17,28,.94));border:1px solid rgba(195,166,255,.35);
+    box-shadow:0 18px 40px -12px rgba(0,0,0,.6),0 0 30px -8px rgba(195,166,255,.35);color:var(--text);font-family:system-ui,sans-serif}
+  .hxc.pop{animation:hxcIn .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes hxcIn{0%{opacity:0;transform:translateY(10px) scale(.94)}100%{opacity:1;transform:none}}
+  .hxc .top{display:flex;align-items:baseline;gap:10px}
+  .hxc .yr{font:800 30px/1 Orbit,Kanit,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#ffd43b;letter-spacing:.02em}
+  .hxc .lb{font:800 10.5px/1 ui-monospace,monospace;letter-spacing:.2em;color:#c3a6ff}
+  .hxc .els{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .hxc .el{display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid color-mix(in srgb,var(--cc) 45%,transparent)}
+  .hxc .el b{display:grid;place-items:center;width:30px;height:30px;border-radius:7px;font:800 15px/1 Kanit,system-ui,sans-serif;color:#0b0d11;background:var(--cc)}
+  .hxc .el span{font-size:12.5px;font-weight:700;line-height:1.25}
+  .hxc .el small{display:block;font-size:11px;font-weight:600;color:var(--dim)}
+  .hxc .hl{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(195,166,255,.3)}
+  .hxc .hl h4{margin:0;font-size:15px;font-weight:900;color:#fff}
+  .hxc .hl p{margin:5px 0 0;font-size:12.5px;line-height:1.55;color:rgba(231,236,244,.82);word-break:keep-all}
+  .hxc .bar{height:3px;margin-top:10px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+  .hxc .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#c3a6ff,#ffd43b);transform-origin:left;animation:hxBar linear forwards}
+  @keyframes hxBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+  .hxc.hi{border-color:rgba(255,212,59,.55);box-shadow:0 18px 40px -12px rgba(0,0,0,.6),0 0 40px -6px rgba(255,212,59,.35)}
+  #mopt .hxc{position:static;margin-top:10px;width:auto;grid-template-columns:1fr!important}
+  #mopt .hxc .hl{grid-column:1;grid-row:auto;border-left:0;border-top:1px dashed rgba(195,166,255,.3);padding:8px 0 0;margin-top:8px}
+  #mopt .hxc .els,#mopt .hxc .els.many{flex-direction:row;flex-wrap:wrap;max-width:none}
+  #mopt .hxc .top{flex-direction:row;align-items:baseline}
+  @media (max-width:700px){ .hxc{padding:10px 12px} .hxc .yr{font-size:22px} .hxc .hl p{font-size:11.5px} }
+  .hxc{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-content:center;padding:10px 14px}
+  .hxc .top{grid-column:1;flex-direction:column;align-items:flex-start;gap:4px}
+  .hxc .yr{font-size:26px}
+  .hxc .els{grid-column:1;margin-top:6px;flex-direction:column;gap:4px;max-width:170px}
+  .hxc .el{padding:3px 8px 3px 3px;gap:6px}
+  .hxc .el b{width:24px;height:24px;font-size:12.5px;border-radius:6px}
+  .hxc .el span{font-size:11.5px}
+  .hxc .el small{font-size:10px}
+  .hxc .els.many{flex-direction:row;flex-wrap:wrap;max-width:260px}
+  .hxc .els.many .el small{display:none}
+  .hxc .hl{grid-column:2;grid-row:1 / span 2;margin:0;padding:0 0 0 14px;border-top:0;border-left:1px dashed rgba(195,166,255,.3);align-self:center}
+  .hxc .hl h4{font-size:14px}
+  .hxc .hl p{font-size:11.8px;line-height:1.5}
+  .hxc .bar{grid-column:1 / -1;margin-top:8px}
+  .hxc:not(:has(.hl)){grid-template-columns:auto}
+  .hxc:not(:has(.hl)) .els{flex-direction:row;flex-wrap:wrap;max-width:none}
+</style>
+<script>
+(function(){
+  if(!window.RX_HIST || typeof paint !== 'function') return;
+  const H = window.RX_HIST;
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  // 연도 바로잡기 (고대로 잘못 들어가 있던 것 + 스칸듐)
+  try{ Object.assign(PROPS.Al, { yr: 1825 }); Object.assign(PROPS.Ca, { yr: 1808 }); Object.assign(PROPS.Co, { yr: 1735 }); Object.assign(PROPS.Cr, { yr: 1797 }); Object.assign(PROPS.Pt, { yr: 1748 }); Object.assign(PROPS.Sc, { yr: 1879 }); }catch(e){}
+  const yrOf = e => { const p = PROPS[e.s]; return p && p.yr != null ? p.yr : 0; };
+  // 발견자 [한국어, 영어]
+  const W = {
+    H:['캐번디시','Cavendish'], He:['장센 · 로키어 (태양 빛 속에서)','Janssen & Lockyer (in sunlight)'], Li:['아르프베드손','Arfwedson'], Be:['보클랭','Vauquelin'], B:['데이비 · 게이뤼삭 · 테나르','Davy, Gay-Lussac & Thénard'],
+    N:['대니얼 러더퍼드','Daniel Rutherford'], O:['셸레 · 프리스틀리','Scheele & Priestley'], F:['무아상','Moissan'], Ne:['램지 · 트래버스','Ramsay & Travers'], Na:['데이비','Davy'], Mg:['데이비','Davy'],
+    Al:['외르스테드','Ørsted'], Si:['베르셀리우스','Berzelius'], P:['브란트','Brand'], Cl:['셸레','Scheele'], Ar:['레일리 · 램지','Rayleigh & Ramsay'], K:['데이비','Davy'], Ca:['데이비','Davy'],
+    Sc:['닐손','Nilson'], Ti:['그레고르','Gregor'], V:['델 리오','del Río'], Cr:['보클랭','Vauquelin'], Mn:['간','Gahn'], Co:['브란트 (게오르크)','Georg Brandt'], Ni:['크론스테트','Cronstedt'], Zn:['마르크그라프','Marggraf'],
+    Ga:['부아보드랑','Lecoq de Boisbaudran'], Ge:['빙클러','Winkler'], Se:['베르셀리우스','Berzelius'], Br:['발라르','Balard'], Kr:['램지 · 트래버스','Ramsay & Travers'], Rb:['분젠 · 키르히호프','Bunsen & Kirchhoff'],
+    Sr:['크로퍼드','Crawford'], Y:['가돌린','Gadolin'], Zr:['클라프로트','Klaproth'], Nb:['해칫','Hatchett'], Mo:['셸레','Scheele'], Tc:['페리에 · 세그레','Perrier & Segrè'], Ru:['클라우스','Klaus'],
+    Rh:['울러스턴','Wollaston'], Pd:['울러스턴','Wollaston'], Cd:['슈트로마이어','Stromeyer'], In:['라이히 · 리히터','Reich & Richter'], Te:['뮐러 폰 라이헨슈타인','Müller von Reichenstein'], I:['쿠르투아','Courtois'],
+    Xe:['램지 · 트래버스','Ramsay & Travers'], Cs:['분젠 · 키르히호프','Bunsen & Kirchhoff'], Ba:['데이비','Davy'], La:['모산데르','Mosander'], Ce:['베르셀리우스 · 히싱어','Berzelius & Hisinger'],
+    Pr:['벨스바흐','Welsbach'], Nd:['벨스바흐','Welsbach'], Pm:['마린스키 · 글렌데닌 · 코리엘','Marinsky, Glendenin & Coryell'], Sm:['부아보드랑','Lecoq de Boisbaudran'], Eu:['드마르세','Demarçay'],
+    Gd:['마리냐크','Marignac'], Tb:['모산데르','Mosander'], Dy:['부아보드랑','Lecoq de Boisbaudran'], Ho:['소레 · 들라퐁텐 · 클레베','Soret, Delafontaine & Cleve'], Er:['모산데르','Mosander'], Tm:['클레베','Cleve'],
+    Yb:['마리냐크','Marignac'], Lu:['위르뱅','Urbain'], Hf:['코스터 · 헤베시','Coster & Hevesy'], Ta:['에케베리','Ekeberg'], W:['엘루야르 형제','Elhuyar brothers'], Re:['노다크 · 타케 · 베르크','Noddack, Tacke & Berg'],
+    Os:['테넌트','Tennant'], Ir:['테넌트','Tennant'], Pt:['울로아','Ulloa'], Tl:['크룩스','Crookes'], Po:['마리 퀴리 · 피에르 퀴리','Marie & Pierre Curie'], At:['코슨 · 매켄지 · 세그레','Corson, MacKenzie & Segrè'],
+    Rn:['도른','Dorn'], Fr:['페레','Perey'], Ra:['마리 퀴리 · 피에르 퀴리','Marie & Pierre Curie'], Ac:['드비에른','Debierne'], Th:['베르셀리우스','Berzelius'], Pa:['파얀스 · 괴링','Fajans & Göhring'], U:['클라프로트','Klaproth'],
+    Np:['맥밀런 · 에이블슨','McMillan & Abelson'], Pu:['시보그 팀 (버클리)','Seaborg team (Berkeley)'], Am:['시보그 팀','Seaborg team'], Cm:['시보그 팀','Seaborg team'], Bk:['시보그 팀 (버클리)','Seaborg team (Berkeley)'],
+    Cf:['시보그 팀 (버클리)','Seaborg team (Berkeley)'], Es:['수소폭탄 시험 낙진에서','Fallout of an H-bomb test'], Fm:['수소폭탄 시험 낙진에서','Fallout of an H-bomb test'], Md:['시보그 · 기오르소 팀','Seaborg & Ghiorso team'],
+    No:['두브나 · 버클리','Dubna & Berkeley'], Lr:['기오르소 팀 (버클리)','Ghiorso team (Berkeley)'], Rf:['두브나 · 버클리','Dubna & Berkeley'], Db:['두브나 · 버클리','Dubna & Berkeley'], Sg:['버클리','Berkeley'],
+    Bh:['독일 GSI','GSI, Germany'], Hs:['독일 GSI','GSI, Germany'], Mt:['독일 GSI','GSI, Germany'], Ds:['독일 GSI','GSI, Germany'], Rg:['독일 GSI','GSI, Germany'], Cn:['독일 GSI','GSI, Germany'],
+    Nh:['일본 리켄','RIKEN, Japan'], Fl:['러시아 두브나','Dubna, Russia'], Mc:['러시아 두브나','Dubna, Russia'], Lv:['러시아 두브나','Dubna, Russia'], Ts:['두브나 · 오크리지','Dubna & Oak Ridge'], Og:['러시아 두브나','Dubna, Russia'] };
+  // 시대 하이라이트: [연도, 제목, 설명] (재생하다 이 해를 지나면 잠깐 멈춤)
+  const HL = {
+    ko: { 1669: ['오줌에서 빛이 나다', '연금술사 브란트가 금을 만들겠다고 오줌을 졸이다가, 어둠 속에서 빛나는 인을 얻었어요. 발견한 사람이 기록에 남은 첫 원소예요.'],
+      1774: ['불의 정체, 산소', '셸레와 프리스틀리가 따로따로 산소를 찾았어요. 그 덕분에 라부아지에가 "물건이 타는 건 산소와 합쳐지는 것"이라는 걸 밝혀냈어요.'],
+      1807: ['전기로 원소를 뜯어내다', '데이비가 볼타 전지로 녹인 잿물에 전기를 흘려 칼륨과 나트륨을 뽑아냈어요. 이듬해엔 칼슘, 바륨, 마그네슘까지 줄줄이 찾아요.'],
+      1860: ['불꽃 색으로 찾은 원소', '분젠과 키르히호프가 불꽃 빛을 프리즘으로 쪼개 보는 분광기를 만들었어요. 처음 보는 파란 선에서 세슘, 이듬해 빨간 선에서 루비듐을 찾아냈어요.'],
+      1868: ['지구보다 태양에서 먼저', '일식 때 태양 빛에서 정체불명의 노란 선이 보였어요. 그래서 이름도 태양(헬리오스)에서 따 헬륨. 지구에서는 27년 뒤에야 찾아요.'],
+      1869: ['멘델레예프의 빈칸', '멘델레예프가 원소를 무게 순으로 늘어놓고, 맞는 원소가 없는 자리는 일부러 비워 뒀어요. "여긴 아직 못 찾은 원소가 있다"는 예언이었어요.'],
+      1875: ['예언 적중 ① 갈륨', '멘델레예프가 "에카알루미늄"이라 부르며 밀도 약 5.9라고 예언한 빈칸이에요. 처음엔 4.7로 쟀다가, 다시 재 보니 5.9. 예언이 더 정확했어요.'],
+      1879: ['예언 적중 ② 스칸듐', '"에카붕소"로 예언한 빈칸이 채워졌어요.'],
+      1886: ['예언 적중 ③ 저마늄', '"에카규소" 예언과 원자량, 밀도, 산화물 성질까지 거의 똑같았어요. 이걸로 주기율표가 진짜라는 게 굳어졌어요.'],
+      1894: ['아무도 몰랐던 한 줄', '공기에서 질소를 빼고 남은 기체가 아르곤이었어요. 곧이어 네온, 크립톤, 제논까지. 주기율표에 비활성 기체 18족 한 줄이 통째로 빠져 있었던 거예요.'],
+      1898: ['방사능의 시대', '마리 퀴리와 피에르 퀴리가 우라늄 광석에서 스스로 빛과 열을 내는 폴로늄과 라듐을 찾았어요. "방사능"이라는 말도 마리 퀴리가 만들었어요.'],
+      1937: ['처음으로 사람이 만든 원소', '43번 자리는 끝까지 비어 있었어요. 결국 가속기로 몰리브데넘을 때려서 만들어 냈고, 이름도 "인공"이라는 뜻의 테크네튬이에요.'],
+      1940: ['우라늄 너머로', '넵투늄과 플루토늄이 만들어지면서, 92번 우라늄 뒤로도 원소가 계속 이어진다는 게 밝혀졌어요.'],
+      1952: ['수소폭탄 속에서', '첫 수소폭탄 시험의 낙진을 조사하다가 아인슈타이늄과 페르뮴이 나왔어요. 처음엔 군사 기밀이라 몇 년 동안 발표도 못 했어요.'],
+      2010: ['118칸이 다 찼다', '테네신을 마지막으로 7주기가 다 채워졌어요. 119번은 아직 아무도 못 만들었어요.'] },
+    en: { 1669: ['Light from urine', 'Alchemist Hennig Brand boiled down urine hoping for gold and got glowing phosphorus instead. The first element with a known discoverer.'],
+      1774: ['What fire really is', 'Scheele and Priestley each found oxygen, letting Lavoisier show that burning means combining with oxygen.'],
+      1807: ['Prying elements apart with electricity', 'Davy ran a current from a voltaic pile through molten potash and soda, pulling out potassium and sodium. Calcium, barium and magnesium soon followed.'],
+      1860: ['Elements found by flame colour', 'Bunsen and Kirchhoff split flame light with a spectroscope. A new blue line gave caesium; a new red line next year gave rubidium.'],
+      1868: ['Found on the Sun first', 'A mystery yellow line appeared in sunlight during an eclipse, so it was named after the Sun (helios). Earth\'s helium was found 27 years later.'],
+      1869: ['Mendeleev\'s gaps', 'Mendeleev ordered the elements and left gaps where nothing fit, predicting that undiscovered elements belonged there.'],
+      1875: ['Prediction hit #1: gallium', 'He called it eka-aluminium and predicted a density of about 5.9. It was first measured at 4.7, then re-measured: 5.9. The prediction won.'],
+      1879: ['Prediction hit #2: scandium', 'The "eka-boron" gap is filled.'],
+      1886: ['Prediction hit #3: germanium', 'Mass, density and oxide matched "eka-silicon" almost exactly. The periodic table was here to stay.'],
+      1894: ['A whole missing column', 'Air minus nitrogen left argon; then came neon, krypton and xenon. An entire group, the noble gases, had been missing.'],
+      1898: ['The age of radioactivity', 'Marie and Pierre Curie found polonium and radium, which give off light and heat on their own. Marie coined the word "radioactivity".'],
+      1937: ['The first human-made element', 'Slot 43 stayed empty until a cyclotron bombarded molybdenum. Its name, technetium, means "artificial".'],
+      1940: ['Beyond uranium', 'Neptunium and plutonium showed the table keeps going past element 92.'],
+      1952: ['Inside an H-bomb', 'Einsteinium and fermium turned up in fallout from the first hydrogen-bomb test, kept secret for years.'],
+      2010: ['All 118 filled', 'Tennessine completed period 7. Nobody has made element 119 yet.'] } };
+  const HOLD = 4200;
+  let lastY = H.y, cardKey = '';
+  // 주기율표 위쪽 빈자리(3~12족 × 1~3주기)에 카드 맞추기
+  function place(c){
+    if(innerWidth <= 700){ c.removeAttribute('style'); return; }
+    const w = document.getElementById('tableWrap'), q = n => document.querySelector(`#grid .cell[data-n="${n}"]`);
+    const a = q(21), b = q(30), t = q(1), d = q(11); if(!w || !a || !b || !t || !d) return;
+    const W0 = w.getBoundingClientRect(), A = a.getBoundingClientRect(), B = b.getBoundingClientRect(), T = t.getBoundingClientRect(), Dd = d.getBoundingClientRect();
+    const L = A.left - W0.left + w.scrollLeft, R = B.right - W0.left + w.scrollLeft, top = T.top - W0.top + w.scrollTop, bot = Dd.bottom - W0.top + w.scrollTop;
+    const width = Math.min(R - L, 640);
+    Object.assign(c.style, { left: (L + (R - L - width) / 2) + 'px', width: width + 'px', top: top + 'px', height: (bot - top) + 'px', overflow: 'hidden' });
+  }
+  addEventListener('resize', () => { const c = document.querySelector('.hxc'); c && place(c); });
+  function card(y, isHi){
+    const MOB = innerWidth <= 700, grid = document.getElementById(MOB ? 'mopt' : 'tableWrap'); if(!grid) return;
+    document.querySelectorAll('.hxc').forEach(x => { if(x.parentNode !== grid) x.remove(); });
+    let c = grid.querySelector('.hxc');
+    if(VIEW !== 'hist'){ c && c.remove(); cardKey = ''; return; }
+    const els = EL.filter(e => yrOf(e) === y && y > 0);
+    const L = EN() ? 'en' : 'ko', hl = HL[L][y];
+    const key = y + (isHi ? 'h' : '');
+    if(!els.length && !hl){ return; }
+    if(!c){ c = document.createElement('div'); c.className = 'hxc'; grid.appendChild(c); cardKey = ''; }
+    place(c);
+    if(key === cardKey) return;
+    cardKey = key;
+    c.classList.toggle('hi', !!(hl && isHi));
+    c.innerHTML = `<div class="top"><span class="yr">${y}</span><span class="lb">${EN() ? 'DISCOVERED' : '발견'}</span></div>
+      <div class="els${els.length > 4 ? ' many' : ''}">${els.map(e => { let col = '#9aa8ff'; try{ col = cssv(CAT[e.c].v); }catch(_){}
+        const w = W[e.s]; return `<div class="el" style="--cc:${col}"><b>${e.s}</b><span>${EN() ? e.en : e.ko}${w ? `<small>${w[EN() ? 1 : 0]}</small>` : ''}</span></div>`; }).join('')}</div>
+      ${hl ? `<div class="hl"><h4>✦ ${hl[0]}</h4><p>${hl[1]}</p></div>` : ''}
+      ${hl && isHi ? `<div class="bar"><i style="animation-duration:${HOLD}ms"></i></div>` : ''}`;
+    c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop');
+  }
+  const _paint = paint;
+  paint = function(){
+    const r = _paint.apply(this, arguments);
+    try{
+      if(VIEW !== 'hist'){ const c = document.querySelector('.hxc'); c && c.remove(); cardKey = ''; lastY = H.y; return r; }
+      const y = H.y, playing = !!H.timer;
+      if(y !== lastY || !document.querySelector('.hxc')){
+        // 지나온 해들 중 발견이 있었던 가장 최근 해
+        const lo = Math.min(lastY, y), hi2 = Math.max(lastY, y);
+        let show = 0, hiY = 0;
+        if(playing && y > lastY){
+          for(let t = lastY + 1; t <= y; t++){ if(HL.ko[t]) hiY = t; if(EL.some(e => yrOf(e) === t)) show = t; }
+        }
+        if(!show){ EL.forEach(e => { const t = yrOf(e); if(t > 0 && t <= y && t > show) show = t; }); }
+        if(hiY){ card(hiY, true); H.hold = Date.now() + HOLD; try{ rxBell(880, .35, .05, 0); rxBell(1320, .45, .04, .12); }catch(_){} }
+        else if(show){ card(show, false); if(playing && show > lo) try{ SFX.tick(); }catch(_){} }
+        else { const c = document.querySelector('.hxc'); c && c.remove(); cardKey = ''; }
+        lastY = y;
+      } else {
+        // 다시 그려도 카드가 맨 위에 남게
+        const c = document.querySelector('.hxc'); c && place(c);
+      }
+    }catch(e){ console.warn('hist2', e); }
+    return r;
+  };
+  try{ if(VIEW === 'hist') paint(); }catch(e){}
 })();
 </script>
 
