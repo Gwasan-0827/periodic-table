@@ -6195,7 +6195,7 @@ function renderModeBar(){
    업데이트 기록
    새 버전을 낼 때 CHANGELOG 맨 앞에 항목을 추가하면 된다.
    ═══════════════════════════════════════════════════ */
-const APP_VER = '4.2.5';
+const APP_VER = '4.3.0';
 
 /* 버전 표기 (시대 구분): αV = 1.x / βV = 2.0 ~ 4.x / ΔV = 5.0 부터. 뒷자리는 아래 첨자 (3.2 → βV.3.₂) */
 function verLabel(v){
@@ -6206,6 +6206,14 @@ function verLabel(v){
   return `${era}V.${a}.${sub}`;
 }
 const CHANGELOG = [
+  {
+    v: '4.3.0', date: '2026-11-18',
+    title: { ko: '페리니아//', en: 'Perinia//' },
+    items: {
+      ko: ["원소 의인화 세계관 이름이 「페리니아//」로 정해졌어요. 의인화 도감에 수소·나트륨·허브(마그네슘)·오그(오가네손)·네온 카페가 그림과 함께 들어왔어요 (웹)", "초중원소를 만드는 6단계 합성 과정 창이 생겼어요. 과녁 바퀴는 실물 사진처럼 바나나 창 4개와 손글씨 라벨까지 그렸어요", "원자를 질량수만큼 담으면 초중원소 합성 실험을 해요. 타이타늄 50개 + 캘리포늄 249개처럼 실제 연구소가 쓴 9가지 조합을 알아듣고, 결과 탭에 새 원소의 전자 구름이, 합성 실험 탭에 빔 쏘기가 나와요", "119·120·121번(우누넨늄·운비닐륨·운비우늄)이 예고 칸·검색·합성 실험으로 들어왔어요. 가끔은 진짜 원소인 척 나타나기도 해요", "원소마다 IF 시리즈가 생겼어요. \"만약 이 원소가 없었다면?\" 118개 전부요", "란타넘족은 란타노이드, 악티늄족은 악티노이드로 이름을 바꿨어요. 주기율표 3족 빈자리도 안내 칸으로 바꿔서, 마우스를 올리면 아래 줄이 물결처럼 켜져요", "실물 3D 탭: 알루미늄 호일(펴기↔구기기), 자철석, 형석(🔦 자외선을 비추면 파랗게 형광), 헤모글로빈", "오늘의 조합 미션이 생겼어요. 매일 새 물질 하나, 힌트는 3단계, 힌트를 덜 볼수록 별이 많아요", "출석 체크가 생겼어요. 도장, 보호막, 칭호, 출석 카드 저장·공유, 나의 화학 리포트까지 있어요", "내 생일을 등록하면 생일 친구 원소와 원소 생일 달력이 생겨요", "오늘의 원소·이온·퀴즈를 새로 꾸몄어요. 이온 탭에는 실제 / ✦ 페리니아식 전환이 있어요 (페리니아식은 웹)", "발견의 역사를 새로 만들었어요. 발견자 카드가 뜨고, 중요한 시대에서 잠깐 멈춰요", "알고 계셨나요?에 카드 6장이 늘었어요. 알파·베타·감마의 정체, 다이아몬드도 탄다, 땅속 우라늄, 맨틀은 보석 공장 등이에요", "핵분열 연쇄 반응 창, 여러 가지 주기율표(멘델레예프 1871·자넷·벤피 나선·원통 등), 대기층 그림, 껍질이 녹아내린 원자(오가네손) 창이 생겼어요", "전자 구름을 WebGL 볼륨으로 새로 그렸어요. 크게 보기에서 오비탈 색도 고를 수 있어요", "도감이 610종이 됐어요. DNA 이중 나선, 엽록소 c, 히스티딘, 메틸수은, 나노후프·다이아만테인·벤즈발렌 같은 \"구조 이상한 놈\"들이 들어왔어요. 물은 이제 옥시데인으로 나와요", "꼬리표가 없던 물질에 전부 꼬리표를 달고, 라디칼·생활·소재·우주 꼬리표를 새로 만들었어요", "조합 칸에 원소를 310개까지 담을 수 있어요", "형석 광물 모형을 결정 안에 색띠가 겹친 모양으로 다시 만들었어요", "숨은 업적과 이스터에그가 잔뜩 늘었어요. 실패 500번 「찌그러진 전자」, 토스터 모드, U+B+N, λ ≡ Undefined…", "처음 온 사람을 위한 용어 풀이 팝업, 조합 힌트, 기능 안내가 생겼어요", "폰: 원자·정보 칸을 위로 밀어 올리는 시트, 생일 달력 겹침·깜빡임, 합성 과정 창 배치를 고쳤어요"],
+      en: ["The persona world finally has a name: \"Perinia//\". Hydrogen, sodium, Herb (magnesium), Og (oganesson) and Neon Café joined the persona codex with art (web)", "A 6-step window shows how superheavy elements are made. The target wheel is drawn from a real photo, banana windows and hand-written labels included", "Load atoms by mass number to run a superheavy experiment: 9 real lab recipes like 50 Ti + 249 Cf. The result tab shows the new element's electron cloud, the Synthesis tab fires the beam", "Elements 119, 120 and 121 arrived as teaser squares, search results and experiments. Sometimes they even pretend to be real", "Every element now has an IF card: \"What if there were no …?\", all 118 of them", "Lanthanides and actinides are now lanthanoids and actinoids. The empty group-3 squares became guide tiles that light up their row when you hover", "Real 3D tabs: aluminium foil (smooth ↔ crumpled), magnetite, fluorite (🔦 glows blue under UV) and hemoglobin", "Daily mix mission: one new substance a day, three hint levels, more stars for fewer hints", "Daily check-in: stamps, shields, titles, a shareable stamp card and your chemistry report", "Register your birthday to get a birthday-buddy element and an element birthday calendar", "Element of the day, ions and quizzes were redesigned. The ion tab has a Real / ✦ Perinia switch (Perinia on web)", "Discovery history was rebuilt with discoverer cards and pauses at key eras", "Six new Did-you-know cards: what alpha, beta and gamma really are, diamonds burn, uranium in soil, the mantle as a gem factory and more", "New windows: fission chain reaction, kinds of periodic tables (Mendeleev 1871, Janet, Benfey spiral, cylinder…), atmosphere layers, and oganesson's \"melted shells\"", "Electron clouds are now WebGL volumes, and the big orbital view lets you pick colours", "The codex now holds 610 entries: DNA double helix, chlorophyll c, histidine, methylmercury and weird structures like the nanohoop, diamantane and benzvalene. Water now shows as oxidane", "Every entry now has tags, with new Radical, Everyday, Materials and Space tags", "The mix tray holds up to 310 atoms", "The fluorite mineral model now shows colour bands nested inside the crystal", "Lots of new secret achievements and easter eggs: 500 failures \"The crumpled electron\", toaster mode, U+B+N, λ ≡ Undefined…", "Beginner helpers: word glossary pop-ups, live mix hints and feature tips", "Phone: swipe-up atom/info sheet, birthday calendar overlap and flicker, synthesis window layout fixed"],
+    },
+  },
   {
     v: '4.2.5', date: '2026-11-03',
     title: { ko: '퀄리티 오버 퀀티티', en: 'Quality over Quantity' },
