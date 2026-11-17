@@ -57945,5 +57945,77 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
   html.april #chips .cnt{font-family:"AprJW","Comic Sans MS","Gaegu",cursive!important;color:#000!important}
 </style>
 
+<style>
+  /* ═══ 120번 예고: 119 옆(2족 자리)에 하나 더 ═══ */
+  .tease119.t120{animation-delay:-2.1s}
+  .tease119.t-flash{animation:t8flash 1.6s ease-out 2}
+  @keyframes t8flash{0%{opacity:.9;box-shadow:0 0 0 2px #b197fc}100%{opacity:.15;box-shadow:0 0 0 0 transparent}}
+</style>
+<script>
+/* ═══════════════════════════════════════════════════
+   120번(운비닐륨) 예고 칸 + 둘 다 열면 「미래에서 온 자」
+   119는 기존 rxTease가 만든다. 120은 그 바로 옆 빈칸(2족 자리).
+   검색창에 119·120·Uue·Ubn·이름을 쳐도 칸이 반짝이고 확장표가 열린다.
+   ═══════════════════════════════════════════════════ */
+const RX_TEASE120 = {
+  ko: ['여기도 비어 있어요', '라듐 바로 아래 자리예요', '버클리에서 지금 만들려고 쏘는 중이에요', '…119번보다 먼저 나올지도요', '타이타늄 22 + 캘리포늄 98 = 120'],
+  en: ['This one is empty too', 'It sits right under radium', 'Berkeley is firing beams at it right now', '…it might even beat 119', 'Titanium 22 + californium 98 = 120'],
+};
+var RX_TEASE120_N = 0;
+function rxTease120(){
+  const s119 = document.querySelector('#grid .tease119:not(.t120)');
+  if(!s119 || document.querySelector('#grid .t120')) return;
+  const slot = s119.nextElementSibling;
+  if(!slot || !slot.classList.contains('spacer') || slot.dataset.n) return;
+  slot.classList.add('tease119', 't120');
+  slot.setAttribute('role', 'button');
+  slot.setAttribute('aria-label', LANG === 'en' ? 'Element 120 (not made yet)' : '120번 원소 (아직 없음)');
+  slot.innerHTML = '<span class="t-num">120</span><span class="t-sym">?</span>';
+  slot.addEventListener('click', e => {
+    e.stopPropagation();
+    const list = RX_TEASE120[LANG === 'en' ? 'en' : 'ko'];
+    const line = list[Math.min(RX_TEASE120_N, list.length - 1)];
+    RX_TEASE120_N++;
+    rxEvt('tease120');
+    RX_EXT.sel = 120;
+    try{ rxExtOpen(line); }catch(err){ rxToast('120', line); }
+  });
+  // 119 칸을 누르면 확장표가 119로 열리게 (120을 본 뒤에도)
+  if(!s119.dataset.t8){ s119.dataset.t8 = 1; s119.addEventListener('click', () => { RX_EXT.sel = 119; try{ rxExtPick(119); }catch(_){} }, true); }
+}
+{
+  const _bt = buildTable;
+  buildTable = function(){ const r = _bt.apply(this, arguments); try{ rxTease120(); }catch(e){} return r; };
+  try{ rxTease120(); }catch(e){}
+}
+/* 검색으로도 찾기 */
+{
+  const se = document.getElementById('search');
+  const M = { 119: /^(119|uue|ununennium|우누넨늄|운운엔늄)$/i, 120: /^(120|ubn|unbinilium|운비닐륨)$/i };
+  if(se) se.addEventListener('input', () => {
+    const v = se.value.trim();
+    for(const n of [119, 120]){
+      if(!M[n].test(v)) continue;
+      const c = document.querySelector(n === 120 ? '#grid .t120' : '#grid .tease119:not(.t120)');
+      if(!c) return;
+      c.classList.remove('t-flash'); void c.offsetWidth; c.classList.add('t-flash');
+      setTimeout(() => c.classList.remove('t-flash'), 3300);
+      try{ c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }catch(_){}
+      rxEvt(n === 120 ? 'tease120' : 'tease119');
+      return;
+    }
+  });
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id:'fut8', secret:true, need:() => rxEvtHas('tease119') && rxEvtHas('tease120'),
+    ko:['미래에서 온 자','아직 아무도 못 만든 8주기 두 칸을 다 열어 봤다. 스포 금지'],
+    en:['From the future','Opened both period-8 squares nobody has made yet. No spoilers'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+  try{ RX_ACH_IC.fut8 = '🛸'; }catch(e){}
+  try{ checkAch(); }catch(e){}
+}
+</script>
+
 </body>
 </html>
