@@ -38396,25 +38396,32 @@ function rxSunGem(){
   };
   Object.assign(SIM, {
     alpha: {
-      init: () => ({ t: 0, go: 0, gt: 0, tr: [[], []] }),
+      init: () => ({ t: 0, go: 0, gt: 0, tr: [[], []], cl: null }),
       tap: s => { if(s.go && s.t - s.gt > 4.2){ s.go = 0; s.tr = [[], []]; } else if(!s.go){ s.go = 1; s.gt = s.t; } },
       draw(c, s, W, H){
         const L = EN(), cx = W * .38, cy = H * .58, u = s.go ? s.t - s.gt : 0, strip = HQ.ease(u / 1.2);
         const fly = u > 1.4 ? HQ.ease((u - 1.4) / 1.4) : 0, ax = cx + fly * (W * .42), paper = W * .84;
-        // 전자 궤도 (기울어진 두 고리)
-        c.save(); c.globalAlpha = 1 - strip;
-        [[.0, 1], [1.1, -1]].forEach(([rot, dir], i) => {
-          c.save(); c.translate(cx, cy); c.rotate(rot);
-          c.strokeStyle = 'rgba(116,192,252,.28)'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(0, 0, 92, 30, 0, 0, 7); c.stroke(); c.restore();
-        });
-        c.restore();
-        [[.0, 1], [1.1, -1]].forEach(([rot, dir], i) => {
-          const a = s.t * 2.4 * dir + i * 2, ex0 = Math.cos(a) * 92, ey0 = Math.sin(a) * 30;
-          let ex = cx + ex0 * Math.cos(rot) - ey0 * Math.sin(rot), ey = cy + ex0 * Math.sin(rot) + ey0 * Math.cos(rot);
-          if(strip > 0){ const ang = Math.atan2(ey - cy, ex - cx), d = strip * W * .55; ex += Math.cos(ang) * d; ey += Math.sin(ang) * d; }
-          s.tr[i].push([ex, ey]); if(s.tr[i].length > 14) s.tr[i].shift();
-          if(ex > -20 && ex < W + 20 && ey > -20 && ey < H + 20){ HQ.trail(c, s.tr[i], 'rgba(116,192,252,1)', 4); HQ.glow(c, ex, ey, 16, 'rgba(116,192,252,1)', .5); HQ.sph(c, ex, ey, 6.5, '#74c0fc', '#0b2a55'); }
-        });
+        // 전자 구름 (헬륨 1s 오비탈: 공 모양, 가운데일수록 진함). 보어 모형처럼 궤도를 그리지 않는다
+        if(!s.cl){ s.cl = []; for(let i = 0; i < 420; i++){ const rr = -Math.log(1 - Math.random() * .985) * 22, th = Math.random() * 6.283; s.cl.push([Math.cos(th) * rr, Math.sin(th) * rr, Math.random() * 6.283]); } }
+        const cloudA = 1 - strip;
+        if(cloudA > .01){
+          HQ.glow(c, cx, cy, 95, 'rgba(116,192,252,1)', .22 * cloudA);
+          c.save(); c.globalCompositeOperation = 'lighter';
+          s.cl.forEach(([x, y, ph], i) => {
+            const tw = .5 + .5 * Math.sin(s.t * 3 + ph), push = strip * (60 + (i % 7) * 30), d = Math.hypot(x, y) || 1;
+            const px = cx + x + x / d * push, py = cy + y + y / d * push;
+            c.fillStyle = `rgba(150,205,255,${(.18 + .3 * tw) * cloudA})`; c.fillRect(px - 1, py - 1, 2, 2);
+          });
+          c.restore();
+          if(strip < .2){ c.setLineDash([3, 4]); c.strokeStyle = 'rgba(116,192,252,.35)'; c.lineWidth = 1; c.beginPath(); c.arc(cx, cy, 70, -.9, -.2); c.stroke(); c.setLineDash([]);
+            c.textAlign = 'left'; c.font = '700 10.5px system-ui'; c.fillStyle = 'rgba(160,205,255,.9)'; c.fillText(L ? '1s electron cloud (2 e⁻)' : '1s 전자 구름 (전자 2개)', cx + 60, cy - 52); }
+        }
+        // 떨어져 나가는 전자 2개
+        if(s.go && strip > 0 && strip < 1){
+          [[-1, -.4], [1, .5]].forEach(([dx, dy], i) => { const d = strip * W * .5, ex = cx + dx * (30 + d), ey = cy + dy * (20 + d * .4);
+            s.tr[i].push([ex, ey]); if(s.tr[i].length > 14) s.tr[i].shift();
+            HQ.trail(c, s.tr[i], 'rgba(116,192,252,1)', 4); HQ.glow(c, ex, ey, 16, 'rgba(116,192,252,1)', .55); HQ.sph(c, ex, ey, 6.5, '#74c0fc', '#0b2a55'); });
+        }
         // 종이 한 장 (알파선이 막히는 곳)
         if(u > 1.2){ const pa = Math.min(1, (u - 1.2) * 2); c.fillStyle = `rgba(240,236,224,${.85 * pa})`; c.beginPath(); c.moveTo(paper, cy - 70); c.lineTo(paper + 8, cy - 64); c.lineTo(paper + 8, cy + 74); c.lineTo(paper, cy + 68); c.closePath(); c.fill(); HQ.label(c, paper + 4, cy + 92, L ? 'a sheet of paper' : '종이 한 장', '', `rgba(231,236,244,${pa})`); }
         // 원자핵 → α
