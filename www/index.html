@@ -58146,6 +58146,7 @@ if(typeof ACH !== 'undefined'){
   #mTabs.shi-tabs > button:not(.shi-t){display:none!important}
   #mTabs .shi-t.sx:not(.on){color:#d0bfff}
   #mStage .shi-cv{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  #mStage .shi-cv.res{pointer-events:auto;cursor:grab;touch-action:none}
   #card.shi-on .rx-gauge,#card.shi-on #mMoreBtn,#card.shi-on #rxFailHint{display:none!important}
   #shiSide{margin:8px 0 4px;font-size:13px;line-height:1.6;opacity:0;transition:opacity .4s}
   #shiSide.on{opacity:1}
@@ -58228,6 +58229,8 @@ function rxShiTab(r){
   const card = document.getElementById('card'), st = document.getElementById('mStage');
   card.classList.add('shi-on'); st.classList.add('shi');
   const cv = document.createElement('canvas'); cv.className = 'shi-cv'; st.appendChild(cv); F.cv = cv;
+  rxCloudDrag(cv, RX_SHI_VIEW, () => RX_SHI_FX.mode === 'res', true);
+  cv.addEventListener('pointerdown', e => e.stopPropagation());
   const zb = EL.find(e => e.s === r[0]).n, zt = EL.find(e => e.s === r[2]).n;
   const side = document.createElement('div'); side.id = 'shiSide';
   document.getElementById('mState').after(side);
@@ -58241,6 +58244,7 @@ function rxShiMode(m){
   [['mTabShiR', m === 'res'], ['mTabShi', m === 'exp']].forEach(([id, v]) => { const b = document.getElementById(id); if(b){ b.classList.toggle('on', v); b.setAttribute('aria-selected', v); } });
   cancelAnimationFrame(F.raf); F.raf = 0;
   const nm = rxShiName(r[4]);
+  F.cv.classList.remove('res');
   if(m === 'exp'){
     document.getElementById('mName').textContent = en ? `${nm} synthesis` : `${nm} 합성 실험`;
     rxShiFire();
@@ -58252,20 +58256,43 @@ function rxShiMode(m){
   const real = r[5] === 'done';
   document.getElementById('mState').textContent = real ? (en ? 'Made for real' : '실제로 만든 원소') : (en ? 'In theory · nobody has made it' : '이론상 · 아직 아무도 못 만듦');
   const life = (en ? RX_SHI_LIFE_EN : RX_SHI_LIFE)[r[4]];
-  const sh = rxShiShells(r[4]).join(' · ');
+  const sh = rxShiCfg(r[4]);
   const side = document.getElementById('shiSide');
   side.innerHTML = `<span class="eqz">${side.dataset.eq}</span>` +
     `<b class="big ${real ? 'ok' : 'wow'}">${r[4]} ${nm}</b>` +
-    `${en ? 'Place' : '자리'}: ${rxShiPos(r[4])}<br>${en ? 'Electron shells' : '전자 껍질'}: ${sh}<br>` +
+    `${en ? 'Place' : '자리'}: ${rxShiPos(r[4])}<br>${en ? 'Electron configuration' : '전자 배치'}: ${sh}<br>` +
     `${en ? (real ? 'Half-life' : 'Expected lifetime') : (real ? '반감기' : '예상 수명')}: ${real ? '' : '~'}${life}` +
     `<span class="hist">${en ? r[7] : r[6]}</span>` +
     `<span class="hist" style="border-style:dashed">${en ? 'Fire the beam yourself in the ⚛ Synthesis tab. Not added to the codex.' : '⚛ 합성 실험 탭에서 직접 쏴 볼 수 있어요. 도감에는 안 올라가요.'}</span>`;
   side.classList.add('on');
   document.getElementById('mSub').textContent = en ? `${r[4]} protons · mass ${r[1] + r[3]}` : `양성자 ${r[4]}개 · 질량수 ${r[1] + r[3]}`;
-  F.t0 = performance.now();
+  F.t0 = performance.now(); F.cv.classList.add('res');
   F.raf = requestAnimationFrame(rxShiResTick);
 }
-/* 결과 그림: 새 원소의 보어 모형 (못 만든 건 점선으로 지지직) */
+/* 결과 그림: 새 원소의 전자 구름 (본 주기율표 원자 보기와 같은 엔진). 못 만든 건 가끔 지지직 */
+function rxShiCloud(z){
+  const F = RX_SHI_FX;
+  if(F.cloudZ === z && F.cloud) return F.cloud;
+  let subs = rxCfgFull(z <= 118 ? byNum[z].s : 'Og').map(x => ({ n: x.n, l: x.l, e: x.e }));
+  if(z > 118) subs.push({ n: 8, l: 's', e: z - 118 });
+  const total = innerWidth <= 760 ? 1300 : 1900, rnd = rxRand('shi:' + z + ':' + total);
+  const per = Math.max(5, Math.min(260, Math.round(total / z))), maxN = Math.max(...subs.map(x => x.n)), pts = [];
+  let idx = 0;
+  subs.forEach(sub => {
+    const Rn = (0.24 + 0.76 * sub.n / maxN) * 0.9, nR = 2 * RX_L[sub.l] + 1, part = nR > 1 && sub.e < 2 * nR;
+    for(let k = 0; k < sub.e; k++){
+      if(part){ const q = Math.max(1, Math.round(per / nR)); for(let m = 0; m < nR; m++) rxOrbPoints(pts, sub.n, sub.l, m, q, Rn, rnd, idx); idx++; }
+      else rxOrbPoints(pts, sub.n, sub.l, rxHundSlot(sub.l, k), per, Rn, rnd, idx++);
+    }
+  });
+  F.cloudZ = z; F.cloud = pts;
+  return pts;
+}
+function rxShiCfg(z){
+  if(z === 119) return '[Og] 8s¹'; if(z === 120) return '[Og] 8s²';
+  try{ return (PROPS[byNum[z].s].cfg || '').replace(/<[^>]+>/g, ''); }catch(e){ return ''; }
+}
+const RX_SHI_VIEW = { yaw: 0.4, pitch: -0.35, zoom: 1, idle: 0 };
 function rxShiResTick(now){
   const F = RX_SHI_FX, cv = F.cv;
   if(!cv || !cv.isConnected || F.mode !== 'res' || !modal.classList.contains('on')){ F.raf = 0; return; }
@@ -58274,31 +58301,14 @@ function rxShiResTick(now){
   if(!w) return;
   if(cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
   const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
-  const t = (now - F.t0) / 1000, z = F.r[4], real = F.r[5] === 'done', sh = rxShiShells(z);
-  const cx = w / 2, cy = h * .46, Rmax = Math.min(w * .46, h * .4), n = sh.length;
-  const glitch = !real && (t % 2.6) > 2.45;
-  const col = real ? '140,233,154' : '255,212,59';
-  c.save(); if(glitch) c.translate((Math.random() - .5) * 6, 0);
-  sh.forEach((k, i) => {
-    const rr = Rmax * (.22 + .78 * (i + 1) / n);
-    c.strokeStyle = `rgba(${col},${.16 + .1 * (i === n - 1)})`; c.lineWidth = 1;
-    if(!real && i === n - 1) c.setLineDash([4, 5]);
-    c.beginPath(); c.arc(cx, cy, rr, 0, 7); c.stroke(); c.setLineDash([]);
-    const sp = (.9 - i * .09) * (i % 2 ? -1 : 1);
-    for(let j = 0; j < k; j++){
-      const a = t * sp + j / k * Math.PI * 2;
-      c.fillStyle = i === n - 1 ? `rgba(${col},.95)` : 'rgba(116,192,252,.75)';
-      c.beginPath(); c.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, i === n - 1 ? 3.2 : 1.9, 0, 7); c.fill();
-    }
-  });
-  const nr = Rmax * .16, pulse = 1 + Math.sin(t * 5) * .04;
-  const g = c.createRadialGradient(cx - nr * .3, cy - nr * .3, nr * .1, cx, cy, nr * pulse);
-  g.addColorStop(0, '#fff'); g.addColorStop(.3, `rgb(${col})`); g.addColorStop(1, 'rgba(20,24,40,1)');
-  c.fillStyle = g; c.beginPath(); c.arc(cx, cy, nr * pulse, 0, 7); c.fill();
-  c.fillStyle = '#0b0d18'; c.font = `800 ${Math.round(nr * .62)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
-  c.fillText(rxShiSym(z), cx, cy + 1);
-  if(glitch){ c.globalCompositeOperation = 'lighter'; c.fillStyle = 'rgba(255,60,140,.25)'; c.fillRect(0, cy - 6, w, 3); c.fillStyle = 'rgba(60,220,255,.25)'; c.fillRect(0, cy + 14, w, 2); }
-  c.restore(); c.textBaseline = 'alphabetic';
+  const t = (now - F.t0) / 1000, z = F.r[4], real = F.r[5] === 'done';
+  const glitch = !real && (t % 2.6) > 2.42;
+  rxCloudSpin(RX_SHI_VIEW, now);
+  c.save();
+  if(glitch){ c.translate((Math.random() - .5) * 8, 0); c.globalAlpha = .7; }
+  rxCloudDraw(c, w, h * .9, rxShiCloud(z), RX_SHI_VIEW, { fog: true, nuc: real ? [140, 233, 154] : [255, 212, 59], nucR: 8 });
+  c.restore();
+  if(glitch){ c.fillStyle = 'rgba(255,60,140,.22)'; c.fillRect(0, h * .42, w, 3); c.fillStyle = 'rgba(60,220,255,.22)'; c.fillRect(0, h * .5, w, 2); }
 }
 function rxShiFire(){
   const F = RX_SHI_FX, r = F.r, T = rxShiT();
