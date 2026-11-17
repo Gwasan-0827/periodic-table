@@ -58474,7 +58474,8 @@ if(typeof ACH !== 'undefined'){
    ═══════════════════════════════════════════════════ */
 (function(){
   if(window.RX_APP_NO_ELP) return;
-  try{ const og = (window.RX_ELP_DATA || []).find(p => p.s === 'Og'); if(og && og.stk && !og.art) og.art = og.stk; }catch(e){}
+  try{ const og = (window.RX_ELP_DATA || []).find(p => p.s === 'Og'); if(og && og.stk && !og.art) og.art = og.stk;
+    if(og && og.bg){ document.documentElement.style.setProperty('--ogbg', 'url(' + og.bg + ')'); const st = document.createElement('style'); st.textContent = '.elp-card[data-s="Og"] .elp-thumb{background:var(--ogbg) center 45%/cover}'; document.head.appendChild(st); } }catch(e){}
   const IMG = ((window.RX_ELP_DATA || []).find(p => p.s === 'Og') || {}).stk || '';
   let timer = 0, sx = 0, sy = 0, fired = 0;
   const cell118 = t => { const c = t.closest && t.closest('#grid .cell'); return c && +c.dataset.n === 118 ? c : null; };
