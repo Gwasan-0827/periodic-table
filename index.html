@@ -58102,5 +58102,35 @@ if(typeof ACH !== 'undefined'){
 }
 </script>
 
+<script>
+/* ═══ 말장난: U + B + N = "Ubn" (운비닐륨 기호). 실패지만 토스트로 한마디 + 숨은 업적 ═══ */
+{
+  const _nf = noteFail;
+  noteFail = function(){
+    const r = _nf.apply(this, arguments);
+    try{
+      const s = mix.map(n => byNum[n].s);
+      if(s.length === 3 && ['U', 'B', 'N'].every(x => s.filter(y => y === x).length === 1)){
+        const en = LANG === 'en';
+        setTimeout(() => rxToast(en ? 'U + B + N = Ubn?!' : 'U + B + N = Ubn?!',
+          en ? 'Unbinilium! …just the symbol, sadly. Add up the protons, though: 92 + 5 + 7 = 104, rutherfordium'
+             : '운비닐륨 완성!! …은 기호만ㅋ 근데 양성자를 다 합치면 92 + 5 + 7 = 104, 러더포듐이에요',
+          en ? 'That is not how fusion works either' : '핵융합도 그렇게는 안 돼요'), 700);
+        rxEvt('ubnpun');
+      }
+    }catch(e){}
+    return r;
+  };
+}
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  const a = { id:'ubnpun', secret:true, need:() => rxEvtHas('ubnpun'),
+    ko:['기호 연금술사','U + B + N으로 운비닐륨을 만들려고 했다. 기호는 맞음'],
+    en:['Symbol alchemist','Tried to make unbinilium out of U + B + N. The symbol checks out'] };
+  if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+  try{ RX_ACH_IC.ubnpun = '🔤'; }catch(e){}
+}
+</script>
+
 </body>
 </html>
