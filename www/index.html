@@ -57775,5 +57775,164 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 })();
 </script>
 
+<style>
+  /* ═══ 오늘의 조합 미션: 매일 힌트 하나 → 그 물질을 만들면 도장 ═══ */
+  .msn{position:relative;margin-top:12px;border-radius:16px;padding:14px 15px 13px;overflow:hidden;
+    background:radial-gradient(120% 90% at 100% 0%,rgba(255,212,59,.13),transparent 55%),linear-gradient(160deg,#171b30,#0e111e);border:1px solid rgba(255,212,59,.32)}
+  .msn::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(255,255,255,.02) 14px 15px)}
+  .msn .hd{position:relative;display:flex;align-items:center;gap:8px}
+  .msn .hd b{font:800 10.5px/1 ui-monospace,monospace;letter-spacing:.18em;color:#ffd43b}
+  .msn .hd span{margin-left:auto;font:700 10.5px/1 ui-monospace,monospace;color:rgba(231,236,244,.55)}
+  .msn .q{position:relative;margin:9px 0 0;font-size:16px;font-weight:800;line-height:1.45;color:#fff;word-break:keep-all}
+  .msn .hs{position:relative;display:grid;gap:6px;margin-top:10px}
+  .msn .h{display:flex;gap:8px;align-items:flex-start;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:12.8px;line-height:1.5;color:rgba(231,236,244,.88);word-break:keep-all;animation:msnIn .35s cubic-bezier(.2,1.2,.4,1) both}
+  .msn .h i{flex:none;font-style:normal;font:800 10px/1.9 ui-monospace,monospace;color:#ffd43b;letter-spacing:.06em}
+  .msn .h .chips{display:inline-flex;gap:4px;flex-wrap:wrap}
+  .msn .h .chips em{font-style:normal;display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 5px;border-radius:6px;font:800 12px/1 Kanit,system-ui,sans-serif;color:#0b0d18;background:var(--cc,#9aa8ff)}
+  @keyframes msnIn{from{opacity:0;transform:translateY(6px)}}
+  .msn .bt{position:relative;display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .msn .bt button{flex:1;min-width:120px;font:inherit;font-size:12.8px;font-weight:800;padding:10px 12px;border-radius:11px;cursor:pointer;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#e7ecf4}
+  .msn .bt button.go{border:0;color:#1b1600;background:linear-gradient(90deg,#fff1b8,#ffd43b);box-shadow:0 0 18px rgba(255,212,59,.35)}
+  .msn .bt button:disabled{opacity:.4;cursor:default}
+  .msn .st{position:relative;display:flex;gap:14px;margin-top:10px;font-size:11.5px;color:rgba(231,236,244,.6)}
+  .msn .st b{color:#fff;font-weight:800}
+  .msn.done{border-color:rgba(120,230,160,.45);background:radial-gradient(120% 90% at 100% 0%,rgba(120,230,160,.14),transparent 55%),linear-gradient(160deg,#152321,#0e1418)}
+  .msn.done .hd b{color:#8ce99a}
+  .msn .won{position:relative;display:flex;align-items:center;gap:12px;margin-top:10px}
+  .msn .won .f{font:800 22px/1 Kanit,system-ui,sans-serif;color:#fff}
+  .msn .won .n{font-size:14px;font-weight:800}
+  .msn .won .stars{margin-left:auto;font-size:20px;letter-spacing:2px;color:#ffd43b;text-shadow:0 0 10px rgba(255,212,59,.6)}
+  .msn .won .stars s{text-decoration:none;color:rgba(255,255,255,.15);text-shadow:none}
+  .msn-chip{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;color:#ffe08a;background:rgba(255,212,59,.1);border:1px solid rgba(255,212,59,.35)}
+  /* 미션 완료 연출 */
+  #msnFx{position:fixed;inset:0;z-index:2147482940;pointer-events:none;display:grid;place-items:center}
+  #msnFx .c{padding:20px 26px 18px;border-radius:22px;text-align:center;color:#fff;font-family:system-ui,sans-serif;
+    background:radial-gradient(120% 80% at 50% 0%,rgba(255,212,59,.28),transparent 60%),linear-gradient(180deg,#1b1f38,#0d1020);border:1px solid rgba(255,212,59,.55);
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(255,212,59,.3);animation:msnPop 2.6s cubic-bezier(.2,1.3,.3,1) forwards}
+  @keyframes msnPop{0%{opacity:0;transform:scale(.6) translateY(20px)}12%{opacity:1;transform:none}82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-14px)}}
+  #msnFx .k{font:800 11px/1 ui-monospace,monospace;letter-spacing:.3em;color:#ffd43b}
+  #msnFx .t{margin-top:10px;font:900 22px/1.2 system-ui,sans-serif}
+  #msnFx .s{margin-top:8px;font-size:26px;letter-spacing:4px;color:#ffd43b;text-shadow:0 0 14px rgba(255,212,59,.7)}
+  #msnFx .s s{text-decoration:none;color:rgba(255,255,255,.15);text-shadow:none}
+  #msnFx .m{margin-top:6px;font-size:12.5px;color:rgba(231,236,244,.7)}
+</style>
+<script>
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const P = (k, e) => EN() ? e : k;
+  const KEY = 'pt_mission';
+  const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const TODAY = () => ymd(rxDayDate());
+  const load = () => { try{ return Object.assign({ d: {}, h: {} }, JSON.parse(localStorage.getItem(KEY) || '{}')); }catch(_){ return { d: {}, h: {} }; } };
+  const save = v => { try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(_){} };
+  const hash = s => { let h = 2166136261; for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const parseKey = k => { const o = {}; String(k).split('+').forEach(t => { const m = t.match(/^([A-Z][a-z]?)(\d*)$/); if(m) o[m[1]] = (o[m[1]] || 0) + (+m[2] || 1); }); return o; };
+
+  // 미션 후보: 바로 조합 가능한 것 (이성질체 겹침 없음, 원소 4종 이하, 원자 40개 이하, 설명 있음)
+  let POOL = null;
+  function pool(){
+    if(POOL) return POOL;
+    const cnt = {}; allEntries().forEach(e => { if(e.exact) cnt[e.key] = (cnt[e.key] || 0) + 1; });
+    POOL = allEntries().filter(e => {
+      if(!e.exact || cnt[e.key] !== 1 || !e.sub || e.sub.length < 4) return false;
+      const c = parseKey(e.key), syms = Object.keys(c), tot = syms.reduce((s, k) => s + c[k], 0);
+      if(!syms.length || syms.length > 4 || tot > 40 || tot < 2) return false;
+      try{ if(window.RX_TAGSET && RX_TAGSET.pred && RX_TAGSET.pred.has(e.name)) return false; }catch(_){}
+      if(e.sub.includes(e.name)) return false;          // 설명에 이름이 그대로 있으면 힌트가 아니라 정답
+      return true;
+    }).sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    return POOL;
+  }
+  function today(){
+    const p = pool(); if(!p.length) return null;
+    const t = TODAY(); let i = hash(t + '·msn') % p.length;
+    // 어제와 같은 게 나오면 하나 비켜 가기
+    const y = new Date(rxDayDate().getTime() - 864e5), yi = hash(ymd(y) + '·msn') % p.length; if(i === yi) i = (i + 1) % p.length;
+    return p[i];
+  }
+  const elCol = s => { try{ const e = EL.find(x => x.s === s); return cssv(CAT[e.c].v); }catch(_){ return '#9aa8ff'; } };
+  const tagNames = name => { try{ const T = rxHazT().tags, tg = rxDexTagsOf(name, '').filter(k => k !== 'haz' && T[k]); return tg.map(k => T[k]); }catch(_){ return []; } };
+  function hints(m){
+    const L = EN() ? 'en' : 'ko', c = parseKey(m.key), syms = Object.keys(c);
+    const sub = EN() ? ((REC_EN[m.name] || [])[1] || m.sub) : m.sub;
+    const tg = tagNames(m.name);
+    return [
+      { k: P('힌트 1', 'HINT 1'), h: `"${sub}"` },
+      { k: P('힌트 2', 'HINT 2'), h: `${P('들어가는 원소', 'Elements')}: <span class="chips">${syms.map(s => `<em style="--cc:${elCol(s)}">${s}</em>`).join('')}</span>${tg.length ? ` · ${P('분류', 'Tags')}: ${tg.slice(0, 2).join(', ')}` : ''}` },
+      { k: P('힌트 3', 'HINT 3'), h: `${P('화학식', 'Formula')}: <b style="font:800 15px Kanit,system-ui">${m.formula}</b>` } ];
+  }
+  function stats(a){
+    let streak = 0; const d = new Date(rxDayDate());
+    if(!a.d[ymd(d)]) d.setDate(d.getDate() - 1);
+    while(a.d[ymd(d)]){ streak++; d.setDate(d.getDate() - 1); }
+    return { streak, total: Object.keys(a.d).length };
+  }
+  const starHTML = n => '★'.repeat(n) + `<s>${'★'.repeat(3 - n)}</s>`;
+  const nameOf = m => EN() ? ((REC_EN[m.name] || [])[0] || m.name) : m.name;
+
+  function cardHTML(){
+    const m = today(); if(!m) return '';
+    const a = load(), t = TODAY(), done = a.d[t], hn = Math.max(1, a.h[t] || 1), s = stats(a), H = hints(m);
+    if(done) return `<div class="msn done"><div class="hd"><b>🎯 ${P('오늘의 조합 미션 · 완료', 'DAILY MIX · CLEARED')}</b><span>${t}</span></div>
+      <div class="won"><div class="f">${m.formula}</div><div class="n">${nameOf(m)}</div><div class="stars">${starHTML(done.s)}</div></div>
+      <div class="st"><span>${P('미션 연속', 'Streak')} <b>${s.streak}</b>${P('일', 'd')}</span><span>${P('총 완료', 'Cleared')} <b>${s.total}</b></span><span>${P('내일 새 미션이 열려요', 'New mission tomorrow')}</span></div></div>`;
+    return `<div class="msn"><div class="hd"><b>🎯 ${P('오늘의 조합 미션', 'DAILY MIX MISSION')}</b><span>${t}</span></div>
+      <div class="q">${P('오늘의 물질을 조합해서 만들어 보세요!', 'Make today\'s mystery substance!')}</div>
+      <div class="hs">${H.slice(0, hn).map(x => `<div class="h"><i>${x.k}</i><div>${x.h}</div></div>`).join('')}</div>
+      <div class="bt"><button type="button" class="more"${hn >= 3 ? ' disabled' : ''}>💡 ${P(`힌트 더 보기 (${hn}/3)`, `More hints (${hn}/3)`)}</button><button type="button" class="go">⚗ ${P('조합하러 가기', 'Go mix')}</button></div>
+      <div class="st"><span>${P('힌트 1개로 맞히면 ★★★', '★★★ with 1 hint')}</span><span>${P('미션 연속', 'Streak')} <b>${s.streak}</b>${P('일', 'd')}</span></div></div>`;
+  }
+  function wire(host){
+    const more = host.querySelector('.msn .more'), go = host.querySelector('.msn .go');
+    more && more.addEventListener('click', () => { const a = load(), t = TODAY(); a.h[t] = Math.min(3, (a.h[t] || 1) + 1); save(a); try{ SFX.tick(); }catch(_){} refresh(); });
+    go && go.addEventListener('click', () => { try{ SFX.pick(); }catch(_){} try{ qEnd(); }catch(_){ quizEl.classList.remove('on'); } setTimeout(() => document.querySelector('#mixBtn, .mixbar, #mixBar')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 80); });
+  }
+  function refresh(){
+    const box = document.querySelector('#quiz .td2'); if(!box) return;
+    let host = box.querySelector('.msn-host');
+    if(!host){ host = document.createElement('div'); host.className = 'msn-host'; const row = box.querySelector('.td3-row'); (row || box.lastElementChild || box).after ? (row ? row.after(host) : box.appendChild(host)) : box.appendChild(host); }
+    host.innerHTML = cardHTML(); wire(host);
+  }
+  // 오늘 화면에 카드
+  if(typeof renderToday === 'function'){
+    const _rt = renderToday;
+    renderToday = function(){ const r = _rt.apply(this, arguments); try{ setTimeout(refresh, 0); }catch(e){ console.warn('mission', e); } return r; };
+  }
+  // 조합 결과가 미션 물질이면 완료
+  const _rr = rxRender;
+  rxRender = function(kind){
+    const r = _rr.apply(this, arguments);
+    try{
+      if(kind === 'fail') return r;
+      const m = today(); if(!m) return r;
+      const nm = ((document.getElementById('mName') || {}).textContent || '').trim();
+      if(nm !== m.name && nm !== nameOf(m)) return r;
+      const a = load(), t = TODAY(); if(a.d[t]) return r;
+      const hn = Math.max(1, a.h[t] || 1), stars = 4 - hn;
+      a.d[t] = { n: m.name, s: stars }; save(a);
+      setTimeout(() => celebrate(m, stars, stats(load())), 900);
+    }catch(e){ console.warn('mission', e); }
+    return r;
+  };
+  function celebrate(m, stars, s){
+    document.getElementById('msnFx')?.remove();
+    const fx = document.createElement('div'); fx.id = 'msnFx';
+    fx.innerHTML = `<div class="c"><div class="k">🎯 ${P('오늘의 미션 완료!', 'MISSION CLEAR!')}</div><div class="t">${nameOf(m)}</div><div class="s">${starHTML(stars)}</div><div class="m">${P(`미션 ${s.streak}일 연속 · 총 ${s.total}개`, `${s.streak}-day streak · ${s.total} total`)}</div></div>`;
+    document.documentElement.appendChild(fx); setTimeout(() => fx.remove(), 2700);
+    try{ rxBell(988, .3, .06, 0); rxBell(1319, .35, .05, .1); rxBell(1568, .5, .05, .2); }catch(_){ try{ SFX.ok(); }catch(__){} }
+  }
+  // 아침 출석 알림 창에도 오늘의 미션 한 줄
+  new MutationObserver(() => {
+    const c = document.querySelector('#apFx .card'); if(!c || c.querySelector('.msn-chip')) return;
+    const m = today(); if(!m || load().d[TODAY()]) return;
+    const sub = EN() ? ((REC_EN[m.name] || [])[1] || m.sub) : m.sub;
+    const row = c.querySelector('.row'); if(!row) return;
+    const ch = document.createElement('div'); ch.className = 'msn-chip'; ch.innerHTML = `🎯 ${P('오늘의 미션', 'Today\'s mission')}: "${sub}"`;
+    row.after(ch);
+  }).observe(document.body, { childList: true });
+  window.rxMission = { today, load, refresh };
+})();
+</script>
+
 </body>
 </html>
