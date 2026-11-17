@@ -53196,13 +53196,16 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     // 4등분 이음매
     c.strokeStyle = 'rgba(40,44,62,.5)'; c.lineWidth = 1.2;
     for(let q = 0; q < 4; q++){ const a = q * Math.PI / 2; c.beginPath(); c.moveTo(...P2(a, Rw * .5)); c.lineTo(...P2(a, Rw)); c.stroke(); }
-    // 테두리 홈 (실물 사진: 이음매 끝마다 작은 네모 홈 + 안쪽 고정 탭)
+    // 테두리 홈 (실물 사진: 이음매 끝마다 좁은 네모 홈, 입체: 바닥 + 밝은 벽 + 그림자 벽)
+    { const hw = Rw * .022, d0 = Rw * .935;
     for(let q = 0; q < 4; q++){ c.save(); c.rotate(q * Math.PI / 2);
-      c.fillStyle = '#10131f'; c.fillRect(Rw * .9, -Rw * .055, Rw * .12, Rw * .11);
-      c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(Rw * .9, -Rw * .055, Rw * .025, Rw * .11);
-      c.fillStyle = metal(c, Rw * .93, -Rw * .03, Rw * .99, Rw * .03, '#7d8499', '#e6e9f1'); c.fillRect(Rw * .94, -Rw * .028, Rw * .045, Rw * .056);
-      c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = .8; c.beginPath(); c.moveTo(Rw * 1.01, -Rw * .055); c.lineTo(Rw * .9, -Rw * .055); c.lineTo(Rw * .9, Rw * .055); c.lineTo(Rw * 1.01, Rw * .055); c.stroke();
-      c.restore(); }
+      c.fillStyle = '#1a1e2c'; c.fillRect(d0, -hw, Rw * 1.01 - d0, hw * 2);                       // 홈 바닥 (어두움)
+      const wa = ((q * Math.PI / 2 + th) % 6.283 + 6.283) % 6.283, lit = Math.sin(wa) < 0;          // 빛은 위쪽에서
+      c.fillStyle = 'rgba(235,240,250,.75)'; c.fillRect(d0, lit ? -hw : hw - Rw * .006, Rw * 1.01 - d0, Rw * .006);   // 빛 받는 벽
+      c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(d0, lit ? hw - Rw * .009 : -hw, Rw * 1.01 - d0, Rw * .009);          // 그늘진 벽
+      c.fillStyle = 'rgba(0,0,0,.6)'; c.fillRect(d0, -hw, Rw * .006, hw * 2);                        // 안쪽 끝 벽
+      c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = .6; c.beginPath(); c.moveTo(Rw, -hw - .5); c.lineTo(d0 - .5, -hw - .5); c.lineTo(d0 - .5, hw + .5); c.lineTo(Rw, hw + .5); c.stroke();
+      c.restore(); } }
     const winPath = q => { const a0 = q * Math.PI / 2 + gapA, a1 = (q + 1) * Math.PI / 2 - gapA; c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(...P2(a1, rm), rc, a1, a1 + Math.PI); c.arc(0, 0, ri, a1, a0, true); c.arc(...P2(a0, rm), rc, a0 + Math.PI, a0); c.closePath(); return [a0, a1]; };
     for(let q = 0; q < 4; q++){
       // 창 홈 (파인 테두리)
@@ -53242,6 +53245,11 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     for(let q = 0; q < 6; q++){ const a = q * Math.PI / 3; c[q ? 'lineTo' : 'moveTo'](...P2(a, Rw * .13)); } c.closePath(); c.fill(); c.strokeStyle = 'rgba(40,44,60,.5)'; c.stroke();
     c.fillStyle = '#d3d7e2'; c.beginPath(); c.arc(0, 0, Rw * .065, 0, 6.283); c.fill();
     c.restore();
+    // 옆면에 보이는 홈 (앞쪽 반바퀴에 있을 때만)
+    for(let q = 0; q < 4; q++){ const ang = q * Math.PI / 2 + th, sa = Math.sin(ang); if(sa <= .05) continue;
+      const x = tx + Math.cos(ang) * Rw, y = cy + sa * Rw * KT, w = Math.max(1.5, Rw * .044 * sa);
+      const g = c.createLinearGradient(x - w, 0, x + w, 0); g.addColorStop(0, '#0c0f18'); g.addColorStop(.5, '#2a2f42'); g.addColorStop(1, '#0c0f18');
+      c.fillStyle = g; c.fillRect(x - w / 2, y - 1, w, Math.max(6, Rw * .07) + 1); }
     // 헤어라인 금속 하이라이트: 빛은 고정이라 바퀴가 돌아도 그대로 (선반 결 특유의 나비 모양 반사)
     if(c.createConicGradient){ c.save(); c.translate(tx, cy); c.scale(1, KT); c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.clip();
       const cg = c.createConicGradient(-Math.PI * .75, 0, 0); [[0, 0], [.05, .22], [.1, 0], [.5, 0], [.55, .14], [.6, 0], [1, 0]].forEach(([o, al]) => cg.addColorStop(o, `rgba(255,255,255,${al})`));
