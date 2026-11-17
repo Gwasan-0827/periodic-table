@@ -37971,7 +37971,18 @@ function rxSunGem(){
         fact: 'A diamond is a crystal of pure carbon, the same element as charcoal. Heat it above roughly 800–900 °C in air and it burns into <b>carbon dioxide</b>, leaving nothing behind.',
         why: 'So diamonds aren\'t forever?',
         ans: '"A diamond is forever" is an advertising slogan. At room temperature it is so hard and stable it may as well be, but in a fire it is just carbon. In 1772 Lavoisier burned a diamond with a giant lens and got carbon dioxide; in 1796 Tennant proved diamond is pure carbon.',
-        hint: 'Tap to light it' } });
+        hint: 'Tap to light it' } }
+    ,{ id: 'uranium',
+      ko: { t: '땅에 우라늄이 있다고요? 네, 마당 흙에도 있어요.',
+        fact: '우라늄은 특별한 광산에만 있는 게 아니에요. 지각에 평균 약 <b>100만분의 2~3</b> 섞여 있어서, 그냥 흙이나 돌 <b>1톤마다 우라늄이 2~3 g</b>쯤 들어 있어요. 화강암엔 조금 더 많고, 바닷물에도 아주 조금 녹아 있어요. 광산은 이게 수백~수천 배 몰려 있는 곳일 뿐이에요.',
+        why: '그럼 위험하지 않아요?',
+        ans: '이 정도로 흩어져 있으면 괜찮아요. 오히려 하는 일이 있어요. 땅속 우라늄, 토륨, 칼륨-40이 천천히 붕괴하면서 내는 열이 <b>지구 속 열의 절반쯤</b>을 채워서, 지구 속을 아직 뜨겁게 유지해 줘요. 앞 카드의 헬륨도 여기서 나오고요. 다만 붕괴하다 생기는 기체 라돈이 지하실처럼 막힌 곳에 고일 수 있어서, 가끔 환기해 주는 게 좋아요.',
+        hint: '눌러서 흙 1톤에서 우라늄 골라내기' },
+      en: { t: 'Uranium in the ground? Yes, even in your garden soil.',
+        fact: 'Uranium is not just in special mines. Earth\'s crust averages about <b>2–3 parts per million</b>, so ordinary soil and rock hold roughly <b>2–3 g of uranium per tonne</b>. Granite has a bit more, and seawater has a trace dissolved. A mine is just a place where it is concentrated hundreds to thousands of times.',
+        why: 'Isn\'t that dangerous?',
+        ans: 'Spread that thin, it is fine, and it does a job: heat from uranium, thorium and potassium-40 slowly decaying underground supplies <b>roughly half of Earth\'s internal heat</b>, keeping the inside of the planet hot. The helium on the last card comes from here too. One catch: radon gas from the decay chain can collect in closed spaces like basements, so airing them out helps.',
+        hint: 'Tap to pick the uranium out of a tonne of soil' } });
   const lsG = () => { try{ return Math.min(CARDS.length - 1, +localStorage.getItem('pt_dyk') || 0); }catch(_){ return 0; } };
   const lsS = v => { try{ localStorage.setItem('pt_dyk', v); }catch(_){} };
   let cur = lsG(), back = false, raf = 0, sim = null, mode = 'apo';
@@ -38280,6 +38291,32 @@ function rxSunGem(){
         c.fillText(u >= 1 ? (L ? '…gone. All CO₂.' : '…사라졌다. 전부 CO₂') : s.go ? 'C + O₂ → CO₂' : (L ? 'Diamond = pure carbon' : '다이아몬드 = 순수한 탄소'), cx, H * .16);
       } },
   });
+  Object.assign(SIM, { uranium: {
+      init: () => ({ t: 0, go: 0, gt: 0, gr: null }),
+      tap: s => { if(s.go && s.t - s.gt > 3.5){ s.go = 0; } else if(!s.go){ s.go = 1; s.gt = s.t; } },
+      draw(c, s, W, H){
+        const L = EN(), hx = W * .3, hy = H * .78, hw = Math.min(150, W * .26), u = s.go ? Math.min(1, (s.t - s.gt) / 2.6) : 0;
+        if(!s.gr){ s.gr = []; for(let i = 0; i < 260; i++){ const a = Math.random(), b = Math.random(); const x = (a * 2 - 1) * hw, y = -Math.sqrt(Math.max(0, 1 - a * a * 0) ) * 0; s.gr.push([x * (1 - b * .2), -b * (hw * .75) * (1 - Math.abs(x) / hw) , ['#8a5a3c', '#6f4a33', '#a0714f', '#5c3d2a', '#7d6a55'][i % 5]]); } }
+        // 흙 더미
+        c.fillStyle = '#4a3324'; c.beginPath(); c.moveTo(hx - hw, hy); c.quadraticCurveTo(hx, hy - hw * 1.5, hx + hw, hy); c.closePath(); c.fill();
+        s.gr.forEach(g => { c.fillStyle = g[2]; c.fillRect(hx + g[0] - 1.5, hy + g[1] - 1.5, 3, 3); });
+        // 노란 우라늄 알갱이들이 튀어나와 오른쪽 접시로
+        const px = W * .74, py = H * .74;
+        for(let i = 0; i < 14; i++){
+          const d = Math.max(0, Math.min(1, u * 1.6 - i * .045)); if(d <= 0) continue;
+          const sx = hx + ((i * 37) % 100 - 50) * hw / 70, sy = hy - 20 - (i % 4) * 12;
+          const x = sx + (px - sx) * d, y = sy + (py - 8 - sy) * d - Math.sin(d * Math.PI) * 70;
+          c.fillStyle = d >= 1 ? '#ffd43b' : `rgba(255,212,59,${.6 + .4 * d})`; c.beginPath(); c.arc(x + (d >= 1 ? (i % 5 - 2) * 3 : 0), y - (d >= 1 ? Math.floor(i / 5) * 3 : 0), 2.6, 0, 7); c.fill();
+        }
+        c.strokeStyle = 'rgba(223,227,255,.6)'; c.lineWidth = 2; c.beginPath(); c.ellipse(px, py, 34, 7, 0, 0, Math.PI); c.stroke();
+        c.textAlign = 'center'; c.font = '800 13px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
+        c.fillText(L ? 'Soil · 1 tonne' : '흙 1톤', hx, hy + 18);
+        c.fillStyle = u >= 1 ? '#ffd43b' : 'rgba(255,212,59,.35)'; c.fillText(L ? 'Uranium ≈ 2–3 g' : '우라늄 약 2~3 g', px, py + 24);
+        c.font = '600 11px system-ui,sans-serif'; c.fillStyle = '#8e99ad';
+        c.fillText(L ? 'about a coin\'s weight' : '작은 동전 하나 무게쯤', px, py + 40);
+        c.font = '800 14px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
+        c.fillText(L ? '2–3 in every million' : '100만 중 2~3', W * .5, H * .15);
+      } } });
   function render(){
     stop();
     setFocus(false);
