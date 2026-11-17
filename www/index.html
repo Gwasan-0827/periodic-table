@@ -58314,5 +58314,17 @@ if(typeof ACH !== 'undefined'){
 }
 </script>
 
+<style>
+  /* ═══ 조합 결과 머리의 원소 타일: 흰 종이 → 표 칸처럼 어두운 유리 ═══ */
+  body:not(.light) #mIn.rx-head .rt{
+    background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--cc) 22%,transparent),transparent 70%),linear-gradient(180deg,#1b2130,#10141d);
+    border:1px solid color-mix(in srgb,var(--cc) 55%,#2a3242);
+    box-shadow:inset 0 -3px 0 var(--cc),inset 0 1px 0 rgba(255,255,255,.08),0 4px 14px rgba(0,0,0,.45),0 0 14px color-mix(in srgb,var(--cc) 22%,transparent);
+  }
+  body:not(.light) #mIn.rx-head .rt b{color:#f1f4fa;text-shadow:0 0 8px color-mix(in srgb,var(--cc) 55%,transparent)}
+  body:not(.light) #mIn.rx-head .rt i{color:color-mix(in srgb,var(--cc) 70%,#c9d2e3)}
+  body:not(.light) #mIn.rx-head .rt em{background:#0d1018;color:#fff;border-color:var(--cc)}
+</style>
+
 </body>
 </html>
