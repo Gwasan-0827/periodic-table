@@ -47625,13 +47625,13 @@ void main(){
       en:{ nm:'Sodium', tag:'Soft-hearted and always sleepy. Loses an electron and still smiles.', chips:['Group 1 · alkali metal','Soft','Naps','NaCl'],
         prof:[['Name','Sodium'],['Atomic mass','22.990'],['Group','Group 1 · alkali metal · period 3'],['Height','About 176 cm'],['Age','Early 20s (stopped growing)'],['Hair','Black with yellow streaks, yellow loop ahoge'],['Personality','Soft, laid-back, a little lazy, dozes off easily'],['Likes','The Creator, naps, warm places · experiments (flame tests), salt (NaCl)'],['Dislikes','Water (dangerous reaction!) · too much activity, the cold']],
         facts:['Yellow eyes, Na hair clip','Black zip hoodie with yellow stripes, white tee, black cargo pants','A metal soft enough to cut with a knife','Burns bright yellow in a flame test (sodium street lamps glow orange)','Reacts violently with water, so he hates it','Lead of Ep.1 "Oh Dear": loses an electron to Chlorine and forms NaCl'], skills:[], q:'Oh dear…' } },
-    { s:'Mg', wip:true, c:'#e9ecf5', ic:'✨',
-      ko:{ nm:'마그네슘', tag:'겉보기엔 남자 같지만 사실은 여자. 톰보이예요.', chips:['알칼리 토금속','톰보이'],
-        prof:[['이름','마그네슘'],['특징','톰보이'],['소속','2족 · 알칼리 토금속']],
-        facts:['불에 타면 눈부신 흰빛을 내요'], skills:[], q:'' },
-      en:{ nm:'Magnesium', tag:'Looks like a boy, actually a girl. Tomboy.', chips:['Alkaline earth','Tomboy'],
-        prof:[['Name','Magnesium'],['Trait','Tomboy'],['Group','Group 2 · alkaline earth metal']],
-        facts:['Burns with a dazzling white light'], skills:[], q:'' } },
+    { s:'Mg', c:'#a9e34b', ic:'🌱', stk:'', art:'', bg:'',
+      ko:{ nm:'허브 (마그네슘)', tag:'허브//가든의 정원사. 평소에도 눈이 하트예요. 이유는 본인도 몰라요.', chips:['2족 · 알칼리 토금속','정원사','하트눈','허브//가든'],
+        prof:[['이름','마그네슘'],['애칭','허브'],['원자량','24.305'],['소속','2족 · 알칼리 토금속 · 3주기'],['직업','정원사'],['공간','허브//가든'],['좋아하는 것','광합성 · 허브 녹차, 허브 롤케이크 (네온 카페 메뉴)'],['싫어하는 것','산소 원자 (불이 붙으면 하얗게 불태워요)']],
+        facts:['평소 눈이 하트예요. 왜 그런지는 본인도 몰라요','머리핀이 엽록소 분자예요. 가운데 연두색이 마그네슘, 둘레의 파란색 4개가 질소예요. 진짜 엽록소도 한가운데에 마그네슘이 들어가요','식물을 재배할 때마다 어째선지 허브 본인이 땅에 심어져요 (??)','공기 중에선 겉에 얇은 산화막이 생겨서 멀쩡해요. 하지만 불이 붙으면 눈부신 흰빛을 내며 하얀 재(MgO)가 돼요. "하얗게 불태웠다" 현실 고증','이 흰빛으로 옛날엔 사진 플래시를 터뜨렸어요'], skills:[], q:'오늘도 광합성~' },
+      en:{ nm:'Herb (Magnesium)', tag:'The gardener of Herb // Garden. Her eyes are hearts even on a normal day. Nobody knows why, not even her.', chips:['Group 2 · alkaline earth','Gardener','Heart eyes','Herb // Garden'],
+        prof:[['Name','Magnesium'],['Nickname','Herb'],['Atomic mass','24.305'],['Group','Group 2 · alkaline earth metal · period 3'],['Job','Gardener'],['Place','Herb // Garden'],['Likes','Photosynthesis · herb green tea, herb roll cake (Neon Café menu)'],['Dislikes','Oxygen atoms (once lit, she burns up white)']],
+        facts:['Her eyes are hearts by default. She has no idea why','Her hair clip is a chlorophyll molecule: the light-green center is magnesium, the four blue atoms around it are nitrogen. Real chlorophyll has magnesium right in the middle too','Every time she grows plants, somehow she ends up planted in the ground herself (??)','In air a thin oxide layer protects her, but once ignited she burns with a blinding white light into white ash (MgO)','That white light was once used for old camera flashes'], skills:[], q:'Photosynthesis again today~' } },
     { s:'O', wip:true, c:'#ff8787', ic:'🫧',
       ko:{ nm:'옥시젠', tag:'산소. 어디에나 끼는 인싸.', chips:['16족'],
         prof:[['이름','옥시젠 (산소)'],['소속','16족']], facts:['자세한 설정은 준비 중이에요'], skills:[], q:'' },
@@ -47660,7 +47660,7 @@ void main(){
     const sec = (h, a) => a && a.length ? `<h4>${h}</h4><ul>${a.map(x => `<li>${x}</li>`).join('')}</ul>` : '';
     rxPanel(t.nm, EN() ? 'Element Persona Index' : '원소 의인화 도감',
       `<div class="elp-prof" style="--c:${p.c}"><div class="elp-top">${tile(p)}<div><div class="elp-nm">${t.nm}</div><div class="elp-el">${e.n} · ${EN() ? e.en : e.ko} (${e.s})</div></div></div>
-       ${p.art ? `<div class="elp-art${p.stk ? ' stk' : ''}"><img src="${p.stk || p.art}" alt="${t.nm}" draggable="false"></div>` : ''}
+       ${p.art ? `<div class="elp-art${p.stk ? ' stk' : ''}${p.bg ? ' bg' : ''}"${p.bg ? ` style="background-image:linear-gradient(180deg,transparent 55%,rgba(10,14,24,.35)),url(${p.bg})"` : ''}><img src="${p.stk || p.art}" alt="${t.nm}" draggable="false"></div>` : ''}
        ${p.sheet ? `<button type="button" class="elp-shbtn" data-s="${p.s}">${EN() ? '🖼 View character sheet' : '🖼 설정화 크게 보기'}</button>` : ''}
        <dl>${t.prof.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
        ${sec(EN() ? 'TRAITS' : '특징', t.facts)}${sec(EN() ? 'SKILLS' : '스킬', t.skills)}
@@ -56320,6 +56320,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
   #elpSheet .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 8px;color:#dfe3ff;font-size:13px;font-weight:800}
   #elpSheet .bar small{font-weight:600;color:rgba(223,227,255,.55);font-size:11.5px}
   #elpSheet .bar button{width:40px;height:40px;border-radius:12px;border:1px solid rgba(223,227,255,.3);background:rgba(255,255,255,.05);color:#fff;font-size:16px;cursor:pointer}
+  .elp-art.bg{background-size:cover!important;background-position:center 30%!important;padding:18px 10px;min-height:200px;align-items:center;border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
   .elp-art.stk img{width:min(70%,260px);border-radius:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}
 </style>
 <script>
