@@ -53173,39 +53173,43 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     c.fillStyle = '#9aa0c8'; c.font = '700 10px system-ui,sans-serif'; c.fillText(P('빛의 속도', 'of light speed'), gx, gy + 16); c.textBaseline = 'alphabetic';
   };
   SCN[1] = (c, W, H, t, r, base) => { // 과녁 바퀴
-    const tx = W * .68, cy = H * .5, Rw = Math.min(H * .34, W * .2), ty = cy + Rw * .62;
+    const tx = W * .68, cy = H * .5, Rw = Math.min(H * .34, W * .2), ty = cy + Rw * .78;
     // 빔관
     const tg = c.createLinearGradient(0, ty - 14, 0, ty + 14); tg.addColorStop(0, '#3a4066'); tg.addColorStop(.5, '#1a1e38'); tg.addColorStop(1, '#3a4066');
     c.fillStyle = tg; c.fillRect(0, ty - 12, tx - Rw * .1, 24); c.strokeStyle = 'rgba(170,180,255,.3)'; c.strokeRect(-1, ty - 12, tx - Rw * .1, 24);
-    // 바퀴 (실제처럼: 지름 ~10cm, 호 모양 표적 4조각 = 얇은 티타늄 박막 위에 악티노이드 산화물을 입힌 것)
+    // 바퀴 (실물 사진 기준: 통짜 금속 원판 4등분, 가장자리에 바나나 모양 창 4개 = 얇은 박막에 표적 물질을 입힌 부분, 가운데 허브엔 구멍 8개)
     c.save(); c.translate(tx, cy); c.rotate(t * 1.6);
-    const ri = Rw * .44, ro = Rw * .88, gapA = .16;
-    // 바깥 테 + 안쪽 테
-    c.strokeStyle = metal(c, -Rw, -Rw, Rw, Rw); c.lineWidth = 6; c.beginPath(); c.arc(0, 0, Rw * .92, 0, 6.283); c.stroke();
-    c.lineWidth = 4; c.beginPath(); c.arc(0, 0, ri - 3, 0, 6.283); c.stroke();
+    const ri = Rw * .66, ro = Rw * .9, gapA = .2, rc = (ro - ri) / 2;
+    c.fillStyle = metal(c, -Rw, -Rw, Rw, Rw, '#8c93a8', '#d9dde8'); c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.fill();
+    c.strokeStyle = 'rgba(40,44,60,.55)'; c.lineWidth = 1.5; c.stroke();
+    // 4등분 이음매
+    c.strokeStyle = 'rgba(50,55,75,.45)'; c.lineWidth = 1;
+    for(let q = 0; q < 4; q++){ const a = q * Math.PI / 2; c.beginPath(); c.moveTo(Math.cos(a) * Rw * .5, Math.sin(a) * Rw * .5); c.lineTo(Math.cos(a) * Rw, Math.sin(a) * Rw); c.stroke(); }
     for(let q = 0; q < 4; q++){
-      const a0 = q * Math.PI / 2 + gapA / 2, a1 = (q + 1) * Math.PI / 2 - gapA / 2;
-      // 티타늄 박막 (거의 투명한 은회색)
-      c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(0, 0, ri, a1, a0, true); c.closePath();
-      const fg = c.createRadialGradient(0, 0, ri, 0, 0, ro); fg.addColorStop(0, 'rgba(190,198,215,.30)'); fg.addColorStop(.5, 'rgba(225,230,240,.42)'); fg.addColorStop(1, 'rgba(170,178,196,.30)');
-      c.fillStyle = fg; c.fill();
-      // 산화물 층 (검갈색, 얼룩덜룩)
-      c.save(); c.clip();
-      const am = (a0 + a1) / 2, rm = (ri + ro) / 2;
-      for(let k = 0; k < 9; k++){ const aa = a0 + (a1 - a0) * ((k * 0.61803) % 1), rr = ri + (ro - ri) * (.2 + .6 * ((k * 0.381966 + q * .17) % 1));
-        const sg = c.createRadialGradient(Math.cos(aa) * rr, Math.sin(aa) * rr, 0, Math.cos(aa) * rr, Math.sin(aa) * rr, Rw * .22);
-        sg.addColorStop(0, 'rgba(92,62,44,.42)'); sg.addColorStop(1, 'rgba(92,62,44,0)'); c.fillStyle = sg; c.fillRect(-Rw, -Rw, Rw * 2, Rw * 2); }
-      c.restore();
-      c.strokeStyle = 'rgba(200,208,230,.55)'; c.lineWidth = 1; c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(0, 0, ri, a1, a0, true); c.closePath(); c.stroke();
-      // 살 (조각 사이)
-      c.save(); c.rotate(q * Math.PI / 2); c.fillStyle = metal(c, 0, -5, 0, 5, '#2c3150', '#6c7499'); c.fillRect(Rw * .1, -4, Rw * .82, 8); c.restore();
+      const a0 = q * Math.PI / 2 + gapA, a1 = (q + 1) * Math.PI / 2 - gapA, rm = (ri + ro) / 2;
+      const path = () => { c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(Math.cos(a1) * rm, Math.sin(a1) * rm, rc, a1, a1 + Math.PI); c.arc(0, 0, ri, a1, a0, true); c.arc(Math.cos(a0) * rm, Math.sin(a0) * rm, rc, a0 + Math.PI, a0); c.closePath(); };
+      // 창 테두리 (살짝 파인 홈)
+      path(); c.strokeStyle = 'rgba(70,74,92,.7)'; c.lineWidth = 3; c.stroke();
+      // 표적 박막: 올리브빛 금색 (실물 사진처럼), 얇아서 결이 보임
+      path(); const fg = c.createRadialGradient(0, 0, ri, 0, 0, ro); fg.addColorStop(0, '#6f6630'); fg.addColorStop(.5, '#b7a55a'); fg.addColorStop(1, '#7a6f36'); c.fillStyle = fg; c.fill();
+      c.save(); path(); c.clip(); c.globalAlpha = .25; c.strokeStyle = '#e8dc9a'; c.lineWidth = .8;
+      for(let k = 0; k < 7; k++){ const rr = ri + (ro - ri) * (k + .5) / 7; c.beginPath(); c.arc(0, 0, rr, a0, a1); c.stroke(); } c.restore();
     }
-    c.fillStyle = metal(c, -12, -12, 12, 12); c.beginPath(); c.arc(0, 0, Rw * .14, 0, 6.283); c.fill(); c.restore();
+    // 가운데 허브: 단차 + 구멍 8개 + 너트
+    c.fillStyle = metal(c, -Rw * .5, -Rw * .5, Rw * .5, Rw * .5, '#a9afc0', '#eef1f7'); c.beginPath(); c.arc(0, 0, Rw * .5, 0, 6.283); c.fill();
+    c.strokeStyle = 'rgba(60,64,82,.35)'; c.lineWidth = 1; c.stroke();
+    for(let q = 0; q < 8; q++){ const a = q * Math.PI / 4 + Math.PI / 8, hx = Math.cos(a) * Rw * .34, hy = Math.sin(a) * Rw * .34;
+      const hg = c.createRadialGradient(hx - 2, hy - 2, 1, hx, hy, Rw * .1); hg.addColorStop(0, '#f4f6fb'); hg.addColorStop(1, '#8f96aa');
+      c.fillStyle = hg; c.beginPath(); c.arc(hx, hy, Rw * .095, 0, 6.283); c.fill(); c.strokeStyle = 'rgba(60,64,82,.5)'; c.stroke(); }
+    c.fillStyle = metal(c, -12, -12, 12, 12, '#7d8396', '#e3e6ef'); c.beginPath();
+    for(let q = 0; q < 6; q++){ const a = q * Math.PI / 3; c[q ? 'lineTo' : 'moveTo'](Math.cos(a) * Rw * .13, Math.sin(a) * Rw * .13); } c.closePath(); c.fill();
+    c.fillStyle = '#c9cdd9'; c.beginPath(); c.arc(0, 0, Rw * .07, 0, 6.283); c.fill();
+    c.restore();
     // 빔이 닿는 한 점 (바퀴는 돌아도 이 자리는 그대로, 뜨거워서 빛남)
     { const hx = tx - Rw * .05, hy = ty, fl = .7 + .3 * Math.sin(t * 23);
       glow(c, hx, hy, Rw * .2, '255,170,120', .55 * fl); c.fillStyle = `rgba(255,236,200,${.85 * fl})`; c.beginPath(); c.arc(hx, hy, 3.5, 0, 6.283); c.fill(); }
     lab(c, P('빔이 맞는 자리', 'beam spot'), tx - Rw * .05, ty + 20, '#ffcfa0', 10);
-    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' · 박막 4조각, 지름 약 10cm 바퀴', ' · 4 thin-film segments on a ~10 cm wheel'), tx, cy + Rw + 26, '#ffe2a0', 12);
+    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' · 지름 약 10cm 바퀴, 바나나 창 4개', ' · ~10 cm wheel, 4 banana-shaped windows'), tx, cy + Rw + 26, '#ffe2a0', 12);
     // 이온: 대부분 튕김
     for(let q = 0; q < 18; q++){ const ph = ((t * 1.1 + q / 18) % 1), hitX = tx - Rw * .05, y0 = ty + Math.sin(q * 7.3) * 5;
       if(ph < .72){ const x = ph / .72 * hitX; ion(c, x, y0, 1, 0, 34, '255,120,150', 2.4); }
