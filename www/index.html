@@ -37982,7 +37982,18 @@ function rxSunGem(){
         fact: 'Uranium is not just in special mines. Earth\'s crust averages about <b>2–3 parts per million</b>, so ordinary soil and rock hold roughly <b>2–3 g of uranium per tonne</b>. Granite has a bit more, and seawater has a trace dissolved. A mine is just a place where it is concentrated hundreds to thousands of times.',
         why: 'Isn\'t that dangerous?',
         ans: 'Spread that thin, it is fine, and it does a job: heat from uranium, thorium and potassium-40 slowly decaying underground supplies <b>roughly half of Earth\'s internal heat</b>, keeping the inside of the planet hot. The helium on the last card comes from here too. One catch: radon gas from the decay chain can collect in closed spaces like basements, so airing them out helps.',
-        hint: 'Tap to pick the uranium out of a tonne of soil' } });
+        hint: 'Tap to pick the uranium out of a tonne of soil' } }
+    ,{ id: 'mantle',
+      ko: { t: '보너스! 지구 맨틀은 사실 보석 공장이에요.',
+        fact: '맨틀 윗부분은 대부분 <b>감람석</b>이라는 광물로 되어 있어요. 이 감람석이 투명하고 예쁘게 자라면 8월의 탄생석 <b>페리도트</b>예요. 석류석(가닛)도 맨틀에 잔뜩 있어요. 그리고 땅 밑 약 <b>150~200 km</b>, 엄청난 압력과 1000 °C가 넘는 열 속에서 탄소가 눌려 <b>다이아몬드</b>가 만들어져요.',
+        why: '그 깊은 데서 어떻게 올라와요?',
+        ans: '아주 드물게 맨틀 깊은 곳에서 <b>킴벌라이트</b>라는 마그마가 엄청 빠르게 솟구쳐 분출해요. 이게 다이아몬드를 태운 급행 엘리베이터예요. 천천히 올라오면 다이아몬드가 흑연으로 변해 버리는데, 빨리 올라와서 식어 버리니까 다이아몬드 그대로 남아요. 참고로 맨틀은 녹은 마그마 바다가 아니라 <b>대부분 단단한 암석</b>이에요. 아주 느리게 흐를 뿐이에요. 도감의 파얄라이트도 감람석 집안이에요.',
+        hint: '눌러서 맨틀 속 들여다보기' },
+      en: { t: 'Bonus! Earth\'s mantle is basically a gem factory.',
+        fact: 'The upper mantle is made mostly of the mineral <b>olivine</b>. Grown clear and pretty, olivine is <b>peridot</b>, August\'s birthstone. Garnet is all over the mantle too. And about <b>150–200 km</b> down, under enormous pressure and over 1000 °C, carbon is squeezed into <b>diamond</b>.',
+        why: 'How do they get up from so deep?',
+        ans: 'Very rarely a magma called <b>kimberlite</b> rockets up from deep in the mantle and erupts. It is an express elevator for diamonds: rise slowly and diamond turns to graphite, but rise fast and cool quickly and it stays diamond. Also, the mantle is not a sea of molten magma; it is <b>mostly solid rock</b> that flows very slowly. Fayalite in the index is part of the olivine family.',
+        hint: 'Tap to look inside the mantle' } });
   const lsG = () => { try{ return Math.min(CARDS.length - 1, +localStorage.getItem('pt_dyk') || 0); }catch(_){ return 0; } };
   const lsS = v => { try{ localStorage.setItem('pt_dyk', v); }catch(_){} };
   let cur = lsG(), back = false, raf = 0, sim = null, mode = 'apo';
@@ -38316,6 +38327,47 @@ function rxSunGem(){
         c.fillText(L ? 'about a coin\'s weight' : '작은 동전 하나 무게쯤', px, py + 40);
         c.font = '800 14px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
         c.fillText(L ? '2–3 in every million' : '100만 중 2~3', W * .5, H * .15);
+      } } });
+  Object.assign(SIM, { mantle: {
+      init: () => ({ t: 0, z: 0, tz: 0, gem: null }),
+      tap: s => { s.tz = s.tz ? 0 : 1; },
+      draw(c, s, W, H){
+        const L = EN(); s.z += (s.tz - s.z) * .06;
+        const z = s.z, top = 22, bot = H - 8;
+        // 단면: 지각(얇게) → 맨틀
+        const crust = top + 22 - z * 10;
+        let g = c.createLinearGradient(0, crust, 0, bot); g.addColorStop(0, '#7a3d1d'); g.addColorStop(.5, '#b2451c'); g.addColorStop(1, '#e8641c');
+        c.fillStyle = g; c.fillRect(0, crust, W, bot - crust);
+        c.fillStyle = '#6b5a48'; c.fillRect(0, top, W, crust - top);
+        c.fillStyle = '#4c8c3a'; c.fillRect(0, top, W, 4);
+        if(!s.gem){ s.gem = []; for(let i = 0; i < 46; i++) s.gem.push({ x: Math.random(), y: Math.random(), k: i < 26 ? 'o' : i < 36 ? 'g' : 'd', r: .6 + Math.random() * .7, a: Math.random() * 6 }); }
+        // 보석들: 감람석(초록) · 석류석(빨강) · 다이아몬드(깊은 곳)
+        s.gem.forEach(p => {
+          const y0 = p.k === 'd' ? .72 + p.y * .25 : .08 + p.y * .6, y = crust + 10 + y0 * (bot - crust - 14), x = 10 + p.x * (W - 20), r = (3 + 6 * z) * p.r;
+          if(p.k === 'd' && z < .2) return;
+          c.save(); c.translate(x, y); c.rotate(p.a + s.t * .2 * (p.k === 'd' ? 1 : 0));
+          c.globalAlpha = p.k === 'd' ? Math.min(1, z * 1.6) : .55 + .45 * z;
+          if(p.k === 'o'){ c.fillStyle = '#a9e34b'; c.beginPath(); for(let j = 0; j < 6; j++){ const a = j / 6 * 6.283; c.lineTo(Math.cos(a) * r, Math.sin(a) * r * .7); } c.fill(); }
+          else if(p.k === 'g'){ c.fillStyle = '#c92a2a'; c.beginPath(); for(let j = 0; j < 8; j++){ const a = j / 8 * 6.283; c.lineTo(Math.cos(a) * r * .9, Math.sin(a) * r * .9); } c.fill(); }
+          else { c.fillStyle = 'rgba(220,240,255,.95)'; c.beginPath(); c.moveTo(0, -r); c.lineTo(r * .8, 0); c.lineTo(0, r); c.lineTo(-r * .8, 0); c.closePath(); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = .8; c.stroke(); }
+          c.restore();
+        });
+        c.globalAlpha = 1;
+        // 킴벌라이트 엘리베이터
+        if(z > .5){
+          const px = W * .82, a = (z - .5) * 2;
+          c.fillStyle = `rgba(40,30,30,${.85 * a})`; c.beginPath(); c.moveTo(px - 6, bot); c.lineTo(px - 22, top); c.lineTo(px + 22, top); c.lineTo(px + 6, bot); c.closePath(); c.fill();
+          for(let i = 0; i < 3; i++){ const q = (s.t * .5 + i / 3) % 1, y = bot - q * (bot - top); c.fillStyle = 'rgba(220,240,255,.95)'; c.beginPath(); c.moveTo(px, y - 5); c.lineTo(px + 4, y); c.lineTo(px, y + 5); c.lineTo(px - 4, y); c.fill(); }
+          c.font = '700 10.5px system-ui,sans-serif'; c.textAlign = 'right'; c.fillStyle = `rgba(255,255,255,${a})`; c.fillText(L ? 'kimberlite ↑' : '킴벌라이트 ↑', px - 26, top + 34);
+        }
+        // 이름표
+        c.textAlign = 'left'; c.font = '700 11px system-ui,sans-serif';
+        c.fillStyle = '#f1f3f5'; c.fillText(L ? 'Crust ~35 km' : '지각 약 35 km', 10, crust - 4 < top + 12 ? top + 14 : crust - 4);
+        c.fillStyle = '#d8f5a2'; c.fillText(L ? '● olivine = peridot' : '● 감람석 = 페리도트', 10, crust + 18);
+        c.fillStyle = '#ffa8a8'; c.fillText(L ? '● garnet' : '● 석류석', 10, crust + 34);
+        if(z > .2){ c.fillStyle = `rgba(220,240,255,${Math.min(1, z * 1.6)})`; c.fillText(L ? '◆ diamond · 150–200 km down' : '◆ 다이아몬드 · 깊이 150~200 km', 10, bot - 10); }
+        c.textAlign = 'center'; c.font = '800 14px system-ui,sans-serif'; c.fillStyle = '#fff';
+        c.fillText(L ? 'MANTLE: a gem factory' : '맨틀 = 보석 공장', W * .5, 16);
       } } });
   function render(){
     stop();
