@@ -37933,6 +37933,52 @@ function rxSunGem(){
         ans: 'Yes. Strictly speaking you are hovering ever so slightly above the chair, held up by electrons repelling each other (electromagnetism) and the rule that two electrons cannot share the same state (the Pauli exclusion principle). That is why your hand does not sink through the desk.',
         hint: 'Tap to push the fingertip in' } },
   ];
+  // ── 과산 요청 추가: 알파·베타·감마 정체 + 다이아몬드 ──
+  CARDS.push(
+    { id: 'alpha',
+      ko: { t: '알파 입자요? 그냥 전자 없는 헬륨-4인데요?',
+        fact: '우라늄이나 라듐 같은 무거운 원자핵이 알파 붕괴를 하면 "알파 입자"가 튀어나와요. 그 정체는 양성자 2개 + 중성자 2개, 즉 <b>헬륨-4 원자핵</b>이에요. 전자 두 개만 붙여 주면 그냥 헬륨 원자가 돼요. 무거워서 종이 한 장에도 막혀요.',
+        why: '그럼 헬륨은 어디서 와요?',
+        ans: '지구의 헬륨은 대부분 땅속 우라늄과 토륨이 수십억 년 동안 알파 붕괴하면서 내놓은 알파 입자예요. 알파 입자가 주변에서 전자를 주워 헬륨 원자가 되고, 천연가스 속에 갇혀 있다가 우리가 캐내는 거예요. <b>풍선 속 헬륨은 옛날 옛적의 알파선</b>이었던 셈이에요.',
+        hint: '눌러서 전자 떼어 내기' },
+      en: { t: 'An alpha particle? It\'s just helium-4 without its electrons.',
+        fact: 'When a heavy nucleus like uranium or radium alpha-decays, it spits out an "alpha particle": 2 protons + 2 neutrons, i.e. a <b>helium-4 nucleus</b>. Add two electrons and it is simply a helium atom. It is so heavy that a sheet of paper stops it.',
+        why: 'So where does helium come from?',
+        ans: 'Most of Earth\'s helium is alpha particles released by uranium and thorium decaying underground over billions of years. They grab electrons, become helium atoms, get trapped with natural gas, and we dig them up. <b>Party-balloon helium was once alpha radiation.</b>',
+        hint: 'Tap to strip the electrons' } },
+    { id: 'beta',
+      ko: { t: '베타선이요? 그냥 엄청 빠른 전자예요.',
+        fact: '베타 붕괴는 원자핵 속 <b>중성자 하나가 양성자로 바뀌면서</b> 전자를 하나 내보내는 거예요. 그 전자가 빛의 속도에 가깝게 튀어나온 게 베타선이에요. 원자핵 안에 원래 전자가 있던 게 아니라, 그 순간 새로 만들어져요.',
+        why: '양성자가 하나 늘면 어떻게 돼요?',
+        ans: '원자 번호가 하나 올라가서 <b>다른 원소가 돼요.</b> 예를 들어 탄소-14가 베타 붕괴하면 질소-14가 돼요. 이 속도가 일정해서 오래된 뼈나 나무의 나이를 재는 "탄소 연대 측정"에 써요. 전자랑 같이 아주 가벼운 반중성미자도 하나 튀어나가요.',
+        hint: '눌러서 중성자 바꾸기' },
+      en: { t: 'Beta radiation? Just very fast electrons.',
+        fact: 'In beta decay, <b>a neutron in the nucleus turns into a proton</b> and throws out an electron at close to the speed of light. That electron is the beta ray. It was never sitting in the nucleus; it is created at that moment.',
+        why: 'What happens when a proton is added?',
+        ans: 'The atomic number goes up by one, so it <b>becomes a different element.</b> Carbon-14 beta-decays into nitrogen-14, at a steady rate, which is how radiocarbon dating measures the age of old bones and wood. A tiny antineutrino flies off too.',
+        hint: 'Tap to flip a neutron' } },
+    { id: 'gamma',
+      ko: { t: '감마선이요? 그냥 엄청 센 빛이에요.',
+        fact: '감마선은 눈에 보이는 빛, 전파, 엑스선과 똑같은 <b>전자기파</b>예요. 다른 점은 파장이 원자핵보다 짧을 만큼 짧고, 그만큼 에너지가 아주 크다는 것뿐이에요. 원자핵이 붕괴하고 남은 에너지를 털어 낼 때 나와요.',
+        why: '그럼 왜 위험해요?',
+        ans: '에너지가 커서 몸속 분자의 전자를 떼어 낼 수 있어서예요(전리 방사선). 알파선은 종이, 베타선은 얇은 알루미늄 판에 막히지만, 감마선은 두꺼운 납이나 콘크리트가 있어야 줄일 수 있어요. 대신 이 힘으로 의료 기구를 소독하고 암 치료에도 써요.',
+        hint: '눌러서 파장 줄이기' },
+      en: { t: 'Gamma rays? Just really strong light.',
+        fact: 'Gamma rays are <b>electromagnetic waves</b>, the same stuff as visible light, radio and X-rays. The only difference is a wavelength shorter than a nucleus and a correspondingly huge energy. Nuclei release them to shed leftover energy after decaying.',
+        why: 'Then why are they dangerous?',
+        ans: 'They carry enough energy to knock electrons off molecules in your body (ionising radiation). Paper stops alpha and thin aluminium stops beta, but gamma needs thick lead or concrete. The same power sterilises medical tools and treats cancer.',
+        hint: 'Tap to shorten the wavelength' } },
+    { id: 'diamond',
+      ko: { t: '다이아몬드도 불에 타요.',
+        fact: '다이아몬드는 탄소 원자만으로 된 결정이에요. 숯이랑 재료가 같으니까, 공기 중에서 약 800~900 °C 넘게 달구면 타서 <b>이산화탄소</b>가 돼요. 다 타면 아무것도 안 남아요.',
+        why: '그럼 영원하지 않아요?',
+        ans: '"다이아몬드는 영원하다"는 광고 문구예요. 상온에서는 너무 단단하고 안정해서 사실상 영원하지만, 불 속에선 그냥 탄소예요. 1772년 라부아지에가 커다란 렌즈로 햇빛을 모아 다이아몬드를 태웠더니 이산화탄소가 나왔고, 1796년 테넌트가 다이아몬드는 순수한 탄소라는 걸 증명했어요.',
+        hint: '눌러서 불붙이기' },
+      en: { t: 'Diamonds burn.',
+        fact: 'A diamond is a crystal of pure carbon, the same element as charcoal. Heat it above roughly 800–900 °C in air and it burns into <b>carbon dioxide</b>, leaving nothing behind.',
+        why: 'So diamonds aren\'t forever?',
+        ans: '"A diamond is forever" is an advertising slogan. At room temperature it is so hard and stable it may as well be, but in a fire it is just carbon. In 1772 Lavoisier burned a diamond with a giant lens and got carbon dioxide; in 1796 Tennant proved diamond is pure carbon.',
+        hint: 'Tap to light it' } });
   const lsG = () => { try{ return Math.min(CARDS.length - 1, +localStorage.getItem('pt_dyk') || 0); }catch(_){ return 0; } };
   const lsS = v => { try{ localStorage.setItem('pt_dyk', v); }catch(_){} };
   let cur = lsG(), back = false, raf = 0, sim = null, mode = 'apo';
@@ -38144,6 +38190,103 @@ function rxSunGem(){
       } },
   };
 
+  // ── 추가 카드 그림 ──
+  const dkBall = (c, x, y, r, col, lab) => {
+    const g = c.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+    g.addColorStop(0, '#fff'); g.addColorStop(.3, col); g.addColorStop(1, 'rgba(10,12,22,1)');
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+    if(lab){ c.fillStyle = '#0b0d18'; c.font = `800 ${Math.round(r * .9)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(lab, x, y + .5); c.textBaseline = 'alphabetic'; }
+  };
+  const dkNuc = (c, x, y, list, r) => {           // list: 'p'/'n' 배열 → 뭉친 원자핵
+    const pos = [[0, 0], [1, 0], [.5, .85], [-.5, .85], [-1, 0], [-.5, -.85], [.5, -.85]];
+    list.forEach((k, i) => { const p = pos[i % pos.length], z = r * 1.05; dkBall(c, x + p[0] * z, y + p[1] * z, r, k === 'p' ? '#ff6b6b' : '#adb5bd', k === 'p' ? '+' : ''); });
+  };
+  Object.assign(SIM, {
+    alpha: {
+      init: () => ({ t: 0, go: 0, gt: 0 }),
+      tap: s => { if(s.go) { s.go = 0; s.gt = 0; } else { s.go = 1; s.gt = s.t; } },
+      draw(c, s, W, H){
+        const cx = W * .5, cy = H * .55, u = s.go ? Math.min(1, (s.t - s.gt) / 1.6) : 0, L = EN();
+        // 전자 궤도 + 전자 2개 (떼면 멀리 날아감)
+        c.strokeStyle = `rgba(154,168,255,${.35 * (1 - u)})`; c.lineWidth = 1.2; c.beginPath(); c.ellipse(cx, cy, 90, 46, 0, 0, 7); c.stroke();
+        for(let i = 0; i < 2; i++){
+          const a = s.t * 2.2 + i * Math.PI, ox = Math.cos(a) * 90, oy = Math.sin(a) * 46, fly = u * 260;
+          const ex = cx + ox + Math.sign(ox || 1) * fly, ey = cy + oy - fly * .35;
+          if(u < 1) dkBall(c, ex, ey, 9, '#74c0fc', 'e');
+        }
+        // 핵: 떼고 나면 α 로 날아간다
+        const nx = cx + (u >= 1 ? Math.min(W * .3, (s.t - s.gt - 1.6) * 160) : 0);
+        dkNuc(c, nx, cy, ['p', 'n', 'p', 'n'], 13);
+        c.textAlign = 'center'; c.font = '800 14px system-ui,sans-serif';
+        c.fillStyle = '#e7ecf4'; c.fillText(u < 1 ? (L ? 'Helium-4 atom' : '헬륨-4 원자') : (L ? 'α particle = He²⁺' : 'α 입자 = He²⁺'), cx, H * .18);
+        c.font = '600 11.5px system-ui,sans-serif'; c.fillStyle = '#8e99ad';
+        c.fillText(L ? '2 protons + 2 neutrons' : '양성자 2 + 중성자 2', cx, H * .18 + 18);
+        if(u >= 1){ c.strokeStyle = 'rgba(255,212,59,.6)'; c.setLineDash([4, 4]); c.beginPath(); c.moveTo(cx - 40, cy); c.lineTo(nx - 30, cy); c.stroke(); c.setLineDash([]); }
+      } },
+    beta: {
+      init: () => ({ t: 0, go: 0, gt: 0 }),
+      tap: s => { if(s.go) { s.go = 0; } else { s.go = 1; s.gt = s.t; } },
+      draw(c, s, W, H){
+        const cx = W * .38, cy = H * .56, L = EN(), u = s.go ? (s.t - s.gt) : 0, flip = u > .5;
+        dkNuc(c, cx, cy, ['p', 'n', 'p', 'n', 'p', 'n', flip ? 'p' : 'n'], 12);
+        if(!flip && s.go){ c.strokeStyle = `rgba(255,212,59,${.5 + .5 * Math.sin(s.t * 20)})`; c.lineWidth = 2; c.beginPath(); c.arc(cx + .5 * 12.6, cy - .85 * 12.6, 15, 0, 7); c.stroke(); }
+        if(flip){
+          const d = Math.min(W * .6, (u - .5) * 420);
+          dkBall(c, cx + 20 + d, cy - 6 - d * .18, 8, '#74c0fc', 'e');
+          c.fillStyle = 'rgba(116,192,252,.4)'; for(let i = 1; i < 6; i++) { c.beginPath(); c.arc(cx + 20 + d - i * 10, cy - 6 - (d - i * 10) * .18, 3, 0, 7); c.fill(); }
+          const d2 = Math.min(W * .55, (u - .5) * 380); c.fillStyle = 'rgba(223,227,255,.7)'; c.beginPath(); c.arc(cx + 10 + d2, cy + 10 + d2 * .22, 3, 0, 7); c.fill();
+          c.font = '600 10px system-ui,sans-serif'; c.textAlign = 'left'; if(d2 > 40) c.fillText(L ? 'antineutrino' : '반중성미자', cx + 18 + d2, cy + 14 + d2 * .22);
+        }
+        c.textAlign = 'center'; c.font = '800 14px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
+        c.fillText(flip ? (L ? 'n → p⁺ + e⁻  (beta ray!)' : 'n → p⁺ + e⁻  (베타선!)') : (L ? 'A neutron in the nucleus…' : '원자핵 속 중성자 하나가…'), W * .5, H * .18);
+        c.font = '600 11.5px system-ui,sans-serif'; c.fillStyle = '#8e99ad';
+        c.fillText(flip ? (L ? 'C-14 → N-14 : one more proton, new element' : '탄소-14 → 질소-14 : 양성자 +1, 다른 원소') : (L ? 'carbon-14: 6 p + 8 n' : '탄소-14: 양성자 6 + 중성자 8'), W * .5, H * .18 + 18);
+      } },
+    gamma: {
+      init: () => ({ t: 0, lv: 0, cur: 0 }),
+      tap: s => { s.lv = (s.lv + 1) % 4; },
+      draw(c, s, W, H){
+        const L = EN(), B = [[L ? 'Radio' : '전파', 160, '#8ce99a'], [L ? 'Visible light' : '가시광선', 46, '#ffd43b'], [L ? 'X-ray' : '엑스선', 16, '#74c0fc'], [L ? 'Gamma ray' : '감마선', 5, '#d0bfff']];
+        s.cur += (s.lv - s.cur) * .08;
+        const i0 = Math.floor(s.cur), f = s.cur - i0, b0 = B[i0], b1 = B[Math.min(3, i0 + 1)];
+        const lam = b0[1] + (b1[1] - b0[1]) * f, cy = H * .55, amp = H * .16;
+        c.strokeStyle = s.lv === 3 ? '#d0bfff' : b0[2]; c.lineWidth = 2.2; c.beginPath();
+        for(let x = 10; x < W - 10; x += 1.2){ const y = cy + Math.sin((x / lam) * Math.PI * 2 - s.t * 6) * amp; x === 10 ? c.moveTo(x, y) : c.lineTo(x, y); }
+        c.stroke();
+        c.textAlign = 'center'; c.font = '800 15px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
+        c.fillText(B[s.lv][0], W * .5, H * .16);
+        c.font = '600 11.5px system-ui,sans-serif'; c.fillStyle = '#8e99ad';
+        c.fillText(L ? 'same wave · shorter wavelength = more energy' : '모두 같은 전자기파 · 파장이 짧을수록 에너지 ↑', W * .5, H * .16 + 18);
+        const bw = (W - 40) / 4; B.forEach((b, i) => { c.fillStyle = i === s.lv ? b[2] : 'rgba(255,255,255,.12)'; c.fillRect(20 + i * bw + 3, H - 18, bw - 6, 5); });
+      } },
+    diamond: {
+      init: () => ({ t: 0, go: 0, gt: 0, pf: [] }),
+      tap: s => { if(s.go && s.t - s.gt > 4.5){ s.go = 0; s.pf = []; } else if(!s.go){ s.go = 1; s.gt = s.t; } },
+      draw(c, s, W, H, dt){
+        const cx = W * .5, cy = H * .58, L = EN(), u = s.go ? Math.min(1, (s.t - s.gt) / 4) : 0, k = 1 - u;
+        if(k > .02){
+          const r = 46 * k;
+          c.save(); c.translate(cx, cy);
+          const pts = [[-1, -.35], [-.55, -.8], [.55, -.8], [1, -.35], [0, 1]].map(p => [p[0] * r, p[1] * r]);
+          c.fillStyle = s.go ? `rgba(255,${180 - 80 * u},${120 - 100 * u},.9)` : 'rgba(200,230,255,.85)';
+          c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fill();
+          c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 1.2; c.stroke();
+          c.beginPath(); c.moveTo(-r, -.35 * r); c.lineTo(r, -.35 * r); c.moveTo(-.55 * r, -.8 * r); c.lineTo(-.25 * r, -.35 * r); c.lineTo(0, r); c.moveTo(.55 * r, -.8 * r); c.lineTo(.25 * r, -.35 * r); c.lineTo(0, r); c.stroke();
+          c.restore();
+        }
+        if(s.go){
+          if(u < 1 && Math.random() < .5) s.pf.push({ x: cx + (Math.random() - .5) * 60 * k, y: cy - 10, vy: -30 - Math.random() * 40, l: 1, co2: Math.random() < .25 });
+          s.pf.forEach(p => { p.y += p.vy * dt; p.l -= dt * .7; });
+          s.pf = s.pf.filter(p => p.l > 0);
+          s.pf.forEach(p => {
+            if(p.co2){ c.fillStyle = `rgba(223,227,255,${p.l})`; c.font = '700 11px system-ui'; c.textAlign = 'center'; c.fillText('CO₂', p.x, p.y); }
+            else { c.fillStyle = `rgba(255,${140 + 80 * p.l | 0},60,${p.l * .8})`; c.beginPath(); c.arc(p.x, p.y, 4 + 6 * (1 - p.l), 0, 7); c.fill(); }
+          });
+        }
+        c.textAlign = 'center'; c.font = '800 14px system-ui,sans-serif'; c.fillStyle = '#e7ecf4';
+        c.fillText(u >= 1 ? (L ? '…gone. All CO₂.' : '…사라졌다. 전부 CO₂') : s.go ? 'C + O₂ → CO₂' : (L ? 'Diamond = pure carbon' : '다이아몬드 = 순수한 탄소'), cx, H * .16);
+      } },
+  });
   function render(){
     stop();
     setFocus(false);
