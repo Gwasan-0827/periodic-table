@@ -38176,7 +38176,7 @@ function rxSunGem(){
         c.fillText(EN() ? 'one year of natural background ≈ 24,000 bananas' : '자연에서 1년 동안 받는 양 ≈ 바나나 2만 4천 개', cx, H - 14);
       } },
     touch: {
-      init: () => ({ t: 0, push: 0, tgt: .55 }),
+      init: () => ({ t: 0, push: 0, tgt: .55, cl: null }),
       tap: s => { s.tgt = s.tgt > .6 ? .55 : 1; },
       draw(c, s, W, H, dt){
         s.push += (s.tgt - s.push) * Math.min(1, dt * 4);
@@ -38189,8 +38189,13 @@ function rxSunGem(){
           g.addColorStop(0, `rgba(${col},.55)`); g.addColorStop(1, `rgba(${col},0)`);
           c.save(); c.translate(x, cy); c.scale(1 - squish * .18, 1 + squish * .12); c.translate(-x, -cy);
           c.fillStyle = g; c.beginPath(); c.arc(x, cy, R, 0, 7); c.fill(); c.restore();
-          for(let i = 0; i < 14; i++){ const a = s.t * (1.5 + i * .13) + i * 2.1, rr = R * (.45 + (i % 4) * .13);
-            c.fillStyle = `rgba(${col},.9)`; c.beginPath(); c.arc(x + Math.cos(a) * rr * (1 - squish * .18), cy + Math.sin(a) * rr, 1.6, 0, 7); c.fill(); }
+          // 전자는 궤도가 아니라 구름: 가운데 진하고 바깥으로 옅어지는 점 구름이 반짝인다
+          if(!s.cl){ s.cl = []; for(let i = 0; i < 260; i++){ const rr = Math.min(1, -Math.log(1 - Math.random() * .97) * .3), th = Math.random() * 6.283; s.cl.push([Math.cos(th) * rr, Math.sin(th) * rr, Math.random() * 6.283]); } }
+          c.save(); c.globalCompositeOperation = 'lighter';
+          s.cl.forEach(([px, py, ph]) => { const tw = .5 + .5 * Math.sin(s.t * 3.2 + ph * 3 + dir);
+            const qx = px * (1 - squish * .18) * R, qy = py * (1 + squish * .12) * R;
+            c.fillStyle = `rgba(${col},${.18 + .45 * tw})`; c.fillRect(x + qx - .9, cy + qy - .9, 1.8, 1.8); });
+          c.restore();
           c.fillStyle = '#fff'; c.beginPath(); c.arc(x, cy, 2.5, 0, 7); c.fill();
         };
         atom(ax, 1, '154,168,255'); atom(bx, -1, '255,190,150');
