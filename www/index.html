@@ -58139,7 +58139,7 @@ if(typeof ACH !== 'undefined'){
 </script>
 
 <style>
-  /* ═══ 초중원소 합성: 질량수만큼 담으면 조합 결과에 '합성 실험' 탭 ═══ */
+  /* ═══ 초중원소 합성: 질량수만큼 담으면 새 원소 결과 + '합성 실험' 탭 ═══ */
   #mStage.shi > :not(.shi-cv):not(.rx-cap):not(.rx5-noise):not(.rx-tabs){visibility:hidden!important}
   #card.shi-on #mKind{display:none!important}
   #card.shi-on .rx-side > :not(#mInfo):not(#mState):not(#shiSide):not(.cbtns){display:none!important}
@@ -58196,46 +58196,109 @@ function rxShiName(z){
 }
 function rxShiSym(z){ return z <= 118 ? byNum[z].s : (z === 119 ? 'Uue' : 'Ubn'); }
 const rxShiT = () => RX_SHI_T[LANG === 'en' ? 'en' : 'ko'];
-function rxShiTab(r){
-  const en = LANG === 'en', tabs = document.getElementById('mTabs');
-  tabs.classList.add('shi-tabs'); tabs.hidden = false;
-  const mk = (id, txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = 'shi-t'; b.textContent = txt;
-    b.addEventListener('click', e => { e.stopPropagation(); fn(); }); tabs.appendChild(b); return b; };
-  const F = RX_SHI_FX;
-  F.r = r;
-  F.keep = { f: document.getElementById('mFormula').innerHTML, fc: document.getElementById('mFormula').className, n: document.getElementById('mName').textContent,
-    st: document.getElementById('mState').textContent, sub: document.getElementById('mSub').textContent, card: document.getElementById('card').className };
-  const b0 = mk('mTabShiR', en ? 'Result' : '결과', () => rxShiMode(false));
-  const b1 = mk('mTabShi', en ? '⚛ Synthesis' : '⚛ 합성 실험', () => rxShiMode(true));
-  b1.classList.add('sx');
-  rxShiMode(false, true);
+function rxShiShells(z){ return z <= 118 ? [2, 8, 18, 32, 32, 18, z - 110] : [2, 8, 18, 32, 32, 18, 8, z - 118]; }
+function rxShiPos(z){
+  const en = LANG === 'en';
+  if(z === 119) return en ? 'Period 8, group 1 (below francium)' : '8주기 1족 (프랑슘 바로 아래)';
+  if(z === 120) return en ? 'Period 8, group 2 (below radium)' : '8주기 2족 (라듐 바로 아래)';
+  return en ? `Period 7, group ${z - 100}` : `7주기 ${z - 100}족`;
 }
-function rxShiMode(on, init){
-  const F = RX_SHI_FX, r = F.r, en = LANG === 'en', K = F.keep;
-  const card = document.getElementById('card'), st = document.getElementById('mStage');
-  [['mTabShiR', !on], ['mTabShi', on]].forEach(([id, v]) => { const b = document.getElementById(id); if(b){ b.classList.toggle('on', v); b.setAttribute('aria-selected', v); } });
-  if(!on){
-    cancelAnimationFrame(F.raf); F.raf = 0;
-    st.classList.remove('shi'); if(F.cv){ F.cv.remove(); F.cv = null; }
-    const s = document.getElementById('shiSide'); if(s) s.remove();
-    if(init) return;
-    card.className = K.card;
-    document.getElementById('mFormula').innerHTML = K.f; document.getElementById('mFormula').className = K.fc;
-    document.getElementById('mName').textContent = K.n; document.getElementById('mState').textContent = K.st; document.getElementById('mSub').textContent = K.sub;
-    return;
-  }
-  if(st.classList.contains('shi')) return;
-  card.classList.add('shi-on'); st.classList.add('shi');
+function rxShiStart(r){
+  const order = [], c = {};
+  mix.forEach(n => { if(c[n] === undefined){ order.push(n); c[n] = 0; } c[n]++; });
+  document.getElementById('mEq').textContent = order.map(n => `${byNum[n].s}×${c[n]}`).join('  +  ');
   document.getElementById('mFormula').innerHTML = `<sup>${r[1] + r[3]}</sup>${rxShiSym(r[4])}`;
   document.getElementById('mFormula').className = 'formula';
-  document.getElementById('mName').textContent = en ? `${rxShiName(r[4])} synthesis` : `${rxShiName(r[4])} 합성 실험`;
+  document.getElementById('mName').textContent = rxShiName(r[4]);
+  RX_RAW = '';
+  rxRender('ok', '', order, c);
+  rxShiTab(r);
+  SFX.start();
+  playFusion(mix.slice(), true, () => { SFX.ok(); modal.classList.add('on'); rxReveal(); rxShiMode('res'); });
+  try{ rxEvt('shi'); }catch(e){}
+}
+function rxShiTab(r){
+  const en = LANG === 'en', tabs = document.getElementById('mTabs'), F = RX_SHI_FX;
+  F.r = r; F.mode = '';
+  tabs.classList.add('shi-tabs'); tabs.hidden = false;
+  const mk = (id, txt, m) => { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = 'shi-t'; b.textContent = txt;
+    b.addEventListener('click', e => { e.stopPropagation(); rxShiMode(m); }); tabs.appendChild(b); return b; };
+  mk('mTabShiR', en ? 'Result' : '결과', 'res');
+  mk('mTabShi', en ? '⚛ Synthesis' : '⚛ 합성 실험', 'exp').classList.add('sx');
+  const card = document.getElementById('card'), st = document.getElementById('mStage');
+  card.classList.add('shi-on'); st.classList.add('shi');
   const cv = document.createElement('canvas'); cv.className = 'shi-cv'; st.appendChild(cv); F.cv = cv;
   const zb = EL.find(e => e.s === r[0]).n, zt = EL.find(e => e.s === r[2]).n;
   const side = document.createElement('div'); side.id = 'shiSide';
   document.getElementById('mState').after(side);
   side.dataset.eq = `${r[0]}-${r[1]} + ${r[2]}-${r[3]}  ·  ${zb} + ${zt} = ${r[4]}`;
-  rxShiFire();
-  try{ rxEvt('shi'); }catch(e){}
+  document.getElementById('mSub').textContent = '';
+}
+function rxShiMode(m){
+  const F = RX_SHI_FX, r = F.r, en = LANG === 'en';
+  if(!r || F.mode === m) return;
+  F.mode = m;
+  [['mTabShiR', m === 'res'], ['mTabShi', m === 'exp']].forEach(([id, v]) => { const b = document.getElementById(id); if(b){ b.classList.toggle('on', v); b.setAttribute('aria-selected', v); } });
+  cancelAnimationFrame(F.raf); F.raf = 0;
+  const nm = rxShiName(r[4]);
+  if(m === 'exp'){
+    document.getElementById('mName').textContent = en ? `${nm} synthesis` : `${nm} 합성 실험`;
+    rxShiFire();
+    return;
+  }
+  // 결과: 새 원소 자체
+  const card = document.getElementById('card'); card.classList.remove('is-fail'); card.classList.add('is-ok');
+  document.getElementById('mName').textContent = nm;
+  const real = r[5] === 'done';
+  document.getElementById('mState').textContent = real ? (en ? 'Made for real' : '실제로 만든 원소') : (en ? 'In theory · nobody has made it' : '이론상 · 아직 아무도 못 만듦');
+  const life = (en ? RX_SHI_LIFE_EN : RX_SHI_LIFE)[r[4]];
+  const sh = rxShiShells(r[4]).join(' · ');
+  const side = document.getElementById('shiSide');
+  side.innerHTML = `<span class="eqz">${side.dataset.eq}</span>` +
+    `<b class="big ${real ? 'ok' : 'wow'}">${r[4]} ${nm}</b>` +
+    `${en ? 'Place' : '자리'}: ${rxShiPos(r[4])}<br>${en ? 'Electron shells' : '전자 껍질'}: ${sh}<br>` +
+    `${en ? (real ? 'Half-life' : 'Expected lifetime') : (real ? '반감기' : '예상 수명')}: ${real ? '' : '~'}${life}` +
+    `<span class="hist">${en ? r[7] : r[6]}</span>` +
+    `<span class="hist" style="border-style:dashed">${en ? 'Fire the beam yourself in the ⚛ Synthesis tab. Not added to the codex.' : '⚛ 합성 실험 탭에서 직접 쏴 볼 수 있어요. 도감에는 안 올라가요.'}</span>`;
+  side.classList.add('on');
+  document.getElementById('mSub').textContent = en ? `${r[4]} protons · mass ${r[1] + r[3]}` : `양성자 ${r[4]}개 · 질량수 ${r[1] + r[3]}`;
+  F.t0 = performance.now();
+  F.raf = requestAnimationFrame(rxShiResTick);
+}
+/* 결과 그림: 새 원소의 보어 모형 (못 만든 건 점선으로 지지직) */
+function rxShiResTick(now){
+  const F = RX_SHI_FX, cv = F.cv;
+  if(!cv || !cv.isConnected || F.mode !== 'res' || !modal.classList.contains('on')){ F.raf = 0; return; }
+  F.raf = requestAnimationFrame(rxShiResTick);
+  const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
+  if(!w) return;
+  if(cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  const t = (now - F.t0) / 1000, z = F.r[4], real = F.r[5] === 'done', sh = rxShiShells(z);
+  const cx = w / 2, cy = h * .46, Rmax = Math.min(w * .46, h * .4), n = sh.length;
+  const glitch = !real && (t % 2.6) > 2.45;
+  const col = real ? '140,233,154' : '255,212,59';
+  c.save(); if(glitch) c.translate((Math.random() - .5) * 6, 0);
+  sh.forEach((k, i) => {
+    const rr = Rmax * (.22 + .78 * (i + 1) / n);
+    c.strokeStyle = `rgba(${col},${.16 + .1 * (i === n - 1)})`; c.lineWidth = 1;
+    if(!real && i === n - 1) c.setLineDash([4, 5]);
+    c.beginPath(); c.arc(cx, cy, rr, 0, 7); c.stroke(); c.setLineDash([]);
+    const sp = (.9 - i * .09) * (i % 2 ? -1 : 1);
+    for(let j = 0; j < k; j++){
+      const a = t * sp + j / k * Math.PI * 2;
+      c.fillStyle = i === n - 1 ? `rgba(${col},.95)` : 'rgba(116,192,252,.75)';
+      c.beginPath(); c.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, i === n - 1 ? 3.2 : 1.9, 0, 7); c.fill();
+    }
+  });
+  const nr = Rmax * .16, pulse = 1 + Math.sin(t * 5) * .04;
+  const g = c.createRadialGradient(cx - nr * .3, cy - nr * .3, nr * .1, cx, cy, nr * pulse);
+  g.addColorStop(0, '#fff'); g.addColorStop(.3, `rgb(${col})`); g.addColorStop(1, 'rgba(20,24,40,1)');
+  c.fillStyle = g; c.beginPath(); c.arc(cx, cy, nr * pulse, 0, 7); c.fill();
+  c.fillStyle = '#0b0d18'; c.font = `800 ${Math.round(nr * .62)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(rxShiSym(z), cx, cy + 1);
+  if(glitch){ c.globalCompositeOperation = 'lighter'; c.fillStyle = 'rgba(255,60,140,.25)'; c.fillRect(0, cy - 6, w, 3); c.fillStyle = 'rgba(60,220,255,.25)'; c.fillRect(0, cy + 14, w, 2); }
+  c.restore(); c.textBaseline = 'alphabetic';
 }
 function rxShiFire(){
   const F = RX_SHI_FX, r = F.r, T = rxShiT();
@@ -58268,7 +58331,7 @@ function rxShiDone(){
 }
 function rxShiTick(now){
   const F = RX_SHI_FX, cv = F.cv;
-  if(!cv || !cv.isConnected || !modal.classList.contains('on')){ F.raf = 0; return; }
+  if(!cv || !cv.isConnected || F.mode !== 'exp' || !modal.classList.contains('on')){ F.raf = 0; return; }
   F.raf = requestAnimationFrame(rxShiTick);
   const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
   if(!w) return;
@@ -58309,7 +58372,7 @@ function rxShiTick(now){
   c.fillStyle = '#8e99ad'; c.font = '600 11px system-ui,sans-serif'; c.textAlign = 'left';
   c.fillText(`${F.r[0]}-${F.r[1]} ${LANG === 'en' ? 'beam' : '빔'} →`, 10, ty - 18);
 }
-/* 결과를 그릴 때마다: 지난 실험 흔적을 치우고, 질량수 조합이면 '합성 실험' 탭을 단다 */
+/* 다른 결과를 그리면 실험 흔적을 치운다 */
 {
   const _rr = rxRender;
   rxRender = function(){
@@ -58317,12 +58380,17 @@ function rxShiTick(now){
     card.classList.remove('shi-on'); st.classList.remove('shi'); tabs.classList.remove('shi-tabs');
     tabs.querySelectorAll('.shi-t').forEach(b => b.remove());
     const s = document.getElementById('shiSide'); if(s) s.remove();
-    cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0; if(RX_SHI_FX.cv){ RX_SHI_FX.cv.remove(); RX_SHI_FX.cv = null; }
-    const out = _rr.apply(this, arguments);
-    try{ const m = rxShiMatch(); if(m) rxShiTab(m); }catch(e){}
-    return out;
+    cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0; RX_SHI_FX.mode = ''; if(RX_SHI_FX.cv){ RX_SHI_FX.cv.remove(); RX_SHI_FX.cv = null; }
+    return _rr.apply(this, arguments);
   };
 }
+/* 섞기 버튼보다 먼저 가로채서 실패 대신 새 원소 결과로 */
+document.addEventListener('click', e => {
+  if(!e.target.closest || !e.target.closest('#mixBtn')) return;
+  const r = rxShiMatch(); if(!r) return;
+  e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();
+  rxShiStart(r);
+}, true);
 if(typeof ACH !== 'undefined'){
   const i = ACH.findIndex(a => a.id === 'master');
   ACH.splice(i >= 0 ? i : ACH.length, 0,
