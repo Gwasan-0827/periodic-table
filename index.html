@@ -57019,19 +57019,19 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 
 <style>
   /* ═══ 자철석 실물 3D (과산 블렌더 표본: 원석 + 팔면체 결정 + 조각) ═══ */
-  #magFx{position:fixed;inset:0;z-index:2147482950;background:radial-gradient(80% 70% at 50% 40%,#1d2433,#0d1119 70%,#080a10);color:#e8ecf4;font-family:system-ui,sans-serif;animation:flIn .4s both;user-select:none;-webkit-user-select:none;touch-action:none}
-  #magFx.out{animation:flOut .3s ease-in forwards}
-  #magFx canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
-  #magFx canvas:active{cursor:grabbing}
-  #magFx .hd{position:absolute;left:clamp(16px,4vw,48px);top:max(18px,env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 8px #0d1119}
-  #magFx .hd h2{margin:0;font:600 clamp(24px,4.4vw,42px)/1 'Kanit',system-ui,sans-serif;letter-spacing:.06em}
-  #magFx .hd small{display:block;margin-top:8px;font:700 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:rgba(220,228,240,.7)}
-  #magFx .hd p{margin:10px 0 0;max-width:400px;font-size:12.5px;line-height:1.55;color:rgba(220,228,240,.72);word-break:keep-all}
-  #magFx .x{position:absolute;right:16px;top:max(16px,env(safe-area-inset-top));width:42px;height:42px;border-radius:12px;border:1px solid rgba(220,228,240,.3);background:rgba(10,14,22,.6);color:#fff;font-size:17px;cursor:pointer;z-index:2}
-  #magFx .fb{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;padding:10px;border-radius:16px;background:rgba(10,14,22,.62);border:1px solid rgba(220,228,240,.16)}
-  #magFx .fb button{font:inherit;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer;color:#e8ecf4;border:1px solid rgba(220,228,240,.28);background:rgba(255,255,255,.04)}
-  #magFx .fb button.on{color:#121620;background:linear-gradient(180deg,#fff,#c9d3e6);border-color:#fff}
-  @media (max-width:640px){ #magFx .hd p{display:none} }
+  #mgtFx{position:fixed;inset:0;z-index:2147482950;background:radial-gradient(80% 70% at 50% 40%,#1d2433,#0d1119 70%,#080a10);color:#e8ecf4;font-family:system-ui,sans-serif;animation:flIn .4s both;user-select:none;-webkit-user-select:none;touch-action:none}
+  #mgtFx.out{animation:flOut .3s ease-in forwards}
+  #mgtFx canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+  #mgtFx canvas:active{cursor:grabbing}
+  #mgtFx .hd{position:absolute;left:clamp(16px,4vw,48px);top:max(18px,env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 8px #0d1119}
+  #mgtFx .hd h2{margin:0;font:600 clamp(24px,4.4vw,42px)/1 'Kanit',system-ui,sans-serif;letter-spacing:.06em}
+  #mgtFx .hd small{display:block;margin-top:8px;font:700 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:rgba(220,228,240,.7)}
+  #mgtFx .hd p{margin:10px 0 0;max-width:400px;font-size:12.5px;line-height:1.55;color:rgba(220,228,240,.72);word-break:keep-all}
+  #mgtFx .x{position:absolute;right:16px;top:max(16px,env(safe-area-inset-top));width:42px;height:42px;border-radius:12px;border:1px solid rgba(220,228,240,.3);background:rgba(10,14,22,.6);color:#fff;font-size:17px;cursor:pointer;z-index:2}
+  #mgtFx .fb{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;padding:10px;border-radius:16px;background:rgba(10,14,22,.62);border:1px solid rgba(220,228,240,.16)}
+  #mgtFx .fb button{font:inherit;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer;color:#e8ecf4;border:1px solid rgba(220,228,240,.28);background:rgba(255,255,255,.04)}
+  #mgtFx .fb button.on{color:#121620;background:linear-gradient(180deg,#fff,#c9d3e6);border-color:#fff}
+  @media (max-width:640px){ #mgtFx .hd p{display:none} }
   #mTabMag{background:linear-gradient(90deg,rgba(201,211,230,.22),rgba(255,255,255,.08))!important}
 </style>
 <script>
@@ -57067,8 +57067,8 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       vec3 col=base*dif*(1.-gm.y*.6)*2.2+spec*(gm.x*.85+f*.4);
       col=col/(1.+col*.5);col=pow(col,vec3(.92));gl_FragColor=vec4(col,1.);}`;
   function open(){
-    document.getElementById('magFx')?.remove();
-    const ov = document.createElement('div'); ov.id = 'magFx';
+    document.getElementById('mgtFx')?.remove();
+    const ov = document.createElement('div'); ov.id = 'mgtFx';
     ov.innerHTML = `<canvas></canvas>
       <div class="hd"><h2>MAGNETITE</h2><small>Fe₃O₄ · ${P('자철석 원석 + 팔면체 결정', 'rough specimen + octahedral crystals')}</small>
         <p>${P('자철석은 정팔면체 결정으로 자라요. 금속처럼 반짝이는 검은색이고, 자석에 착 붙어요. 지구에서 가장 자성이 센 천연 광물이라, 옛날 사람들이 처음 만난 "자석"도 번개 맞은 자철석이었어요.', 'Magnetite grows as octahedral crystals: metallic black and strongly drawn to magnets. It is the most magnetic natural mineral on Earth; the first "magnets" people found were lightning-struck magnetite.')}</p></div>
