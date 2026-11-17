@@ -11549,13 +11549,12 @@ function rxFluorite(){
     if(nr[0] * m0[0] + nr[1] * m0[1] + nr[2] * m0[2] < 0) nr = nr.map(x => -x);
     const e = Math.max(...q.map((a, i) => Math.hypot(a[0] - q[(i + 1) % n][0], a[1] - q[(i + 1) % n][1], a[2] - q[(i + 1) % n][2])));
     if(n === 3 && e > 30){
-      // 큰 삼각형은 잘게 나눠 색띠를 그린다
-      const split = (a, b, c, d) => {
-        if(d === 0){ const t = [a, b, c]; faces.push({ p: t, n: nr, m: mat, col: rxFluoCol(cen(t)), top: nr[1] < -0.6 }); return; }
-        const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a);
-        split(a, ab, ca, d - 1); split(ab, b, bc, d - 1); split(ca, bc, c, d - 1); split(ab, bc, ca, d - 1);
-      };
-      split(q[0], q[1], q[2], 3);
+      // 큰 면은 한 장 그대로 (잘게 나누면 이음매가 격자처럼 보임).
+      // 대신 안쪽에 크기가 다른 팔면체 껍질을 겹쳐서, 실제 형석의 '성장띠(유령 결정)'처럼 색이 층층이 비치게 한다
+      faces.push({ p: q, n: nr, m: Object.assign({}, mat, { clear: 0.36 }), col: [150, 96, 232], top: nr[1] < -0.6 });
+      [[0.8, [124, 80, 220], 0.32], [0.6, [90, 120, 232], 0.42], [0.4, [56, 214, 196], 0.7]].forEach(([k, col, cl]) => {
+        faces.push({ p: q.map(v => v.map(x => x * k)), n: nr, m: Object.assign({}, mat, { clear: cl }), col, top: nr[1] < -0.6, inner: 1 });
+      });
     } else {
       // 베벨 모서리: 밝게 빛나는 가장자리
       faces.push({ p: q, n: nr, m: mat, col: rxMix(rxFluoCol(m0), [235, 225, 255], 0.45), edge: 1, top: nr[1] < -0.6 });
