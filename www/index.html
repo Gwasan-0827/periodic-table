@@ -58138,5 +58138,181 @@ if(typeof ACH !== 'undefined'){
 }
 </script>
 
+<style>
+  /* ═══ 초중원소 합성: 질량수만큼 원자를 담으면 가속기 실험 ═══ */
+  #shiFx{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(4,6,10,.88);padding:16px}
+  #shiFx.on{display:flex}
+  #shiBox{width:min(620px,96vw);max-height:94vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:16px 18px 18px;animation:nucCard .42s cubic-bezier(.2,.9,.25,1);position:relative}
+  #shiBox .x{position:absolute;right:12px;top:10px;cursor:pointer;font-size:20px;color:var(--dim);background:none;border:0}
+  #shiBox .k{font-size:11px;letter-spacing:.12em;color:#b197fc;font-weight:700}
+  #shiBox h2{font-size:18px;margin:4px 0 2px}
+  #shiBox .eq{font-family:ui-monospace,monospace;font-size:13px;color:var(--dim)}
+  #shiCv{width:100%;aspect-ratio:16/8;display:block;border-radius:9px;margin:12px 0 10px;background:radial-gradient(circle at 70% 50%,#151a2a,#07090f 75%)}
+  #shiCnt{font-family:ui-monospace,monospace;font-size:12px;color:#8e99ad;text-align:center;min-height:16px}
+  #shiRes{margin-top:10px;font-size:13.5px;line-height:1.6;min-height:60px;opacity:0;transition:opacity .4s}
+  #shiRes.on{opacity:1}
+  #shiRes b.big{display:block;font-size:17px;margin-bottom:4px}
+  #shiRes .ok{color:#8ce99a}#shiRes .no{color:#ff8787}#shiRes .wow{color:#ffd43b}
+  #shiRes .hist{display:block;margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--dim);font-size:12.5px}
+  #shiBtns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+  #shiBtns button{font:inherit;font-size:13px;padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:none;color:var(--text)}
+  #shiBtns button.p{background:#b197fc;color:#120a2a;border-color:#b197fc;font-weight:700}
+</style>
+<div id="shiFx" aria-hidden="true"><div id="shiBox">
+  <button class="x" id="shiX" aria-label="닫기">×</button>
+  <div class="k" id="shiK"></div><h2 id="shiH"></h2><div class="eq" id="shiEq"></div>
+  <canvas id="shiCv"></canvas><div id="shiCnt"></div><div id="shiRes"></div>
+  <div id="shiBtns"><button id="shiAgain" class="p"></button><button id="shiClose"></button></div>
+</div></div>
+<script>
+/* ═══════════════════════════════════════════════════
+   초중원소 합성: 원자 개수를 "질량수"로 담으면 (예: Ti 50개 + Cf 249개)
+   실제 연구소가 쓴(쓰는) 빔 + 표적 조합으로 알아듣고 가속기 실험을 보여준다.
+   양성자 수를 더하면 새 원소 번호. 이미 만든 원소는 성공, 119·120은 거의 실패.
+   ═══════════════════════════════════════════════════ */
+const RX_SHI = [
+  // [빔, 빔 질량수, 표적, 표적 질량수, 결과 번호, 상태, 기록 ko, en]
+  ['Ti', 50, 'Cf', 249, 120, 'now', '미국 버클리 연구소가 지금 실제로 하고 있는 실험이에요. 2024년에 같은 타이타늄-50 빔으로 리버모륨 원자 2개를 만드는 데 성공해서, 다음 목표가 바로 120번이에요.', 'This is the actual experiment Berkeley Lab is running now. In 2024 the same titanium-50 beam made two atoms of livermorium, so element 120 is next.'],
+  ['V', 51, 'Cm', 248, 119, 'now', '일본 리켄 연구소가 2018년부터 하고 있는 실험이에요. 몇 년째 쏘고 있지만 아직 한 개도 안 나왔어요.', 'RIKEN in Japan has been running this since 2018. Years of firing, not a single atom yet.'],
+  ['Fe', 58, 'Pu', 244, 120, 'fail', '2007년 러시아 두브나에서 실제로 해 본 조합이에요. 결과는 0개였어요.', 'Dubna in Russia actually tried this in 2007. The result was zero atoms.'],
+  ['Ca', 48, 'Cf', 249, 118, 'done', '2002~2005년 러시아 두브나에서 오가네손을 만든 조합이에요. 몇 년 동안 쏴서 겨우 몇 개였어요.', 'The combination Dubna used to make oganesson in 2002–2005. Years of firing for a handful of atoms.'],
+  ['Ca', 48, 'Bk', 249, 117, 'done', '2010년 두브나에서 테네신을 만든 조합이에요. 처음에 6개가 나왔어요. 버클륨 표적은 미국에서 만들어서 비행기로 실어 보냈어요.', 'The combination Dubna used to make tennessine in 2010: six atoms at first. The berkelium target was made in the US and flown over.'],
+  ['Ti', 50, 'Pu', 244, 116, 'done', '2024년 버클리에서 타이타늄-50 빔으로 리버모륨 원자 2개를 만든 조합이에요. 120번 도전의 예행연습이었어요.', 'Berkeley made two atoms of livermorium this way in 2024: the dress rehearsal for element 120.'],
+  ['Ca', 48, 'Pu', 244, 114, 'done', '1998년 두브나에서 플레로븀을 처음 만든 조합이에요.', 'The combination Dubna used to first make flerovium in 1998.'],
+  ['Zn', 70, 'Bi', 209, 113, 'done', '일본 리켄이 니호늄을 만든 조합이에요. 9년 동안 쏴서 딱 3개 나왔어요. 아시아에서 처음 찾은 원소예요.', 'How RIKEN made nihonium: nine years of firing for exactly three atoms. The first element discovered in Asia.'],
+];
+const RX_SHI_T = {
+  ko: { k:'초중원소 합성 실험', fire:'빔 발사', again:'한 번 더 쏘기', close:'닫기', shots:n => `충돌 ${n} × 10¹⁸회`,
+        ok:(nm, n) => `성공! ${nm} 원자 ${n}개`, decay:s => `…그리고 ${s} 만에 붕괴했어요`, none:'아무것도 안 나왔어요', noneSub:'실제 연구소도 지금 이 상태예요. 원소는 이렇게 만드는 거예요',
+        wow:n => `!!!! ${n}번 원자 1개 검출…?!`, wowSub:'…하고 사라졌어요. 다시 확인할 방법이 없네요. 실제로 이랬으면 노벨상감이에요', pre:'질량수만큼 담았네요. 연구소에서 쓰는 빔과 표적이에요' },
+  en: { k:'Superheavy synthesis', fire:'Fire beam', again:'Fire again', close:'Close', shots:n => `${n} × 10¹⁸ collisions`,
+        ok:(nm, n) => `Success! ${n} atom${n > 1 ? 's' : ''} of ${nm}`, decay:s => `…and it decayed in ${s}`, none:'Nothing came out', noneSub:'Which is exactly where the real labs are right now. This is how elements get made',
+        wow:n => `!!!! One atom of element ${n} detected…?!`, wowSub:'…and it is gone. No way to confirm it. If this happened for real it would be Nobel material', pre:'You added atoms equal to the mass numbers: a real beam and target' },
+};
+const RX_SHI_LIFE = { 113:'0.0014초', 114:'2초', 116:'0.001초', 117:'0.05초', 118:'0.0007초', 119:'0.00001초', 120:'0.00001초' };
+const RX_SHI_LIFE_EN = { 113:'0.0014 seconds', 114:'2 seconds', 116:'0.001 seconds', 117:'0.05 seconds', 118:'0.0007 seconds', 119:'0.00001 seconds', 120:'0.00001 seconds' };
+const RX_SHI_FX = { raf:0, t0:0, r:null, out:null, cnt:0 };
+function rxShiMatch(){
+  if(typeof mix === 'undefined' || !mix.length) return null;
+  const c = {}; mix.forEach(n => { const s = byNum[n].s; c[s] = (c[s] || 0) + 1; });
+  const k = Object.keys(c); if(k.length !== 2) return null;
+  return RX_SHI.find(r => c[r[0]] === r[1] && c[r[2]] === r[3]) || null;
+}
+function rxShiName(z){
+  if(z <= 118) return elName(byNum[z]);
+  const en = LANG === 'en'; return z === 119 ? (en ? 'ununennium' : '우누넨늄') : (en ? 'unbinilium' : '운비닐륨');
+}
+function rxShiOpen(r){
+  const en = LANG === 'en', T = RX_SHI_T[en ? 'en' : 'ko'], F = RX_SHI_FX;
+  F.r = r;
+  const zb = EL.find(e => e.s === r[0]).n, zt = EL.find(e => e.s === r[2]).n;
+  document.getElementById('shiK').textContent = T.k;
+  document.getElementById('shiH').textContent = `${r[0]}-${r[1]} → ${r[2]}-${r[3]}`;
+  document.getElementById('shiEq').textContent = `${zb} + ${zt} = ${r[4]}  (${rxShiName(r[4])})  ·  ${T.pre}`;
+  document.getElementById('shiAgain').textContent = T.fire;
+  document.getElementById('shiClose').textContent = T.close;
+  const fx = document.getElementById('shiFx'); fx.classList.add('on'); fx.setAttribute('aria-hidden', 'false');
+  rxShiFire();
+  try{ rxEvt('shi'); }catch(e){}
+}
+function rxShiClose(){
+  const fx = document.getElementById('shiFx'); fx.classList.remove('on'); fx.setAttribute('aria-hidden', 'true');
+  cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0;
+}
+function rxShiFire(){
+  const F = RX_SHI_FX, r = F.r, en = LANG === 'en', T = RX_SHI_T[en ? 'en' : 'ko'];
+  // 결과는 미리 정해 둔다
+  if(r[5] === 'done') F.out = { k:'ok', n: 1 + Math.floor(Math.random() * 3) };
+  else if(r[5] === 'now' && Math.random() < 0.02) F.out = { k:'wow' };
+  else F.out = { k:'none' };
+  F.t0 = performance.now(); F.cnt = 0;
+  const res = document.getElementById('shiRes'); res.classList.remove('on'); res.innerHTML = '';
+  document.getElementById('shiAgain').disabled = true;
+  document.getElementById('shiAgain').textContent = T.again;
+  cancelAnimationFrame(F.raf); F.raf = requestAnimationFrame(rxShiTick);
+  try{ SFX.tick(); }catch(e){}
+}
+function rxShiDone(){
+  const F = RX_SHI_FX, r = F.r, en = LANG === 'en', T = RX_SHI_T[en ? 'en' : 'ko'], nm = rxShiName(r[4]);
+  const life = (en ? RX_SHI_LIFE_EN : RX_SHI_LIFE)[r[4]];
+  let h = '';
+  if(F.out.k === 'ok') h = `<b class="big ok">${T.ok(nm, F.out.n)}</b>${T.decay(life)}`;
+  else if(F.out.k === 'wow'){ h = `<b class="big wow">${T.wow(r[4])}</b>${T.wowSub}`; try{ rxEvt('shiwow'); SFX.gem(); }catch(e){} }
+  else h = `<b class="big no">${T.none}</b>${r[5] === 'now' ? T.noneSub : ''}`;
+  h += `<span class="hist">${en ? r[7] : r[6]}</span>`;
+  const res = document.getElementById('shiRes'); res.innerHTML = h; res.classList.add('on');
+  document.getElementById('shiAgain').disabled = false;
+}
+function rxShiTick(now){
+  const F = RX_SHI_FX, cv = document.getElementById('shiCv');
+  if(!document.getElementById('shiFx').classList.contains('on')){ F.raf = 0; return; }
+  F.raf = requestAnimationFrame(rxShiTick);
+  const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
+  if(!w) return;
+  if(cv.width !== Math.round(w * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  const t = (now - F.t0) / 1000, DUR = 3.2, tx = w * .74, ty = h * .5, R = Math.min(w, h) * .17;
+  const col = s => (typeof CAT !== 'undefined' && CAT[EL.find(e => e.s === s).c] && CAT[EL.find(e => e.s === s).c].col) || '#9aa8ff';
+  // 가속관
+  c.strokeStyle = 'rgba(154,168,255,.18)'; c.lineWidth = 14; c.beginPath(); c.moveTo(0, ty); c.lineTo(tx - R - 8, ty); c.stroke();
+  c.strokeStyle = 'rgba(154,168,255,.35)'; c.lineWidth = 1; for(let x = 10; x < tx - R; x += 26){ c.beginPath(); c.moveTo(x, ty - 9); c.lineTo(x, ty + 9); c.stroke(); }
+  // 표적 핵 (흔들림)
+  const shake = t < DUR ? Math.sin(t * 60) * 1.2 : 0;
+  const g = c.createRadialGradient(tx - R * .3, ty - R * .35, R * .1, tx, ty, R);
+  g.addColorStop(0, '#fff'); g.addColorStop(.25, '#ff9f9f'); g.addColorStop(1, '#3a1420');
+  c.fillStyle = g; c.beginPath(); c.arc(tx + shake, ty, R, 0, 7); c.fill();
+  c.fillStyle = '#0b0d18'; c.font = `800 ${Math.round(R * .5)}px system-ui,sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(F.r[2], tx + shake, ty - R * .12); c.font = `700 ${Math.round(R * .26)}px ui-monospace,monospace`; c.fillText(F.r[3], tx + shake, ty + R * .32);
+  // 빔 입자들: 거의 다 튕겨 나간다
+  if(t < DUR){
+    for(let i = 0; i < 9; i++){
+      const p = ((t * 2.4 + i / 9) % 1), x = p * (tx - R), bounce = p > .96;
+      const y = ty + Math.sin(i * 7.3) * 3;
+      c.fillStyle = 'rgba(116,192,252,.9)'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill();
+      c.fillStyle = 'rgba(116,192,252,.25)'; c.beginPath(); c.arc(x - 9, y, 3, 0, 7); c.fill();
+      if(bounce){ c.strokeStyle = 'rgba(255,212,59,.8)'; c.lineWidth = 1.5; c.beginPath(); c.arc(tx - R, y, 10, 0, 7); c.stroke(); }
+    }
+    F.cnt = Math.floor(t / DUR * 40) + 1;
+    document.getElementById('shiCnt').textContent = RX_SHI_T[LANG === 'en' ? 'en' : 'ko'].shots(F.cnt);
+  }else{
+    if(!document.getElementById('shiRes').classList.contains('on')) rxShiDone();
+    const u = t - DUR;
+    if(F.out.k !== 'none' && u < 2.2){
+      // 새 원자핵 번쩍 → 붕괴
+      const a = Math.max(0, 1 - u / 2.2), rr = R * .55 * (1 + u * .3);
+      c.fillStyle = F.out.k === 'wow' ? `rgba(255,212,59,${a})` : `rgba(140,233,154,${a})`;
+      c.beginPath(); c.arc(tx, ty - R * 1.25, rr, 0, 7); c.fill();
+      c.fillStyle = `rgba(11,13,24,${a})`; c.font = `800 ${Math.round(rr * .7)}px system-ui,sans-serif`; c.fillText(F.r[4], tx, ty - R * 1.25);
+      for(let k = 0; k < 6; k++){ const an = k * 1.05 + 0.3, d = u * 90; c.fillStyle = `rgba(255,255,255,${a})`; c.beginPath(); c.arc(tx + Math.cos(an) * d, ty - R * 1.25 + Math.sin(an) * d, 2.5, 0, 7); c.fill(); }
+    }
+  }
+  c.textBaseline = 'alphabetic';
+  c.fillStyle = '#8e99ad'; c.font = '600 11px system-ui,sans-serif'; c.textAlign = 'left';
+  c.fillText(`${F.r[0]}-${F.r[1]} ${LANG === 'en' ? 'beam' : '빔'} →`, 10, ty - 18);
+}
+document.getElementById('shiX').addEventListener('click', rxShiClose);
+document.getElementById('shiClose').addEventListener('click', rxShiClose);
+document.getElementById('shiAgain').addEventListener('click', rxShiFire);
+document.getElementById('shiFx').addEventListener('click', e => { if(e.target.id === 'shiFx') rxShiClose(); });
+addEventListener('keydown', e => { if(e.key === 'Escape' && document.getElementById('shiFx').classList.contains('on')) rxShiClose(); });
+/* 섞기 버튼보다 먼저 가로챈다 */
+document.addEventListener('click', e => {
+  if(!e.target.closest || !e.target.closest('#mixBtn')) return;
+  const r = rxShiMatch(); if(!r) return;
+  e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();
+  rxShiOpen(r);
+}, true);
+window.rxShiOpen = rxShiOpen;
+if(typeof ACH !== 'undefined'){
+  const i = ACH.findIndex(a => a.id === 'master');
+  ACH.splice(i >= 0 ? i : ACH.length, 0,
+    { id:'shi', secret:true, need:() => rxEvtHas('shi'),
+      ko:['입자 가속기 운전병','원자를 질량수만큼 담아서 진짜 초중원소 실험을 돌렸다'], en:['Accelerator operator','Loaded atoms by mass number and ran a real superheavy experiment'] },
+    { id:'shiwow', secret:true, need:() => rxEvtHas('shiwow'),
+      ko:['노벨상 각','아직 아무도 못 만든 원소를 만들었다…? 근데 증거가 없음'], en:['Nobel material','Made an element nobody has made yet…? No evidence though'] });
+  try{ RX_ACH_IC.shi = '🌀'; RX_ACH_IC.shiwow = '🏅'; }catch(e){}
+}
+</script>
+
 </body>
 </html>
