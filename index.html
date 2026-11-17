@@ -58133,9 +58133,12 @@ if(typeof ACH !== 'undefined'){
 </script>
 
 <style>
-  /* ═══ 초중원소 합성: 질량수만큼 담으면 조합 결과 화면이 가속기 실험으로 ═══ */
-  #mStage.shi > :not(.shi-cv):not(.rx-cap):not(.rx5-noise){visibility:hidden!important}
+  /* ═══ 초중원소 합성: 질량수만큼 담으면 조합 결과에 '합성 실험' 탭 ═══ */
+  #mStage.shi > :not(.shi-cv):not(.rx-cap):not(.rx5-noise):not(.rx-tabs){visibility:hidden!important}
   #card.shi-on #mKind{display:none!important}
+  #card.shi-on .rx-side > :not(#mInfo):not(#mState):not(#shiSide):not(.cbtns){display:none!important}
+  #mTabs.shi-tabs > button:not(.shi-t){display:none!important}
+  #mTabs .shi-t.sx:not(.on){color:#d0bfff}
   #mStage .shi-cv{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
   #card.shi-on .rx-gauge,#card.shi-on #mMoreBtn,#card.shi-on #rxFailHint{display:none!important}
   #shiSide{margin:8px 0 4px;font-size:13px;line-height:1.6;opacity:0;transition:opacity .4s}
@@ -58187,27 +58190,45 @@ function rxShiName(z){
 }
 function rxShiSym(z){ return z <= 118 ? byNum[z].s : (z === 119 ? 'Uue' : 'Ubn'); }
 const rxShiT = () => RX_SHI_T[LANG === 'en' ? 'en' : 'ko'];
-function rxShiStart(r){
-  const en = LANG === 'en', T = rxShiT(), F = RX_SHI_FX;
-  const order = [], c = {};
-  mix.forEach(n => { if(c[n] === undefined){ order.push(n); c[n] = 0; } c[n]++; });
-  document.getElementById('mEq').textContent = order.map(n => `${byNum[n].s}×${c[n]}`).join('  +  ');
+function rxShiTab(r){
+  const en = LANG === 'en', tabs = document.getElementById('mTabs');
+  tabs.classList.add('shi-tabs'); tabs.hidden = false;
+  const mk = (id, txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = 'shi-t'; b.textContent = txt;
+    b.addEventListener('click', e => { e.stopPropagation(); fn(); }); tabs.appendChild(b); return b; };
+  const F = RX_SHI_FX;
+  F.r = r;
+  F.keep = { f: document.getElementById('mFormula').innerHTML, fc: document.getElementById('mFormula').className, n: document.getElementById('mName').textContent,
+    st: document.getElementById('mState').textContent, sub: document.getElementById('mSub').textContent, card: document.getElementById('card').className };
+  const b0 = mk('mTabShiR', en ? 'Result' : '결과', () => rxShiMode(false));
+  const b1 = mk('mTabShi', en ? '⚛ Synthesis' : '⚛ 합성 실험', () => rxShiMode(true));
+  b1.classList.add('sx');
+  rxShiMode(false, true);
+}
+function rxShiMode(on, init){
+  const F = RX_SHI_FX, r = F.r, en = LANG === 'en', K = F.keep;
+  const card = document.getElementById('card'), st = document.getElementById('mStage');
+  [['mTabShiR', !on], ['mTabShi', on]].forEach(([id, v]) => { const b = document.getElementById(id); if(b){ b.classList.toggle('on', v); b.setAttribute('aria-selected', v); } });
+  if(!on){
+    cancelAnimationFrame(F.raf); F.raf = 0;
+    st.classList.remove('shi'); if(F.cv){ F.cv.remove(); F.cv = null; }
+    const s = document.getElementById('shiSide'); if(s) s.remove();
+    if(init) return;
+    card.className = K.card;
+    document.getElementById('mFormula').innerHTML = K.f; document.getElementById('mFormula').className = K.fc;
+    document.getElementById('mName').textContent = K.n; document.getElementById('mState').textContent = K.st; document.getElementById('mSub').textContent = K.sub;
+    return;
+  }
+  if(st.classList.contains('shi')) return;
+  card.classList.add('shi-on'); st.classList.add('shi');
   document.getElementById('mFormula').innerHTML = `<sup>${r[1] + r[3]}</sup>${rxShiSym(r[4])}`;
   document.getElementById('mFormula').className = 'formula';
   document.getElementById('mName').textContent = en ? `${rxShiName(r[4])} synthesis` : `${rxShiName(r[4])} 합성 실험`;
-  RX_RAW = '';
-  rxRender('ok', '', order, c);
-  F.r = r;
-  const card = document.getElementById('card'), st = document.getElementById('mStage');
-  card.classList.add('shi-on');
-  st.classList.add('shi');
-  const cv = document.createElement('canvas'); cv.className = 'shi-cv rx-fx'; st.appendChild(cv); F.cv = cv;
+  const cv = document.createElement('canvas'); cv.className = 'shi-cv'; st.appendChild(cv); F.cv = cv;
   const zb = EL.find(e => e.s === r[0]).n, zt = EL.find(e => e.s === r[2]).n;
   const side = document.createElement('div'); side.id = 'shiSide';
   document.getElementById('mState').after(side);
   side.dataset.eq = `${r[0]}-${r[1]} + ${r[2]}-${r[3]}  ·  ${zb} + ${zt} = ${r[4]}`;
-  SFX.start();
-  playFusion(mix.slice(), true, () => { SFX.ok(); modal.classList.add('on'); rxReveal(); rxShiFire(); });
+  rxShiFire();
   try{ rxEvt('shi'); }catch(e){}
 }
 function rxShiFire(){
@@ -58282,24 +58303,20 @@ function rxShiTick(now){
   c.fillStyle = '#8e99ad'; c.font = '600 11px system-ui,sans-serif'; c.textAlign = 'left';
   c.fillText(`${F.r[0]}-${F.r[1]} ${LANG === 'en' ? 'beam' : '빔'} →`, 10, ty - 18);
 }
-/* 다른 결과를 그리면 실험 흔적을 치운다 */
+/* 결과를 그릴 때마다: 지난 실험 흔적을 치우고, 질량수 조합이면 '합성 실험' 탭을 단다 */
 {
   const _rr = rxRender;
   rxRender = function(){
-    document.getElementById('card').classList.remove('shi-on');
-    document.getElementById('mStage').classList.remove('shi');
+    const card = document.getElementById('card'), st = document.getElementById('mStage'), tabs = document.getElementById('mTabs');
+    card.classList.remove('shi-on'); st.classList.remove('shi'); tabs.classList.remove('shi-tabs');
+    tabs.querySelectorAll('.shi-t').forEach(b => b.remove());
     const s = document.getElementById('shiSide'); if(s) s.remove();
-    cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0; RX_SHI_FX.cv = null;
-    return _rr.apply(this, arguments);
+    cancelAnimationFrame(RX_SHI_FX.raf); RX_SHI_FX.raf = 0; if(RX_SHI_FX.cv){ RX_SHI_FX.cv.remove(); RX_SHI_FX.cv = null; }
+    const out = _rr.apply(this, arguments);
+    try{ const m = rxShiMatch(); if(m) rxShiTab(m); }catch(e){}
+    return out;
   };
 }
-/* 섞기 버튼보다 먼저 가로챈다 */
-document.addEventListener('click', e => {
-  if(!e.target.closest || !e.target.closest('#mixBtn')) return;
-  const r = rxShiMatch(); if(!r) return;
-  e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();
-  rxShiStart(r);
-}, true);
 if(typeof ACH !== 'undefined'){
   const i = ACH.findIndex(a => a.id === 'master');
   ACH.splice(i >= 0 ? i : ACH.length, 0,
