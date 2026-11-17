@@ -3260,8 +3260,8 @@ const CAT = {
   nonmetal:{ko:"비금속",v:"--nonmetal"},
   halogen:{ko:"할로젠",v:"--halogen"},
   noble:{ko:"비활성 기체",v:"--noble"},
-  lanthanide:{ko:"란타넘족",v:"--lanthanide"},
-  actinide:{ko:"악티늄족",v:"--actinide"},
+  lanthanide:{ko:"란타노이드",v:"--lanthanide"},
+  actinide:{ko:"악티노이드",v:"--actinide"},
   unknown:{ko:"성질 미확인",v:"--unknown"},
 };
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -3328,7 +3328,7 @@ function buildTable(){
 
   grid.appendChild(Object.assign(document.createElement('div'),{className:'rowgap'}));
 
-  // 란타넘족 / 악티늄족
+  // 란타노이드 / 악티노이드
   [[57,71],[89,103]].forEach(([a,b]) => {
     grid.appendChild(Object.assign(document.createElement('div'),{className:'phead'}));
     grid.appendChild(Object.assign(document.createElement('div'),{className:'spacer'}));
@@ -3404,7 +3404,7 @@ function select(n){
     <div class="rows">
       <div class="r"><span>원자번호</span><span>${e.n}</span></div>
       <div class="r"><span>원자량</span><span>${e.m}</span></div>
-      <div class="r"><span>족</span><span>${e.g ?? (e.c==='lanthanide'?'란타넘족':'악티늄족')}</span></div>
+      <div class="r"><span>족</span><span>${e.g ?? (e.c==='lanthanide'?'란타노이드':'악티노이드')}</span></div>
       <div class="r"><span>주기</span><span>${e.p}</span></div>
       <div class="r"><span>전자 배치</span><span>${e.sh.join(', ')}</span></div>
     </div>
@@ -4961,7 +4961,7 @@ const UI = {
     pickEl:"원소를 선택하세요", addMix:"조합에 담기  +",
     atomN:"원자번호", atomM:"원자량", group:"족", period:"주기", conf:"전자 배치",
     shells:"전자껍질", proton:"양성자", neutron:"중성자", electron:"전자",
-    lan:"란타넘족", act:"악티늄족", unstable:"UNSTABLE",
+    lan:"란타노이드", act:"악티노이드", unstable:"UNSTABLE",
     ok:"조합 성공", loose:"비율은 대충", failBadge:"실패", unknown:"미지의 물질",
     dexTitle:"조합 도감",
     /* 퀴즈 */
@@ -7084,7 +7084,7 @@ const CHANGELOG = [
         '표에서 바로 담는 모드와 N개 한 번에 담기',
         '배경 발광과 파형',
         '조합 31종 추가 — 도감 153 → 184개',
-        '악티늄족 줄 정렬 수정',
+        '악티노이드 줄 정렬 수정',
         '모바일 화면 정리 (범례·트레이·세로 공간)',
         '원자 모형 확대',
       ],
@@ -18967,7 +18967,7 @@ if(typeof ACH !== 'undefined'){
 }
 
 /* ═══════════════════════════════════════════════════
-   119번 예고: 프랑슘 아래(란타넘족 줄의 1족 자리)에 빈칸이 희미하게 깜빡인다.
+   119번 예고: 프랑슘 아래(란타노이드 줄의 1족 자리)에 빈칸이 희미하게 깜빡인다.
    누르면 "아직 아무도 못 만들었어요". 계속 누르면 말이 조금씩 바뀐다.
    ═══════════════════════════════════════════════════ */
 const RX_TEASE = {
@@ -19517,11 +19517,11 @@ const RIEL_CAT = {
                  'With metals it forms salts. “Halogen” literally means “salt maker”.'] },
   noble: { ko:['비활성 기체예요. 바깥 껍질이 이미 꽉 차 있어서 반응을 거의 안 해요. 실험실에서 제일 얌전한 친구들이에요.'],
            en:['A noble gas. Its outer shell is already full, so it barely reacts. The calmest residents of the lab.'] },
-  lanthanide: { ko:['란타넘족이에요. 서로 성질이 너무 비슷해서 하나씩 분리하기가 정말 어려워요.',
+  lanthanide: { ko:['란타노이드예요. 서로 성질이 너무 비슷해서 하나씩 분리하기가 정말 어려워요.',
                     '강한 자석이나 스마트폰 부품에 쓰이는 희토류가 여기 모여 있어요.'],
                 en:['A lanthanide. They are so alike that separating them is really hard.',
                     'Many of the rare earths used in strong magnets and phone parts live here.'] },
-  actinide: { ko:['악티늄족이에요. 전부 방사성이라서, 저도 이 줄은 멀리서만 봐요.'],
+  actinide: { ko:['악티노이드예요. 전부 방사성이라서, 저도 이 줄은 멀리서만 봐요.'],
               en:['An actinide. Every one of them is radioactive, so I only look at this row from a distance.'] },
   unknown: { ko:['아직 성질이 확실히 밝혀지지 않은 원소예요. 만들어도 눈 깜짝할 새에 붕괴해 버려서요.'],
              en:['Its properties are not fully known yet. It falls apart the instant it is made.'] },
@@ -21022,7 +21022,7 @@ const RX_ORB_T = {
         s:'공 모양이에요. 방향이 없어서 어느 쪽에서 봐도 똑같아요.',
         p:'아령 모양이에요. x·y·z 세 방향으로 하나씩, 방이 3개 있어요.',
         d:'네 잎 모양이 4개, 도넛을 두른 아령 모양(d<sub>z²</sub>)이 1개. 방이 5개 있어요.',
-        f:'잎이 여섯·여덟 갈래인 복잡한 모양이에요. 방이 7개 있고, 란타넘족·악티늄족에서 채워져요.',
+        f:'잎이 여섯·여덟 갈래인 복잡한 모양이에요. 방이 7개 있고, 란타노이드·악티노이드에서 채워져요.',
         occ:'전자 {e}개 / 최대 {c}개', node:'전자가 절대 없는 곳(마디): 공 껍질 모양 {r}개, 평면·원뿔 모양 {a}개', room:'이 방에는 전자 {e}개', roomEmpty:'이 방은 비어 있어요 (모양만 보여 줘요)', roomAny:'전자 {e}개가 방 {n}개 중 어디 있는지는 정해져 있지 않아요. 이 방의 모양만 따로 보여 줘요', partAll:'덜 찬 껍질이라 전자 방향이 정해져 있지 않아요. 그래서 방 {n}개를 다 겹쳐서 보여 줘요. 아래 전자 상자는 채우는 순서를 보여 주는 약속이에요',
         filling:'{k} / {z}번째 전자', foot:'껍질 사이 간격은 보기 좋게 벌려 놓았어요. 실제로는 안쪽 껍질이 훨씬 작아요.',
         phaseNote:'분홍색은 파동의 부호가 반대인 쪽이에요. 화학 결합이 생길 때 이 부호가 맞아야 해요.',
@@ -21338,8 +21338,8 @@ function rxRelicOpen(){
   // 먼저 화면에 띄운 뒤에 불러온다 (크기가 0인 채로 열리면 옛 원자 모형이 못 그린다)
   box.classList.add('on');
   const bytes = Uint8Array.from(atob(RX_RELIC_B64), c => c.charCodeAt(0));
-  // 빽도한 악티늄족 칸에 개발 일지 말풍선 (유물 HTML 끝에 살짝 끼워 넣는다)
-  const tipMsg = LANG === 'en' ? 'Back then the actinides sat one cell too far left, heh. Fixed in the current version!' : '이때는 악티늄족이 한 칸 빽도해 있었어요 ㅎ 지금 버전에선 고쳤어요!';
+  // 빽도한 악티노이드 칸에 개발 일지 말풍선 (유물 HTML 끝에 살짝 끼워 넣는다)
+  const tipMsg = LANG === 'en' ? 'Back then the actinides sat one cell too far left, heh. Fixed in the current version!' : '이때는 악티노이드가 한 칸 빽도해 있었어요 ㅎ 지금 버전에선 고쳤어요!';
   const tipJs = `<style>.rl-tip{position:fixed;z-index:99;max-width:230px;padding:7px 11px;border-radius:10px;background:#ffd43b;color:#1a1a1a;font:700 12px/1.45 system-ui,sans-serif;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.45);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}.rl-tip.on{opacity:1;transform:none}.rl-tip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#ffd43b}</style>` +
     `<script>(function(){var tip=document.createElement('div');tip.className='rl-tip';tip.textContent=${JSON.stringify(tipMsg)};document.body.appendChild(tip);var h=0;
 function show(c){clearTimeout(h);var r=c.getBoundingClientRect(),W=document.documentElement.clientWidth;tip.classList.add('on');var tw=tip.offsetWidth,th=tip.offsetHeight;var x=Math.max(6,Math.min(W-tw-6,r.left+r.width/2-tw/2));tip.style.left=x+'px';tip.style.top=Math.max(6,r.top-th-10)+'px';tip.style.setProperty('--ax',(r.left+r.width/2-x)+'px');}
@@ -22567,7 +22567,7 @@ function rxExtName(n){
   const ko = n === 119 ? '우누넨늄' : '운' + mid[d[1]] + end[d[2]];
   return { en: en[0].toUpperCase() + en.slice(1), ko, sym, how: d.join(' · ') + ' → ' + d.map(k => RX_EXT_ROOT[k]).join(' + ') + ' + ium' };
 }
-/* 칸 자리: [주기, 족] 또는 초악티늄족 줄 */
+/* 칸 자리: [주기, 족] 또는 초악티노이드 줄 */
 function rxExtPos(n){
   if(n === 119 || n === 120) return { p: 8, g: n - 118, blk: 's' };
   if(n <= 155) return { sa: n - 121, blk: 'g' };
@@ -22576,7 +22576,7 @@ function rxExtPos(n){
   return { p: 9, g: n - 154, blk: 'p' };
 }
 const RX_EXT_BLK = {
-  s: ['#ff8787', 's 구역', 's block'], g: ['#b197fc', '초악티늄족 (g·f 구역)', 'Superactinides (g and f blocks)'],
+  s: ['#ff8787', 's 구역', 's block'], g: ['#b197fc', '초악티노이드 (g·f 구역)', 'Superactinides (g and f blocks)'],
   d: ['#ffd43b', 'd 구역', 'd block'], p: ['#74c0fc', 'p 구역', 'p block'] };
 const RX_EXT_NOTE = {
   119: ['일본 리켄 연구소가 바나듐-51 빔을 퀴륨-248 표적에 쏴서 만들려고 도전 중이에요. 만들어지면 8주기의 첫 원소가 돼요.',
@@ -22708,7 +22708,7 @@ function rxExtBuild(){
   // 9주기
   h += '<span class="xh">9</span>' + cell(165) + cell(166) + empty(10) + Array.from({ length: 6 }, (_, i) => cell(167 + i)).join('');
   h += '<span class="xgap"></span>';
-  // 초악티늄족 121~155: 15칸씩
+  // 초악티노이드 121~155: 15칸씩
   for(let r = 0; r < 3; r++){
     h += `<span class="xlab">${r === 0 ? '121–155' : ''}</span>` + empty(1);
     const row = Array.from({ length: 15 }, (_, i) => 121 + r * 15 + i).filter(n => n <= 155);
@@ -30812,12 +30812,12 @@ function rxVerPop(force){
   const shut = () => rxLS.get('pt_isec_shut', {});
   function neigh(e){
     const L = LANG === 'en';
-    // 란타넘족·악티늄족(족 번호가 없음)은 앞뒤 번호로 가로 이웃만
+    // 란타노이드·악티노이드(족 번호가 없음)은 앞뒤 번호로 가로 이웃만
     const at = (p, g) => EL.find(x => x.p === p && x.g === g);
     let grid;
     if(e.g){ grid = [-1, 0, 1].map(dp => [-1, 0, 1].map(dg => at(e.p + dp, e.g + dg))); }
     else {
-      // 란타넘족 ↔ 악티늄족은 32번 차이로 위아래가 짝
+      // 란타노이드 ↔ 악티노이드는 32번 차이로 위아래가 짝
       const up = e.n >= 89 ? n => byNum[n - 32] : () => null, dn = e.n <= 71 ? n => byNum[n + 32] : () => null;
       grid = [[up(e.n - 1), up(e.n), up(e.n + 1)], [byNum[e.n - 1], e, byNum[e.n + 1]], [dn(e.n - 1), dn(e.n), dn(e.n + 1)]];
     }
@@ -31692,8 +31692,8 @@ function rxGaCube(){
     [1, 1, 20,  ['1~3주기 + 칼륨·칼슘', 'Periods 1–3 + K, Ca'], ['H ~ Ca', 'H – Ca']],
     [2, 21, 36, ['4주기 나머지', 'Rest of period 4'], ['Sc ~ Kr', 'Sc – Kr']],
     [4, 37, 54, ['5주기', 'Period 5'], ['Rb ~ Xe', 'Rb – Xe']],
-    [6, 55, 86, ['6주기 + 란타넘족', 'Period 6 + lanthanides'], ['Cs ~ Rn', 'Cs – Rn']],
-    [8, 87, 118,['7주기 + 악티늄족', 'Period 7 + actinides'], ['Fr ~ Og', 'Fr – Og']],
+    [6, 55, 86, ['6주기 + 란타노이드', 'Period 6 + lanthanides'], ['Cs ~ Rn', 'Cs – Rn']],
+    [8, 87, 118,['7주기 + 악티노이드', 'Period 7 + actinides'], ['Fr ~ Og', 'Fr – Og']],
   ];
   const en = () => LANG === 'en';
   const L = (ko, e) => en() ? e : ko;
@@ -39790,7 +39790,7 @@ function rxSunGem(){
     clearFill();
     const L = EN() ? 'en' : 'ko', ms = mastery(), pct = ms / 118, C = 2 * Math.PI * 25;
     const weak = weakList();
-    // 미니 주기율표: 행 1~7, 빈 줄, 란타넘족·악티늄족
+    // 미니 주기율표: 행 1~7, 빈 줄, 란타노이드·악티노이드
     const cells = [];
     for(let r = 1; r <= 10; r++){
       if(r === 8) continue;
@@ -43252,7 +43252,7 @@ void main(){
     let mini = '';
     for(let p = 1; p <= 7; p++) for(let g = 1; g <= 18; g++){
       const e = EL.find(x => x.p === p && x.g === g);
-      const f = !e && g === 3 && (p === 6 || p === 7) ? (p === 6 ? 'lanthanide' : 'actinide') : '';   // 란타넘족·악티늄족 자리
+      const f = !e && g === 3 && (p === 6 || p === 7) ? (p === 6 ? 'lanthanide' : 'actinide') : '';   // 란타노이드·악티노이드 자리
       mini += e ? `<i data-p="${p}" data-g="${g}" data-c="${e.c}" style="--c:${col(e.c)}"></i>` : f ? `<i class="fs" data-p="${p}" data-c="${f}" style="--c:${col(f)}"></i>` : '<i class="e"></i>';
     }
     // 아래에 따로 빼 둔 두 줄 (57–71, 89–103)
@@ -43298,9 +43298,9 @@ void main(){
       const run = () => {
         if(!document.body.contains(miniEl)) return clearInterval(mt);
         if(v === 'c'){ const c = show3[step % show3.length]; cells.forEach(i => i.classList.toggle('hl', i.dataset.c === c));
-          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>. 아래 따로 뺀 두 줄은 <b>란타넘족·악티늄족</b>이에요. 원래 3족 6·7주기 자리에 들어가는데, 표가 너무 길어져서 빼 둔 거예요', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing. The two rows below are the <b>lanthanides and actinides</b>: they belong in group 3, periods 6 and 7, but are pulled out so the table is not too wide'); }
+          txt.innerHTML = P('색은 원소의 성질 무리예요. 왼쪽은 대부분 <b>금속</b>, 오른쪽 위는 <b>비금속</b>, 맨 오른쪽은 아무와도 안 붙는 <b>비활성 기체</b>. 아래 따로 뺀 두 줄은 <b>란타노이드·악티노이드</b>이에요. 원래 3족 6·7주기 자리에 들어가는데, 표가 너무 길어져서 빼 둔 거예요', 'Colors group elements by behavior. The left is mostly <b>metals</b>, top right <b>nonmetals</b>, far right the <b>noble gases</b> that bond with nothing. The two rows below are the <b>lanthanides and actinides</b>: they belong in group 3, periods 6 and 7, but are pulled out so the table is not too wide'); }
         else if(v === 'p'){ const p = step % 7 + 1; cells.forEach(i => i.classList.toggle('hl', +i.dataset.p === p));
-          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요${p >= 6 ? ` (아래 ${p === 6 ? '란타넘족' : '악티늄족'} 줄도 ${p}주기)` : ''}`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down${p >= 6 ? ` (the ${p === 6 ? 'lanthanide' : 'actinide'} row below is period ${p} too)` : ''}`); }
+          txt.innerHTML = P(`가로줄은 <b>주기</b>. 지금 ${p}주기 · 전자 껍질이 ${p}개예요. 아래로 갈수록 원자가 커져요${p >= 6 ? ` (아래 ${p === 6 ? '란타노이드' : '악티노이드'} 줄도 ${p}주기)` : ''}`, `Rows are <b>periods</b>. This is period ${p} · ${p} electron shell${p > 1 ? 's' : ''}. Atoms get bigger as you go down${p >= 6 ? ` (the ${p === 6 ? 'lanthanide' : 'actinide'} row below is period ${p} too)` : ''}`); }
         else { const G = [1, 2, 14, 17, 18], g = G[step % G.length]; cells.forEach(i => i.classList.toggle('hl', +i.dataset.g === g));
           txt.innerHTML = P(`세로줄은 <b>족</b>. 지금 ${g}족 · 같은 족은 바깥 전자 수가 같아서 성질이 비슷해요`, `Columns are <b>groups</b>. This is group ${g} · same outer electrons, so similar behavior`); }
         step++;
@@ -45141,7 +45141,7 @@ void main(){
 
   window.__pwSnd = snd;
   const LOAD_KO = ['전자 껍질 채우는 중', '양성자 세는 중 (1, 2, 3…)', '오비탈 다림질 중', '비활성 기체 깨우는 중 (안 일어남)', '할로젠한테 전자 뺏기는 중', '나트륨 물에서 건지는 중', '마그네슘 불 끄는 중', '세슘 진정시키는 중', '헬륨 풍선 붙잡는 중',
-    '우라늄 반감기 기다리는 중… 농담이에요', '탄소 넷이 손 잡게 하는 중', '금 반짝반짝 닦는 중', '오가네손 사라지기 전에 찍는 중', '란타넘족 아랫줄로 보내는 중', '악티늄 빽도 방지 중', '아보가드로 수만큼 세는 중', '118칸 줄 맞추는 중',
+    '우라늄 반감기 기다리는 중… 농담이에요', '탄소 넷이 손 잡게 하는 중', '금 반짝반짝 닦는 중', '오가네손 사라지기 전에 찍는 중', '란타노이드 아랫줄로 보내는 중', '악티늄 빽도 방지 중', '아보가드로 수만큼 세는 중', '118칸 줄 맞추는 중',
     '멘델레예프한테 허락받는 중', '분자 모형 공 끼우는 중', '이온 전하 맞추는 중', '실험실 불 켜는 중', '아스리엘 깨우는 중', '과학적으로 정확한 헛소리 장전 중', '전자 구름 뭉치는 중', '플루오린 달래는 중 (반응 그만해)', '비스무트 계단 쌓는 중',
     '네온사인 켜는 중', '수은 온도계 흔드는 중', '원자량 소수점 맞추는 중', '프랑슘 22분 안에 데려오는 중', '클로린한테 사과문 쓰는 중', '페리윙클 색 칠하는 중', '"//" 날 세우는 중'];
   const LOAD_EN = ['Filling electron shells', 'Counting protons (1, 2, 3…)', 'Ironing the orbitals', 'Waking the noble gases (they won\'t)', 'Getting robbed by a halogen', 'Fishing sodium out of the water', 'Putting out the magnesium', 'Calming down caesium', 'Holding on to the helium balloon',
@@ -46092,7 +46092,7 @@ void main(){
       bohr:'보어 모형', orb:'전자 구름', p:'양성자', nn:'중성자', e:'전자', shells:'전자껍질', cfg:'전자 배치', toOrb:'오비탈 크게 보기', toNuc:'핵 속으로', add:'조합에 담기 +',
       num:'원자번호', mass:'원자량', grp:'족', per:'주기', blk:'구역', cat:'분류', st:'상온 상태', ox:'산화수', yr:'발견', org:'출신', cfgS:'전자 배치',
       ancient:'아주 옛날부터 알려짐', yrS:'{y}년', st_:{gas:'기체',liquid:'액체',solid:'고체'}, unk:'알 수 없음', story:'이름 이야기', blockS:'{b} 구역',
-      lan:'란타넘족', act:'악티늄족',
+      lan:'란타노이드', act:'악티노이드',
       mp:'녹는점', bp:'끓는점', d:'밀도', en:'전기음성도', ie:'1차 이온화 에너지', r:'원자 반지름',
       rank:'{n}개 중 {k}위', na:'자료 없음',
       dW:'물보다 {x}배 무거워요', dL:'물보다 가벼워요', dGas:'기체라서 공기만큼 가벼워요',
@@ -48752,8 +48752,8 @@ void main(){
       p: { ko: '공기에서 아르곤(1894)을 찾았는데, 표 어디에도 들어갈 자리가 없었어요. 곧 헬륨·네온·크립톤·제논까지 줄줄이 나오자 <b>표 오른쪽에 세로줄 하나를 통째로 새로 붙였어요.</b> 지금의 18족, 비활성 기체예요. 주기율표가 예상 못 한 것까지 품을 수 있다는 걸 보여 줬어요.', en: 'Argon turned up in air in 1894 with no place to go. Then helium, neon, krypton and xenon followed, so <b>a whole new column was added</b> — today\'s group 18, the noble gases. The table could even absorb a surprise.' } },
     { id: 'mos', y: '1913', ko: ['원자번호의 발견', '헨리 모즐리'], en: ['Atomic number', 'Henry Moseley'],
       p: { ko: 'X선으로 원소를 비춰 보고, 순서를 정하는 진짜 기준이 원자량이 아니라 <b>핵 속 양성자 수(원자번호)</b>라는 걸 밝혔어요. 멘델레예프가 감으로 뒤바꿔 둔 자리들이 정확히 설명됐어요. 모즐리는 2년 뒤 27살에 1차 세계대전에서 전사했어요.', en: 'Shining X-rays on elements, he showed the true order is not mass but <b>the number of protons — the atomic number</b>. It explained the swaps Mendeleev had made by instinct. Moseley was killed in World War I two years later, aged 27.' } },
-    { id: 'sea', y: '1945', ko: ['악티늄족을 아래로', '글렌 시보그'], en: ['Actinides move down', 'Glenn Seaborg'],
-      p: { ko: '우라늄 너머 원소들을 만들다 보니 성질이 전이 금속이 아니라 란타넘족과 닮았어요. 그래서 <b>악티늄족을 란타넘족 아래 따로 한 줄</b>로 빼자고 했어요. 다들 말렸지만 결국 그가 맞았고, 지금 표 아래 두 줄이 그렇게 생겼어요. 시보그는 노벨상을 받았고, 106번 시보귬은 살아 있는 사람 이름을 딴 첫 원소예요.', en: 'Making elements past uranium, he saw they behaved like the lanthanides, not transition metals, and proposed <b>a separate actinide row under the lanthanides</b>. Colleagues warned him off; he was right. That is why the table has two rows at the bottom. Element 106, seaborgium, was the first named after a living person.' } },
+    { id: 'sea', y: '1945', ko: ['악티노이드를 아래로', '글렌 시보그'], en: ['Actinides move down', 'Glenn Seaborg'],
+      p: { ko: '우라늄 너머 원소들을 만들다 보니 성질이 전이 금속이 아니라 란타노이드와 닮았어요. 그래서 <b>악티노이드를 란타노이드 아래 따로 한 줄</b>로 빼자고 했어요. 다들 말렸지만 결국 그가 맞았고, 지금 표 아래 두 줄이 그렇게 생겼어요. 시보그는 노벨상을 받았고, 106번 시보귬은 살아 있는 사람 이름을 딴 첫 원소예요.', en: 'Making elements past uranium, he saw they behaved like the lanthanides, not transition metals, and proposed <b>a separate actinide row under the lanthanides</b>. Colleagues warned him off; he was right. That is why the table has two rows at the bottom. Element 106, seaborgium, was the first named after a living person.' } },
     { id: 'full', y: '2016', ko: ['7주기 완성', 'IUPAC'], en: ['Period 7 complete', 'IUPAC'],
       p: { ko: '113번 니호늄, 115번 모스코븀, 117번 테네신, 118번 오가네손의 이름이 정해지면서 <b>7주기가 꽉 찼어요.</b> 118칸이 전부 채워진 지금의 모습이에요. 2019년은 멘델레예프 주기율표 150주년이라 "국제 주기율표의 해"였어요.', en: 'Nihonium (113), moscovium (115), tennessine (117) and oganesson (118) were named and <b>period 7 was full</b> — all 118 squares, as you see it today. 2019, the table\'s 150th birthday, was the International Year of the Periodic Table.' } },
     { id: 'next', y: '???', ko: ['다음은?', '8주기 · 안정성의 섬'], en: ['What next?', 'Period 8 · the island'],
@@ -52113,8 +52113,8 @@ window.rxFogMake = MAKE;
     [['알칼리 금속'], ['alkali metal', 'alkali metals'], '1족 금속(수소 빼고)이에요. 전자 하나를 쉽게 내놔서 물과 격렬하게 반응해요.', 'Group 1 metals (not H). Give away one electron easily and react wildly with water.', 'Li, Na, K', 'Li, Na, K'],
     [['알칼리 토금속'], ['alkaline earth metal', 'alkaline earth metals'], '2족 금속이에요. 전자 두 개를 내놓고 +2 이온이 돼요.', 'Group 2 metals. Give away two electrons to become +2 ions.', 'Mg, Ca', 'Mg, Ca'],
     [['전이 금속'], ['transition metal', 'transition metals'], '3~12족 금속이에요. d 오비탈에 전자가 채워지고, 색깔 있는 화합물을 많이 만들어요.', 'Groups 3–12. Their d orbitals fill up and they make many colourful compounds.', 'Fe, Cu, Au', 'Fe, Cu, Au'],
-    [['란타넘족'], ['lanthanide', 'lanthanides'], '57~71번 원소예요. 4f 오비탈이 채워지고 성질이 서로 많이 닮았어요.', 'Elements 57–71. Their 4f orbitals fill and they are very alike.', '네오디뮴 자석', 'Neodymium magnets'],
-    [['악티늄족'], ['actinide', 'actinides'], '89~103번 원소예요. 5f 오비탈이 채워지고 전부 방사성이에요.', 'Elements 89–103. Their 5f orbitals fill and all are radioactive.', '우라늄, 플루토늄', 'U, Pu'],
+    [['란타노이드'], ['lanthanide', 'lanthanides'], '57~71번 원소예요. 4f 오비탈이 채워지고 성질이 서로 많이 닮았어요.', 'Elements 57–71. Their 4f orbitals fill and they are very alike.', '네오디뮴 자석', 'Neodymium magnets'],
+    [['악티노이드'], ['actinide', 'actinides'], '89~103번 원소예요. 5f 오비탈이 채워지고 전부 방사성이에요.', 'Elements 89–103. Their 5f orbitals fill and all are radioactive.', '우라늄, 플루토늄', 'U, Pu'],
     [['준금속'], ['metalloid', 'metalloids'], '금속과 비금속의 중간 성질을 가진 원소예요. 반도체로 많이 써요.', 'Halfway between metal and nonmetal. Often used as semiconductors.', '규소(Si)', 'Silicon'],
     [['방사성'], ['radioactive'], '원자핵이 불안정해서 스스로 방사선을 내며 다른 원자로 바뀌는 성질이에요.', 'An unstable nucleus that gives off radiation and turns into another atom.', '우라늄, 라듐', 'U, Ra'],
     [['알파 붕괴'], ['alpha decay'], '핵이 헬륨 핵(양성자 2 + 중성자 2)을 내보내는 붕괴예요. 원자번호가 2 줄어요.', 'The nucleus spits out a helium nucleus. Atomic number drops by 2.', '우라늄-238 → 토륨-234', 'U-238 → Th-234'],
@@ -52723,7 +52723,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
 
   const V = {
     long: { t: ['32열 긴 주기율표', '32-column table'],
-      cap: ['란타넘족·악티늄족을 아래로 떼어 놓지 않고 <b>표 안에 그대로 끼워 넣은</b> 모양이에요. 원래는 이게 진짜 모양인데, 너무 가로로 길어서 교과서는 f 블록을 잘라 아래에 붙여요.',
+      cap: ['란타노이드·악티노이드를 아래로 떼어 놓지 않고 <b>표 안에 그대로 끼워 넣은</b> 모양이에요. 원래는 이게 진짜 모양인데, 너무 가로로 길어서 교과서는 f 블록을 잘라 아래에 붙여요.',
             'The lanthanides and actinides are <b>slotted straight into the table</b> instead of being cut out below. This is the "true" shape; textbooks only cut the f-block off because it is so wide.'] },
     mend: { t: ['멘델레예프 (1871)', 'Mendeleev (1871)'],
       cap: ['멘델레예프는 원자량 순으로 줄을 세우고 성질이 비슷한 것끼리 8개 족으로 묶었어요. 맞는 원소가 없으면 <b>"?" 빈칸</b>으로 남기고 성질까지 예측했는데, 뒤에 스칸듐·갈륨·저마늄이 정말 발견됐어요. 비활성 기체는 아직 몰라서 자리가 없어요. <b>분홍 빈칸을 눌러 보세요.</b>',
@@ -52732,7 +52732,7 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
       cap: ['1928년 샤를 재닛이 만든 표예요. 전자가 오비탈을 채우는 순서 그대로 <b>f → d → p → s</b> 블록을 왼쪽부터 놓아서 계단 모양이 돼요. 헬륨이 비활성 기체가 아니라 <b>베릴륨 위(s 블록)</b>에 가는 게 특징이에요.',
             'Charles Janet\'s 1928 table. Blocks go <b>f → d → p → s</b> from the left, in the order electrons fill orbitals, giving a staircase. Helium sits <b>above beryllium in the s-block</b>, not with the noble gases.'] },
     spiral: { t: ['벤피 나선', 'Benfey spiral'],
-      cap: ['1964년 오토 벤피가 만든 달팽이 모양 표예요. 수소에서 시작해 한 바퀴가 한 주기예요. 끊김 없이 이어져서 <b>비활성 기체 다음에 바로 알칼리 금속</b>이 와요. 전이 금속과 란타넘족·악티늄족은 바깥으로 불룩 튀어나와요.',
+      cap: ['1964년 오토 벤피가 만든 달팽이 모양 표예요. 수소에서 시작해 한 바퀴가 한 주기예요. 끊김 없이 이어져서 <b>비활성 기체 다음에 바로 알칼리 금속</b>이 와요. 전이 금속과 란타노이드·악티노이드는 바깥으로 불룩 튀어나와요.',
             'Otto Benfey\'s 1964 snail. It starts at hydrogen and each turn is one period, so there is no break: <b>alkali metals follow right after noble gases</b>. Transition metals and the f-block bulge outward.'] },
     ring: { t: ['원형', 'Circular'],
       cap: ['주기마다 동그란 고리 하나예요. 안쪽이 1주기, 바깥이 7주기예요. 같은 족은 <b>같은 방향의 반지름 선</b> 위에 놓여서, 족이 방사형으로 뻗어 나가요.',
@@ -58168,7 +58168,7 @@ const RX_SHI = [
   // [빔, 빔 질량수, 표적, 표적 질량수, 결과 번호, 상태, 기록 ko, en]
   ['Ti', 50, 'Cf', 249, 120, 'now', '미국 버클리 연구소가 지금 실제로 하고 있는 실험이에요. 2024년에 같은 타이타늄-50 빔으로 리버모륨 원자 2개를 만드는 데 성공해서, 다음 목표가 바로 120번이에요.', 'This is the actual experiment Berkeley Lab is running now. In 2024 the same titanium-50 beam made two atoms of livermorium, so element 120 is next.'],
   ['V', 51, 'Cm', 248, 119, 'now', '일본 리켄 연구소가 2018년부터 하고 있는 실험이에요. 몇 년째 쏘고 있지만 아직 한 개도 안 나왔어요.', 'RIKEN in Japan has been running this since 2018. Years of firing, not a single atom yet.'],
-  ['Cu', 65, 'U', 238, 121, 'fail', '1977년 독일 GSI에서 실제로 해 본 조합이에요. 지금까지 121번을 만들려고 한 시도는 이게 유일하고, 결과는 0개였어요. 121번부터는 표에서 초악티늄족(g 구역) 자리가 시작돼요.', 'GSI in Germany actually tried this in 1977. It is still the only attempt ever made at element 121, and it produced nothing. From 121 on, the table enters the superactinide (g-block) region.'],
+  ['Cu', 65, 'U', 238, 121, 'fail', '1977년 독일 GSI에서 실제로 해 본 조합이에요. 지금까지 121번을 만들려고 한 시도는 이게 유일하고, 결과는 0개였어요. 121번부터는 표에서 초악티노이드(g 구역) 자리가 시작돼요.', 'GSI in Germany actually tried this in 1977. It is still the only attempt ever made at element 121, and it produced nothing. From 121 on, the table enters the superactinide (g-block) region.'],
   ['Fe', 58, 'Pu', 244, 120, 'fail', '2007년 러시아 두브나에서 실제로 해 본 조합이에요. 결과는 0개였어요.', 'Dubna in Russia actually tried this in 2007. The result was zero atoms.'],
   ['Ca', 48, 'Cf', 249, 118, 'done', '2002~2005년 러시아 두브나에서 오가네손을 만든 조합이에요. 몇 년 동안 쏴서 겨우 몇 개였어요.', 'The combination Dubna used to make oganesson in 2002–2005. Years of firing for a handful of atoms.'],
   ['Ca', 48, 'Bk', 249, 117, 'done', '2010년 두브나에서 테네신을 만든 조합이에요. 처음에 6개가 나왔어요. 버클륨 표적은 미국에서 만들어서 비행기로 실어 보냈어요.', 'The combination Dubna used to make tennessine in 2010: six atoms at first. The berkelium target was made in the US and flown over.'],
@@ -58204,7 +58204,7 @@ function rxShiPos(z){
   const en = LANG === 'en';
   if(z === 119) return en ? 'Period 8, group 1 (below francium)' : '8주기 1족 (프랑슘 바로 아래)';
   if(z === 120) return en ? 'Period 8, group 2 (below radium)' : '8주기 2족 (라듐 바로 아래)';
-  if(z === 121) return en ? 'Period 8, group 3 (where the superactinides begin)' : '8주기 3족 (초악티늄족이 시작되는 자리)';
+  if(z === 121) return en ? 'Period 8, group 3 (where the superactinides begin)' : '8주기 3족 (초악티노이드가 시작되는 자리)';
   return en ? `Period 7, group ${z - 100}` : `7주기 ${z - 100}족`;
 }
 const RX_SHI_CAT = { 113:'post', 114:'post', 116:'post', 117:'metalloid', 118:'noble', 119:'alkali', 120:'alkaline', 121:'super' };
@@ -58212,7 +58212,7 @@ function rxShiCatChip(z){
   let el = document.getElementById('shiCat');
   if(!el){ el = document.createElement('div'); el.id = 'shiCat'; const row = document.getElementById('mKinds'); (row || document.getElementById('mName')).after(el); }
   const k = RX_SHI_CAT[z], en = LANG === 'en';
-  const nm = k === 'super' ? (en ? 'Superactinide' : '초악티늄족') : en ? ((typeof CAT_EN !== 'undefined' && CAT_EN[k]) || k) : CAT[k].ko;
+  const nm = k === 'super' ? (en ? 'Superactinide' : '초악티노이드') : en ? ((typeof CAT_EN !== 'undefined' && CAT_EN[k]) || k) : CAT[k].ko;
   el.style.setProperty('--cc', k === 'super' ? '#b197fc' : cssv(CAT[k].v));
   el.textContent = en ? `${nm} (predicted)` : `${nm} (예상)`;
   el.title = en ? 'Too few atoms have ever existed to test its chemistry, so this is a prediction' : '원자가 너무 적고 금방 사라져서 화학적 성질을 실제로 확인하지 못했어요. 그래서 예상이에요';
@@ -58473,6 +58473,35 @@ Object.assign(RX_SMILES_PRE, {"C1C2CC3C4CC5CC(C14)C(C2)C3C5":{"a":[["C",-46.0,23
   add("C17+H18+N2","C₁₇H₁₈N₂","트뢰거 염기","V자로 꺾인 채 굳어 버린 분자","Tröger's base","A molecule frozen into a V shape","CC1=CC2=C(C=C1)N3CC4=C(C=CC(=C4)C)N(C2)C3","1887년 율리우스 트뢰거가 처음 만들었는데, 구조가 밝혀진 건 거의 50년 뒤인 1935년이에요. 두 벤젠 고리가 다리로 묶여 V자로 굳어 있어서 뒤집히지 못해요. 그래서 질소 원자가 손대칭 중심이 되는 드문 분자예요. 거울에 비친 왼손형·오른손형 두 가지로 나눌 수 있어요.","First made by Julius Tröger in 1887, but its structure was only worked out in 1935. A bridge locks the two benzene rings into a rigid V that cannot flip, so its nitrogen atoms become chiral centres: it comes in left- and right-handed mirror forms.","troger's base 트로거 염기 tröger",false);
   add("C42+H30","C₄₂H₃₀","헥사페닐벤젠","벤젠 둘레에 벤젠 6개가 프로펠러처럼","Hexaphenylbenzene","Six benzenes around a benzene, like a propeller","c1ccc(cc1)-c1c(-c2ccccc2)c(-c2ccccc2)c(-c2ccccc2)c(-c2ccccc2)c1-c1ccccc1","가운데 벤젠에 벤젠 6개가 빙 둘러 붙었는데, 바깥 고리끼리 서로 부딪쳐서 납작하게 눕지 못하고 비스듬히 서 있어요. 그래서 위에서 보면 프로펠러, 옆에서 보면 바람개비예요. 바깥 고리끼리 이어 붙이면 작은 그래핀 조각(헥사벤조코로넨)이 돼요.","Six benzenes ring a central benzene, but they bump into each other and cannot lie flat, so they stand tilted: a propeller from above, a pinwheel from the side. Stitch the outer rings together and you get a small piece of graphene (hexabenzocoronene).","hexaphenylbenzene 프로펠러 propeller",false);
 })();
+</script>
+
+<style>
+  /* ═══ IF 시리즈: 만약 이 원소가 없었다면? ═══ */
+  #info .el-if{margin:8px 0 4px;padding:10px 12px;border-radius:13px;font-size:12.5px;line-height:1.6;color:#d6dcf0;
+    background:linear-gradient(135deg,rgba(116,192,252,.08),rgba(116,192,252,.02));border:1px solid rgba(116,192,252,.26)}
+  #info .el-if b{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;color:#0b0d11;background:#74c0fc;border-radius:5px;padding:2px 6px;margin-right:6px;box-shadow:0 0 10px rgba(116,192,252,.35)}
+  #info .el-if q{quotes:none;font-weight:700;color:#eaf2ff}
+  #info .el-if span{display:block;margin-top:5px;color:#c3cbe0}
+</style>
+<script>
+/* ═══ IF 시리즈 (과산 요청): 원소마다 "만약 이 원소가 없었다면?" ═══ */
+const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, 유기물도 없어서 생명은 시작조차 못 해요.", "Almost no stars would form. No water, no organic molecules, so life never even starts."], "He": ["MRI의 초전도 자석을 식힐 방법이 마땅치 않아요. 풍선은 둥둥 못 뜨고, 목소리 변조 장난도 끝.", "MRI magnets would be hard to cool. Balloons would not float, and the squeaky-voice trick is gone."], "Li": ["스마트폰과 전기차의 리튬 이온 배터리가 없어요. 휴대폰은 지금보다 훨씬 두껍고 금방 꺼져요.", "No lithium-ion batteries: phones would be far thicker and die fast, and electric cars would barely exist."], "Be": ["제임스 웹 우주 망원경의 가볍고 단단한 거울을 다른 금속으로 만들어야 해요. 엑스선 창도 바꿔야 하고요.", "The James Webb telescope would need another metal for its light, stiff mirrors, and X-ray windows would change."], "B": ["붕규산 유리가 없어서 실험실 비커와 내열 냄비가 뜨거운 물에 쩍쩍 갈라져요.", "No borosilicate glass: lab beakers and oven dishes would crack under sudden heat."], "C": ["유기물이 없으니 생명이 없어요. 다이아몬드, 연필심, 석탄, 석유도 전부 사라져요.", "No organic chemistry, so no life. Diamonds, pencil lead, coal and oil all vanish too."], "N": ["단백질과 DNA를 만들 수 없어요. 공기의 78%가 비어 버려서 대기 자체가 확 달라져요.", "No proteins or DNA. And 78% of the air would be missing, changing the whole atmosphere."], "O": ["숨 쉴 공기도, 물도, 오존층도 없어요. 지각의 거의 절반이 산소라서 땅의 모습부터 달라져요.", "No breathable air, no water, no ozone layer. Nearly half of Earth's crust is oxygen, so even rocks change."], "F": ["충치 예방 불소 치약도, 눌어붙지 않는 테플론 프라이팬도 없어요.", "No fluoride toothpaste and no non-stick Teflon pans."], "Ne": ["밤거리의 주황빛 네온사인이 사라져요. 네온 카페 간판도 그냥 전구로…", "The orange glow of neon signs disappears. Even the Neon Café sign would be a plain bulb."], "Na": ["소금(NaCl)이 없어요. 신경 신호도 나트륨 이온으로 전달되니 몸이 움직이질 못해요.", "No table salt. Nerve signals rely on sodium ions too, so bodies could not move."], "Mg": ["엽록소 한가운데의 마그네슘이 없어 식물이 광합성을 못 해요. 허브도 할 일이 없어져요.", "Chlorophyll has magnesium at its heart, so plants could not photosynthesize. Herb would be out of a job."], "Al": ["비행기 몸체, 음료 캔, 알루미늄 호일이 전부 더 무거운 금속으로 바뀌어요.", "Aircraft bodies, drink cans and kitchen foil would all be made of heavier metals."], "Si": ["반도체 칩이 없으니 컴퓨터와 스마트폰이 없어요. 모래, 유리, 바위도 대부분 사라져요.", "No silicon chips, so no computers or phones. Most sand, glass and rock would be gone too."], "P": ["DNA의 뼈대와 에너지 화폐 ATP를 못 만들어요. 생명은 에너지를 저장할 방법이 없어요.", "No backbone for DNA and no ATP, the energy currency of cells. Life could not store energy."], "S": ["단백질을 단단히 묶어 주는 다리가 없어져요. 머리카락 파마도, 고무 타이어 가황도 불가능.", "Proteins lose the bridges that hold them together. No perms, and no vulcanized rubber tyres."], "Cl": ["수돗물과 수영장 소독이 어려워져요. 위산(HCl)도 없어서 소화가 안 돼요.", "Tap water and pools would be hard to disinfect, and without stomach acid (HCl) digestion fails."], "Ar": ["백열전구 속을 채울 값싼 기체가 없어 필라멘트가 금방 타 버려요. 용접할 때 쓰는 보호 기체도 바꿔야 해요.", "Light bulbs lose their cheap filler gas and filaments burn out; welders need a new shielding gas."], "K": ["심장 박동을 조절하는 칼륨이 없어 심장이 제 박자로 못 뛰어요. 바나나도 그냥 노란 과일.", "Heartbeats depend on potassium, so the heart could not keep rhythm. Bananas lose their claim to fame."], "Ca": ["뼈와 이빨, 조개껍데기가 없어요. 석회암과 대리석, 시멘트도 사라져요.", "No bones, teeth or seashells. Limestone, marble and cement disappear as well."], "Sc": ["알루미늄-스칸듐 합금으로 만든 가벼운 자전거 프레임과 야구 배트가 없어요. 사실 대부분은 모르고 지나갈 거예요.", "No ultralight aluminium-scandium bike frames or bats. Honestly, most people would never notice."], "Ti": ["가볍고 녹슬지 않는 인공 관절과 임플란트가 없어요. 하얀 페인트와 자외선 차단제의 이산화 타이타늄도 사라져요.", "No light, rustproof joint implants, and no titanium dioxide in white paint and sunscreen."], "V": ["단단한 크롬-바나듐 공구강이 없어서 렌치와 드라이버가 쉽게 휘어요.", "No chrome-vanadium tool steel, so wrenches and screwdrivers would bend more easily."], "Cr": ["스테인리스강이 없어요. 수저와 싱크대가 금방 녹슬고, 루비의 붉은색도 사라져요.", "No stainless steel: cutlery and sinks would rust, and rubies would lose their red."], "Mn": ["강철을 단단하게 만드는 망가니즈가 없어 철도 레일과 금고가 약해져요. 알칼리 건전지도 바꿔야 해요.", "Steel loses its toughening agent, so rails and safes weaken, and alkaline batteries need a rethink."], "Fe": ["혈액의 헤모글로빈이 산소를 못 날라요. 강철, 철도, 건물 뼈대도 없고, 지구 자기장마저 약해져요.", "Hemoglobin could not carry oxygen. No steel, railways or girders, and Earth's magnetic field would weaken."], "Co": ["비타민 B12를 만들 수 없어요. 파란 도자기 \"코발트 블루\"와 강한 자석도 사라져요.", "No vitamin B12. Cobalt-blue pottery and many strong magnets would vanish too."], "Ni": ["스테인리스강과 동전 합금이 확 바뀌어요. 니켈 수소 배터리도 없어요.", "Stainless steel and coin alloys would change, and nickel-metal-hydride batteries would not exist."], "Cu": ["전선의 대부분이 구리라서 전기를 멀리 보내기 힘들어요. 자유의 여신상도 초록색이 아니었을 거예요.", "Most wiring is copper, so moving electricity would be harder. The Statue of Liberty would not be green."], "Zn": ["철을 녹슬지 않게 덮는 아연 도금이 없어요. 몸속 효소 수백 개도 일을 못 해요.", "No galvanized steel, and hundreds of enzymes in the body would stop working."], "Ga": ["파란 LED가 갈륨 질화물로 만들어지니, 파란 LED와 흰 LED 조명이 없어요. 손에서 녹는 금속 장난도 끝.", "Blue and white LEDs are made from gallium nitride, so they disappear. So does the metal that melts in your hand."], "Ge": ["최초의 트랜지스터가 저마늄으로 만들어졌어요. 전자 혁명이 한참 늦어졌을지도 몰라요.", "The first transistor was germanium. The electronics revolution might have started much later."], "As": ["역사 속 독살 사건의 단골 독이 사라져요. 반도체 갈륨 비소 칩도 다른 재료가 필요해요.", "History's favourite poison disappears, and gallium arsenide chips need a new material."], "Se": ["복사기와 레이저 프린터의 초기 기술이 셀레늄 감광체였어요. 사람 몸에 필요한 미량 원소도 하나 줄어요.", "Early photocopiers used selenium drums. And the body loses a trace nutrient it needs."], "Br": ["상온에서 액체인 비금속은 브로민 하나뿐인데, 그게 사라져요. 사진 필름의 브로민화 은도 없어서 옛날 사진이 없어요.", "One of only two liquid elements vanishes, and so does silver bromide: no old photographic film."], "Kr": ["1960~1983년 동안 1미터는 크립톤 빛의 파장으로 정의됐어요. 미터의 역사가 바뀌었을 거예요.", "From 1960 to 1983 the metre was defined by krypton light. The history of the metre would change."], "Rb": ["루비듐 원자시계가 GPS 위성 일부에 들어가요. 위치 정확도가 떨어질 수 있어요.", "Rubidium atomic clocks fly on some GPS satellites, so positioning could get less accurate."], "Sr": ["불꽃놀이의 새빨간 색과 빨간 조명탄이 사라져요.", "The deep red of fireworks and road flares disappears."], "Y": ["빨간 형광체(이트륨 화합물)가 없어 옛날 컬러 TV와 형광등 색이 달라져요. 초전도체 YBCO도 없어요.", "Old colour TVs and fluorescent lamps lose their red phosphor, and the YBCO superconductor vanishes."], "Zr": ["원자로의 연료봉 피복관이 대부분 지르코늄 합금이에요. 원자력 발전이 훨씬 어려워져요.", "Most nuclear fuel rods are clad in zirconium alloy, so nuclear power would be much harder."], "Nb": ["MRI와 입자 가속기의 초전도 자석이 나이오븀 합금이에요. 대형 강입자 충돌기도 못 만들었을 거예요.", "MRI and accelerator magnets use niobium alloys. The Large Hadron Collider might never have been built."], "Mo": ["콩과 식물 뿌리의 세균이 공기 중 질소를 붙잡는 효소에 몰리브데넘이 들어가요. 비료가 없던 시절의 농사가 훨씬 힘들었을 거예요.", "The nitrogen-fixing enzyme of root bacteria uses molybdenum, so pre-fertilizer farming would struggle."], "Tc": ["병원 핵의학 검사의 약 80%가 테크네튬-99m을 써요. 뼈 스캔 같은 검사가 크게 줄어요.", "About 80% of nuclear-medicine scans use technetium-99m, so bone scans and similar tests would shrink."], "Ru": ["하드 디스크의 데이터 층과 일부 전기 접점이 바뀌어야 해요. 대부분은 눈치 못 챌 거예요.", "Hard-disk layers and some electrical contacts would need new metals. Most people would never notice."], "Rh": ["자동차 배기가스 정화 장치(삼원 촉매)에서 질소 산화물을 잡는 게 로듐이에요. 공기가 더 더러워져요.", "Rhodium in catalytic converters removes nitrogen oxides, so city air would be dirtier."], "Pd": ["배기가스 촉매와 치과 합금에서 빠져요. 수소를 스펀지처럼 빨아들이는 신기한 금속도 사라져요.", "Gone from catalytic converters and dental alloys, along with the metal that soaks up hydrogen like a sponge."], "Ag": ["사진 필름과 거울의 은 코팅이 사라져요. 전기를 가장 잘 통하는 금속도 없어져요.", "No photographic film and no silvered mirrors. The best electrical conductor of all disappears."], "Cd": ["니켈-카드뮴 충전지가 없어요. 대신 이타이이타이병 같은 카드뮴 중독 사고도 없었겠죠.", "No nickel-cadmium batteries, but also no cadmium poisoning disasters like itai-itai disease."], "In": ["터치스크린의 투명 전극(ITO)이 인듐이에요. 스마트폰 화면을 손가락으로 못 만졌을지도 몰라요.", "Touchscreens use indium tin oxide electrodes, so finger-friendly phone screens might not exist."], "Sn": ["통조림 캔의 주석 도금과 납땜이 사라져요. 청동기 시대(구리+주석)도 없었을 거예요.", "No tin-plated cans and no solder. Without copper plus tin, there would be no Bronze Age."], "Sb": ["옛날 인쇄 활자의 합금과 이집트 화장품 콜(kohl)에 들어갔어요. 불에 잘 안 타게 하는 난연제도 바꿔야 해요.", "Old printing type metal and Egyptian kohl eyeliner used it, and flame retardants would need a substitute."], "Te": ["카드뮴 텔루라이드 태양 전지와 재기록 DVD의 기록층이 사라져요.", "Cadmium telluride solar panels and rewritable DVD layers would vanish."], "I": ["갑상샘 호르몬을 못 만들어요. 상처 소독약 포비돈 요오드도, CT 조영제도 없어요.", "The thyroid could not make its hormones. No iodine antiseptic and no CT contrast agents."], "Xe": ["우주 탐사선의 이온 엔진 연료가 사라져요. 자동차 제논 헤드라이트도 없고요.", "Spacecraft ion engines lose their fuel, and cars lose xenon headlights."], "Cs": ["1초의 정의가 세슘 원자시계로 정해져 있어요. 시간의 기준부터 새로 정해야 해요.", "The second is defined by caesium atomic clocks, so the world would need a new definition of time."], "Ba": ["위장 엑스선 촬영 때 마시는 하얀 바륨 조영제가 없어요. 불꽃놀이의 초록색도 사라져요.", "No white barium meal for stomach X-rays, and fireworks lose their green."], "La": ["카메라 렌즈의 고굴절 유리와 하이브리드 자동차 배터리에서 빠져요.", "Gone from high-refraction camera lenses and hybrid-car batteries."], "Ce": ["라이터의 부싯돌과 자동차 배기가스 촉매에서 빠져요. 유리 연마제도 바꿔야 해요.", "Gone from lighter flints, exhaust catalysts and glass-polishing powder."], "Pr": ["유리 공예용 보안경(디디뮴 유리)과 일부 강한 자석에서 빠져요.", "Gone from glassblowers' didymium goggles and some powerful magnets."], "Nd": ["네오디뮴 자석이 없어서 이어폰, 전기차 모터, 풍력 발전기가 훨씬 크고 무거워져요.", "No neodymium magnets: earbuds, EV motors and wind turbines would be far bigger and heavier."], "Pm": ["자연에 거의 없어서 사라져도 일상은 거의 그대로예요. 야광 시계 일부만 아쉬워해요.", "So rare in nature that daily life would barely change. Only a few glow-in-the-dark watches would miss it."], "Sm": ["사마륨-코발트 자석이 없어서 고온에서 버티는 자석을 다른 걸로 만들어야 해요.", "No samarium-cobalt magnets, so heat-resistant magnets would need another recipe."], "Eu": ["유로 지폐의 위조 방지용 형광 잉크가 유로퓸이에요. 빨간 형광체도 사라져요.", "Euro banknotes use europium in their anti-forgery glow, and red phosphors disappear too."], "Gd": ["MRI 조영제의 대부분이 가돌리늄이에요. 혈관과 종양을 선명하게 보기 어려워져요.", "Most MRI contrast agents are gadolinium, so blood vessels and tumours would be harder to see."], "Tb": ["초록색 형광체와 일부 자석에서 빠져요. 형광등과 화면의 초록이 흐려져요.", "Gone from green phosphors and some magnets, so lamps and screens lose some green."], "Dy": ["전기차 모터의 자석이 뜨거워지면 힘이 빠지는데, 그걸 막는 게 디스프로슘이에요.", "Dysprosium keeps EV motor magnets strong when hot. Without it, they weaken."], "Ho": ["가장 강한 자기장을 만드는 자석 극 소재로 쓰여요. 연구용 강자석이 약해져요.", "Used for pole pieces in the strongest magnets, so research magnets would be weaker."], "Er": ["광섬유 신호를 중간에 증폭하는 장치가 어븀이에요. 바다 건너 인터넷이 느려질 수 있어요.", "Fibre-optic amplifiers use erbium, so undersea internet links could get slower."], "Tm": ["휴대용 의료 엑스선 장비와 일부 레이저에 쓰여요. 거의 아무도 모를 거예요.", "Used in some portable X-ray units and lasers. Almost nobody would notice."], "Yb": ["세상에서 가장 정확한 원자시계 중 하나가 이터븀이에요. 시간 측정의 최전선이 한 발 물러나요.", "Some of the most precise atomic clocks use ytterbium, so the frontier of timekeeping slips back."], "Lu": ["PET 검사기의 검출 결정에 루테튬이 들어가요. 암 검사가 덜 선명해질 수 있어요.", "PET scanner detector crystals contain lutetium, so cancer scans could be less sharp."], "Hf": ["원자로 제어봉으로 중성자를 잡는 하프늄이 없어요. 최신 칩의 절연막도 바꿔야 해요.", "No hafnium control rods to soak up neutrons, and modern chips need a new insulating layer."], "Ta": ["스마트폰 속 작은 탄탈럼 축전기가 없어요. 휴대폰이 지금보다 커져요.", "No tiny tantalum capacitors, so phones would be bulkier."], "W": ["백열전구 필라멘트가 없어요. 녹는점이 가장 높은 금속이 사라져서 고온 공구도 약해져요.", "No light-bulb filaments, and the metal with the highest melting point vanishes from high-heat tools."], "Re": ["제트 엔진 터빈 날개의 초합금이 레늄을 써요. 비행기 엔진이 높은 온도를 못 버텨요.", "Jet-engine turbine blades use rhenium superalloys, so engines could not take the heat."], "Os": ["가장 밀도가 높은 원소가 사라져요. 옛날 만년필 펜촉과 레코드 바늘 끝도 바꿔야 해요.", "The densest element disappears, along with old fountain-pen tips and record-needle points."], "Ir": ["공룡 멸종의 증거인 이리듐 지층이 없어서, 소행성 충돌설이 밝혀지지 못했을지도 몰라요.", "The iridium layer that revealed the dinosaur-killing asteroid would not exist, so we might never have known."], "Pt": ["자동차 촉매, 항암제 시스플라틴, 그리고 1kg 원기(국제 킬로그램 원기)가 사라져요.", "No car catalysts, no cisplatin cancer drug, and no platinum-iridium kilogram prototype."], "Au": ["금본위제, 금메달, 결혼반지가 없어요. 녹슬지 않는 전자 회로 접점도 바꿔야 해요.", "No gold standard, gold medals or wedding rings, and electronics lose their corrosion-proof contacts."], "Hg": ["온도계와 혈압계의 은빛 기둥이 사라져요. 페리니아// 최강 큐리도… 어?", "The silver column in old thermometers disappears. And Perinia's strongest, Cury… wait."], "Tl": ["독살 사건에 쓰이던 \"독살자의 독\"이 사라져요. 심장 검사용 탈륨 스캔도 없어요.", "The so-called poisoner's poison disappears, and so do thallium heart scans."], "Pb": ["납 수도관, 납 페인트, 유연 휘발유의 피해가 없었겠죠. 대신 엑스선 차폐복과 자동차 배터리를 다시 설계해야 해요.", "No lead pipes, paint or leaded petrol damage, but X-ray aprons and car batteries need redesigning."], "Bi": ["무지개빛 계단 결정이 없어요. 배탈약(비스무트 제제)과 네온 카페의 비스무트 케이크도 사라져요.", "No rainbow staircase crystals, no bismuth stomach medicine, and no bismuth cake at Neon Café."], "Po": ["마리 퀴리가 조국 폴란드의 이름을 붙인 원소가 사라져요. 1g이면 수많은 사람을 해칠 수 있는 독이라 없어도 아쉽진 않아요.", "Marie Curie's tribute to Poland disappears. A single gram could harm countless people, so few would miss it."], "At": ["지구 전체에 1g도 안 되는 원소라 사라져도 아무도 몰라요. 다만 암 치료 연구 하나가 줄어요.", "Less than a gram exists on Earth at once, so nobody would notice, though one line of cancer research would end."], "Rn": ["지하실에 쌓여 폐암을 일으키는 라돈이 없어서 오히려 더 안전해져요. 라돈은 라듐케이크를 못 먹어서 슬퍼하겠지만.", "Basements would be safer without lung-cancer-causing radon. Radon would only miss its radium cake."], "Fr": ["가장 불안정한 자연 원소라 사라져도 일상은 똑같아요. 주기율표 왼쪽 아래만 허전해져요.", "The least stable natural element, so daily life would not change. Only the bottom-left corner looks emptier."], "Ra": ["마리 퀴리의 노벨상 이야기가 달라져요. 야광 시계를 칠하다 병든 \"라듐 걸스\"의 비극도 없었겠죠.", "Marie Curie's Nobel story changes, and the tragedy of the \"Radium Girls\" painting watch dials never happens."], "Ac": ["악티노이드라는 이름의 시작점이 사라져요. 줄 이름부터 다시 지어야 해요.", "The element the whole actinoid row is named after vanishes. The row would need a new name."], "Th": ["토륨 원자로 연구가 사라져요. 옛날 캠핑 랜턴 심지(맨틀)의 하얀 빛도 없어요.", "Thorium reactor research ends, and old camping lantern mantles lose their bright glow."], "Pa": ["너무 귀하고 독해서 쓰는 곳이 거의 없어요. 사라져도 거의 그대로예요.", "Too rare and toxic to have real uses, so almost nothing would change."], "U": ["원자력 발전도, 원자 폭탄도 없어요. 지구 내부를 데우는 열의 일부도 줄어들어요.", "No nuclear power and no atomic bombs. Part of the heat warming Earth's interior would disappear too."], "Np": ["플루토늄을 만드는 중간 단계가 사라져요. 탐사선 전지의 플루토늄-238 생산도 막혀요.", "The step on the way to plutonium is gone, blocking plutonium-238 for spacecraft batteries."], "Pu": ["보이저호와 화성 탐사 로버의 원자력 전지가 없어요. 태양에서 먼 우주 탐사가 거의 불가능해져요.", "Voyager and Mars rovers lose their nuclear batteries, so exploring far from the Sun becomes nearly impossible."], "Am": ["집집마다 붙어 있는 이온화식 화재 감지기 속 아메리슘이 없어요.", "The americium in household ionization smoke detectors would be gone."], "Cm": ["화성 탐사 로버가 암석 성분을 분석하는 장치(APXS)가 퀴륨을 써요. 화성 돌의 성분을 덜 알았을 거예요.", "Mars rovers analyse rocks with curium-powered instruments, so we would know less about Martian stone."], "Bk": ["테네신을 만들 때 표적으로 썼어요. 버클륨이 없으면 117번도 아직 빈칸일 거예요.", "It was the target used to make tennessine, so element 117 might still be a blank square."], "Cf": ["원자로를 처음 켤 때 쓰는 중성자원이 캘리포늄이에요. 오가네손과 운비닐륨 실험의 표적도 사라져요.", "Californium is a neutron source for starting reactors, and the target for oganesson and the 120 hunt."], "Es": ["수소 폭탄 실험 잔해에서 처음 발견됐어요. 없으면 아인슈타인 이름이 붙은 원소도 없어요.", "Found in the debris of the first hydrogen-bomb test. Without it, no element would bear Einstein's name."], "Fm": ["역시 수소 폭탄 잔해에서 발견됐어요. 쓰는 곳이 없어서 사라져도 연구실 몇 곳만 아쉬워해요.", "Also found in hydrogen-bomb debris. With no uses, only a few labs would miss it."], "Md": ["주기율표를 만든 멘델레예프 이름이 붙은 원소가 사라져요. 페테 입장에선 꽤 섭섭한 일이에요.", "The element named after Mendeleev, father of the periodic table, would be gone. Rather sad for us."], "No": ["노벨 이름의 원소가 사라져요. 노벨상은 그대로니 걱정 마세요.", "The element named after Nobel disappears. Don't worry, the Nobel Prize stays."], "Lr": ["악티노이드 줄의 마지막 칸이 비어요. 3족 자리를 두고 벌어진 루테튬·로렌슘 논쟁도 없었겠죠.", "The last square of the actinoid row would be empty, and the lutetium-lawrencium group 3 debate never happens."], "Rf": ["악티노이드 바로 다음 칸의 첫 원소예요. 이름을 두고 미국과 소련이 싸운 \"트랜스페르뮴 전쟁\"이 한 판 줄어요.", "The first transactinide. One round of the US-Soviet \"Transfermium Wars\" over names would never be fought."], "Db": ["두브나 연구소 이름을 딴 원소예요. 없으면 러시아 지명 원소가 하나 줄어요.", "Named after the Dubna lab, so one fewer element carries a Russian place name."], "Sg": ["살아 있는 사람(시보그)의 이름이 처음 붙은 원소예요. 그 기록이 오가네손에게 넘어가요.", "The first element named after a living person, Seaborg. That record would pass to oganesson."], "Bh": ["원자 모형의 보어 이름이 붙은 원소가 사라져요. 보어 모형은 그대로 남아요.", "The element named after Niels Bohr vanishes. The Bohr model stays, of course."], "Hs": ["독일 헤센주 이름을 딴 원소예요. 독일 GSI 연구소의 자랑거리 하나가 줄어요.", "Named after the German state of Hesse, so GSI loses one of its trophies."], "Mt": ["여성 과학자 리제 마이트너의 이름이 붙은 원소가 사라져요. 핵분열을 처음 설명한 사람인데 노벨상은 못 받았어요.", "The element honouring Lise Meitner, who first explained fission but never got a Nobel, would be gone."], "Ds": ["독일 다름슈타트 이름을 딴 원소예요. 원자 몇 개만 만들어진 원소라 일상엔 영향 없음.", "Named after Darmstadt and made only a few atoms at a time, so daily life is untouched."], "Rg": ["엑스선을 발견한 뢴트겐의 이름이 붙은 원소예요. 엑스선은 그대로 있어요.", "Named after Röntgen, who discovered X-rays. The X-rays themselves stay."], "Cn": ["코페르니쿠스 이름의 원소예요. 상대론 효과로 액체나 기체일 수도 있다는 신기한 예측이 사라져요.", "Named after Copernicus. The strange prediction that relativity might make it a liquid or gas goes too."], "Nh": ["아시아에서 처음 찾은 원소예요. 리켄 연구소의 9년짜리 도전도 없었겠죠.", "The first element discovered in Asia, and RIKEN's nine-year hunt would never have happened."], "Fl": ["\"안정성의 섬\" 근처라 기대를 모은 원소예요. 섬으로 가는 길의 이정표 하나가 사라져요.", "A hoped-for neighbour of the \"island of stability\": one signpost on the way there would be gone."], "Mc": ["모스크바 이름을 딴 원소예요. 115번이 빈칸이면 113번 니호늄도 발견 못 했을지 몰라요(붕괴 사슬로 나왔거든요).", "Named after Moscow. Nihonium was first seen in moscovium's decay chain, so 113 might be missing too."], "Lv": ["2024년 버클리가 120번 도전의 예행연습으로 다시 만든 원소예요. 리허설 없이 운비닐륨에 도전해야 해요.", "Berkeley remade it in 2024 as a dress rehearsal for element 120. Without it, no rehearsal."], "Ts": ["가장 최근에 발견된 원소 중 하나예요. 할로젠 막내 자리가 비어요.", "One of the most recently discovered elements; the halogens would lose their youngest member."], "Og": ["주기율표의 마지막 칸이 비어요. 오그도 T h e // N u l l p l a c e 에서 영원히… 아, 원래 Null이었네요.", "The last square of the table is empty. Og stays in T h e // N u l l p l a c e forever… it was Null already."]};
+{
+  const josa = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? '이' : '가'; };
+  const _sel = select;
+  select = function(n){
+    const r = _sel.apply(this, arguments);
+    try{
+      const e = byNum[n], d = RX_EL_IF[e.s];
+      if(!d || info.querySelector('.el-if')) return r;
+      const en = LANG === 'en', nm = elName(e);
+      const anchor = info.querySelector('.el-tmi') || info.querySelector('.cat'); if(!anchor) return r;
+      anchor.insertAdjacentHTML('afterend', `<div class="el-if"><b>IF</b><q>${en ? `What if there were no ${nm}?` : `만약 ${nm}${josa(nm)} 없었다면?`}</q><span>${d[en ? 1 : 0]}</span></div>`);
+    }catch(err){}
+    return r;
+  };
+  try{ if(typeof selected !== 'undefined' && selected) select(selected); }catch(e){}
+}
 </script>
 
 </body>
