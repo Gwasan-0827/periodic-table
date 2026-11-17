@@ -56805,5 +56805,15 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 })();
 </script>
 
+<script>
+/* ── 꼬리표 빠진 것 채우기: DNA·헤모글로빈 → 몸 속, 엽록소 a → 색 ── */
+(function(){
+  try{
+    RX_TAGSET.body && ['DNA', '헤모글로빈'].forEach(n => RX_TAGSET.body.add(n));
+    RX_TAGSET.color && RX_TAGSET.color.add('엽록소 a');
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
