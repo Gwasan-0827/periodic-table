@@ -53000,7 +53000,10 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     #syWin nav button span{display:none}
     #syWin nav button.on span,#syWin nav button.pl span{display:inline}
     #syWin nav button::after,#syWin nav .sep{display:none}
-    #syWin .stage{grid-row:3}
+    #syWin .stage{grid-row:3;grid-column:1}
+    #syWin header{grid-column:1;flex-wrap:wrap}
+    #syWin nav{grid-column:1}
+    #syWin .foot{grid-row:4;grid-column:1}
     #syWin .txt p{font-size:13px}
     #syWin .eq em{display:none}
   }
@@ -53181,15 +53184,35 @@ Object.assign(RX_SMILES_PRE, {"c1cnccn1":{"a":[["C",-32.0,-19.4,-0.0,16],["C",-3
     // 빔관
     const tg = c.createLinearGradient(0, ty - 14, 0, ty + 14); tg.addColorStop(0, '#3a4066'); tg.addColorStop(.5, '#1a1e38'); tg.addColorStop(1, '#3a4066');
     c.fillStyle = tg; c.fillRect(0, ty - 12, tx - Rw * .1, 24); c.strokeStyle = 'rgba(170,180,255,.3)'; c.strokeRect(-1, ty - 12, tx - Rw * .1, 24);
-    // 바퀴
+    // 바퀴 (실제처럼: 지름 ~10cm, 호 모양 표적 4조각 = 얇은 티타늄 박막 위에 악티노이드 산화물을 입힌 것)
     c.save(); c.translate(tx, cy); c.rotate(t * 1.6);
-    c.strokeStyle = metal(c, -Rw, -Rw, Rw, Rw); c.lineWidth = 10; c.beginPath(); c.arc(0, 0, Rw, 0, 6.283); c.stroke();
-    for(let q = 0; q < 8; q++){ c.save(); c.rotate(q * Math.PI / 4);
-      c.fillStyle = metal(c, 0, -6, 0, 6, '#2c3150', '#6c7499'); c.fillRect(Rw * .14, -3, Rw * .3, 6);
-      const fg = c.createLinearGradient(Rw * .45, 0, Rw * .95, 0); fg.addColorStop(0, '#8a6a2c'); fg.addColorStop(.5, '#e6c46f'); fg.addColorStop(1, '#8a6a2c');
-      c.fillStyle = fg; c.beginPath(); c.roundRect ? c.roundRect(Rw * .45, -Rw * .16, Rw * .48, Rw * .32, 4) : c.rect(Rw * .45, -Rw * .16, Rw * .48, Rw * .32); c.fill(); c.restore(); }
-    c.fillStyle = metal(c, -12, -12, 12, 12); c.beginPath(); c.arc(0, 0, 13, 0, 6.283); c.fill(); c.restore();
-    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' (돌아가는 바퀴)', ' (spinning wheel)'), tx, cy + Rw + 26, '#ffe2a0', 12);
+    const ri = Rw * .44, ro = Rw * .88, gapA = .16;
+    // 바깥 테 + 안쪽 테
+    c.strokeStyle = metal(c, -Rw, -Rw, Rw, Rw); c.lineWidth = 6; c.beginPath(); c.arc(0, 0, Rw * .92, 0, 6.283); c.stroke();
+    c.lineWidth = 4; c.beginPath(); c.arc(0, 0, ri - 3, 0, 6.283); c.stroke();
+    for(let q = 0; q < 4; q++){
+      const a0 = q * Math.PI / 2 + gapA / 2, a1 = (q + 1) * Math.PI / 2 - gapA / 2;
+      // 티타늄 박막 (거의 투명한 은회색)
+      c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(0, 0, ri, a1, a0, true); c.closePath();
+      const fg = c.createRadialGradient(0, 0, ri, 0, 0, ro); fg.addColorStop(0, 'rgba(190,198,215,.30)'); fg.addColorStop(.5, 'rgba(225,230,240,.42)'); fg.addColorStop(1, 'rgba(170,178,196,.30)');
+      c.fillStyle = fg; c.fill();
+      // 산화물 층 (검갈색, 얼룩덜룩)
+      c.save(); c.clip();
+      const am = (a0 + a1) / 2, rm = (ri + ro) / 2;
+      for(let k = 0; k < 9; k++){ const aa = a0 + (a1 - a0) * ((k * 0.61803) % 1), rr = ri + (ro - ri) * (.2 + .6 * ((k * 0.381966 + q * .17) % 1));
+        const sg = c.createRadialGradient(Math.cos(aa) * rr, Math.sin(aa) * rr, 0, Math.cos(aa) * rr, Math.sin(aa) * rr, Rw * .22);
+        sg.addColorStop(0, 'rgba(92,62,44,.42)'); sg.addColorStop(1, 'rgba(92,62,44,0)'); c.fillStyle = sg; c.fillRect(-Rw, -Rw, Rw * 2, Rw * 2); }
+      c.restore();
+      c.strokeStyle = 'rgba(200,208,230,.55)'; c.lineWidth = 1; c.beginPath(); c.arc(0, 0, ro, a0, a1); c.arc(0, 0, ri, a1, a0, true); c.closePath(); c.stroke();
+      // 살 (조각 사이)
+      c.save(); c.rotate(q * Math.PI / 2); c.fillStyle = metal(c, 0, -5, 0, 5, '#2c3150', '#6c7499'); c.fillRect(Rw * .1, -4, Rw * .82, 8); c.restore();
+    }
+    c.fillStyle = metal(c, -12, -12, 12, 12); c.beginPath(); c.arc(0, 0, Rw * .14, 0, 6.283); c.fill(); c.restore();
+    // 빔이 닿는 한 점 (바퀴는 돌아도 이 자리는 그대로, 뜨거워서 빛남)
+    { const hx = tx - Rw * .05, hy = ty, fl = .7 + .3 * Math.sin(t * 23);
+      glow(c, hx, hy, Rw * .2, '255,170,120', .55 * fl); c.fillStyle = `rgba(255,236,200,${.85 * fl})`; c.beginPath(); c.arc(hx, hy, 3.5, 0, 6.283); c.fill(); }
+    lab(c, P('빔이 맞는 자리', 'beam spot'), tx - Rw * .05, ty + 20, '#ffcfa0', 10);
+    lab(c, P('과녁 ', 'target ') + SUP(r.ta) + r.ts + P(' · 박막 4조각, 지름 약 10cm 바퀴', ' · 4 thin-film segments on a ~10 cm wheel'), tx, cy + Rw + 26, '#ffe2a0', 12);
     // 이온: 대부분 튕김
     for(let q = 0; q < 18; q++){ const ph = ((t * 1.1 + q / 18) % 1), hitX = tx - Rw * .05, y0 = ty + Math.sin(q * 7.3) * 5;
       if(ph < .72){ const x = ph / .72 * hitX; ion(c, x, y0, 1, 0, 34, '255,120,150', 2.4); }
