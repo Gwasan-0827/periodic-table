@@ -58816,6 +58816,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   #flipBack{position:fixed;left:50%;bottom:max(96px,calc(env(safe-area-inset-bottom) + 96px));transform:translateX(-50%);z-index:2147482901;opacity:0;pointer-events:none;transition:opacity .3s;
     font:800 15px/1 system-ui,sans-serif;padding:13px 18px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.3);background:rgba(18,20,32,.92);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.5);white-space:nowrap}
   #flipBack.on{opacity:1;pointer-events:auto}
+  body.flipped *{pointer-events:none!important}
+  .flipbare::before,.flipbare::after{opacity:0!important}
+  body.flipped *{animation-play-state:paused!important}
+  .flipbare{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:background .3s,border-color .3s,box-shadow .3s!important}
+  body.flipped #flipBack{pointer-events:auto!important}
   body.flipping{animation:flipShake .45s cubic-bezier(.3,.7,.4,1)}
   @keyframes flipShake{0%,100%{transform:none}15%{transform:translate(-12px,8px) rotate(-.6deg)}30%{transform:translate(10px,-6px) rotate(.5deg)}50%{transform:translate(-6px,4px)}70%{transform:translate(4px,-2px)}}
   @media (prefers-reduced-motion:reduce){ body.flipping{animation:none} }
@@ -58849,24 +58854,41 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   }
   function flip(){
     if(busy || S.flipped) return;
-    const grid = document.getElementById('grid'); if(!grid) return;
     busy = true; S.flipped = true;
     try{ rxEvt('tableflip'); }catch(_){}
-    // 잘리지 않게 조상들의 overflow 를 잠시 풀어 둔다
-    S.ov = []; for(let p = grid.parentElement; p && p !== document.body; p = p.parentElement){ S.ov.push([p, p.style.overflow]); p.style.overflow = 'visible'; }
-    grid.style.pointerEvents = 'none';
-    const W = innerWidth, tw = document.getElementById('tableWrap') || grid.parentElement, gb = grid.getBoundingClientRect();
-    // 바닥: 표 아래로 처음 가리는 판(폰의 아래 시트·조합 바 등) 위쪽
-    let H = innerHeight;
-    for(let y = Math.max(0, gb.top + 20); y < innerHeight; y += 8){
-      const top = document.elementFromPoint(W / 2, y); if(!top) continue;
-      if(!tw.contains(top) && !top.contains(tw) && top !== document.body && top !== document.documentElement){ H = y; break; }
-    }
-    S.els = [...grid.children].filter(e => e.offsetWidth && getComputedStyle(e).visibility !== 'hidden').map(e => {
-      const r = e.getBoundingClientRect();
-      e.style.willChange = 'transform'; e.style.position = e.style.position || ''; e.style.zIndex = 50;
-      return { e, r, s: (r.width / (e.offsetWidth || r.width)) || 1, x: 0, y: 0, a: 0, vx: (r.left + r.width / 2 - W / 2) * (.6 + Math.random() * .8) + (Math.random() - .5) * 500,
-               vy: -(700 + Math.random() * 900) * (1 - r.top / H * .35), va: (Math.random() - .5) * 1400, rest: 0 };
+    // 화면의 UI 전부를 조각으로 나눈다: 큰 판은 안으로 파고들고, 작은 것(버튼·칸·칩·글자 줄)은 통째로 날린다
+    const W = innerWidth, H = innerHeight, VA = W * H, MINE = /^(flipAsk|flipKao|flipBack)$/;
+    const out = []; S.bg = [];
+    const pick = el => {
+      if(out.length > 420 || MINE.test(el.id) || /^(SCRIPT|STYLE|LINK|META|TEMPLATE|NOSCRIPT)$/.test(el.tagName)) return;
+      const cs = getComputedStyle(el);
+      if(cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .05) return;
+      if(cs.display === 'contents'){ [...el.children].forEach(pick); return; }
+      const r = el.getBoundingClientRect();
+      if(cs.position === 'fixed' && cs.pointerEvents === 'none' && r.width * r.height < 12000) return;   // 원자 커서 같은 것
+      if(r.width < 3 || r.height < 3 || r.bottom < 0 || r.top > H || r.right < 0 || r.left > W) return;
+      const area = r.width * r.height, kids = [...el.children];
+      if(area > VA * .045 && kids.length){
+        // 판 자체는 투명하게 (알맹이가 다 날아가고 빈 판만 남지 않게). 화면 거의 전체를 덮는 배경판은 그대로
+        if(area < VA * .6 && (cs.backgroundImage !== 'none' || !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.borderTopWidth !== '0px' || cs.boxShadow !== 'none')){
+          const st = el.style, keep = ['background', 'border-color', 'box-shadow', 'backdrop-filter', '-webkit-backdrop-filter'].map(k => [k, st.getPropertyValue(k), st.getPropertyPriority(k)]);
+          S.bg.push([el, keep]); el.classList.add('flipbare');
+        }
+        kids.forEach(pick); return;
+      }
+      if(area > VA * .3) return;                                                     // 배경 캔버스 같은 통짜는 남겨 둔다
+      out.push([el, r, cs.transform]);
+    };
+    [...document.body.children].forEach(pick);
+    S.ov = []; const seen = new Set();
+    out.forEach(([el]) => { for(let p = el.parentElement; p && p !== document.documentElement && !seen.has(p); p = p.parentElement){ seen.add(p); S.ov.push([p, p.style.overflow, p.style.contain]); p.style.overflow = 'visible'; p.style.contain = 'none'; } });
+    document.body.classList.add('flipped');
+    S.els = out.map(([e, r, tf]) => {
+      const m = tf && tf !== 'none' ? tf : '', sc = m ? (new DOMMatrix(m)).a || 1 : 1;
+      const s = ((r.width / (e.offsetWidth || r.width)) / Math.abs(sc)) || 1;
+      const ot = e.style.transform; e.style.willChange = 'transform';
+      return { e, r, s, m, ot, x: 0, y: 0, a: 0, vx: (r.left + r.width / 2 - W / 2) * (.6 + Math.random() * .8) + (Math.random() - .5) * 500,
+               vy: -(600 + Math.random() * 1000) * (1 - r.top / H * .4), va: (Math.random() - .5) * 1400 * Math.min(1, 140 / Math.max(r.width, r.height)), rest: 0 };
     });
     // 얼굴 + 흔들림 + 쾅
     let k = document.getElementById('flipKao'); if(!k){ k = document.createElement('div'); k.id = 'flipKao'; document.body.appendChild(k); }
@@ -58883,14 +58905,14 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
       for(const o of S.els){
         if(o.rest > 40) continue;
         o.vy += G * dt; o.x += o.vx * dt; o.y += o.vy * dt; o.a += o.va * dt;
-        const floor = H - o.r.top - o.r.height * .75, wallL = -o.r.left, wallR = W - o.r.right;
+        const floor = H - o.r.bottom + Math.min(o.r.height * .25, 20), wallL = -o.r.left, wallR = W - o.r.right;
         if(o.y > floor){ o.y = floor; o.vy *= -.38; o.vx *= .72; o.va *= .6; if(Math.abs(o.vy) < 60){ o.vy = 0; o.rest++; } }
         if(o.x < wallL){ o.x = wallL; o.vx *= -.5; } if(o.x > wallR){ o.x = wallR; o.vx *= -.5; }
         if(o.vy === 0){ o.vx *= .9; o.va *= .85; }
         moving += Math.abs(o.vx) + Math.abs(o.vy) > 5 ? 1 : 0;
-        o.e.style.transform = `translate(${(o.x / o.s).toFixed(1)}px,${(o.y / o.s).toFixed(1)}px) rotate(${o.a.toFixed(1)}deg)`;
+        o.e.style.setProperty('transform', `translate(${(o.x / o.s).toFixed(1)}px,${(o.y / o.s).toFixed(1)}px) rotate(${o.a.toFixed(1)}deg) ${o.m}`, 'important');
       }
-      if(now - t0 < 6000 && moving) raf = requestAnimationFrame(step);
+      if(now - t0 < 7000 && moving) raf = requestAnimationFrame(step);
       else { busy = false; }
     };
     raf = requestAnimationFrame(step);
@@ -58913,13 +58935,13 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
         const u = Math.max(0, Math.min(1, (now - t0 - o.d) / D)), e = ease(u);
         if(u < 1) left++;
         const lift = Math.sin(u * Math.PI) * -60;
-        o.e.style.transform = u >= 1 ? '' : `translate(${(o.sx * (1 - e) / o.s).toFixed(1)}px,${((o.sy * (1 - e) + lift) / o.s).toFixed(1)}px) rotate(${(o.sa * (1 - e)).toFixed(1)}deg)`;
+        if(u >= 1) o.e.style.transform = o.ot; else o.e.style.setProperty('transform', `translate(${(o.sx * (1 - e) / o.s).toFixed(1)}px,${((o.sy * (1 - e) + lift) / o.s).toFixed(1)}px) rotate(${(o.sa * (1 - e)).toFixed(1)}deg) ${o.m}`, 'important');
       }
       if(left) raf = requestAnimationFrame(step);
       else {
-        els.forEach(o => { o.e.style.transform = ''; o.e.style.willChange = ''; o.e.style.zIndex = ''; });
-        (S.ov || []).forEach(([p, v]) => p.style.overflow = v);
-        const g = document.getElementById('grid'); if(g) g.style.pointerEvents = '';
+        els.forEach(o => { o.e.style.removeProperty('transform'); o.e.style.transform = o.ot; o.e.style.willChange = ''; });
+        (S.ov || []).forEach(([p, v, c]) => { p.style.overflow = v; p.style.contain = c; });
+        document.body.classList.remove('flipped'); (S.bg || []).forEach(([el]) => el.classList.remove('flipbare'));
         S.els = []; S.flipped = false; busy = false;
         try{ SFX.ok(); }catch(_){}
         try{ rxToast('', T('done')); }catch(_){}
