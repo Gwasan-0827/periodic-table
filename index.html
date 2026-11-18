@@ -48162,7 +48162,9 @@ void main(){
     [57, 89].forEach(st => { mt += '<i class="gap"></i><i class="gap"></i>'; for(let n = st; n < st + 15; n++) mt += cell(byNum[n]); mt += '<i class="gap"></i>'; });
     box.innerHTML = `
       <div class="elp-hero"><div style="flex:1"><h3>${EN() ? 'ELEMENT PERSONA INDEX' : '원소 의인화 도감'}</h3>
-        <p>${EN() ? 'Elements, as people. Friends from the director\'s world, "Perinia //".' : '원소가 사람이 된다면? 디렉터의 세계관 「페리니아//」 친구들이에요.'}</p></div>
+        <p>${EN() ? 'Elements, as people. Friends from the director\'s world, "Perinia //".' : '원소가 사람이 된다면? 디렉터의 세계관 「페리니아//」 친구들이에요.'}</p>
+        <div class="elp-law"><div><b>${EN() ? 'LAW 1' : '제1법칙'}</b><span class="rd" title="${EN() ? 'Classified' : '기밀'}">██████ ████ ███████</span></div>
+        <div><b>${EN() ? 'LAW 2' : '제2법칙'}</b><span><code>λ ≡ Undefined</code> ${EN() ? 'Every element in Perinia is judged a stable isotope.' : '페리니아의 모든 원소는 안정 동위원소로 판정된다.'}</span></div></div></div>
         <div class="elp-big">${P.filter(p => !p.wip).length}<small> / 118</small></div></div>
       <div class="elp-mt">${mt}</div>
       ${fltHTML()}<div class="elp-grid">${P.map(p => { const t = p[L], e = el(p.s); return `<div class="elp-card${p.wip ? ' wip' : ''}" role="button" tabindex="0" data-s="${p.s}" style="--c:${p.c}">${thumb(p)}
@@ -59061,5 +59063,13 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
 })();
 </script>
 
+<style>
+  /* 페리니아// 법칙 칸 (의인화 도감 머리) */
+  .elp-law{margin-top:10px;display:grid;gap:5px;font-size:12.5px;line-height:1.5;color:var(--dim,#aab)}
+  .elp-law>div{display:flex;gap:8px;align-items:baseline;padding:6px 10px;border-radius:9px;background:rgba(177,151,252,.07);border:1px solid rgba(177,151,252,.2)}
+  .elp-law b{flex:none;font-size:11px;font-weight:800;letter-spacing:.04em;color:#d0bfff;min-width:46px}
+  .elp-law code{font-family:ui-monospace,monospace;font-weight:800;color:#fff;background:rgba(177,151,252,.18);padding:1px 6px;border-radius:5px;margin-right:4px}
+  .elp-law .rd{color:#0b0b12;background:#0b0b12;border-radius:2px;letter-spacing:.06em;user-select:none;cursor:help;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+</style>
 </body>
 </html>
