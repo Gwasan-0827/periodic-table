@@ -58802,5 +58802,152 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
 })();
 </script>
 
+<style>
+  /* ═══ 하기 싫으세요? [밥상 뒤집기!!] — 주기율표(테이블)를 엎는다 ═══ */
+  #flipAsk{position:fixed;left:50%;bottom:max(96px,calc(env(safe-area-inset-bottom) + 96px));transform:translateX(-50%) translateY(20px);z-index:2147482900;opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:10px;padding:12px 14px 12px 16px;border-radius:16px;background:rgba(18,20,32,.94);border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 40px rgba(0,0,0,.5);
+    font:700 14px/1.3 system-ui,sans-serif;color:#eef1f8;transition:opacity .25s,transform .3s cubic-bezier(.2,.9,.3,1.3);white-space:nowrap}
+  #flipAsk.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+  #flipAsk button{font:inherit;font-size:13px;padding:8px 12px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:none;color:#c9d0e2}
+  #flipAsk button.go{background:linear-gradient(180deg,#ff8a65,#e8590c);border-color:#ff8a65;color:#fff;font-weight:900;letter-spacing:.02em;box-shadow:0 0 16px rgba(255,138,101,.45)}
+  #flipKao{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);z-index:2147482901;pointer-events:none;opacity:0;
+    font:900 clamp(30px,7vw,72px)/1 system-ui,"Segoe UI Symbol",sans-serif;color:#fff;text-shadow:0 4px 0 #e8590c,0 0 30px rgba(255,138,101,.7);white-space:nowrap;transition:opacity .2s,transform .35s cubic-bezier(.2,.9,.3,1.4)}
+  #flipKao.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #flipBack{position:fixed;left:50%;bottom:max(96px,calc(env(safe-area-inset-bottom) + 96px));transform:translateX(-50%);z-index:2147482901;opacity:0;pointer-events:none;transition:opacity .3s;
+    font:800 15px/1 system-ui,sans-serif;padding:13px 18px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.3);background:rgba(18,20,32,.92);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.5);white-space:nowrap}
+  #flipBack.on{opacity:1;pointer-events:auto}
+  body.flipping{animation:flipShake .45s cubic-bezier(.3,.7,.4,1)}
+  @keyframes flipShake{0%,100%{transform:none}15%{transform:translate(-12px,8px) rotate(-.6deg)}30%{transform:translate(10px,-6px) rotate(.5deg)}50%{transform:translate(-6px,4px)}70%{transform:translate(4px,-2px)}}
+  @media (prefers-reduced-motion:reduce){ body.flipping{animation:none} }
+</style>
+<script>
+/* ═══════════════════════════════════════════════════
+   밥상 뒤집기: 조합에 연달아 5번 실패하면 "하기 싫으세요?" → [밥상 뒤집기!!]
+   주기율표 칸들이 와르르 날아가 바닥에 튕기고, ┬─┬ノ( º _ ºノ) 버튼으로 다시 정리한다.
+   검색창에 "밥상" / "tableflip" / "┻━┻" 를 쳐도 뒤집힌다. 콘솔: rxTableFlip()
+   ═══════════════════════════════════════════════════ */
+(function(){
+  const EN = () => typeof LANG !== 'undefined' && LANG === 'en';
+  const T = k => ({
+    ask: ['하기 싫으세요?', 'Over it?'], go: ['밥상 뒤집기!!', 'Flip the table!!'], no: ['아니요', 'Nah'],
+    back: ['┬─┬ノ( º _ ºノ)  다시 정리하기', '┬─┬ノ( º _ ºノ)  Put it back'],
+    done: ['…원소들이 제자리로 돌아갔어요', '…the elements are back in place'],
+  })[k][EN() ? 1 : 0];
+  let streak = 0, lastAsk = 0, busy = false, raf = 0;
+  const S = { els: [], flipped: false };
+  function ask(){
+    if(busy || S.flipped || Date.now() - lastAsk < 90000) return;
+    lastAsk = Date.now();
+    let a = document.getElementById('flipAsk');
+    if(!a){ a = document.createElement('div'); a.id = 'flipAsk'; document.body.appendChild(a); }
+    a.innerHTML = `<span>${T('ask')}</span><button type="button" class="go">${T('go')}</button><button type="button" class="no">${T('no')}</button>`;
+    requestAnimationFrame(() => a.classList.add('on'));
+    const hide = () => a.classList.remove('on');
+    a.querySelector('.go').onclick = () => { hide(); try{ if(typeof modal !== 'undefined') document.getElementById('mClose')?.click(); }catch(_){} setTimeout(flip, 250); };
+    a.querySelector('.no').onclick = hide;
+    clearTimeout(a._t); a._t = setTimeout(hide, 9000);
+  }
+  function flip(){
+    if(busy || S.flipped) return;
+    const grid = document.getElementById('grid'); if(!grid) return;
+    busy = true; S.flipped = true;
+    try{ rxEvt('tableflip'); }catch(_){}
+    // 잘리지 않게 조상들의 overflow 를 잠시 풀어 둔다
+    S.ov = []; for(let p = grid.parentElement; p && p !== document.body; p = p.parentElement){ S.ov.push([p, p.style.overflow]); p.style.overflow = 'visible'; }
+    grid.style.pointerEvents = 'none';
+    const W = innerWidth, tw = document.getElementById('tableWrap') || grid.parentElement, gb = grid.getBoundingClientRect();
+    // 바닥: 표 아래로 처음 가리는 판(폰의 아래 시트·조합 바 등) 위쪽
+    let H = innerHeight;
+    for(let y = Math.max(0, gb.top + 20); y < innerHeight; y += 8){
+      const top = document.elementFromPoint(W / 2, y); if(!top) continue;
+      if(!tw.contains(top) && !top.contains(tw) && top !== document.body && top !== document.documentElement){ H = y; break; }
+    }
+    S.els = [...grid.children].filter(e => e.offsetWidth && getComputedStyle(e).visibility !== 'hidden').map(e => {
+      const r = e.getBoundingClientRect();
+      e.style.willChange = 'transform'; e.style.position = e.style.position || ''; e.style.zIndex = 50;
+      return { e, r, s: (r.width / (e.offsetWidth || r.width)) || 1, x: 0, y: 0, a: 0, vx: (r.left + r.width / 2 - W / 2) * (.6 + Math.random() * .8) + (Math.random() - .5) * 500,
+               vy: -(700 + Math.random() * 900) * (1 - r.top / H * .35), va: (Math.random() - .5) * 1400, rest: 0 };
+    });
+    // 얼굴 + 흔들림 + 쾅
+    let k = document.getElementById('flipKao'); if(!k){ k = document.createElement('div'); k.id = 'flipKao'; document.body.appendChild(k); }
+    k.textContent = '(╯°□°)╯︵ ┻━┻'; requestAnimationFrame(() => k.classList.add('on'));
+    document.body.classList.remove('flipping'); void document.body.offsetWidth; document.body.classList.add('flipping');
+    try{ SFX.boom(); }catch(_){ try{ SFX.fail(); }catch(__){} }
+    try{ navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(_){}
+    let t0 = performance.now(), last = t0;
+    const G = 2600;
+    cancelAnimationFrame(raf);
+    const step = now => {
+      const dt = Math.min(.033, (now - last) / 1000); last = now;
+      let moving = 0;
+      for(const o of S.els){
+        if(o.rest > 40) continue;
+        o.vy += G * dt; o.x += o.vx * dt; o.y += o.vy * dt; o.a += o.va * dt;
+        const floor = H - o.r.top - o.r.height * .75, wallL = -o.r.left, wallR = W - o.r.right;
+        if(o.y > floor){ o.y = floor; o.vy *= -.38; o.vx *= .72; o.va *= .6; if(Math.abs(o.vy) < 60){ o.vy = 0; o.rest++; } }
+        if(o.x < wallL){ o.x = wallL; o.vx *= -.5; } if(o.x > wallR){ o.x = wallR; o.vx *= -.5; }
+        if(o.vy === 0){ o.vx *= .9; o.va *= .85; }
+        moving += Math.abs(o.vx) + Math.abs(o.vy) > 5 ? 1 : 0;
+        o.e.style.transform = `translate(${(o.x / o.s).toFixed(1)}px,${(o.y / o.s).toFixed(1)}px) rotate(${o.a.toFixed(1)}deg)`;
+      }
+      if(now - t0 < 6000 && moving) raf = requestAnimationFrame(step);
+      else { busy = false; }
+    };
+    raf = requestAnimationFrame(step);
+    setTimeout(() => k.classList.remove('on'), 1700);
+    setTimeout(() => {
+      let b = document.getElementById('flipBack'); if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'flipBack'; document.body.appendChild(b); }
+      b.textContent = T('back'); b.onclick = putBack; requestAnimationFrame(() => b.classList.add('on'));
+    }, 1300);
+  }
+  function putBack(){
+    const b = document.getElementById('flipBack'); if(b) b.classList.remove('on');
+    cancelAnimationFrame(raf);
+    const k = document.getElementById('flipKao'); if(k){ k.textContent = '┬─┬ノ( º _ ºノ)'; k.classList.add('on'); setTimeout(() => k.classList.remove('on'), 1100); }
+    const els = S.els; els.forEach(o => { o.sx = o.x; o.sy = o.y; o.sa = o.a % 360; o.d = Math.random() * 380; });
+    const t0 = performance.now(), D = 520;
+    const ease = u => 1 - Math.pow(1 - u, 3) * (1 - 1.6 * u * (1 - u));
+    const step = now => {
+      let left = 0;
+      for(const o of els){
+        const u = Math.max(0, Math.min(1, (now - t0 - o.d) / D)), e = ease(u);
+        if(u < 1) left++;
+        const lift = Math.sin(u * Math.PI) * -60;
+        o.e.style.transform = u >= 1 ? '' : `translate(${(o.sx * (1 - e) / o.s).toFixed(1)}px,${((o.sy * (1 - e) + lift) / o.s).toFixed(1)}px) rotate(${(o.sa * (1 - e)).toFixed(1)}deg)`;
+      }
+      if(left) raf = requestAnimationFrame(step);
+      else {
+        els.forEach(o => { o.e.style.transform = ''; o.e.style.willChange = ''; o.e.style.zIndex = ''; });
+        (S.ov || []).forEach(([p, v]) => p.style.overflow = v);
+        const g = document.getElementById('grid'); if(g) g.style.pointerEvents = '';
+        S.els = []; S.flipped = false; busy = false;
+        try{ SFX.ok(); }catch(_){}
+        try{ rxToast('', T('done')); }catch(_){}
+      }
+    };
+    raf = requestAnimationFrame(step);
+  }
+  window.rxTableFlip = flip;
+  // 연속 실패 세기
+  const _nf = noteFail;
+  noteFail = function(){ const r = _nf.apply(this, arguments); streak++; if(streak >= 5){ streak = 0; setTimeout(ask, 1600); } return r; };
+  const _rr = rxRender;
+  rxRender = function(kind){ if(kind !== 'fail') streak = 0; return _rr.apply(this, arguments); };
+  // 검색창 비밀 단어
+  const se = document.getElementById('search');
+  if(se) se.addEventListener('input', () => {
+    const v = se.value.trim().toLowerCase();
+    if(v === '밥상' || v === '밥상 뒤집기' || v === 'tableflip' || v.includes('┻━┻')){ se.value = ''; se.blur(); try{ se.dispatchEvent(new Event('input')); }catch(_){} setTimeout(flip, 150); }
+  });
+  if(typeof ACH !== 'undefined'){
+    const i = ACH.findIndex(a => a.id === 'master');
+    const a = { id:'tableflip', secret:true, need:() => rxEvtHas('tableflip'),
+      ko:['(╯°□°)╯︵ ┻━┻','주기율표를 엎었다. 페리오딕//"테이블"이니까'], en:['(╯°□°)╯︵ ┻━┻','Flipped the periodic table. It is a "table", after all'] };
+    if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
+    try{ RX_ACH_IC.tableflip = '🍽️'; }catch(e){}
+  }
+})();
+</script>
+
 </body>
 </html>
