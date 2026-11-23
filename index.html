@@ -57268,7 +57268,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
 
 <style>
   /* ═══ 이스터에그: 둥실 날아다니는 수소 (웹 전용) ═══ */
-  #hFly{position:fixed;left:0;top:0;z-index:2147482000;width:96px;height:96px;cursor:pointer;touch-action:manipulation;will-change:transform;-webkit-tap-highlight-color:transparent}
+  #hFly{position:fixed;left:0;top:0;z-index:2147482000;width:96px;height:96px;cursor:pointer;touch-action:manipulation;will-change:transform;contain:layout style;-webkit-tap-highlight-color:transparent}
   #hFly img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(140,150,255,.45));pointer-events:none;user-select:none;-webkit-user-drag:none}
   .hf-trail, #hFly .bb{position:absolute;border-radius:50%;border:1.5px solid rgba(200,210,255,.85);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(190,200,255,.15) 60%);pointer-events:none}
   #hFly.got{pointer-events:none}
@@ -57319,12 +57319,26 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
     return false;
   }
 
+  const IMG = {};
+  function getImg(src){ if(!IMG[src]){ const im = new Image(); im.decoding = 'async'; im.src = src; IMG[src] = im; } return IMG[src]; }
+  function sprite(src, S){
+    const dpr = Math.min(2, devicePixelRatio || 1), pad = 20, cv = document.createElement('canvas'), F = S + pad * 2;
+    cv.width = Math.round(F * dpr); cv.height = cv.width;
+    cv.style.cssText = `position:absolute;left:${-pad}px;top:${-pad}px;width:${F}px;height:${F}px;pointer-events:none`;
+    const im = getImg(src), draw = () => { const c = cv.getContext('2d'), k = Math.min(S / im.naturalWidth, S / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.shadowColor = 'rgba(140,150,255,.45)'; c.shadowBlur = 14 * dpr; c.shadowOffsetY = 6 * dpr;
+      c.drawImage(im, pad + (S - w) / 2, pad + (S - h) / 2, w, h); };
+    if(im.complete && im.naturalWidth) draw(); else if(im.decode) im.decode().then(draw).catch(() => {}); else im.onload = draw;
+    return cv;
+  }
+  // 처음 날 때 그림 해독으로 버벅이지 않게 미리 풀어 둔다
+  setTimeout(() => { try{ const s = pic(); if(s){ const im = getImg(s); im.decode && im.decode().catch(() => {}); } }catch(_){} }, 4000);
   function fly(force){
     if(!force && blocked()) return false;
     const src = pic(); if(!src) return false;
     document.getElementById('hFly')?.remove();
     const el = document.createElement('div'); el.id = 'hFly'; el.setAttribute('role', 'button'); el.setAttribute('aria-label', EN() ? 'Catch Hydrogen' : '수소 잡기');
-    el.innerHTML = `<img src="${src}" alt="">`;
+    el.appendChild(sprite(src, Math.max(72, Math.min(110, innerWidth * .2))));   // 렉 줄이기: 큰 그림 + drop-shadow 필터를 매 프레임 돌리지 않고, 작은 캔버스에 한 번만 구워 둔다
     document.documentElement.appendChild(el);
     const W = innerWidth, H = innerHeight, S = Math.max(72, Math.min(110, W * .2));
     el.style.width = el.style.height = S + 'px';
@@ -57340,7 +57354,7 @@ RX_SMILES_PRE["Oc1ccc(O)cc1"] = {"a":[["O",-76.9,-0.0,0.0,16],["C",-38.7,0.7,0.0
       const rot = Math.cos(u * Math.PI * 2 * fq) * 8;
       el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scaleX(${flip})`;
       // 뒤로 남는 거품
-      if(Math.random() < .35){
+      if(Math.random() < .16){
         const b = document.createElement('i'); b.className = 'bb hf-trail'; const r = 5 + Math.random() * 9;
         Object.assign(b.style, { position: 'fixed', zIndex: 2147481999, width: r + 'px', height: r + 'px', left: (x + S * .5 - flip * S * .3) + 'px', top: (y + S * .55 + (Math.random() - .5) * 20) + 'px', transition: 'transform .9s ease-out, opacity .9s' });
         document.documentElement.appendChild(b);
