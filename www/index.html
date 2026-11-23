@@ -58914,28 +58914,68 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     a.innerHTML = `<span>${T('ask')}</span><button type="button" class="go">${T('go')}</button><button type="button" class="no">${T('no')}</button>`;
     requestAnimationFrame(() => a.classList.add('on'));
     const hide = () => a.classList.remove('on');
+    try{ loadBuf(); }catch(_){}
     a.querySelector('.go').onclick = () => { hide(); try{ if(typeof modal !== 'undefined') document.getElementById('mClose')?.click(); }catch(_){} setTimeout(flip, 250); };
     a.querySelector('.no').onclick = hide;
     clearTimeout(a._t); a._t = setTimeout(hide, 9000);
   }
   /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 1.78초)에 전부 날아간다 */
   const JUMP = 1.76;
+  /* 박자 맞추기: Web Audio 로 틀고, 스피커까지 걸리는 지연(outputLatency, 블루투스면 0.2초 넘게)까지 더해서
+     '귀에 들리는' 순간에 날린다. HTMLAudio 의 currentTime 은 실제로 들리는 것보다 앞서가서 PC 에서 박자가 어긋났음 */
+  let BUF = null, BUFP = null;
+  function loadBuf(){
+    if(BUF || BUFP) return BUFP;
+    try{
+      const a = ac(); if(!a) return null;
+      const bin = atob(RX_TBL_SND.split(',')[1]), u8 = new Uint8Array(bin.length);
+      for(let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      BUFP = new Promise(res => { try{ a.decodeAudioData(u8.buffer, b => { BUF = b; res(b); }, () => res(null)); }catch(_){ res(null); } });
+      return BUFP;
+    }catch(_){ return null; }
+  }
   function flip(){
     if(busy || S.flipped) return;
     busy = true;
-    let au = null, fired = false;
-    try{ if(typeof sndOn === 'undefined' || sndOn){ au = new Audio(RX_TBL_SND); au.volume = .9; } }catch(_){ au = null; }   // 동작 줄이기(윈도우 '애니메이션 효과' 꺼짐 포함)여도 소리 박자는 맞춘다. 흔들림만 CSS 로 꺼짐
-    S.au = au; S.clip = !!au;
+    let fired = false;
+    S.au = null; S.src = null; S.clip = false;
     const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob'); busy = false; launch(); };
-    if(!au){ fire(); return; }
+    if(!(typeof sndOn === 'undefined' || sndOn)){ fire(); return; }
     if(!(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)) document.body.classList.add('flipwob');   // 흔들림은 앱의 동작 설정을 따른다
     try{ navigator.vibrate && navigator.vibrate([30, 60, 30, 60, 30]); }catch(_){}
     const t0 = performance.now();
-    try{ const p = au.play(); if(p && p.catch) p.catch(() => { S.clip = false; fire(); }); }catch(_){ S.clip = false; fire(); return; }
-    const tick = () => { if(fired) return; const ct = au.currentTime || 0;
-      document.body.style.setProperty('--wob', Math.min(1, .35 + ct / JUMP * .65).toFixed(2));
-      if(ct >= JUMP || performance.now() - t0 > 3000) return fire(); requestAnimationFrame(tick); };
-    requestAnimationFrame(tick);
+    const wob = k => document.body.style.setProperty('--wob', Math.min(1, .35 + k * .65).toFixed(2));
+    // 1) Web Audio (지연 보정)
+    const viaWA = b => {
+      const a = ac(); if(!a || !b) return false;
+      try{
+        const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .9;
+        src.buffer = b; src.connect(g).connect(a.destination);
+        const st = a.currentTime + .04; src.start(st); S.src = src; S.clip = true;
+        const lat = () => (a.outputLatency || 0) + (a.baseLatency || 0);
+        const tick = () => { if(fired) return; const heard = a.currentTime - st - lat();
+          wob(Math.max(0, heard) / JUMP);
+          if(heard >= JUMP || performance.now() - t0 > 3500) return fire(); requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+        return true;
+      }catch(_){ return false; }
+    };
+    // 2) 안 되면 예전 HTMLAudio
+    const viaEl = () => {
+      let au = null; try{ au = new Audio(RX_TBL_SND); au.volume = .9; }catch(_){}
+      if(!au){ fire(); return; }
+      S.au = au; S.clip = true;
+      try{ const p = au.play(); if(p && p.catch) p.catch(() => { S.clip = false; fire(); }); }catch(_){ S.clip = false; fire(); return; }
+      const tick = () => { if(fired) return; const ct = au.currentTime || 0; wob(ct / JUMP);
+        if(ct >= JUMP || performance.now() - t0 > 3500) return fire(); requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    };
+    if(BUF){ if(!viaWA(BUF)) viaEl(); return; }
+    const p = loadBuf();
+    if(!p){ viaEl(); return; }
+    let done = false;
+    p.then(b => { if(done) return; done = true; if(!viaWA(b)) viaEl(); });
+    setTimeout(() => { if(done) return; done = true; viaEl(); }, 400);   // 해독이 늦으면 그냥 HTMLAudio
   }
   function launch(){
     if(busy || S.flipped) return;
@@ -59030,6 +59070,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   }
   function putBack(){
     try{ if(S.au){ S.au.pause(); S.au = null; } }catch(_){}
+    try{ if(S.src){ S.src.stop(); S.src = null; } }catch(_){}
     const b = document.getElementById('flipBack'); if(b) b.classList.remove('on');
     { const s = document.getElementById('flipSub'); if(s) s.classList.remove('on'); }
     cancelAnimationFrame(raf);
