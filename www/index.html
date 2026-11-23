@@ -58941,9 +58941,10 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     if(busy || S.flipped) return;
     busy = true;
     let fired = false;
-    S.au = null; S.src = null; S.clip = false;
+    S.au = null; S.src = null; S.clip = false; S.prep = null;
     const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob', 'hard'); busy = false; launch(); };
     if(!(typeof sndOn === 'undefined' || sndOn)){ fire(); return; }
+    try{ S.prep = prep(); }catch(_){ S.prep = null; }   // 흔들기 전에 미리 다 재 둔다
     if(!(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)) document.body.classList.add('flipwob');   // 흔들림은 앱의 동작 설정을 따른다
     try{ navigator.vibrate && navigator.vibrate([30, 60, 30, 60, 30]); }catch(_){}
     const t0 = performance.now();
@@ -58980,13 +58981,12 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     p.then(b => { if(done) return; done = true; if(!viaWA(b)) viaEl(); });
     setTimeout(() => { if(done) return; done = true; viaEl(); }, 400);   // 해독이 늦으면 그냥 HTMLAudio
   }
-  function launch(){
-    if(busy || S.flipped) return;
-    busy = true; S.flipped = true;
-    try{ rxEvt('tableflip'); }catch(_){}
+  /* 읽기(위치·스타일 재기)와 쓰기(투명하게·overflow·will-change)를 완전히 나눈다.
+     섞어 쓰면 요소마다 레이아웃을 다시 계산해서, UI 가 많은 PC 에서는 날아가기까지 1초 넘게 걸렸음 */
+  function prep(){
     // 화면의 UI 전부를 조각으로 나눈다: 큰 판은 안으로 파고들고, 작은 것(버튼·칸·칩·글자 줄)은 통째로 날린다
     const W = innerWidth, H = innerHeight, VA = W * H, MINE = /^(flipAsk|flipKao|flipBack)$/;
-    const out = []; S.bg = [];
+    const out = [], bare = [];
     const pick = el => {
       if(out.length > 420 || MINE.test(el.id) || /^(SCRIPT|STYLE|LINK|META|TEMPLATE|NOSCRIPT)$/.test(el.tagName)) return;
       const cs = getComputedStyle(el);
@@ -58999,23 +58999,34 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
       if(area > VA * .045 && kids.length){
         // 판 자체는 투명하게 (알맹이가 다 날아가고 빈 판만 남지 않게). 화면 거의 전체를 덮는 배경판은 그대로
         if(area < VA * .6 && (cs.backgroundImage !== 'none' || !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.borderTopWidth !== '0px' || cs.boxShadow !== 'none')){
-          const st = el.style, keep = ['background', 'border-color', 'box-shadow', 'backdrop-filter', '-webkit-backdrop-filter'].map(k => [k, st.getPropertyValue(k), st.getPropertyPriority(k)]);
-          S.bg.push([el, keep]); el.classList.add('flipbare');
-          // id 로 칠한 판(#detail #atomBox 등)은 클래스로 안 지워져서, 인라인 !important 로 확실히 비운다 (폰 원자 칸 어두운 판)
-          [['background', 'transparent'], ['border-color', 'transparent'], ['box-shadow', 'none'], ['backdrop-filter', 'none'], ['-webkit-backdrop-filter', 'none']].forEach(([k, v]) => st.setProperty(k, v, 'important'));
+          bare.push(el);
         }
         kids.forEach(pick); return;
       }
       if(area > VA * .3) return;                                                     // 배경 캔버스 같은 통짜는 남겨 둔다
-      out.push([el, r, cs.transform]);
+      out.push([el, r, cs.transform, el.offsetWidth]);
     };
     [...document.body.children].forEach(pick);
+    return { out, bare };
+  }
+  function launch(){
+    if(busy || S.flipped) return;
+    busy = true; S.flipped = true;
+    try{ rxEvt('tableflip'); }catch(_){}
+    const W = innerWidth, H = innerHeight;
+    const { out, bare } = S.prep || prep(); S.prep = null;
+    // ↓ 여기부터는 쓰기만
+    S.bg = bare.map(el => { const st = el.style, keep = ['background', 'border-color', 'box-shadow', 'backdrop-filter', '-webkit-backdrop-filter'].map(k => [k, st.getPropertyValue(k), st.getPropertyPriority(k)]);
+      el.classList.add('flipbare');
+      // id 로 칠한 판(#detail #atomBox 등)은 클래스로 안 지워져서, 인라인 !important 로 확실히 비운다 (폰 원자 칸 어두운 판)
+      [['background', 'transparent'], ['border-color', 'transparent'], ['box-shadow', 'none'], ['backdrop-filter', 'none'], ['-webkit-backdrop-filter', 'none']].forEach(([k, v]) => st.setProperty(k, v, 'important'));
+      return [el, keep]; });
     S.ov = []; const seen = new Set();
     out.forEach(([el]) => { for(let p = el.parentElement; p && p !== document.documentElement && !seen.has(p); p = p.parentElement){ seen.add(p); S.ov.push([p, p.style.overflow, p.style.contain]); p.style.overflow = 'visible'; p.style.contain = 'none'; } });
     document.body.classList.add('flipped'); document.documentElement.classList.add('flipclip'); try{ scrollTo(0, 0); }catch(_){}
-    S.els = out.map(([e, r, tf]) => {
+    S.els = out.map(([e, r, tf, ow]) => {
       const m = tf && tf !== 'none' ? tf : '', sc = m ? (new DOMMatrix(m)).a || 1 : 1;
-      const s = ((r.width / (e.offsetWidth || r.width)) / Math.abs(sc)) || 1;
+      const s = ((r.width / (ow || r.width)) / Math.abs(sc)) || 1;
       const ot = e.style.transform; e.style.willChange = 'transform';
       return { e, r, s, m, ot, x: 0, y: 0, a: 0, vx: (r.left + r.width / 2 - W / 2) * (.6 + Math.random() * .8) + (Math.random() - .5) * 500,
                vy: -(600 + Math.random() * 1000) * (1 - r.top / H * .4), va: (Math.random() - .5) * 1400 * Math.min(1, 140 / Math.max(r.width, r.height)), rest: 0 };
