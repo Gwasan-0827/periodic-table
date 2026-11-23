@@ -58989,8 +58989,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   /* 날아간 조각이 화면 밖으로 삐져나가도 페이지가 커지거나 스크롤되지 않게 (폰에서 되돌리기 버튼이 화면 밖으로 밀려나던 문제) */
   html.flipclip,html.flipclip body{overflow:hidden!important;overscroll-behavior:none!important;touch-action:none}
   html.flipclip #flipBack{touch-action:manipulation}
-  body.flipwob{--wob:.4;animation:flipWob .09s linear infinite}
-  @keyframes flipWob{0%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}50%{transform:translate(calc(var(--wob)*3px),calc(var(--wob)*-2px)) rotate(calc(var(--wob)*.25deg))}100%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}}
+  /* 흔들기는 합성(GPU)만 쓰게: transform 만, 매 프레임 변수 갱신 없이 두 단계 (PC 큰 화면에서 프레임이 무너져 박자가 1초 넘게 밀렸음) */
+  body.flipwob{will-change:transform;animation:flipWob .09s linear infinite}
+  body.flipwob.hard{animation:flipWob2 .07s linear infinite}
+  @keyframes flipWob{0%,100%{transform:translate(-1.5px,1px) rotate(-.12deg)}50%{transform:translate(1.5px,-1px) rotate(.12deg)}}
+  @keyframes flipWob2{0%,100%{transform:translate(-3.5px,2px) rotate(-.3deg)}50%{transform:translate(3.5px,-2px) rotate(.3deg)}}
   @media (prefers-reduced-motion:reduce){ body.flipping{animation:none} }
   #flipSub{position:fixed;left:50%;bottom:max(170px,calc(env(safe-area-inset-bottom) + 170px));transform:translateX(-50%);z-index:2147482901;pointer-events:none;opacity:0;transition:opacity .4s;text-align:center;white-space:nowrap}
   #flipSub.on{opacity:1}
@@ -59025,8 +59028,8 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     a.querySelector('.no').onclick = hide;
     clearTimeout(a._t); a._t = setTimeout(hide, 9000);
   }
-  /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 0.55초)에 전부 날아간다 */
-  const JUMP = 0.54;   // 0.2~0.53초 작은 소리(흔들흔들) → 0.55초에 23dB 확 커짐
+  /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 1.81초)에 전부 날아간다 */
+  const JUMP = 1.78;   // 0.2~1.8초는 흔들흔들, 1.81초부터 와장창 (과산이 스펙트럼에 표시한 구간)
   /* 박자 맞추기: Web Audio 로 틀고, 스피커까지 걸리는 지연(outputLatency, 블루투스면 0.2초 넘게)까지 더해서
      '귀에 들리는' 순간에 날린다. HTMLAudio 의 currentTime 은 실제로 들리는 것보다 앞서가서 PC 에서 박자가 어긋났음 */
   let BUF = null, BUFP = null;
@@ -59045,12 +59048,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     busy = true;
     let fired = false;
     S.au = null; S.src = null; S.clip = false;
-    const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob'); busy = false; launch(); };
+    const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob', 'hard'); busy = false; launch(); };
     if(!(typeof sndOn === 'undefined' || sndOn)){ fire(); return; }
     if(!(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)) document.body.classList.add('flipwob');   // 흔들림은 앱의 동작 설정을 따른다
     try{ navigator.vibrate && navigator.vibrate([30, 60, 30, 60, 30]); }catch(_){}
     const t0 = performance.now();
-    const wob = k => document.body.style.setProperty('--wob', Math.min(1, .35 + k * .65).toFixed(2));
     // 1) Web Audio (지연 보정)
     const viaWA = b => {
       const a = ac(); if(!a || !b) return false;
@@ -59058,11 +59060,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
         const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .9;
         src.buffer = b; src.connect(g).connect(a.destination);
         const st = a.currentTime + .04; src.start(st); S.src = src; S.clip = true;
-        const lat = () => (a.outputLatency || 0) + (a.baseLatency || 0);
-        const tick = () => { if(fired) return; const heard = a.currentTime - st - lat();
-          wob(Math.max(0, heard) / JUMP);
-          if(heard >= JUMP || performance.now() - t0 > 3500) return fire(); requestAnimationFrame(tick); };
-        requestAnimationFrame(tick);
+        const lat = (a.outputLatency || 0) + (a.baseLatency || 0);
+        const ms = (st - a.currentTime + JUMP + lat) * 1000;
+        setTimeout(() => document.body.classList.add('hard'), Math.max(0, ms - 700));
+        setTimeout(fire, Math.max(0, ms));
+        setTimeout(fire, ms + 1500);   // 혹시 몰라서
         return true;
       }catch(_){ return false; }
     };
@@ -59072,9 +59074,10 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
       if(!au){ fire(); return; }
       S.au = au; S.clip = true;
       try{ const p = au.play(); if(p && p.catch) p.catch(() => { S.clip = false; fire(); }); }catch(_){ S.clip = false; fire(); return; }
-      const tick = () => { if(fired) return; const ct = au.currentTime || 0; wob(ct / JUMP);
-        if(ct >= JUMP || performance.now() - t0 > 3500) return fire(); requestAnimationFrame(tick); };
-      requestAnimationFrame(tick);
+      let sched = false;
+      au.addEventListener('playing', () => { if(sched) return; sched = true; const ms = (JUMP - (au.currentTime || 0)) * 1000;
+        setTimeout(() => document.body.classList.add('hard'), Math.max(0, ms - 700)); setTimeout(fire, Math.max(0, ms)); });
+      setTimeout(fire, 3500);
     };
     if(BUF){ if(!viaWA(BUF)) viaEl(); return; }
     const p = loadBuf();
