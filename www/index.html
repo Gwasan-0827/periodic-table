@@ -61206,27 +61206,52 @@ function rxOrgOf(name, formula){
       const m = box && box.querySelector('[data-m]'); if(m) m.textContent = `Xe × ${S.A.length}`;
     } };
 
-  // 2009 AFM: 바늘을 가까이 댈수록 펜타센이 또렷하게
+  // 2009 AFM: 바늘을 가까이 댈수록 펜타센이 또렷하게 (결합이 밝게 빛나는 실제 AFM 사진 느낌)
   SC.afm = {
-    init(){ S.z = .25; },
+    init(){ S.z = .25; S.key = ''; S.off = document.createElement('canvas'); S.ox = S.off.getContext('2d'); },
+    geo(){ // 펜타센: 탄소 22 + 수소 14
+      const C = [], B = [], key = (x, y) => x.toFixed(2) + ',' + y.toFixed(2), idx = new Map();
+      const add = (x, y) => { const k = key(x, y); if(idx.has(k)) return idx.get(k); idx.set(k, C.length); C.push([x, y]); return C.length - 1; };
+      for(let i = 0; i < 5; i++){ const cx = (i - 2) * 1.732, V = []; for(let k = 0; k < 6; k++){ const t = Math.PI / 6 + k * Math.PI / 3; V.push(add(cx + Math.cos(t), Math.sin(t))); }
+        for(let k = 0; k < 6; k++){ const u = V[k], v = V[(k + 1) % 6]; if(!B.some(([p, q]) => (p === u && q === v) || (p === v && q === u))) B.push([u, v]); } }
+      const deg = C.map(() => 0); B.forEach(([u, v]) => { deg[u]++; deg[v]++; });
+      const H = []; C.forEach(([x, y], i) => { if(deg[i] !== 2) return; const nb = B.filter(e => e.includes(i)).map(e => C[e[0] === i ? e[1] : e[0]]);
+        const mx = (nb[0][0] + nb[1][0]) / 2, my = (nb[0][1] + nb[1][1]) / 2, dx = x - mx, dy = y - my, l = Math.hypot(dx, dy); H.push([i, x + dx / l * 1.05, y + dy / l * 1.05]); });
+      return { C, B, H }; },
     ctl: () => `<label>${L('바늘 거리', 'Tip distance')} <span>${L('멀리', 'far')}</span><input type="range" min="0" max="100" value="25" data-a="z"><span>${L('가까이', 'close')}</span></label><span class="apx-m" data-m></span>`,
     bind(box){ box.querySelector('[data-a="z"]').addEventListener('input', e => { S.z = +e.target.value / 100; }); },
+    bake(w, h, z, s, cx, cy){
+      const G = S.G || (S.G = SC.afm.geo()), img = S.ox.createImageData(w, h), D = img.data;
+      const segs = G.B.map(([u, v]) => [G.C[u], G.C[v], 1]).concat(G.H.map(([i, x, y]) => [G.C[i], [x, y], .55]));
+      const wd = .13 + (1 - z) * .85, a = .35 + z * .65, ring = (1 - z);
+      const pal = [[10, 5, 3], [58, 26, 10], [140, 66, 22], [228, 140, 62], [255, 214, 150], [255, 250, 236]];
+      const cmap = t => { t = Math.max(0, Math.min(.999, t)) * (pal.length - 1); const i = t | 0, f = t - i, A = pal[i], Bc = pal[i + 1]; return [A[0] + (Bc[0] - A[0]) * f, A[1] + (Bc[1] - A[1]) * f, A[2] + (Bc[2] - A[2]) * f]; };
+      for(let j = 0; j < h; j++) for(let i = 0; i < w; i++){
+        const X = (i - cx) / s, Y = (j - cy) / s; let v = 0;
+        for(const [P, Q, k] of segs){ const ex = Q[0] - P[0], ey = Q[1] - P[1], l2 = ex * ex + ey * ey; let t = ((X - P[0]) * ex + (Y - P[1]) * ey) / l2; t = t < 0 ? 0 : t > 1 ? 1 : t;
+          const dx = X - P[0] - ex * t, dy = Y - P[1] - ey * t; v += k * Math.exp(-(dx * dx + dy * dy) / (wd * wd)); }
+        // 멀리서는 분자 전체가 하나의 흐릿한 덩어리
+        const blob = Math.exp(-(X * X) / 30 - (Y * Y) / 2.2);
+        let t = a * Math.min(1.25, v) * .62 + blob * (.18 + ring * .32) + (Math.random() - .5) * (.03 + z * .03) + .06;
+        t += Math.sin(j * 1.7 + i * .02) * .006;   // 스캔 줄 자국
+        const c = cmap(t), o = (j * w + i) * 4; D[o] = c[0]; D[o + 1] = c[1]; D[o + 2] = c[2]; D[o + 3] = 255; }
+      S.off.width = w; S.off.height = h; S.ox.putImageData(img, 0, 0); },
     draw(c, dt){
-      const z = S.z, cx = W / 2, cy = H * .56, s = Math.min(W / 13, H / 6.2);
-      const hex = i => Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return [cx + (i - 2) * s * 1.732 + Math.cos(a) * s, cy + Math.sin(a) * s]; });
-      c.save(); c.filter = `blur(${((1 - z) * 12).toFixed(1)}px)`;
-      // 멀면 흐릿한 덩어리, 가까우면 결합선
-      c.fillStyle = `rgba(200,210,230,${.25 + (1 - z) * .35})`; c.beginPath(); c.ellipse(cx, cy, s * 4.9, s * 1.35, 0, 0, 7); c.fill();
-      c.strokeStyle = `rgba(245,248,255,${.15 + z * .85})`; c.lineWidth = 2 + z * 3; c.lineJoin = 'round';
-      for(let i = 0; i < 5; i++){ const P = hex(i); c.beginPath(); P.forEach(([x, y], k) => k ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); }
-      c.restore();
-      // 노이즈 (실제 AFM 사진처럼)
-      if(z > .6){ c.fillStyle = 'rgba(255,255,255,.04)'; for(let i = 0; i < 160; i++) c.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5); }
-      // 바늘 + CO
-      const ty = 24 + (1 - z) * 30;
-      c.fillStyle = '#7f8796'; c.beginPath(); c.moveTo(cx - 40, 0); c.lineTo(cx + 40, 0); c.lineTo(cx + 6, ty - 8); c.lineTo(cx - 6, ty - 8); c.closePath(); c.fill();
-      c.fillStyle = '#ff6b6b'; c.beginPath(); c.arc(cx, ty - 4, 4, 0, 7); c.fill(); c.fillStyle = '#5c6270'; c.beginPath(); c.arc(cx, ty + 4, 4, 0, 7); c.fill();
-      c.fillStyle = '#8fa3c7'; c.font = '11px system-ui'; c.textAlign = 'left'; c.fillText(L('바늘 끝 CO 분자 (O 빨강 · C 회색)', 'CO on the tip (O red · C grey)'), cx + 12, ty + 2);
+      const z = S.z, q = 3, w = Math.max(60, Math.round(W / q)), h = Math.max(40, Math.round(H / q)), s = Math.min(w / 11.5, h / 5.2), key = [w, h, z.toFixed(2)].join();
+      if(key !== S.key){ S.key = key; SC.afm.bake(w, h, z, s, w / 2, h * .58); }
+      c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; c.drawImage(S.off, 0, 0, W, H);
+      // 1 nm 눈금
+      const nm = s * q / .14 * .1;   // 탄소–탄소 결합 0.14 nm 기준
+      c.fillStyle = '#fff'; c.fillRect(W - 16 - nm, H - 18, nm, 3); c.font = '11px system-ui'; c.textAlign = 'right'; c.fillText('0.1 nm', W - 16, H - 24);
+      // 캔틸레버 + 바늘 + CO
+      const cx = W / 2, tipY = 26 + (1 - z) * 34;
+      const cg = c.createLinearGradient(0, 0, 0, 16); cg.addColorStop(0, '#d9dee8'); cg.addColorStop(1, '#6f7787');
+      c.fillStyle = cg; c.beginPath(); c.moveTo(cx - 150, 0); c.lineTo(cx + 26, 0); c.lineTo(cx + 22, 10); c.lineTo(cx - 150, 10); c.closePath(); c.fill();
+      const tg = c.createLinearGradient(cx - 14, 0, cx + 14, 0); tg.addColorStop(0, '#7b8394'); tg.addColorStop(.45, '#e6eaf2'); tg.addColorStop(1, '#565d6b');
+      c.fillStyle = tg; c.beginPath(); c.moveTo(cx - 14, 10); c.lineTo(cx + 14, 10); c.lineTo(cx + 2, tipY - 14); c.lineTo(cx - 2, tipY - 14); c.closePath(); c.fill();
+      const ball = (y, r, c0, c1) => { const g = c.createRadialGradient(cx - r * .35, y - r * .35, 0, cx, y, r); g.addColorStop(0, '#fff'); g.addColorStop(.3, c0); g.addColorStop(1, c1); c.fillStyle = g; c.beginPath(); c.arc(cx, y, r, 0, 7); c.fill(); };
+      ball(tipY - 9, 5.2, '#9aa1ad', '#3a3f48'); ball(tipY, 5.6, '#ff8a80', '#a01818');
+      c.fillStyle = 'rgba(255,240,220,.85)'; c.font = '11px system-ui'; c.textAlign = 'left'; c.fillText(L('CO 분자 (C 회색 · O 빨강)', 'CO molecule (C grey · O red)'), cx + 12, tipY - 2);
       const m = box && box.querySelector('[data-m]'); if(m) m.textContent = `${(0.1 + (1 - z) * 1.9).toFixed(1)} nm`;
     } };
 
@@ -61249,27 +61274,47 @@ function rxOrgOf(name, formula){
       const m = box && box.querySelector('[data-m]'); if(m) m.textContent = `e⁻ × ${S.n.toLocaleString()}`;
     } };
 
-  // 2018 이온 덫: 레이저 켜고 장노출
+  // 2018 이온 덫: 금속 전극 사이 원자 하나, 레이저 켜고 장노출
   SC.trap = {
-    init(){ S.las = false; S.exp = 0; S.photo = 0; S.shot = null; },
+    init(){ S.las = false; S.exp = 0; S.photo = 0; S.shot = null; S.t = 0; },
     ctl: () => `<button type="button" data-a="las">🔵 ${L('레이저', 'Laser')}</button><button type="button" data-a="shut">📷 ${L('셔터 (장노출)', 'Shutter (long exposure)')}</button><span class="apx-m" data-m></span>`,
     bind(box){ const l = box.querySelector('[data-a="las"]'); l.addEventListener('click', () => { S.las = !S.las; l.classList.toggle('on', S.las); });
-      box.querySelector('[data-a="shut"]').addEventListener('click', () => { if(S.exp > 0) return; S.exp = 2.4; S.photo = 0; S.shot = null; try{ SFX.pick(); }catch(_){} }); },
+      box.querySelector('[data-a="shut"]').addEventListener('click', () => { if(S.exp > 0) return; S.exp = 2.6; S.photo = 0; S.lit = 0; S.shot = null; try{ SFX.pick(); }catch(_){} }); },
+    scene(c, cx, cy, k, lit, atom){
+      // 바늘 전극 (좌우) + 날 전극 (위아래 두 쌍) — 금속 광택
+      const metal = (x0, y0, x1, y1, dark) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, dark ? '#20242c' : '#3a404c'); g.addColorStop(.45, dark ? '#4a505c' : '#c9d0dc'); g.addColorStop(.55, dark ? '#5a606c' : '#f3f6fb'); g.addColorStop(1, dark ? '#181b21' : '#2c313b'); return g; };
+      const gap = 11 * k, len = 150 * k, rr = 9 * k;
+      [-1, 1].forEach(sd => { c.fillStyle = metal(0, cy - rr, 0, cy + rr, !lit);
+        c.beginPath(); c.moveTo(cx + sd * (gap + len), cy - rr); c.lineTo(cx + sd * (gap + 6 * k), cy - 2.2 * k); c.quadraticCurveTo(cx + sd * gap, cy, cx + sd * (gap + 6 * k), cy + 2.2 * k); c.lineTo(cx + sd * (gap + len), cy + rr); c.closePath(); c.fill(); });
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => { const x = cx + sx * 34 * k, y = cy + sy * 22 * k;
+        c.fillStyle = metal(x - 30 * k, 0, x + 30 * k, 0, !lit); c.beginPath();
+        c.moveTo(x - 26 * k, y + sy * 46 * k); c.lineTo(x + 26 * k, y + sy * 46 * k); c.lineTo(x + 6 * k * -sx + 6 * k, y + sy * 4 * k); c.lineTo(x + 6 * k * -sx - 6 * k, y + sy * 4 * k); c.closePath(); c.fill(); });
+      if(atom > 0){ const p = 1 + Math.sin(S.t * 6) * .08 * (atom > .9);
+        [[44, .14], [20, .32], [8, .8], [3, 1]].forEach(([r, al]) => { const g = c.createRadialGradient(cx, cy, 0, cx, cy, r * k * p); g.addColorStop(0, `rgba(240,225,255,${al * atom})`); g.addColorStop(.4, `rgba(170,120,255,${al * atom * .8})`); g.addColorStop(1, 'rgba(110,60,240,0)'); c.fillStyle = g; c.beginPath(); c.arc(cx, cy, r * k * p, 0, 7); c.fill(); }); } },
     draw(c, dt){
-      const cx = W * .38, cy = H / 2, e = Math.min(W * .1, 46);
-      c.fillStyle = '#06080d'; c.fillRect(0, 0, W, H);
-      c.fillStyle = '#5b6372'; [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => { c.fillRect(cx + a * e * .55 - e * .5 + (a > 0 ? e * .5 : -e * .5) * .9, cy + b * e * .5 - e * .25, e, e * .5); });
-      if(S.las){ c.strokeStyle = 'rgba(90,120,255,.45)'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, cy); c.lineTo(W * .76, cy); c.stroke();
-        const g = c.createRadialGradient(cx, cy, 0, cx, cy, 8); g.addColorStop(0, '#fff'); g.addColorStop(.4, '#b197fc'); g.addColorStop(1, 'rgba(124,58,237,0)'); c.fillStyle = g; c.beginPath(); c.arc(cx, cy, 8, 0, 7); c.fill(); }
-      // 사진 (오른쪽 액자)
-      const px = W * .78, pw = W * .2, ph = Math.min(H * .7, pw * 1.3), py = (H - ph) / 2;
-      c.fillStyle = '#e9e4d8'; c.fillRect(px - 5, py - 5, pw + 10, ph + 22); c.fillStyle = '#05060a'; c.fillRect(px, py, pw, ph);
-      if(S.exp > 0){ S.exp -= dt; if(S.las) S.photo = Math.min(1, S.photo + dt * .5); if(S.exp <= 0) S.shot = S.las ? 'ok' : 'dark'; }
-      if(S.photo > 0){ const x = px + pw * .5, y = py + ph * .5; c.fillStyle = '#3a3f4a'; c.fillRect(px + pw * .12, y - ph * .12, pw * .22, ph * .08); c.fillRect(px + pw * .66, y - ph * .12, pw * .22, ph * .08);
-        c.fillRect(px + pw * .12, y + ph * .04, pw * .22, ph * .08); c.fillRect(px + pw * .66, y + ph * .04, pw * .22, ph * .08);
-        const g = c.createRadialGradient(x, y, 0, x, y, 5); g.addColorStop(0, `rgba(230,210,255,${S.photo})`); g.addColorStop(1, 'rgba(160,110,255,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); }
-      c.fillStyle = '#333'; c.font = '10px system-ui'; c.textAlign = 'center'; c.fillText(S.exp > 0 ? L('노출 중…', 'exposing…') : S.shot === 'dark' ? L('깜깜해요!', 'Pitch black!') : S.shot ? L('원자 하나 ✓', 'one atom ✓') : '', px + pw / 2, py + ph + 13);
-      c.fillStyle = '#8fa3c7'; c.font = '11px system-ui'; c.fillText(L('전극 사이 약 2 mm', 'about 2 mm gap'), cx, cy + e + 14);
+      S.t += dt;
+      const bg = c.createRadialGradient(W * .38, H / 2, 10, W * .38, H / 2, W * .6); bg.addColorStop(0, '#111725'); bg.addColorStop(1, '#03050a'); c.fillStyle = bg; c.fillRect(0, 0, W, H);
+      const cx = W * .36, cy = H / 2, k = Math.min(1.25, H / 260);
+      c.strokeStyle = 'rgba(140,160,200,.08)'; c.lineWidth = 10; c.beginPath(); c.arc(cx, cy, Math.min(H * .46, W * .3), 0, 7); c.stroke();   // 진공 창
+      if(S.las){ c.save(); c.globalCompositeOperation = 'lighter';
+        [[14, .06], [6, .14], [2.2, .55], [1, .9]].forEach(([w, a]) => { const g = c.createLinearGradient(0, 0, W * .74, 0); g.addColorStop(0, `rgba(70,110,255,${a})`); g.addColorStop(.48, `rgba(110,140,255,${a})`); g.addColorStop(1, `rgba(70,110,255,${a * .3})`);
+          c.strokeStyle = g; c.lineWidth = w; c.beginPath(); c.moveTo(0, cy); c.lineTo(W * .74, cy); c.stroke(); });
+        c.restore(); }
+      SC.trap.scene(c, cx, cy, k, S.las, S.las ? 1 : 0);
+      c.fillStyle = '#8fa3c7'; c.font = '11px system-ui'; c.textAlign = 'center'; c.fillText(L('전극 사이 약 2 mm · 스트론튬 원자 하나', 'about 2 mm gap · one strontium atom'), cx, H - 12);
+      if(!S.las){ c.fillStyle = 'rgba(200,210,240,.45)'; c.fillText(L('원자가 있긴 한데… 안 보여요', 'the atom is there… but invisible'), cx, cy - 70 * k); }
+      // 폴라로이드
+      const pw = Math.min(W * .22, 170), ph = pw, px = W - pw - 22, py = (H - ph - 30) / 2;
+      c.save(); c.translate(px + pw / 2, py + ph / 2); c.rotate(.04); c.translate(-px - pw / 2, -py - ph / 2);
+      c.fillStyle = 'rgba(0,0,0,.4)'; c.fillRect(px - 6 + 4, py - 6 + 5, pw + 12, ph + 36);
+      c.fillStyle = '#f2eee4'; c.fillRect(px - 8, py - 8, pw + 16, ph + 40); c.fillStyle = '#020306'; c.fillRect(px, py, pw, ph);
+      if(S.exp > 0){ S.exp -= dt; if(S.las){ S.photo = Math.min(1, S.photo + dt * .45); S.lit = Math.min(1, (S.lit || 0) + dt * .45); } if(S.exp <= 0) S.shot = S.las ? 'ok' : 'dark'; }
+      if(S.photo > 0 || S.lit > 0){ c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip(); c.globalAlpha = .25 + .75 * (S.lit || 0);
+        SC.trap.scene(c, px + pw / 2, py + ph / 2, pw / 300, true, S.photo); c.restore(); }
+      c.fillStyle = '#4a4438'; c.font = '11px "Comic Sans MS",cursive'; c.textAlign = 'center';
+      c.fillText(S.exp > 0 ? L('노출 중…', 'exposing…') : S.shot === 'dark' ? L('깜깜해요!', 'Pitch black!') : S.shot ? L('원자 하나 ✓', 'one atom ✓') : L('셔터를 눌러요', 'press the shutter'), px + pw / 2, py + ph + 21);
+      if(S.exp > 0){ c.fillStyle = '#d6cfbf'; c.fillRect(px, py + ph + 26, pw, 3); c.fillStyle = '#8fb0ff'; c.fillRect(px, py + ph + 26, pw * (1 - S.exp / 2.6), 3); }
+      c.restore();
       const m = box && box.querySelector('[data-m]'); if(m) m.textContent = S.exp > 0 ? `⏱ ${S.exp.toFixed(1)} s` : '';
     } };
 
