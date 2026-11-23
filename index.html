@@ -59143,7 +59143,7 @@ Object.assign(RX_SMILES_PRE, {"C=CCN=C=S": {"a": [["C", -54.5, -19.1, 10.6, 16],
       addEventListener('keydown', e => { if(e.key === 'Escape' && w.classList.contains('on')) close(); }); }
     const L = EN() ? 1 : 0;
     w.innerHTML = `<div class="w" role="dialog" aria-label="${P('없던 원소 도감', 'Phantom elements')}"><header><div><h3>👻 ${P('없던 원소 도감', 'Phantom Elements')}</h3>
-      <p>${P('한때 진짜 원소인 줄 알았지만 끝내 발견되지 않은 원소 후보들이에요. 119·120번이 "아직 없는 원소"라면, 이 친구들은 "없던 걸로 판명된 원소"예요.', 'Element candidates once taken for real but never confirmed. If 119 and 120 are "not yet", these are "never were".')}</p></div>
+      <p>${P('한때 존재한다고 믿었던 원소들.', 'Elements once believed to exist.')}</p></div>
       <button class="x" type="button" aria-label="close">✕</button></header>
       <div class="g">${D.map((d, i) => `<div class="c" style="--pc:${d.c};--d:${(i * .37).toFixed(2)}s">
         <div class="top"><div class="tile"><small>${d.z}</small>${d.s}</div><div><div class="nm">${L ? d.en : d.ko}</div>
