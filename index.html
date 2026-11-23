@@ -58972,7 +58972,9 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   body.flipped #flipBack{pointer-events:auto!important}
   body.flipping{animation:flipShake .45s cubic-bezier(.3,.7,.4,1)}
   @keyframes flipShake{0%,100%{transform:none}15%{transform:translate(-12px,8px) rotate(-.6deg)}30%{transform:translate(10px,-6px) rotate(.5deg)}50%{transform:translate(-6px,4px)}70%{transform:translate(4px,-2px)}}
-  @media (prefers-reduced-motion:reduce){ body.flipping{animation:none} }
+  body.flipwob{--wob:.4;animation:flipWob .09s linear infinite}
+  @keyframes flipWob{0%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}50%{transform:translate(calc(var(--wob)*3px),calc(var(--wob)*-2px)) rotate(calc(var(--wob)*.25deg))}100%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}}
+  @media (prefers-reduced-motion:reduce){ body.flipping,body.flipwob{animation:none} }
   #flipSub{position:fixed;left:50%;bottom:max(170px,calc(env(safe-area-inset-bottom) + 170px));transform:translateX(-50%);z-index:2147482901;pointer-events:none;opacity:0;transition:opacity .4s;text-align:center;white-space:nowrap}
   #flipSub.on{opacity:1}
   #flipSub b{display:block;font:italic 800 clamp(18px,3.4vw,30px)/1.2 Georgia,"Times New Roman",serif;color:#fff8d6;text-shadow:0 2px 0 #000,0 0 3px #000,2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
@@ -59005,7 +59007,26 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     a.querySelector('.no').onclick = hide;
     clearTimeout(a._t); a._t = setTimeout(hide, 9000);
   }
+  /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 1.78초)에 전부 날아간다 */
+  const JUMP = 1.76;
   function flip(){
+    if(busy || S.flipped) return;
+    busy = true;
+    let au = null, fired = false;
+    try{ if((typeof sndOn === 'undefined' || sndOn) && !(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)){ au = new Audio(RX_TBL_SND); au.volume = .9; } }catch(_){ au = null; }
+    S.au = au; S.clip = !!au;
+    const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob'); busy = false; launch(); };
+    if(!au){ fire(); return; }
+    document.body.classList.add('flipwob');
+    try{ navigator.vibrate && navigator.vibrate([30, 60, 30, 60, 30]); }catch(_){}
+    const t0 = performance.now();
+    try{ const p = au.play(); if(p && p.catch) p.catch(() => { S.clip = false; fire(); }); }catch(_){ S.clip = false; fire(); return; }
+    const tick = () => { if(fired) return; const ct = au.currentTime || 0;
+      document.body.style.setProperty('--wob', Math.min(1, .35 + ct / JUMP * .65).toFixed(2));
+      if(ct >= JUMP || performance.now() - t0 > 3000) return fire(); requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+  function launch(){
     if(busy || S.flipped) return;
     busy = true; S.flipped = true;
     try{ rxEvt('tableflip'); }catch(_){}
@@ -59047,7 +59068,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     let k = document.getElementById('flipKao'); if(!k){ k = document.createElement('div'); k.id = 'flipKao'; document.body.appendChild(k); }
     k.textContent = '(╯°□°)╯︵ ┻━┻'; requestAnimationFrame(() => k.classList.add('on'));
     document.body.classList.remove('flipping'); void document.body.offsetWidth; document.body.classList.add('flipping');
-    try{ SFX.boom(); }catch(_){ try{ SFX.fail(); }catch(__){} }
+    if(!S.clip) try{ SFX.boom(); }catch(_){ try{ SFX.fail(); }catch(__){} }
     try{ navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(_){}
     let t0 = performance.now(), last = t0;
     const G = 2600;
@@ -59070,7 +59091,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     };
     raf = requestAnimationFrame(step);
     setTimeout(() => k.classList.remove('on'), 1700);
-    setTimeout(ohNo, 1900);
+    setTimeout(ohNo, S.clip ? 700 : 1900);
     setTimeout(() => {
       let b = document.getElementById('flipBack'); if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'flipBack'; document.body.appendChild(b); }
       b.textContent = T('back'); b.onclick = putBack; requestAnimationFrame(() => b.classList.add('on'));
@@ -59084,8 +59105,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     s.innerHTML = `<b>"Oh no, our table… it's broken."</b>${EN() ? '' : '<span>앗, 우리 테이블이… 부서졌어.</span>'}`;
     requestAnimationFrame(() => s.classList.add('on'));
     // 과산이 따 온 효과음 (통째로). 못 틀면 아래 합성음
-    let played = false;
-    try{ if(typeof sndOn === 'undefined' || sndOn){ const au = new Audio(RX_TBL_SND); au.volume = .9; const p = au.play(); played = true; if(p && p.catch) p.catch(() => synth()); } else played = true; }catch(_){ played = false; }
+    let played = !!S.clip;   // 소리는 flip() 때 이미 나오는 중
     if(!played) synth();
     function synth(){ try{
       rxTone(190, .38, 'sawtooth', .05, 0, 120);                       // 삐걱
@@ -59096,6 +59116,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     clearTimeout(ohNo.t); ohNo.t = setTimeout(() => s.classList.remove('on'), 5400);
   }
   function putBack(){
+    try{ if(S.au){ S.au.pause(); S.au = null; } }catch(_){}
     const b = document.getElementById('flipBack'); if(b) b.classList.remove('on');
     { const s = document.getElementById('flipSub'); if(s) s.classList.remove('on'); }
     cancelAnimationFrame(raf);
