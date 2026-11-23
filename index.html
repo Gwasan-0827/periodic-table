@@ -59025,8 +59025,8 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     a.querySelector('.no').onclick = hide;
     clearTimeout(a._t); a._t = setTimeout(hide, 9000);
   }
-  /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 1.78초)에 전부 날아간다 */
-  const JUMP = 1.76;
+  /* 소리 먼저: 작은 소리 동안은 흔들흔들, 갑자기 커지는 순간(약 0.55초)에 전부 날아간다 */
+  const JUMP = 0.54;   // 0.2~0.53초 작은 소리(흔들흔들) → 0.55초에 23dB 확 커짐
   /* 박자 맞추기: Web Audio 로 틀고, 스피커까지 걸리는 지연(outputLatency, 블루투스면 0.2초 넘게)까지 더해서
      '귀에 들리는' 순간에 날린다. HTMLAudio 의 currentTime 은 실제로 들리는 것보다 앞서가서 PC 에서 박자가 어긋났음 */
   let BUF = null, BUFP = null;
