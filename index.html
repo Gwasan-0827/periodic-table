@@ -48181,7 +48181,7 @@ void main(){
   let FLT = 'all';
   const grpOf = p => { const g = el(p.s).g; return g === 17 ? 'hal' : g === 18 ? 'nob' : 'etc'; };
   const fltHTML = () => { const L = EN(); const F = [['all', L ? 'All' : '전체'], ['hal', L ? 'Halogens' : '할로젠 (17족)'], ['nob', L ? 'Noble gases' : '비활성 기체 (18족)'], ['etc', L ? 'Others' : '그 밖의 친구들'], ['art', L ? 'With art' : '일러스트 있음']];
-    return `<div class="elp-flt">${F.map(([k, n]) => `<button type="button" data-f="${k}" class="${FLT === k ? 'on' : ''}">${n}<b>${k === 'all' ? P.length : k === 'art' ? P.filter(p => p.art).length : P.filter(p => grpOf(p) === k).length}</b></button>`).join('')}
+    return `<div class="elp-flt">${F.map(([k, n]) => `<button type="button" data-f="${k}" class="${FLT === k ? 'on' : ''}">${n}<b>${k === 'all' ? P.filter(p => !p.wip).length : k === 'art' ? P.filter(p => p.art && !p.wip).length : P.filter(p => !p.wip && grpOf(p) === k).length}</b></button>`).join('')}
       <button type="button" class="rnd" id="elpRand">🎲 ${L ? 'Random friend' : '랜덤 친구'}</button></div>`; };
   const fltApply = () => { document.querySelectorAll('#elpDex .elp-card[data-s]:not(.soon)').forEach(c => { const p = BY[c.dataset.s]; c.hidden = !(FLT === 'all' || (FLT === 'art' ? !!p.art : grpOf(p) === FLT)); }); };
   document.addEventListener('click', ev => {
