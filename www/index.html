@@ -59924,8 +59924,8 @@ RX_SMILES_PRE['[HeH+]'] = { a: [['He', -10.9, 0, 0, 16], ['H', 10.9, 0, 0, 9.9]]
   EXACT[KEY] = [F, ko, '붕소와 산소의 삼중 결합. 혼자서는 못 버팀'];
   REC_EN[ko] = ['Oxoborane', 'A boron–oxygen triple bond that cannot stand on its own'];
   RX_SMILES[ko] = '[H]B#O';
-  RX_TMI[ko] = '수소–붕소≡산소가 일직선으로 늘어선 아주 작은 분자예요. 붕소와 산소가 삼중 결합으로 묶여 있는데, 이게 너무 반응을 잘해서 혼자서는 못 버티고 금세 셋이 뭉쳐 B₃O₃ 고리(보록신)가 돼요. 그래서 뜨거운 기체 속이나, 아주 차가운 아르곤 얼음 속에 가둬 둔 채로만 잠깐 볼 수 있어요. 2023년에는 연구진이 큰 분자로 감싸서 "길들이는" 데 성공했어요.';
-  try{ RX_TMI_EN[ko] = 'A tiny straight-line molecule: hydrogen–boron≡oxygen. The boron–oxygen triple bond is so reactive that HBO cannot last alone; three of them quickly snap together into a B₃O₃ ring (a boroxine). It has only been seen fleetingly in hot gas or frozen inside solid argon. In 2023 chemists finally "tamed" it by wrapping it in a bulky molecule.'; }catch(e){}
+  RX_TMI[ko] = '수소–붕소≡산소가 일직선으로 늘어선 아주 작은 분자예요. 붕소와 산소가 삼중 결합으로 묶여 있는데, 이게 너무 반응을 잘해서 혼자서는 못 버티고 금세 셋이 뭉쳐 B₃O₃ 고리(보록신)가 돼요. 그래서 뜨거운 기체 속이나, 아주 차가운 아르곤 얼음 속에 가둬 둔 채로만 잠깐 볼 수 있어요. 그러다 2026년 10월, 독일 뷔르츠부르크 대학 연구진이 B≡O 삼중 결합을 가진 옥소보레인 세 종류를 처음으로 상온에서 고체로 떼어 내는 데 성공했어요. 1960년대부터 60년 넘게 찾던 걸, 박사과정 학생 둘이 다른 실험을 하다가 뜻밖에 얻었대요. 다만 그건 수소 대신 큰 분자 덩어리가 붙은 친척이고, 맨 HBO는 여전히 혼자 못 버텨요.';
+  try{ RX_TMI_EN[ko] = 'A tiny straight-line molecule: hydrogen–boron≡oxygen. The boron–oxygen triple bond is so reactive that HBO cannot last alone; three of them quickly snap together into a B₃O₃ ring (a boroxine). It has only been seen fleetingly in hot gas or frozen inside solid argon. Then in October 2026 a University of Würzburg team isolated three oxoboranes with a real B≡O triple bond as room-temperature solids for the first time, ending a hunt that began in the 1960s. Two PhD students stumbled on them while running a different reaction. Those carry bulky groups instead of hydrogen, though; bare HBO still cannot survive alone.'; }catch(e){}
   // 도감 말고 '특수 발견'에 둔다
   const _ae = allEntries;
   allEntries = function(){ return _ae.apply(this, arguments).filter(x => x.name !== ko); };
