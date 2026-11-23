@@ -58991,7 +58991,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   html.flipclip #flipBack{touch-action:manipulation}
   body.flipwob{--wob:.4;animation:flipWob .09s linear infinite}
   @keyframes flipWob{0%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}50%{transform:translate(calc(var(--wob)*3px),calc(var(--wob)*-2px)) rotate(calc(var(--wob)*.25deg))}100%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}}
-  @media (prefers-reduced-motion:reduce){ body.flipping,body.flipwob{animation:none} }
+  @media (prefers-reduced-motion:reduce){ body.flipping{animation:none} }
   #flipSub{position:fixed;left:50%;bottom:max(170px,calc(env(safe-area-inset-bottom) + 170px));transform:translateX(-50%);z-index:2147482901;pointer-events:none;opacity:0;transition:opacity .4s;text-align:center;white-space:nowrap}
   #flipSub.on{opacity:1}
   #flipSub b{display:block;font:italic 800 clamp(18px,3.4vw,30px)/1.2 Georgia,"Times New Roman",serif;color:#fff8d6;text-shadow:0 2px 0 #000,0 0 3px #000,2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
@@ -59030,11 +59030,11 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     if(busy || S.flipped) return;
     busy = true;
     let au = null, fired = false;
-    try{ if((typeof sndOn === 'undefined' || sndOn) && !(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)){ au = new Audio(RX_TBL_SND); au.volume = .9; } }catch(_){ au = null; }
+    try{ if(typeof sndOn === 'undefined' || sndOn){ au = new Audio(RX_TBL_SND); au.volume = .9; } }catch(_){ au = null; }   // 동작 줄이기(윈도우 '애니메이션 효과' 꺼짐 포함)여도 소리 박자는 맞춘다. 흔들림만 CSS 로 꺼짐
     S.au = au; S.clip = !!au;
     const fire = () => { if(fired) return; fired = true; document.body.classList.remove('flipwob'); busy = false; launch(); };
     if(!au){ fire(); return; }
-    document.body.classList.add('flipwob');
+    if(!(typeof RX_REDUCED !== 'undefined' && RX_REDUCED)) document.body.classList.add('flipwob');   // 흔들림은 앱의 동작 설정을 따른다
     try{ navigator.vibrate && navigator.vibrate([30, 60, 30, 60, 30]); }catch(_){}
     const t0 = performance.now();
     try{ const p = au.play(); if(p && p.catch) p.catch(() => { S.clip = false; fire(); }); }catch(_){ S.clip = false; fire(); return; }
