@@ -106,11 +106,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>페리오딕//테이블 — 주기율표</title>
-<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 610종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta name="description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 611종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta name="application-name" content="페리오딕//테이블">
 <meta property="og:site_name" content="페리오딕//테이블">
 <meta property="og:title" content="페리오딕//테이블 — 주기율표">
-<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 610종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
+<meta property="og:description" content="교과서보다 더 깊게. 원소를 눌러 원자 모형과 전자 구름을 보고, 원소끼리 섞어서 물질을 만드는 인터랙티브 주기율표. 원소 118개와 물질 611종 도감, 실제 모양 그대로의 오비탈, 붕괴 사슬, 퀴즈까지. 광고·결제·회원가입 없음.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gwasan-0827.github.io/periodic-table/">
 <meta property="og:locale" content="ko_KR">
@@ -59073,5 +59073,17 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   .elp-law code{font-family:ui-monospace,monospace;font-weight:800;color:#fff;background:rgba(177,151,252,.18);padding:1px 6px;border-radius:5px;margin-right:4px}
   .elp-law .rd{color:#0b0b12;background:#0b0b12;border-radius:2px;letter-spacing:.06em;user-select:none;cursor:help;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
 </style>
+<script>
+/* ── 다이디뮴 (과산 아이디어): Pr + Nd. 한때 원소였던 "쌍둥이" ── */
+(function(){
+  const ko = '다이디뮴';
+  EXACT['Nd1+Pr1'] = ['Pr-Nd', ko, '40년 넘게 원소인 척했던 쌍둥이'];
+  REC_EN[ko] = ['Didymium', 'The "twin" that posed as an element for 40+ years'];
+  RX_TMI[ko] = '1841년 모산데르가 새 원소로 발표하고 기호 Di까지 받았어요. 이름은 그리스어로 "쌍둥이". 그런데 1885년 아우어 폰 벨스바흐가 결정을 수백 번 녹였다 굳혀서 둘로 갈라냈더니, 연두색 프라세오디뮴("초록 쌍둥이")과 연보라색 네오디뮴("새 쌍둥이")이었어요. 지금은 이 둘을 섞은 것을 다이디뮴이라 부르고, 유리 공예용 보안경(디디뮴 유리)에 써요. 불꽃의 눈부신 노란빛만 쏙 걸러 줘요.';
+  try{ RX_TMI_EN[ko] = 'In 1841 Mosander announced it as a new element, and it even got the symbol Di. The name is Greek for "twin". Then in 1885 Auer von Welsbach recrystallised it hundreds of times and split it in two: green praseodymium ("green twin") and lilac neodymium ("new twin"). Today a Pr-Nd mixture is still called didymium and goes into glassblowers\' goggles, filtering out the glaring yellow of the flame.'; }catch(e){}
+  try{ RX_TAGSET.mat && RX_TAGSET.mat.add(ko); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
