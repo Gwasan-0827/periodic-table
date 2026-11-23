@@ -58972,6 +58972,9 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
   body.flipped #flipBack{pointer-events:auto!important}
   body.flipping{animation:flipShake .45s cubic-bezier(.3,.7,.4,1)}
   @keyframes flipShake{0%,100%{transform:none}15%{transform:translate(-12px,8px) rotate(-.6deg)}30%{transform:translate(10px,-6px) rotate(.5deg)}50%{transform:translate(-6px,4px)}70%{transform:translate(4px,-2px)}}
+  /* 날아간 조각이 화면 밖으로 삐져나가도 페이지가 커지거나 스크롤되지 않게 (폰에서 되돌리기 버튼이 화면 밖으로 밀려나던 문제) */
+  html.flipclip,html.flipclip body{overflow:hidden!important;overscroll-behavior:none!important;touch-action:none}
+  html.flipclip #flipBack{touch-action:manipulation}
   body.flipwob{--wob:.4;animation:flipWob .09s linear infinite}
   @keyframes flipWob{0%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}50%{transform:translate(calc(var(--wob)*3px),calc(var(--wob)*-2px)) rotate(calc(var(--wob)*.25deg))}100%{transform:translate(calc(var(--wob)*-3px),calc(var(--wob)*2px)) rotate(calc(var(--wob)*-.25deg))}}
   @media (prefers-reduced-motion:reduce){ body.flipping,body.flipwob{animation:none} }
@@ -59056,7 +59059,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
     [...document.body.children].forEach(pick);
     S.ov = []; const seen = new Set();
     out.forEach(([el]) => { for(let p = el.parentElement; p && p !== document.documentElement && !seen.has(p); p = p.parentElement){ seen.add(p); S.ov.push([p, p.style.overflow, p.style.contain]); p.style.overflow = 'visible'; p.style.contain = 'none'; } });
-    document.body.classList.add('flipped');
+    document.body.classList.add('flipped'); document.documentElement.classList.add('flipclip'); try{ scrollTo(0, 0); }catch(_){}
     S.els = out.map(([e, r, tf]) => {
       const m = tf && tf !== 'none' ? tf : '', sc = m ? (new DOMMatrix(m)).a || 1 : 1;
       const s = ((r.width / (e.offsetWidth || r.width)) / Math.abs(sc)) || 1;
@@ -59136,7 +59139,7 @@ const RX_EL_IF = {"H": ["우주에 별이 거의 생기지 않아요. 물도, �
       else {
         els.forEach(o => { o.e.style.removeProperty('transform'); o.e.style.transform = o.ot; o.e.style.willChange = ''; });
         (S.ov || []).forEach(([p, v, c]) => { p.style.overflow = v; p.style.contain = c; });
-        document.body.classList.remove('flipped'); (S.bg || []).forEach(([el]) => el.classList.remove('flipbare'));
+        document.body.classList.remove('flipped'); document.documentElement.classList.remove('flipclip'); (S.bg || []).forEach(([el]) => el.classList.remove('flipbare'));
         S.els = []; S.flipped = false; busy = false;
         try{ SFX.ok(); }catch(_){}
         try{ rxToast('', T('done')); }catch(_){}
