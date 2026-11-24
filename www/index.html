@@ -62326,7 +62326,7 @@ function rxOrgOf(name, formula){
   if(typeof ACH === 'undefined' || ACH.some(a => a.id === 'chlorin2')) return;
   const i = ACH.findIndex(a => a.id === 'master');
   const a = { id:'chlorin2', need:() => found.has('Chlorine 고리') && found.has('클로린'),
-    ko:['클로린','님아 그거 클로린 고리 맞는데 아님'], en:['Chlorin','Mate, that is a chlorine ring. Just not that one'] };
+    ko:['클로린','클로린 고리인 줄 알았던 클로린 고리가 사실 클로린 고리가 아니라 클로린 고리였음. 이해했죠?'], en:['Chlorin','The chlorine ring you thought was the chlorin ring was not the chlorin ring but the chlorine ring. Got it?'] };
   if(i >= 0) ACH.splice(i, 0, a); else ACH.push(a);
   try{ RX_ACH_IC.chlorin2 = '🌿'; }catch(e){}
 })();
