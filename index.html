@@ -48282,7 +48282,7 @@ void main(){
   const BY = {}; P.forEach(p => BY[p.s] = p);
   const el = s => EL.find(e => e.s === s);
   const tile = (p, cls) => { const e = el(p.s); return `<div class="elp-tile${cls || ''}"><em>${e.n}</em><b>${p.s}</b><u>${p.ic}</u></div>`; };
-  const thumb = p => p.art ? `<div class="elp-thumb"><img src="${p.art}" alt="" loading="lazy" draggable="false"></div>`
+  const thumb = p => p.art ? `<div class="elp-thumb"${p.bg ? ` style="background:url(${p.bg}) 50% 40%/cover"` : ''}><img src="${p.art}" alt="" loading="lazy" draggable="false"></div>`
     : `<div class="elp-thumb none"><span>${p.ic}</span><small>${EN() ? 'Art coming soon' : '일러스트 준비 중'}</small></div>`;
   let FLT = 'all';
   const grpOf = p => { const g = el(p.s).g; return g === 17 ? 'hal' : g === 18 ? 'nob' : 'etc'; };
