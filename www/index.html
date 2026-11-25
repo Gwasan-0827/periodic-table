@@ -6243,7 +6243,6 @@ const CHANGELOG = [
       "원자 사진에 2013 🎬 추가: IBM이 일산화탄소 분자 65개로 만든 세상에서 가장 작은 영화 「소년과 원자」. 직접 틀거나 한 장씩 넘겨 봐요",
       "알파·감마·델타 사이클로덱스트린 모형이 구겨져 보이던 문제 수정: 이제 베타처럼 동그란 도넛으로 나와요",
       "설정 › 모형 색 개편: 여러 개를 같이 고를 수 있어요(예: 산소 + 금속 + 커스터마이징). 커스터마이징은 원소마다 \"실제 색\"으로 할지 직접 고른 색으로 할지 정해요",
-      "광물 모형이 자라날 때 소리 리워크: 낮은 웅 소리와 함께 위로 쓸려 올라가다가 다 자라는 순간 금속 종이 \"딩!\" 울려요",
       "119번 우누넨늄에 여담 추가: 코리아늄이 될 뻔한 이야기 (기호 Kr 주의)",
       "확장 주기율표에 퓌쾨 모형(2011) 추가: 프리케 1971 / 퓌쾨 2011 배치를 바꿔 볼 수 있고, ▶ 채우기 순서로 전자가 8s → 5g → 8p½ → 6f → 7d → 9s → 9p½ → 8p³⁄₂ 순서로 제멋대로 채워지는 걸 볼 수 있어요",
       "확장 주기율표의 \"지금 도전 중\" 노란 점이 세로로 길쭉하게 늘어나던 문제 수정", "밥상을 엎으면 자막이 떠요: \"Oh no, our table… it's broken.\" 삐걱 → 우지끈 → 쿵 효과음과 함께", "형석 광물 모형을 결정 안에 색띠가 겹친 모양으로 다시 만들었어요", "숨은 업적과 이스터에그가 잔뜩 늘었어요. 실패 500번 「찌그러진 전자」, 토스터 모드, U+B+N, λ ≡ Undefined…", "처음 온 사람을 위한 용어 풀이 팝업, 조합 힌트, 기능 안내가 생겼어요", "폰: 원자·정보 칸을 위로 밀어 올리는 시트, 생일 달력 겹침·깜빡임, 합성 과정 창 배치를 고쳤어요"],
@@ -6285,7 +6284,6 @@ const CHANGELOG = [
       "Atom photos gets 2013 🎬: \"A Boy and His Atom\", IBM's world's smallest movie made from 65 carbon monoxide molecules. Play it or step through frame by frame",
       "Fixed alpha, gamma and delta cyclodextrin models looking crumpled: they are round doughnuts like beta now",
       "Settings › Model colours reworked: pick several at once (e.g. Oxygen + Metals + Custom). Custom now lets each element use its real colour or one you choose",
-      "New sound when a mineral model grows: a low hum sweeps upward and a metallic bell rings \"ding!\" the moment it finishes",
       "Side note on element 119: the Koreanium that almost was (mind the Kr)",
       "Extended table now has the Pyykkö model (2011): switch between Fricke 1971 and Pyykkö 2011 layouts, and press ▶ Filling order to watch electrons go 8s → 5g → 8p½ → 6f → 7d → 9s → 9p½ → 8p³⁄₂ all over the table",
       "Fixed the yellow \"being attempted now\" dot on the extended table stretching into a tall oval", "Flipping the table now ends with a subtitle: \"Oh no, our table… it's broken.\" plus a creak, crack and thud", "Beginner helpers: word glossary pop-ups, live mix hints and feature tips", "Phone: swipe-up atom/info sheet, birthday calendar overlap and flicker, synthesis window layout fixed"],
@@ -18768,32 +18766,11 @@ Object.assign(SFX, {
     rxNoise(0.18, 0.22, 'lowpass', 400);
     rxTone(150, 0.3, 'sawtooth', 0.05, 0.12, 90);
   },
-  /* 결정이 자라난다 (4.3.0 리워크 F "실험실 합성기"): 낮은 웅 + 위로 쓸리는 소리 → 금속 종 "딩!" */
-  grow(D){
-    if(!sndOn) return;
-    const a = ac(); if(!a) return;
-    const T = Math.max(1.2, Math.min(3, (D || 1800) / 1000)), t = a.currentTime, verb = typeof rxVerb === 'function' ? rxVerb() : null;
-    const out = a.createGain(); out.gain.value = 1; out.connect(a.destination); if(verb) out.connect(verb);
-    // 낮은 웅
-    const pad = a.createOscillator(), pg = a.createGain(); pad.frequency.value = 55;
-    pg.gain.setValueAtTime(0, t); pg.gain.linearRampToValueAtTime(.12, t + .4); pg.gain.linearRampToValueAtTime(.0001, t + T);
-    pad.connect(pg); pg.connect(out); pad.start(t); pad.stop(t + T + .05);
-    // 위로 쓸리는 소리
-    const sw = a.createOscillator(), sg = a.createGain(); sw.frequency.setValueAtTime(110, t); sw.frequency.exponentialRampToValueAtTime(440, t + T);
-    sg.gain.setValueAtTime(0, t); sg.gain.linearRampToValueAtTime(.05, t + .3); sg.gain.setValueAtTime(.05, t + T - .05); sg.gain.linearRampToValueAtTime(0, t + T);
-    sw.connect(sg); sg.connect(out); sw.start(t); sw.stop(t + T + .05);
-    // 점점 커지는 쉬익
-    const n = Math.floor(a.sampleRate * T), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
-    let prev = 0; for(let i = 0; i < n; i++){ const r = Math.random() * 2 - 1; d[i] = (r - prev) * Math.pow(i / n, 2); prev = r; }
-    const ns = a.createBufferSource(), ng = a.createGain(); ns.buffer = buf; ng.gain.value = .05; ns.connect(ng); ng.connect(out); ns.start(t);
-    // 금속 종 "딩!" (FM)
-    const tb = t + T, car = a.createOscillator(), mod = a.createOscillator(), mg = a.createGain(), cg = a.createGain();
-    car.frequency.value = 1400; mod.frequency.value = 1400 * 1.41;
-    mg.gain.setValueAtTime(900, tb); mg.gain.exponentialRampToValueAtTime(1, tb + 1);
-    cg.gain.setValueAtTime(0, tb); cg.gain.linearRampToValueAtTime(.12, tb + .004); cg.gain.exponentialRampToValueAtTime(.0001, tb + 1.8);
-    mod.connect(mg); mg.connect(car.frequency); car.connect(cg); cg.connect(out);
-    car.start(tb); mod.start(tb); car.stop(tb + 1.9); mod.stop(tb + 1.9);
-    try{ rxBell(700, 1.6, .05, T); }catch(e){}
+  /* 결정이 자라난다: 위로 번지는 맑은 소리 */
+  grow(){
+    [523, 659, 784, 988, 1319].forEach((f, i) =>
+      rxTone(f, 0.55 - i * 0.05, 'sine', 0.045, i * 0.13));
+    rxNoise(0.5, 0.03, 'highpass', 4000);
   },
   /* 도감에 새로 등록 */
   dexNew(){
