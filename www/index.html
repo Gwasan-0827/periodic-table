@@ -15813,7 +15813,7 @@ const RX_TMI = {
   '실리콘 웨이퍼':'반도체용 실리콘은 99.9999999% 이상 순수해요.',
   '네온사인':'네온 자체는 주황빛 빨강만 내요. 다른 색 간판은 다른 기체나 형광 코팅을 써요.',
   '수은 웅덩이':'상온에서 액체인 금속은 수은뿐이에요. 갈륨과 세슘은 30℃ 가까이 되어야 녹아요.',
-  '비스무트 결정':'무지갯빛은 색소가 아니라 표면의 얇은 산화막 때문에 생겨요.',
+  '비스무트 결정':'무지갯빛은 색소가 아니라 표면의 얇은 산화막 때문에 생겨요. 놀랍게도 분홍색 위장약(차살리실산 비스무트)을 잔뜩 모아서 비스무트만 뽑아내도 이 결정을 만들 수 있어요.',
   '(순수) 갈륨 큐브':'갈륨은 29.76°C에서 녹아요. 손이 따뜻하면 쥐고만 있어도 녹고, 찬 손이면 잘 안 녹아요. 그리고 물처럼 얼 때 부피가 약 3% 늘어나는 드문 금속이라, 꽉 찬 유리병에 넣고 얼리면 병이 깨질 수 있어요.',
   '(순수) 타이타늄 큐브':'타이타늄에 전기를 걸면 표면에 아주 얇은 산화막이 자라요. 그 막에서 반사된 빛끼리 간섭해서 색이 생기는데, 막 두께는 걸어 준 전압으로 정해져요. 물감 없이 두께만으로 내는 색이에요.',
   '(순수) 구리 큐브':'구리는 세균을 죽이는 성질이 있어서 문손잡이에 쓰기도 해요.',
@@ -62291,8 +62291,8 @@ function rxOrgOf(name, formula){
   EXACT[KEY] = ['C₇H₅BiO₄', NM, '속 쓰릴 때 먹는 분홍 약. 먹으면 혀가 까매짐'];
   try{ REC_EN[NM] = ['Bismuth subsalicylate', 'The pink tummy medicine that turns your tongue black']; }catch(e){}
   try{ RX_SMILES[NM] = SM; RX_SMILES_PRE[SM] = PRE; }catch(e){}
-  try{ RX_TMI[NM] = '분홍색 위장약 "펩토비스몰"의 주성분이에요. 속쓰림·배탈·설사에 써요. 재밌는 부작용이 하나 있는데, 먹고 나면 혀나 변이 까맣게 변할 수 있어요. 비스무트가 입과 장 속의 황과 만나 검은색 황화 비스무트(Bi₂S₃)가 되기 때문이에요. 해롭진 않고 며칠 지나면 없어져요. 비스무트는 무거운 금속인데도 독성이 아주 약한 편이라 약으로 쓸 수 있어요. 다만 이름처럼 살리실산(아스피린의 친척)이 들어 있어서, 아스피린 알레르기가 있거나 독감·수두에 걸린 어린이·청소년은 먹으면 안 돼요. 그림은 한 단위만 그린 거고, 실제 가루 속에선 이런 단위들이 사슬처럼 길게 이어져 있어요.'; }catch(e){}
-  try{ RX_TMI_EN[NM] = 'The active ingredient in pink Pepto-Bismol, used for heartburn, upset stomach and diarrhoea. Fun side effect: it can turn your tongue or poop black, because bismuth meets sulfur in your mouth and gut and forms black bismuth sulfide (Bi₂S₃). Harmless, and it fades in a few days. Bismuth is a heavy metal but unusually low in toxicity, which is why it can be a medicine. It does contain salicylate (an aspirin relative), so people allergic to aspirin, and children or teens with flu or chickenpox, should not take it. The drawing shows one unit; in the real powder these units link up into long chains.'; }catch(e){}
+  try{ RX_TMI[NM] = '분홍색 위장약 "펩토비스몰"의 주성분이에요. 속쓰림·배탈·설사에 써요. 재밌는 부작용이 하나 있는데, 먹고 나면 혀나 변이 까맣게 변할 수 있어요. 비스무트가 입과 장 속의 황과 만나 검은색 황화 비스무트(Bi₂S₃)가 되기 때문이에요. 해롭진 않고 며칠 지나면 없어져요. 비스무트는 무거운 금속인데도 독성이 아주 약한 편이라 약으로 쓸 수 있어요. 다만 이름처럼 살리실산(아스피린의 친척)이 들어 있어서, 아스피린 알레르기가 있거나 독감·수두에 걸린 어린이·청소년은 먹으면 안 돼요. 그림은 한 단위만 그린 거고, 실제 가루 속에선 이런 단위들이 사슬처럼 길게 이어져 있어요. 놀랍게도 이 분홍 약을 잔뜩 모아 비스무트만 뽑아낸 다음 녹였다 식히면, 도감의 "비스무트 결정" 같은 무지개 계단 결정도 만들 수 있어요.'; }catch(e){}
+  try{ RX_TMI_EN[NM] = 'The active ingredient in pink Pepto-Bismol, used for heartburn, upset stomach and diarrhoea. Fun side effect: it can turn your tongue or poop black, because bismuth meets sulfur in your mouth and gut and forms black bismuth sulfide (Bi₂S₃). Harmless, and it fades in a few days. Bismuth is a heavy metal but unusually low in toxicity, which is why it can be a medicine. It does contain salicylate (an aspirin relative), so people allergic to aspirin, and children or teens with flu or chickenpox, should not take it. The drawing shows one unit; in the real powder these units link up into long chains. Amazingly, if you collect a lot of this pink medicine, pull out just the bismuth, then melt and cool it, you can grow the same rainbow staircase crystals as the "bismuth crystal" in the codex.'; }catch(e){}
   try{ if(typeof RX_DEX_ALIAS !== 'undefined') RX_DEX_ALIAS[NM] = 'bismuth subsalicylate 차살리실산비스무트 비스무트 살리실산 펩토비스몰 pepto bismol 위장약 설사약 검은 혀 black tongue bss'; }catch(e){}
   try{ RX_TAGSET.med && RX_TAGSET.med.add(NM); }catch(e){}
 })();
