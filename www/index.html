@@ -62789,6 +62789,7 @@ function rxOrgOf(name, formula){
   #info .el-q[open] summary::after{content:' ▴'}
   #info .el-q p{margin:7px 0 0;color:#c9d1e6}
   #info .el-q p.warn{color:#ffc9c9}
+  #info .el-q p.qn{color:#fff4c2;font-weight:700}
 </style>
 <script>
 /* ═══ 원소 Q&A (과산 요청) ═══ */
@@ -62802,7 +62803,9 @@ const RX_EL_Q = {
          'The fun part: the pitch of your voice does not actually change. Your vocal cords vibrate just as fast. What changes is how sound resonates in your throat and mouth. Faster sound boosts the high resonances, so the same note comes out sounding high and quacky like a duck.',
          'Breathe sulfur hexafluoride (SF₆), five times heavier than air, and the opposite happens: sound slows down and your voice turns monster-deep.']],
     warn: ['⚠ 헬륨을 마시면 그만큼 산소를 못 마셔요. 풍선이나 탱크에서 직접 들이마시면 어지럽거나 쓰러질 수 있고, 특히 고압 탱크는 폐를 다치게 할 수 있어서 절대 안 돼요.',
-           '⚠ Every breath of helium is a breath without oxygen. Inhaling straight from a balloon or tank can make you dizzy or pass out, and a pressurised tank can injure your lungs, so never do it.']
+           '⚠ Every breath of helium is a breath without oxygen. Inhaling straight from a balloon or tank can make you dizzy or pass out, and a pressurised tank can injure your lungs, so never do it.'],
+    note: ['알아둘점: 헬륨까스를(많이) 마시면 질식할수있으니 쬐끔만 마십시다 아니다 그냥 흡입하지마;',
+           'Good to know: breathing (a lot of) helium can suffocate you, so just a tiny bit— no, actually, just don\'t breathe it in;']
   }],
 };
 {
@@ -62814,7 +62817,7 @@ const RX_EL_Q = {
       if(!L || info.querySelector('.el-q')) return r;
       const i = LANG === 'en' ? 1 : 0;
       const anchor = info.querySelector('.el-if') || info.querySelector('.el-tmi') || info.querySelector('.cat'); if(!anchor) return r;
-      anchor.insertAdjacentHTML('afterend', L.map(x => `<details class="el-q"><summary><b>Q</b>${x.q[i]}</summary>${x.a[i].map(p => `<p>${p}</p>`).join('')}${x.warn ? `<p class="warn">${x.warn[i]}</p>` : ''}</details>`).join(''));
+      anchor.insertAdjacentHTML('afterend', L.map(x => `<details class="el-q"><summary><b>Q</b>${x.q[i]}</summary>${x.a[i].map(p => `<p>${p}</p>`).join('')}${x.warn ? `<p class="warn">${x.warn[i]}</p>` : ''}${x.note ? `<p class="qn">${x.note[i]}</p>` : ''}</details>`).join(''));
     }catch(err){}
     return r;
   };
