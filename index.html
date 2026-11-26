@@ -63885,8 +63885,8 @@ try{ Object.assign(RX_SMILES_PRE, {"C1=CC=CC=CC=CC=C1":{"a":[["C",-62.6,-19.0,3.
   const single = (sym, n, f, ko, sub) => { if((SINGLE[sym] || []).some(r => r[3] === ko)) return false; (SINGLE[sym] = SINGLE[sym] || []).unshift([n, n, f, ko, sub]); return true; };
   if(single('He', 2, 'He₂', '헬륨 이합체', '역사상 가장 허접한 결합'))
     meta('헬륨 이합체', 'Helium dimer', 'The flimsiest bond in history', 'weak-He2', pair('He', 14, 'He', 14, 230),
-      '헬륨 원자 둘이 손을 잡은 분자인데, 그 손이 세상에서 제일 약해요. 결합 에너지가 너무 작아서 절대 영도보다 겨우 1000분의 1도 따뜻해도 바로 떨어져 버려요. 두 원자 사이 평균 거리는 약 52Å로, 보통 분자의 결합보다 30배 넘게 멀어요(그림은 이것도 줄여서 그린 거예요). 1994년에야 겨우 존재가 확인됐어요.',
-      'Two helium atoms holding hands, with the weakest grip in the world. The bond is so feeble that warming it to just a thousandth of a degree above absolute zero pulls it apart. The atoms sit about 52 Å apart on average, over 30 times a normal bond (and the picture is still shrunk). Its existence was only confirmed in 1994.',
+      '헬륨 원자 둘이 손을 잡은 분자인데, 그 손이 세상에서 제일 약해요. 결합 에너지가 너무 작아서 절대 영도보다 겨우 1000분의 1도 따뜻해도 바로 떨어져 버려요. 두 원자 사이 평균 거리는 약 52Å로, 보통 분자의 결합보다 30배 넘게 멀어요(그림은 이것도 줄여서 그린 거예요). 1994년에야 겨우 존재가 확인됐어요. 솔직히 결합이라고 부르기에도 민망해요.',
+      'Two helium atoms holding hands, with the weakest grip in the world. The bond is so feeble that warming it to just a thousandth of a degree above absolute zero pulls it apart. The atoms sit about 52 Å apart on average, over 30 times a normal bond (and the picture is still shrunk). Its existence was only confirmed in 1994. Honestly, it\'s embarrassing to even call it a bond.',
       'helium dimer he2 헬륨 이합체 다이헬륨 가장 약한 결합 weakest bond 판데르발스 van der waals 허접');
   if(single('Be', 2, 'Be₂', '베릴륨 이합체', '이론상 안 붙는데 억지로 붙어 있음'))
     meta('베릴륨 이합체', 'Beryllium dimer', 'Theory says no bond, yet it clings on', 'weak-Be2', pair('Be', 15, 'Be', 15, 69),
