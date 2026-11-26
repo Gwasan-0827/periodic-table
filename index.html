@@ -63632,6 +63632,7 @@ try{ Object.assign(RX_SMILES_PRE, {"C1=CC=CC=CC=CC=C1":{"a":[["C",-62.6,-19.0,3.
 
 <style>
 /* ── 폰 가로모드 (LAND 4.3.0): 머리말 압축 · 표를 화면에 맞춤 · 조합 바 접기 ── */
+#lsHandle{display:none}
 @media (orientation:landscape) and (max-height:520px){
   html.lsm header{height:40px !important;min-height:0 !important;padding-top:0 !important;padding-bottom:0 !important}
   html.lsm header .hd-tx .sub{display:none !important}
@@ -63670,7 +63671,6 @@ try{ Object.assign(RX_SMILES_PRE, {"C1=CC=CC=CC=CC=C1":{"a":[["C",-62.6,-19.0,3.
   /* 조합 바: 평소엔 손잡이만 */
   html.lsm footer#tray{overflow:visible !important;transition:transform .28s cubic-bezier(.2,.8,.2,1) !important}
   html.lsm:not(.lsTrayOpen) footer#tray{transform:translateY(calc(100% - 34px)) !important}
-  #lsHandle{display:none}
   html.lsm #lsHandle{display:flex;align-items:center;justify-content:center;gap:8px;position:absolute;left:50%;top:0;transform:translate(-50%,-100%);
     height:28px;padding:0 16px;border-radius:10px 10px 0 0;border:1px solid var(--line2,rgba(255,255,255,.18));border-bottom:none;
     background:var(--panel,#141a3a);color:var(--text,#e8ecff);font:650 12px/1 inherit;cursor:pointer;z-index:2;white-space:nowrap}
