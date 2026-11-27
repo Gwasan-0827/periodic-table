@@ -64135,9 +64135,9 @@ try{ Object.assign(RX_SMILES_PRE, {"C1=CC=CC=CC=CC=C1":{"a":[["C",-62.6,-19.0,3.
     const L = LANG === 'en';
     const html = row(L ? 'Two-letter table' : '두 글자 주기율표', sw('twolet', on),
       L ? 'Turns the 14 one-letter symbols into two letters (H → Hy, C → Cb…). Five of them were real symbols once.' : '한 글자 기호 14개를 두 글자로 바꿔요 (H → Hy, C → Cb…). 그중 다섯 개는 옛날에 진짜 쓰던 기호예요.');
-    const lang = b.querySelector('.sseg[data-seg="lang"]'), r = lang && lang.closest('.srow, .row, div');
+    const lang = b.querySelector('.sseg[data-seg="lang"]'), r = lang && lang.closest('.srow');
     const t = document.createElement('div'); t.innerHTML = html;
-    const node = t.firstElementChild;
+    const node = t.firstElementChild; node.dataset.tab = (r && r.dataset.tab) || 'gen';
     if(r && r.parentNode === b) b.insertBefore(node, r.nextSibling); else b.appendChild(node);
     node.querySelector('[data-sw="twolet"]').addEventListener('click', e => {
       e.stopPropagation(); on = !on; try{ localStorage.setItem(KEY, on ? '1' : '0'); }catch(_){}
